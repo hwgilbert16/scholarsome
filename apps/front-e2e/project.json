@@ -1,18 +1,18 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/quizletbutfree-e2e/src",
+  "sourceRoot": "apps/front-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nrwl/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/quizletbutfree-e2e/cypress.config.ts",
-        "devServerTarget": "quizletbutfree:serve:development",
+        "cypressConfig": "apps/front-e2e/cypress.config.ts",
+        "devServerTarget": "front:serve:development",
         "testingType": "e2e"
       },
       "configurations": {
         "production": {
-          "devServerTarget": "quizletbutfree:serve:production"
+          "devServerTarget": "front:serve:production"
         }
       }
     },
@@ -20,10 +20,10 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/quizletbutfree-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": ["apps/front-e2e/**/*.{js,ts}"]
       }
     }
   },
   "tags": [],
-  "implicitDependencies": ["quizletbutfree"]
+  "implicitDependencies": ["front"]
 }

@@ -4,7 +4,7 @@
   "projects": {
     "api": "apps/api",
     "api-interfaces": "libs/api-interfaces",
-    "quizletbutfree": "apps/quizletbutfree",
-    "quizletbutfree-e2e": "apps/quizletbutfree-e2e"
+    "front": "apps/front",
+    "front-e2e": "apps/front-e2e"
   }
 }

@@ -1,23 +1,21 @@
 {
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/quizletbutfree/src",
+  "sourceRoot": "apps/front/src",
   "prefix": "quizletbutfree",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/quizletbutfree",
-        "index": "apps/quizletbutfree/src/index.html",
-        "main": "apps/quizletbutfree/src/main.ts",
-        "polyfills": "apps/quizletbutfree/src/polyfills.ts",
-        "tsConfig": "apps/quizletbutfree/tsconfig.app.json",
+        "outputPath": "dist/apps/front",
+        "index": "apps/front/src/index.html",
+        "main": "apps/front/src/main.ts",
+        "polyfills": "apps/front/src/polyfills.ts",
+        "tsConfig": "apps/front/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": [
-          "apps/quizletbutfree/src/favicon.ico",
-          "apps/quizletbutfree/src/assets"
-        ],
-        "styles": ["apps/quizletbutfree/src/styles.scss"],
+        "assets": ["apps/front/src/favicon.ico", "apps/front/src/assets"],
+        "styles": ["apps/front/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -36,8 +34,8 @@
           ],
           "fileReplacements": [
             {
-              "replace": "apps/quizletbutfree/src/environments/environment.ts",
-              "with": "apps/quizletbutfree/src/environments/environment.prod.ts"
+              "replace": "apps/front/src/environments/environment.ts",
+              "with": "apps/front/src/environments/environment.prod.ts"
             }
           ],
           "outputHashing": "all"
@@ -57,37 +55,34 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "quizletbutfree:build:production"
+          "browserTarget": "front:build:production"
         },
         "development": {
-          "browserTarget": "quizletbutfree:build:development"
+          "browserTarget": "front:build:development"
         }
       },
       "defaultConfiguration": "development",
       "options": {
-        "proxyConfig": "apps/quizletbutfree/proxy.conf.json"
+        "proxyConfig": "apps/front/proxy.conf.json"
       }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "quizletbutfree:build"
+        "browserTarget": "front:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/quizletbutfree/**/*.ts",
-          "apps/quizletbutfree/**/*.html"
-        ]
+        "lintFilePatterns": ["apps/front/**/*.ts", "apps/front/**/*.html"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/quizletbutfree"],
+      "outputs": ["coverage/apps/front"],
       "options": {
-        "jestConfig": "apps/quizletbutfree/jest.config.ts",
+        "jestConfig": "apps/front/jest.config.ts",
         "passWithNoTests": true
       }
     }
