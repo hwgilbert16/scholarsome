@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Message } from '@quizletbutfree/api-interfaces';
+import {setTheme} from "ngx-bootstrap/utils";
 
 @Component({
   selector: 'quizletbutfree-root',
@@ -8,6 +9,5 @@ import { Message } from '@quizletbutfree/api-interfaces';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  hello$ = this.http.get<Message>('/api/hello');
-  constructor(private http: HttpClient) {}
+
 }
