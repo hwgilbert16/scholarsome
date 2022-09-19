@@ -1,0 +1,42 @@
+.navbar {
+  background-color: #233f6f !important;
+  box-shadow: black;
+  filter: drop-shadow(0 0.4rem 0.25rem rgba(0, 0, 0, 0.2));
+}
+
+.navbar-brand {
+  color: white;
+}
+
+.navbar-nav > li{
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.navbar-nav > li > a:hover{
+  filter: drop-shadow(0 0.4rem 0.25rem rgba(0, 0, 0, 0.6)) !important;
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 768px) {
+  .btn-outline-light {
+    margin-right: 15.1rem;
+  }
+
+  .create-button {
+    margin-bottom: 1rem;
+    width: 20%;
+    height: 60px;
+  }
+
+  .navbar-nav > li{
+    padding-top:5px;
+    padding-bottom: 5px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .btn-outline-light {
+    margin-right: 1rem;
+  }
+}
