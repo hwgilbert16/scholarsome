@@ -19,10 +19,6 @@
 }
 
 @media screen and (max-width: 768px) {
-  .btn-outline-light {
-    margin-right: 15.1rem;
-  }
-
   .create-button {
     margin-bottom: 1rem;
     width: 20%;
@@ -32,11 +28,5 @@
   .navbar-nav > li{
     padding-top:5px;
     padding-bottom: 5px;
-  }
-}
-
-@media screen and (min-width: 768px) {
-  .btn-outline-light {
-    margin-right: 1rem;
   }
 }
