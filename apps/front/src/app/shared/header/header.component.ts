@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { faClone } from '@fortawesome/free-regular-svg-icons';
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 
 @Component({
   selector: 'quizletbutfree-header',
@@ -7,9 +8,15 @@ import { faClone } from '@fortawesome/free-regular-svg-icons';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  constructor() {}
+  constructor(private modalService: BsModalService) {}
 
   faClone = faClone;
+
+  modalRef?: BsModalRef;
+
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+  }
 
   ngOnInit(): void {}
 }

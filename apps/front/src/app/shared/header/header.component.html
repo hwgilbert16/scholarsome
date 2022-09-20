@@ -1,13 +1,13 @@
 <nav class="navbar navbar-expand-lg bg-light navbar-dark fs-5">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" [routerLink]="''">Navbar</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
+          <a class="nav-link active text-white" aria-current="page" [routerLink]="''">Home</a>
         </li>
         <li class="btn-group create-button" dropdown>
           <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle fs-5"
@@ -20,14 +20,47 @@
           </ul>
         </li>
       </ul>
-      <div class="d-flex justify-content-around">
-        <button type="button" class="btn btn-outline-light pr-6">
-          Log in
-        </button>
-        <button type="button" class="btn btn-warning ms-4">
-          Sign up
-        </button>
+      <div class="d-flex">
+        <a>
+          <button type="button" class="btn btn-outline-light pr-6" (click)="openModal(login)">
+            Log in
+          </button>
+        </a>
+        <a>
+          <button type="button" class="btn btn-warning ms-4">
+            Sign up
+          </button>
+        </a>
       </div>
     </div>
   </div>
 </nav>
+
+<ng-template #login>
+  <div class="modal-header bg-light">
+    <h4 class="modal-title pull-left">Log in</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form class="mx-3">
+      <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail1">
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword1">
+      </div>
+      <div class="form-text text-center mb-3">Forgot password?</div>
+      <div class="modal-footer">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="exampleCheck1">
+          <label class="form-check-label" for="exampleCheck1">Remember me</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
