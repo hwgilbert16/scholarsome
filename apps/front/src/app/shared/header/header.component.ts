@@ -1,6 +1,7 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import { faClone } from '@fortawesome/free-regular-svg-icons';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: 'quizletbutfree-header',
@@ -16,6 +17,14 @@ export class HeaderComponent implements OnInit {
 
   openModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
+  }
+
+  submitLogin(form: NgForm) {
+    console.log(form.value);
+  }
+
+  submitRegister(form: NgForm) {
+    console.log(form.value);
   }
 
   ngOnInit(): void {}

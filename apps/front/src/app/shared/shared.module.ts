@@ -6,9 +6,10 @@ import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { RouterLinkWithHref } from "@angular/router";
+import { FormsModule } from "@angular/forms";
 
 @NgModule({
-  imports: [TooltipModule.forRoot(), BsDropdownModule, BrowserAnimationsModule, FontAwesomeModule, RouterLinkWithHref],
+  imports: [TooltipModule.forRoot(), BsDropdownModule, BrowserAnimationsModule, FontAwesomeModule, RouterLinkWithHref, FormsModule],
   declarations: [FooterComponent, HeaderComponent],
   exports: [FooterComponent, HeaderComponent],
 })
