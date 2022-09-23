@@ -9,3 +9,25 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sets      Set[]
+}
+
+model Set {
+  id       String @id @default(uuid())
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+}
+
+model Card {
+  id         String @id @default(uuid())
+  term       String
+  definition String
+}
