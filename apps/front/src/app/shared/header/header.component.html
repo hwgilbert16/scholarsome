@@ -44,22 +44,22 @@
     </button>
   </div>
   <div class="modal-body">
-    <form class="mx-3">
+    <form class="mx-3" (ngSubmit)="submitLogin(loginForm)" #loginForm="ngForm" ngNativeValidate>
       <div class="mb-3">
         <label for="login-email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="login-email" required ngModel>
+        <input type="email" class="form-control" id="login-email" name="email" required ngModel>
       </div>
       <div class="mb-3">
         <div class="d-flex justify-content-between">
           <label for="login-password" class="form-label">Password</label>
           <a class="form-text" [routerLink]="[]">Forgot?</a>
         </div>
-        <input type="password" class="form-control" id="login-password" required ngModel>
+        <input type="password" class="form-control" id="login-password" name="password" required ngModel>
       </div>
       <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)">Sign up.</a></div>
       <div class="modal-footer">
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="login-enable-cookies" required ngModel>
+          <input type="checkbox" class="form-check-input" id="login-enable-cookies" name="enableCookies" ngModel>
           <label class="form-check-label" for="login-enable-cookies">Remember me</label>
         </div>
         <button type="submit" class="btn btn-primary">Log in</button>
@@ -79,19 +79,19 @@
     <form class="mx-3" (ngSubmit)="submitRegister(registerForm)" #registerForm="ngForm" ngNativeValidate>
       <div class="mb-3">
         <label for="register-username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="register-username" name="register-username" ngModel required>
+        <input type="text" class="form-control" id="register-username" name="username" ngModel required>
       </div>
       <div class="mb-3">
         <label for="register-email" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="register-email" name="register-email" ngModel required>
+        <input type="email" class="form-control" id="register-email" name="email" ngModel required>
       </div>
       <div class="mb-3">
         <label for="register-password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="register-password" name="register-password" ngModel required>
+        <input type="password" class="form-control" id="register-password" name="password" ngModel required>
       </div>
       <div class="mb-3">
         <label for="register-confirm-password" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="register-confirm-password" name="register-confirm-password" ngModel required>
+        <input type="password" class="form-control" id="register-confirm-password" name="confirmPassword" ngModel required>
       </div>
       <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)">Log in.</a></div>
       <div class="modal-footer">

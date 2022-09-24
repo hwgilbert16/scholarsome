@@ -21,13 +21,20 @@ model User {
 }
 
 model Set {
-  id       String @id @default(uuid())
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  id        String   @id @default(uuid())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cards     Card[]
 }
 
 model Card {
-  id         String @id @default(uuid())
+  id         String   @id @default(uuid())
+  setId      String
   term       String
   definition String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  set        Set      @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

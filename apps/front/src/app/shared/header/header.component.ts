@@ -1,7 +1,9 @@
-import {Component, EventEmitter, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { faClone } from '@fortawesome/free-regular-svg-icons';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
+import { ModalService } from "../modal.service";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
   selector: 'quizletbutfree-header',
@@ -9,22 +11,36 @@ import { NgForm } from "@angular/forms";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  constructor(private modalService: BsModalService) {}
+  @ViewChild('register')
+  registerModal!: TemplateRef<any>
 
-  faClone = faClone;
+  constructor(private bsModalService: BsModalService,
+              private modalService: ModalService,
+              private authService: AuthService) {
+    this.modalService.modal.subscribe(e => {
+      if (e === 'register-open') {
+        this.modalRef = this.bsModalService.show(this.registerModal);
+      }
+    })
+  }
 
   modalRef?: BsModalRef;
+  faClone = faClone;
 
   openModal(template: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.bsModalService.show(template);
   }
 
   submitLogin(form: NgForm) {
-    console.log(form.value);
+    this.authService.login(form.value).subscribe(() => {
+      console.log('Logged in');
+    })
   }
 
   submitRegister(form: NgForm) {
-    console.log(form.value);
+    this.authService.login(form.value).subscribe(() => {
+      console.log('Logged in');
+    })
   }
 
   ngOnInit(): void {}
