@@ -38,8 +38,8 @@ export class HeaderComponent implements OnInit {
   }
 
   submitRegister(form: NgForm) {
-    this.authService.login(form.value).subscribe(() => {
-      console.log('Logged in');
+    this.authService.register(form.value).subscribe(() => {
+      console.log('Registered');
     })
   }
 
