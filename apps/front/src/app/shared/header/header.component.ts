@@ -1,9 +1,10 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { faClone } from '@fortawesome/free-regular-svg-icons';
+import { faClone, faUser, faCaretSquareLeft } from '@fortawesome/free-regular-svg-icons';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
-import {AuthService} from "../../auth/auth.service";
+import { AuthService } from "../../auth/auth.service";
+import { CookieService } from "ngx-cookie";
 
 @Component({
   selector: 'quizletbutfree-header',
@@ -14,9 +15,18 @@ export class HeaderComponent implements OnInit {
   @ViewChild('register')
   registerModal!: TemplateRef<any>
 
-  constructor(private bsModalService: BsModalService,
-              private modalService: ModalService,
-              private authService: AuthService) {
+  @ViewChild('loginForm')
+  loginForm!: NgForm
+
+  @ViewChild('registerForm')
+  registerForm!: NgForm
+
+  constructor(
+    private bsModalService: BsModalService,
+    private modalService: ModalService,
+    private authService: AuthService,
+    private cookieService: CookieService
+  ) {
     this.modalService.modal.subscribe(e => {
       if (e === 'register-open') {
         this.modalRef = this.bsModalService.show(this.registerModal);
@@ -25,7 +35,14 @@ export class HeaderComponent implements OnInit {
   }
 
   modalRef?: BsModalRef;
+
   faClone = faClone;
+  faUser = faUser;
+  faCaretSquareLeft = faCaretSquareLeft;
+
+  getCookie(key: string) {
+    return this.cookieService.get(key);
+  }
 
   openModal(template: TemplateRef<any>) {
     this.modalRef = this.bsModalService.show(template);
@@ -33,13 +50,20 @@ export class HeaderComponent implements OnInit {
 
   submitLogin(form: NgForm) {
     this.authService.login(form.value).subscribe(() => {
-      console.log('Logged in');
+      this.modalRef?.hide();
+      window.location.reload();
     })
   }
 
   submitRegister(form: NgForm) {
     this.authService.register(form.value).subscribe(() => {
       console.log('Registered');
+    })
+  }
+
+  submitLogout() {
+    this.authService.logout().subscribe(() => {
+      window.location.reload();
     })
   }
 

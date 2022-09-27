@@ -8,6 +8,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LandingComponent } from './landing/landing.component';
 import { AppRoutes } from "./app.routes";
 import { ModalModule } from "ngx-bootstrap/modal";
+import { CookieModule } from "ngx-cookie";
 
 @NgModule({
   declarations: [AppComponent, LandingComponent],
@@ -17,7 +18,8 @@ import { ModalModule } from "ngx-bootstrap/modal";
     SharedModule,
     FontAwesomeModule,
     RouterModule.forRoot(AppRoutes, { enableTracing: true }),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    CookieModule.withOptions()
   ],
   providers: [],
   bootstrap: [AppComponent],

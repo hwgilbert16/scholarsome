@@ -1,7 +1,6 @@
 export interface LoginForm {
   username: string;
   password: string;
-  enableCookies: boolean;
 }
 
 export interface RegisterForm {

@@ -13,7 +13,7 @@ export class RegisterDto {
   @IsNotEmpty()
   password: string;
 
-  @IsBoolean()
+  @IsString()
   @IsNotEmpty()
-  enableCookies: boolean;
+  confirmPassword: string;
 }

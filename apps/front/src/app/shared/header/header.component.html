@@ -21,16 +21,31 @@
         </li>
       </ul>
       <div class="d-flex">
-        <a>
-          <button type="button" class="btn btn-outline-light pr-6" (click)="openModal(login)">
-            Log in
-          </button>
-        </a>
-        <a>
-          <button type="button" class="btn btn-warning ms-4" (click)="openModal(register)">
-            Sign up
-          </button>
-        </a>
+        <div *ngIf="!getCookie('authenticated');else user">
+          <a>
+            <button type="button" class="btn btn-outline-light pr-6" (click)="openModal(login)">
+              Log in
+            </button>
+          </a>
+          <a>
+            <button type="button" class="btn btn-warning ms-4" (click)="openModal(register)">
+              Sign up
+            </button>
+          </a>
+        </div>
+        <ng-template #user>
+          <ul class="nav navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-white text-left" data-bs-toggle="dropdown"><fa-icon [icon]="faUser"></fa-icon></a>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item">Reports</a>
+                <a class="dropdown-item">Settings</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" (click)="submitLogout()"><fa-icon [icon]="faCaretSquareLeft"></fa-icon> Logout</a>
+              </div>
+            </li>
+          </ul>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -59,7 +74,7 @@
       <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)">Sign up.</a></div>
       <div class="modal-footer">
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="login-enable-cookies" name="enableCookies" ngModel>
+          <input type="checkbox" class="form-check-input" id="login-enable-cookies" name="enableCookies">
           <label class="form-check-label" for="login-enable-cookies">Remember me</label>
         </div>
         <button type="submit" class="btn btn-primary">Log in</button>

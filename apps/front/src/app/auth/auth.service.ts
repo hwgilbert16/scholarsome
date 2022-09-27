@@ -10,10 +10,14 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(loginForm: LoginForm) {
-    return this.http.post<LoginForm>('/api/login', loginForm).pipe(shareReplay());
+    return this.http.post<LoginForm>('/api/auth/login', loginForm).pipe(shareReplay());
   }
 
   register(registerForm: RegisterForm) {
-    return this.http.post<RegisterForm>('/api/register', registerForm).pipe(shareReplay());
+    return this.http.post<RegisterForm>('/api/auth/register', registerForm).pipe(shareReplay());
+  }
+
+  logout() {
+    return this.http.post('/api/auth/logout', {}).pipe(shareReplay());
   }
 }
