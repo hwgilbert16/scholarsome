@@ -1,5 +1,51 @@
-<div class="text-center py-5 px-2">
+<div *ngIf="!getCookie('authenticated');else authenticated" class="text-center py-5 px-2">
   <h1 class="display-1 fw-bold">Free studying and learning for all</h1>
   <p class="pt-2 fs-5">All your favorite study tools from the other guys, all without the ads and no premium plan to pay for.</p>
   <button class="btn btn-lg btn-primary mt-4" (click)="openRegister()">Sign up for free</button>
 </div>
+
+<ng-template #authenticated>
+  <div class="py-4 px-5">
+    <div class="d-flex px-3">
+      <h2>Your sets</h2>
+    </div>
+    <div class="row row-cols-1 row-cols-md-4 g-4 py-4">
+      <div class="col">
+        <div class="card shadow w-4">
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+          <div class="card-footer bold">
+            <fa-icon [icon]="faUser"></fa-icon> johndoe46
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card shadow w-4">
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+          <div class="card-footer bold">
+            <fa-icon [icon]="faUser"></fa-icon> johndoe46
+          </div>
+        </div>
+      </div>
+    </div>
+<!--    <div class="d-flex py-4 px-3 justify-content-lg-evenly">-->
+<!--      <div class="card shadow" style="width: 24rem;">-->
+<!--        <div class="card-body">-->
+<!--          <h5 class="card-title">Card title</h5>-->
+<!--          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>-->
+<!--          <a href="#" class="btn btn-primary">Go somewhere</a>-->
+<!--        </div>-->
+<!--        <div class="card-footer bold">-->
+<!--          <fa-icon [icon]="faUser"></fa-icon> johndoe46-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+  </div>
+</ng-template>

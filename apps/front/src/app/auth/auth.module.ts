@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
+import { CookieModule } from "ngx-cookie";
 
 @NgModule({
-  imports: [],
+  imports: [CookieModule],
   declarations: [],
   exports: [],
 })
