@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
@@ -11,7 +10,7 @@ import { CookieModule } from "ngx-cookie";
 
 @NgModule({
   imports: [TooltipModule.forRoot(), BsDropdownModule, BrowserAnimationsModule, FontAwesomeModule, RouterLinkWithHref, FormsModule, CookieModule],
-  declarations: [FooterComponent, HeaderComponent],
-  exports: [FooterComponent, HeaderComponent],
+  declarations: [HeaderComponent],
+  exports: [HeaderComponent],
 })
 export class SharedModule {}
