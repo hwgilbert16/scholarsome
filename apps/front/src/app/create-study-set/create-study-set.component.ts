@@ -8,5 +8,9 @@ import { Component, OnInit } from '@angular/core';
 export class CreateStudySetComponent implements OnInit {
   constructor() {}
 
-  ngOnInit(): void {}
+  private cardCounter = 0;
+
+  ngOnInit() {
+
+  }
 }

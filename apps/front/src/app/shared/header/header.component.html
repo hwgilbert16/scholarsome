@@ -16,7 +16,7 @@
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
               role="menu" aria-labelledby="button-basic">
-            <li role="menuitem"><a class="dropdown-item" [routerLink]="'create-study-set'"><fa-icon [icon]="faClone"></fa-icon> &nbsp;Study set</a></li>
+            <li role="menuitem"><a class="dropdown-item" [routerLink]="'create-study-set'"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
           </ul>
         </li>
       </ul>
@@ -36,12 +36,12 @@
         <ng-template #user>
           <ul class="nav navbar-nav">
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-white text-left" data-bs-toggle="dropdown"><fa-icon [icon]="faUser"></fa-icon></a>
+              <a class="nav-link dropdown-toggle text-white text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
               <div class="dropdown-menu dropdown-menu-end">
                 <a class="dropdown-item">Reports</a>
                 <a class="dropdown-item">Settings</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" (click)="submitLogout()"><fa-icon [icon]="faCaretSquareLeft"></fa-icon> Logout</a>
+                <a class="dropdown-item" (click)="submitLogout()"><fa-icon [icon]="['far', 'caret-square-left']"></fa-icon> Logout</a>
               </div>
             </li>
           </ul>

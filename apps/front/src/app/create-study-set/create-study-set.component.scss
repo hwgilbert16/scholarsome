@@ -1,3 +1,9 @@
 textarea {
   resize: none;
 }
+
+.new-card:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+

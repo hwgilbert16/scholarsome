@@ -36,10 +36,6 @@ export class HeaderComponent implements OnInit {
 
   modalRef?: BsModalRef;
 
-  faClone = faClone;
-  faUser = faUser;
-  faCaretSquareLeft = faCaretSquareLeft;
-
   getCookie(key: string) {
     return this.cookieService.get(key);
   }
@@ -67,5 +63,5 @@ export class HeaderComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 }

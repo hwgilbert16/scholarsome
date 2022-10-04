@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from "../shared/modal.service";
 import { CookieService } from "ngx-cookie";
-import { faUser } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: 'quizletbutfree-landing',
@@ -11,8 +10,6 @@ import { faUser } from "@fortawesome/free-regular-svg-icons";
 export class LandingComponent implements OnInit {
   constructor(private modalService: ModalService, private cookieService: CookieService) {}
 
-  faUser = faUser;
-
   openRegister() {
     this.modalService.modal.next('register-open');
   }
@@ -21,5 +18,5 @@ export class LandingComponent implements OnInit {
     return this.cookieService.get(key);
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {}
 }
