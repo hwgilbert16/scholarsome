@@ -2,7 +2,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "apps/front/src",
-  "prefix": "quizletbutfree",
+  "prefix": "scholarsome",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",

@@ -3,7 +3,7 @@ import { ModalService } from "../shared/modal.service";
 import { CookieService } from "ngx-cookie";
 
 @Component({
-  selector: 'quizletbutfree-landing',
+  selector: 'scholarsome-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
 })

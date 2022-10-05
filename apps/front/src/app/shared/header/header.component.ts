@@ -7,7 +7,7 @@ import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
 
 @Component({
-  selector: 'quizletbutfree-header',
+  selector: 'scholarsome-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
