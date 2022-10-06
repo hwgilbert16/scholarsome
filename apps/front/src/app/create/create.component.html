@@ -20,31 +20,15 @@
     </div>
     <hr>
   </div>
-  <div class="container-fluid">
+  <div class="container-fluid" #cardList>
     <div class="row mx-3">
-      <div class="card my-3 bg-light">
-        <div class="card-body">
-          <div class="card-header bg-light mb-2">1.</div>
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-lg">
-                <label for="term" class="form-label">Term</label>
-                <input type="email" class="form-control" id="term">
-              </div>
-              <div class="col-lg">
-                <label for="definition" class="form-label">Definition</label>
-                <input type="email" class="form-control" id="definition">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ng-template scholarsomeCardList></ng-template>
     </div>
   </div>
   <div class="container-fluid">
     <div class="row mx-3">
       <div class="card my-3 bg-light">
-        <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card">
+        <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard()">
           <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>
         </div>
       </div>

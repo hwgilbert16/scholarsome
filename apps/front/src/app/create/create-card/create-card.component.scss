@@ -1,0 +1,19 @@
+.card-button {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.card-button:hover {
+  animation: button-color-change 0.25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes button-color-change {
+  0% {
+    color: #212529;
+  }
+
+  100% {
+    color: #0d6efd;
+  }
+}

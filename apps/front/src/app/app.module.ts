@@ -9,17 +9,18 @@ import { LandingComponent } from './landing/landing.component';
 import { AppRoutes } from './app.routes';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieModule } from 'ngx-cookie';
-import { CreateStudySetComponent } from './create-study-set/create-study-set.component';
-import { faCaretSquareLeft, faClone, faUser, faPlusSquare } from "@fortawesome/free-regular-svg-icons";
+import { faCaretSquareLeft, faClone, faUser, faPlusSquare, faTrashCan, faArrowAltCircleUp,faArrowAltCircleDown } from "@fortawesome/free-regular-svg-icons";
+import { CreateModule } from "./create/create.module";
 
 @NgModule({
-  declarations: [AppComponent, LandingComponent, CreateStudySetComponent],
+  declarations: [AppComponent, LandingComponent],
   imports: [
+    CreateModule,
     BrowserModule,
     HttpClientModule,
     SharedModule,
     FontAwesomeModule,
-    RouterModule.forRoot(AppRoutes, { enableTracing: true }),
+    RouterModule.forRoot(AppRoutes, {enableTracing: true}),
     ModalModule.forRoot(),
     CookieModule.withOptions(),
   ],
@@ -28,6 +29,6 @@ import { faCaretSquareLeft, faClone, faUser, faPlusSquare } from "@fortawesome/f
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {
-    library.addIcons(faClone, faUser, faCaretSquareLeft, faPlusSquare);
+    library.addIcons(faClone, faUser, faCaretSquareLeft, faPlusSquare, faTrashCan, faArrowAltCircleUp, faArrowAltCircleDown);
   }
 }

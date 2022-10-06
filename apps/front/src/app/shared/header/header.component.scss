@@ -8,7 +8,7 @@
   color: white;
 }
 
-.navbar-nav > li{
+.navbar-nav > li {
   padding-left:10px;
   padding-right:10px;
 }
@@ -18,7 +18,17 @@
   text-decoration: underline;
 }
 
-@media screen and (max-width: 768px) {
+a:hover {
+  cursor: pointer;
+}
+
+//max-width: 768px
+
+.navbar-brand {
+  width: 9vw;
+}
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
   .create-button {
     margin-bottom: 1rem;
     width: 20%;
@@ -29,8 +39,29 @@
     padding-top:5px;
     padding-bottom: 5px;
   }
+
+  .navbar-brand {
+    width: 30vw;
+  }
 }
 
-a:hover {
-  cursor: pointer;
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+  .create-button {
+    margin-bottom: 1rem;
+    width: 20%;
+    height: 60px;
+  }
+
+  .navbar-toggler {
+    margin-right: 1rem;
+  }
+
+  .navbar-nav > li{
+    padding-top:5px;
+    padding-bottom: 5px;
+  }
+
+  .navbar-brand {
+    width: 25vw;
+  }
 }

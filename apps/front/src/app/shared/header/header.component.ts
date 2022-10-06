@@ -13,13 +13,13 @@ import { CookieService } from "ngx-cookie";
 })
 export class HeaderComponent implements OnInit {
   @ViewChild('register')
-  registerModal!: TemplateRef<any>
+  registerModal: TemplateRef<any>
 
   @ViewChild('loginForm')
-  loginForm!: NgForm
+  loginForm: NgForm
 
   @ViewChild('registerForm')
-  registerForm!: NgForm
+  registerForm: NgForm
 
   constructor(
     private bsModalService: BsModalService,
