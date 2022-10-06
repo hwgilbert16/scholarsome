@@ -5,7 +5,5 @@ import  {Subject } from "rxjs";
   providedIn: 'root'
 })
 export class ModalService {
-  constructor() { }
-
   public modal: Subject<string> = new Subject<string>();
 }

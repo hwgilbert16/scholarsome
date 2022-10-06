@@ -1,9 +1,6 @@
 import { Component, ComponentRef, OnInit, ViewChild } from '@angular/core';
 import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
-import {
-  textSpanIntersectsWithPosition
-} from "@schematics/angular/third_party/github.com/Microsoft/TypeScript/lib/typescript";
 
 @Component({
   selector: 'scholarsome-create',
@@ -19,12 +16,9 @@ export class CreateComponent implements OnInit {
     for (let i = 0; i < this.cards.length; i++) {
       this.cards[i].component.instance.cardIndex = i;
       this.cards[i].index = i;
-      // if (this.cards[i].index === 0) {
-      //   this.cards[i].component.instance.cardIndex = 0;
-      // } else {
-      //   this.cards[i].component.instance.cardIndex = this.cards[i - 1].index + 1;
-      //   this.cards[i].index = this.cards[i - 1].index + 1;
-      // }
+
+      this.cards[i].component.instance.upArrow = i !== 0;
+      this.cards[i].component.instance.downArrow = this.cards.length - 1 !== i;
     }
   }
 
@@ -45,15 +39,13 @@ export class CreateComponent implements OnInit {
     card.instance.moveCardEvent.subscribe(e => {
       if (this.cardList.viewContainerRef.length > 1) {
         const cardIndex = this.cards.map(c => c.index).indexOf(e.index);
-        const swappedIndex = this.cards.map(c => c.index).indexOf(e.index + e.direction);
 
         this.cardList.viewContainerRef.move(this.cards[cardIndex].component.hostView, e.index + e.direction);
 
-        const f = this.cards.splice(cardIndex, swappedIndex)[0];
-        this.cards.splice(swappedIndex, 0, f);
-
-        this.cards[swappedIndex].index = e.index;
+        this.cards[this.cards.map(c => c.index).indexOf(e.index + e.direction)].index = e.index;
         this.cards[cardIndex].index = e.index + e.direction;
+
+        this.cards.sort((a, b) => a.index - b.index);
 
         this.updateCardIndices();
       }

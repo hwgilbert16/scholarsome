@@ -7,8 +7,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class CreateCardComponent {
   @Input() cardIndex: number;
+
+  @Input() upArrow = true;
+  @Input() downArrow = true;
+
   @Output() deleteCardEvent = new EventEmitter<number>();
-  @Output() moveCardEvent = new EventEmitter<any>();
+  @Output() moveCardEvent = new EventEmitter<{ index: number, direction: number }>();
 
   deleteCard() {
     this.deleteCardEvent.emit(this.cardIndex);

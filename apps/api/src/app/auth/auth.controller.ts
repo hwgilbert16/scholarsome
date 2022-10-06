@@ -29,7 +29,8 @@ export class AuthController {
 
   @UseGuards(AuthenticatedGuard)
   @Post('test')
-  async test() {
+  async test(@Body() body: any) {
+    console.log(body);
     return true;
   }
 }
