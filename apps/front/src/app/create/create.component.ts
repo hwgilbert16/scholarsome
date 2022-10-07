@@ -1,6 +1,7 @@
 import { Component, ComponentRef, OnInit, ViewChild } from '@angular/core';
 import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'scholarsome-create',
@@ -8,9 +9,20 @@ import { CreateCardComponent } from "./create-card/create-card.component";
   styleUrls: ['./create.component.scss'],
 })
 export class CreateComponent implements OnInit {
+  constructor(private http: HttpClient) {}
+
   @ViewChild(CreateCardDirective, { static: true }) cardList: CreateCardDirective;
 
   cards: { component: ComponentRef<CreateCardComponent>, index: number }[] = [];
+
+  createSet() {
+    for (const card of this.cards) {
+      if (card.component.instance.term.length === 0 && card.component.instance.definition.length === 0) {
+        card.component.instance.notifyEmptyInput();
+        return;
+      }
+    }
+  }
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {

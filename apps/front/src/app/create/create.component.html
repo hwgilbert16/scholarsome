@@ -1,7 +1,7 @@
 <div class="py-4">
   <div class="d-flex px-3 justify-content-between">
     <h2>Create new study set</h2>
-    <button type="submit" class="btn btn-primary">Create</button>
+    <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
   </div>
   <div class="container-fluid mt-3">
     <div class="row mx-md-4">
@@ -20,7 +20,7 @@
     </div>
     <hr>
   </div>
-  <div class="container-fluid" #cardList>
+  <div class="container-fluid">
     <div class="row mx-3">
       <ng-template scholarsomeCardList></ng-template>
     </div>
