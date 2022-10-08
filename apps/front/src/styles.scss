@@ -1,2 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css');
+
+$body-bg: white;
+$primary: #8438ff;
+
+@import 'bootstrap';
+
+body {
+  background-color: #f6f7fb;
+}
+
+.show > .btn-primary.dropdown-toggle {
+  background-color: #8438ff;
+  outline: none !important;
+}
+
+.btn-primary:focus {
+  background-color: #8438ff !important;
+  outline: #8438ff !important;
+  border-color: #8438ff !important;
+  box-shadow: none !important;
+}
+
+.btn-primary pre:focus {
+  outline: 0 !important;
+}
