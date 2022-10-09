@@ -9,4 +9,5 @@ export class AlertComponent {
   @Input() type: string;
   @Input() dismiss: boolean;
   @Input() message: string;
+  @Input() spacingClass: string;
 }

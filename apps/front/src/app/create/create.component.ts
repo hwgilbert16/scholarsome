@@ -1,7 +1,10 @@
-import { Component, ComponentRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
+import { AlertComponent } from "../shared/alert/alert.component";
+import { shareReplay } from "rxjs";
+import { success } from "concurrently/dist/src/defaults";
 
 @Component({
   selector: 'scholarsome-create',
@@ -13,15 +16,49 @@ export class CreateComponent implements OnInit {
 
   @ViewChild(CreateCardDirective, { static: true }) cardList: CreateCardDirective;
 
+  @ViewChild('title', { static: false, read: ViewContainerRef }) titleInput: ViewContainerRef;
+  @ViewChild('description') descriptionInput: ElementRef;
+  @ViewChild('private') privateCheckbox: ElementRef;
+
   cards: { component: ComponentRef<CreateCardComponent>, index: number }[] = [];
 
-  createSet() {
+  async createSet() {
+    const cards: { index: number; term: string; definition: string; }[] = [];
+
+    if (!this.titleInput.element.nativeElement.value) {
+      const alert = this.titleInput.createComponent<AlertComponent>(AlertComponent);
+
+      alert.instance.message = 'Title must not be empty';
+      alert.instance.type = 'danger';
+      alert.instance.dismiss = true;
+      alert.instance.spacingClass = 'mt-3';
+
+      return;
+    }
+
     for (const card of this.cards) {
-      if (card.component.instance.term.length === 0 && card.component.instance.definition.length === 0) {
+      if (card.component.instance.term.length !== 0 && card.component.instance.definition.length !== 0) {
+        cards.push({
+          index: card.component.instance.cardIndex,
+          term: card.component.instance.term,
+          definition: card.component.instance.definition
+        });
+      } else {
         card.component.instance.notifyEmptyInput();
         return;
       }
     }
+
+    this.http.post(
+      '/api/create/set',
+      {
+        title: this.titleInput.element.nativeElement.value,
+        description: this.descriptionInput.nativeElement.value,
+        private: this.privateCheckbox.nativeElement.checked,
+        cards,
+      },
+      { observe: 'response' }
+    ).subscribe((data: HttpResponse<any>) => console.log(data));
   }
 
   updateCardIndices() {

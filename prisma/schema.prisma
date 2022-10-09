@@ -18,18 +18,21 @@ model User {
 }
 
 model Set {
-  id        String   @id @default(uuid())
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  private   Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cards     Card[]
+  id          String   @id @default(uuid())
+  authorId    String
+  title       String
+  description String?
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  private     Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cards       Card[]
 }
 
 model Card {
   id         String   @id @default(uuid())
   setId      String
+  index      Int
   term       String
   definition String
   createdAt  DateTime @default(now())

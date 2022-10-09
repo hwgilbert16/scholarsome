@@ -3,9 +3,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './providers/database/database.module';
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule } from '@nestjs/config';
+import { CreateController } from './create/create.controller';
+import { CreateModule } from './create/create.module';
 
 @Module({
   imports: [
@@ -16,10 +17,10 @@ import { ConfigModule } from "@nestjs/config";
       isGlobal: true,
     }),
     AuthModule,
-    UsersModule,
     DatabaseModule,
+    CreateModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, CreateController],
   providers: [],
 })
 export class AppModule {}

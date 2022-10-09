@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../providers/database/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
+import { Request } from "express";
+import jwt_decode from "jwt-decode";
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
+
+  getUserEmail(req: Request): string {
+    const decoded = jwt_decode(req.cookies['access_token']);
+
+    return decoded['email'];
+  }
 
   async user(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,

@@ -18,11 +18,11 @@ export class CreateCardComponent {
   @ViewChild('definition', { static: false }) definitionElement: ElementRef;
   @ViewChild('inputsContainer', { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
 
-  get term() {
+  get term(): string {
     return this.termElement.nativeElement.value;
   }
 
-  get definition() {
+  get definition(): string {
     return this.definitionElement.nativeElement.value;
   }
 
@@ -36,6 +36,7 @@ export class CreateCardComponent {
     alert.instance.message = 'Both fields cannot be empty';
     alert.instance.type = 'danger';
     alert.instance.dismiss = true;
+    alert.instance.spacingClass = 'mt-4';
   }
 
   moveCard(direction: number) {
