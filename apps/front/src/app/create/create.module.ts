@@ -9,6 +9,6 @@ import { CreateRoutingModule } from "./create-routing.module";
 
 @NgModule({
   imports: [PopoverModule, FontAwesomeModule, CreateRoutingModule, CommonModule],
-  declarations: [CreateStudySetComponent, CreateCardComponent, CreateCardDirective],
+  declarations: [CreateStudySetComponent, CreateCardComponent, CreateCardDirective]
 })
 export class CreateModule {}

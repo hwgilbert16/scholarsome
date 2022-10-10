@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from "../shared/modal.service";
 import { CookieService } from "ngx-cookie";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'scholarsome-landing',
@@ -8,15 +9,11 @@ import { CookieService } from "ngx-cookie";
   styleUrls: ['./landing.component.scss'],
 })
 export class LandingComponent implements OnInit {
-  constructor(private modalService: ModalService, private cookieService: CookieService) {}
+  constructor(public modalService: ModalService, private cookieService: CookieService, private router: Router) {}
 
-  openRegister() {
-    this.modalService.modal.next('register-open');
+  async ngOnInit(): Promise<void> {
+    if (this.cookieService.get('authenticated') === 'true') {
+      await this.router.navigate(['view']);
+    }
   }
-
-  getCookie(key: string) {
-    return this.cookieService.get(key);
-  }
-
-  ngOnInit() {}
 }

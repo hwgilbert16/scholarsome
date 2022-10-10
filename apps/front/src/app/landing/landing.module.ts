@@ -7,6 +7,6 @@ import { CommonModule } from "@angular/common";
 
 @NgModule({
   imports: [SharedModule, LandingRoutingModule, FontAwesomeModule, CommonModule],
-  declarations: [LandingComponent],
+  declarations: [LandingComponent]
 })
 export class LandingModule {}

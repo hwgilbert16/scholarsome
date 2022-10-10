@@ -9,6 +9,10 @@ const routes: Routes = [
   {
     path: 'create',
     loadChildren: () => import('./create/create.module').then(m => m.CreateModule)
+  },
+  {
+    path: 'view',
+    loadChildren: () => import('./view/view.module').then(m => m.ViewModule)
   }
 ];
 

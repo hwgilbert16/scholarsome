@@ -3,6 +3,7 @@ import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'scholarsome-create',
@@ -10,7 +11,7 @@ import { AlertComponent } from "../../shared/alert/alert.component";
   styleUrls: ['./create-study-set.component.scss'],
 })
 export class CreateStudySetComponent implements OnInit {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   @ViewChild(CreateCardDirective, { static: true }) cardList: CreateCardDirective;
 
@@ -18,7 +19,7 @@ export class CreateStudySetComponent implements OnInit {
   @ViewChild('description') descriptionInput: ElementRef;
   @ViewChild('privateCheck') privateCheckbox: ElementRef;
 
-  @ViewChild('createButton', { static: false, read: ViewContainerRef }) createButton: ViewContainerRef;
+  formDisabled = false;
 
   cards: { component: ComponentRef<CreateCardComponent>, index: number }[] = [];
 
@@ -49,7 +50,7 @@ export class CreateStudySetComponent implements OnInit {
       }
     }
 
-    this.createButton.element.nativeElement.parentElement.setAttribute('disabled', '');
+    this.formDisabled = true;
 
     this.http.post(
       '/api/create/set',
@@ -60,9 +61,7 @@ export class CreateStudySetComponent implements OnInit {
         cards,
       },
       { observe: 'response' }
-    ).subscribe((data: HttpResponse<any>) => {
-      console.log(data);
-    });
+    ).subscribe(async (data: HttpResponse<any>) => await this.router.navigate(['/view/set/' + data.body.id]));
   }
 
   updateCardIndices() {

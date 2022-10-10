@@ -10,10 +10,11 @@ import { Response } from "express";
 export class AuthService {
   constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
-  logoutUser(res: Response): Promise<void> {
+  logoutUser(res: Response): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
-    return;
+
+    return res.redirect('/');
   }
 
   async validateUser(email: string, password: string): Promise<boolean> {

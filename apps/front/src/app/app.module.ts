@@ -3,7 +3,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
-import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import {
+  FontAwesomeModule,
+  FaIconLibrary,
+} from '@fortawesome/angular-fontawesome';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieModule } from 'ngx-cookie';
 import {
@@ -14,13 +17,13 @@ import {
   faTrashCan,
   faArrowAltCircleUp,
   faArrowAltCircleDown,
-  faCheckSquare
-} from "@fortawesome/free-regular-svg-icons";
-import { CreateModule } from "./create/create.module";
-import { AppRoutingModule } from "./app-routing.module";
-import { LandingModule } from "./landing/landing.module";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { CommonModule } from "@angular/common";
+  faCheckSquare,
+} from '@fortawesome/free-regular-svg-icons';
+import { CreateModule } from './create/create.module';
+import { AppRoutingModule } from './app-routing.module';
+import { LandingModule } from './landing/landing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,7 +38,7 @@ import { CommonModule } from "@angular/common";
     CookieModule.withOptions(),
     AppRoutingModule,
     BrowserAnimationsModule,
-    CommonModule
+    CommonModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

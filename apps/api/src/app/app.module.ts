@@ -11,7 +11,7 @@ import { CreateModule } from './create/create.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'dist', 'apps', 'front'),
+      rootPath: join(__dirname, '..', 'front'),
     }),
     ConfigModule.forRoot({
       isGlobal: true,
