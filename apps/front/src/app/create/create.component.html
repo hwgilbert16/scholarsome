@@ -1,7 +1,7 @@
 <div class="py-4">
   <div class="d-flex px-3 justify-content-between">
     <h2>Create new study set</h2>
-    <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
+    <button type="submit" class="btn btn-primary" (click)="createSet()">Create <ng-template #createButton></ng-template></button>
   </div>
   <div class="container-fluid mt-3">
     <div class="row mx-md-4">
@@ -13,7 +13,7 @@
           <textarea class="form-control" placeholder="Add a description..." #description></textarea>
         </div>
         <div class="mb-2 form-check">
-          <input type="checkbox" class="form-check-input" id="privateCheck" #private>
+          <input type="checkbox" class="form-check-input" id="privateCheck" #privateCheck>
           <label class="form-check-label" for="privateCheck">Viewable only to me</label>
         </div>
       </div>
@@ -33,8 +33,5 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="d-flex px-3 justify-content-between flex-row-reverse">
-    <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
   </div>
 </div>

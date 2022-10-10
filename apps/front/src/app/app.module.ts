@@ -9,7 +9,7 @@ import { LandingComponent } from './landing/landing.component';
 import { AppRoutes } from './app.routes';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieModule } from 'ngx-cookie';
-import { faCaretSquareLeft, faClone, faUser, faPlusSquare, faTrashCan, faArrowAltCircleUp,faArrowAltCircleDown } from "@fortawesome/free-regular-svg-icons";
+import { faCaretSquareLeft, faClone, faUser, faPlusSquare, faTrashCan, faArrowAltCircleUp, faArrowAltCircleDown, faCheckSquare } from "@fortawesome/free-regular-svg-icons";
 import { CreateModule } from "./create/create.module";
 
 @NgModule({
@@ -29,6 +29,6 @@ import { CreateModule } from "./create/create.module";
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {
-    library.addIcons(faClone, faUser, faCaretSquareLeft, faPlusSquare, faTrashCan, faArrowAltCircleUp, faArrowAltCircleDown);
+    library.addIcons(faClone, faUser, faCaretSquareLeft, faPlusSquare, faTrashCan, faArrowAltCircleUp, faArrowAltCircleDown, faCheckSquare);
   }
 }

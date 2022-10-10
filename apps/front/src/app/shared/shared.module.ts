@@ -8,7 +8,7 @@ import { RouterLinkWithHref } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CookieModule } from 'ngx-cookie';
 import { AlertComponent } from './alert/alert.component';
-import { AlertModule } from "ngx-bootstrap/alert";
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 @NgModule({
   imports: [
@@ -19,9 +19,9 @@ import { AlertModule } from "ngx-bootstrap/alert";
     RouterLinkWithHref,
     FormsModule,
     CookieModule,
-    AlertModule
+    AlertModule,
   ],
   declarations: [HeaderComponent, AlertComponent],
-  exports: [HeaderComponent],
+  exports: [HeaderComponent, AlertComponent],
 })
 export class SharedModule {}

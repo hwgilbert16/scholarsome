@@ -3,8 +3,6 @@ import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { AlertComponent } from "../shared/alert/alert.component";
-import { shareReplay } from "rxjs";
-import { success } from "concurrently/dist/src/defaults";
 
 @Component({
   selector: 'scholarsome-create',
@@ -18,7 +16,9 @@ export class CreateComponent implements OnInit {
 
   @ViewChild('title', { static: false, read: ViewContainerRef }) titleInput: ViewContainerRef;
   @ViewChild('description') descriptionInput: ElementRef;
-  @ViewChild('private') privateCheckbox: ElementRef;
+  @ViewChild('privateCheck') privateCheckbox: ElementRef;
+
+  @ViewChild('createButton', { static: false, read: ViewContainerRef }) createButton: ViewContainerRef;
 
   cards: { component: ComponentRef<CreateCardComponent>, index: number }[] = [];
 
@@ -49,6 +49,8 @@ export class CreateComponent implements OnInit {
       }
     }
 
+    this.createButton.element.nativeElement.parentElement.setAttribute('disabled', '');
+
     this.http.post(
       '/api/create/set',
       {
@@ -58,7 +60,9 @@ export class CreateComponent implements OnInit {
         cards,
       },
       { observe: 'response' }
-    ).subscribe((data: HttpResponse<any>) => console.log(data));
+    ).subscribe((data: HttpResponse<any>) => {
+      console.log(data);
+    });
   }
 
   updateCardIndices() {
