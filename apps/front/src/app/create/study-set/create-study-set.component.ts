@@ -2,14 +2,14 @@ import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRe
 import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
 import { HttpClient, HttpResponse } from "@angular/common/http";
-import { AlertComponent } from "../shared/alert/alert.component";
+import { AlertComponent } from "../../shared/alert/alert.component";
 
 @Component({
   selector: 'scholarsome-create',
-  templateUrl: './create.component.html',
-  styleUrls: ['./create.component.scss'],
+  templateUrl: './create-study-set.component.html',
+  styleUrls: ['./create-study-set.component.scss'],
 })
-export class CreateComponent implements OnInit {
+export class CreateStudySetComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   @ViewChild(CreateCardDirective, { static: true }) cardList: CreateCardDirective;

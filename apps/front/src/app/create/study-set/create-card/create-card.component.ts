@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from '@angular/core';
-import { AlertComponent } from "../../shared/alert/alert.component";
+import { AlertComponent } from "../../../shared/alert/alert.component";
 
 @Component({
   selector: 'scholarsome-create-card',

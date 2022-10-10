@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { PopoverModule } from 'ngx-bootstrap/popover';
-import { CreateComponent } from './create.component';
+import { CreateStudySetComponent } from './study-set/create-study-set.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CreateCardComponent } from './create-card/create-card.component';
-import { CreateCardDirective } from "./create-card/create-card.directive";
-import { NgIf } from "@angular/common";
-import { HttpClientModule } from "@angular/common/http";
+import { CreateCardComponent } from './study-set/create-card/create-card.component';
+import { CreateCardDirective } from "./study-set/create-card/create-card.directive";
+import { CommonModule } from "@angular/common";
+import { CreateRoutingModule } from "./create-routing.module";
 
 @NgModule({
-  imports: [PopoverModule, FontAwesomeModule, NgIf, HttpClientModule],
-  declarations: [CreateComponent, CreateCardComponent, CreateCardDirective],
+  imports: [PopoverModule, FontAwesomeModule, CreateRoutingModule, CommonModule],
+  declarations: [CreateStudySetComponent, CreateCardComponent, CreateCardDirective],
 })
 export class CreateModule {}
