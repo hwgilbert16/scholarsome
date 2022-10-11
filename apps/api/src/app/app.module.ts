@@ -5,8 +5,7 @@ import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './providers/database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { CreateController } from './create/create.controller';
-import { CreateModule } from './create/create.module';
+import { SetsModule } from "./sets/sets.module";
 
 @Module({
   imports: [
@@ -18,9 +17,9 @@ import { CreateModule } from './create/create.module';
     }),
     AuthModule,
     DatabaseModule,
-    CreateModule,
+    SetsModule,
   ],
-  controllers: [AuthController, CreateController],
+  controllers: [AuthController],
   providers: [],
 })
 export class AppModule {}

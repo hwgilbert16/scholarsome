@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StudySetComponent } from './study-set/study-set.component';
 import { ViewComponent } from './view.component';
-import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { ViewRoutingModule } from "./view-routing.module";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ViewRoutingModule } from './view-routing.module';
+import { ViewStudySetsComponent } from './study-set/view-study-sets.component';
+import { StudySetCardComponent } from './study-set-card/study-set-card.component';
 
 @NgModule({
-  declarations: [StudySetComponent, ViewComponent],
+  declarations: [ViewStudySetsComponent, ViewComponent, StudySetCardComponent],
   imports: [CommonModule, FontAwesomeModule, ViewRoutingModule],
 })
 export class ViewModule {}

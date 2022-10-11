@@ -1,8 +1,8 @@
 import { RouterModule, Routes } from "@angular/router";
 import { NgModule } from "@angular/core";
-import { StudySetComponent } from "./study-set/study-set.component";
 import { ViewComponent } from "./view.component";
 import { AuthGuardService } from "../auth/auth-guard.service";
+import { ViewStudySetsComponent } from "./study-set/view-study-sets.component";
 
 const routes: Routes = [
   {
@@ -11,8 +11,8 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
   },
   {
-    path: 'set/:setId',
-    component: StudySetComponent,
+    path: 'sets/:setId',
+    component: ViewStudySetsComponent,
     canActivate: [AuthGuardService],
   }
 ];

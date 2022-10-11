@@ -8,10 +8,8 @@ import jwt_decode from "jwt-decode";
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  getUserEmail(req: Request): string {
-    const decoded = jwt_decode(req.cookies['access_token']);
-
-    return decoded['email'];
+  getUserInfo(req: Request): { id: string; email: string; } {
+    return jwt_decode(req.cookies['access_token']);
   }
 
   async user(

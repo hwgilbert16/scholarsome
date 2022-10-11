@@ -25,8 +25,16 @@ export class AuthService {
     return !!(await bcrypt.compare(password, user.password));
   }
 
-  authenticateUser(loginDto: LoginDto, res: Response): Promise<void> {
-    res.cookie('access_token', this.jwtService.sign({ email: loginDto.email }), { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 14)) })
+  async authenticateUser(loginDto: LoginDto, res: Response): Promise<void> {
+    const user = await this.usersService.user({
+      email: loginDto.email
+    });
+
+    if (!user) {
+      throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email }), { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 14)) })
     res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) })
     return;
   }

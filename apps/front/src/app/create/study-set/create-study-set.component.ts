@@ -53,7 +53,7 @@ export class CreateStudySetComponent implements OnInit {
     this.formDisabled = true;
 
     this.http.post(
-      '/api/create/set',
+      '/api/sets',
       {
         title: this.titleInput.element.nativeElement.value,
         description: this.descriptionInput.nativeElement.value,
@@ -61,7 +61,7 @@ export class CreateStudySetComponent implements OnInit {
         cards,
       },
       { observe: 'response' }
-    ).subscribe(async (data: HttpResponse<any>) => await this.router.navigate(['/view/set/' + data.body.id]));
+    ).subscribe(async (data: HttpResponse<any>) => await this.router.navigate(['/view/sets/' + data.body.id]));
   }
 
   updateCardIndices() {

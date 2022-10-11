@@ -25,7 +25,7 @@ export class HeaderComponent implements OnInit {
     private bsModalService: BsModalService,
     private modalService: ModalService,
     private authService: AuthService,
-    private cookieService: CookieService
+    public cookieService: CookieService
   ) {
     this.modalService.modal.subscribe(e => {
       if (e === 'register-open') {
