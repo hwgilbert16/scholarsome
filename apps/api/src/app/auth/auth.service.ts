@@ -13,8 +13,6 @@ export class AuthService {
   logoutUser(res: Response): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
-
-    return res.redirect('/');
   }
 
   async validateUser(email: string, password: string): Promise<boolean> {

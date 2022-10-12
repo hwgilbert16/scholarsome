@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
+import { lastValueFrom } from "rxjs";
+import type { SetWithRelations } from "@scholarsome/api-interfaces";
 
 @Component({
   selector: 'scholarsome-view-study-sets',
@@ -12,7 +14,11 @@ export class ViewStudySetsComponent implements OnInit {
 
   setId: string | null;
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.setId = this.route.snapshot.paramMap.get('setId');
+
+    const set = await lastValueFrom(this.http.get<SetWithRelations>('/api/sets/' + this.setId));
+
+    console.log(set);
   }
 }

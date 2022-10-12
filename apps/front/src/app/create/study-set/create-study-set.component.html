@@ -1,6 +1,6 @@
 <fieldset [disabled]="formDisabled">
   <div class="py-4">
-    <div class="d-flex px-3 justify-content-between">
+    <div class="create-header d-flex justify-content-between text-nowrap">
       <h2>Create new study set</h2>
       <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
     </div>
@@ -8,7 +8,7 @@
       <div class="row mx-md-4">
         <div class="col">
           <div class="my-3">
-            <input type="input" class="form-control" placeholder="Enter a title for your study set..." #title>
+            <input type="input" class="form-control" placeholder="Enter a title for your study set..." maxlength="255" #title>
           </div>
           <div class="mb-3">
             <textarea class="form-control" placeholder="Add a description..." #description></textarea>
@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="container-fluid">
-      <div class="row mx-3">
+      <div class="row mx-4">
         <div class="card my-3 bg-white">
           <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard()">
             <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>

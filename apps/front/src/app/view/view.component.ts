@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
 import { StudySetCardComponent } from "./study-set-card/study-set-card.component";
-import { Set } from "@prisma/client";
+import { SetWithRelations } from "@scholarsome/api-interfaces";
 
 @Component({
   selector: 'scholarsome-view',
@@ -13,9 +13,19 @@ export class ViewComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   @ViewChild('cards', { static: true, read: ViewContainerRef }) cardContainer: ViewContainerRef;
+  @ViewChild('container', { static: true }) container: ElementRef;
+
+  @ViewChild('spinner', { static: true }) spinner: ElementRef;
 
   async ngOnInit(): Promise<void> {
-    const sets: Set[] = Object.values(await lastValueFrom(this.http.get('/api/sets/user/self')));
+    const sets = await lastValueFrom(this.http.get<SetWithRelations[]>('/api/sets/user/self'));
+
+    sets.sort((a,b) => {
+      return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+    });
+
+    this.spinner.nativeElement.remove();
+    this.container.nativeElement.removeAttribute('hidden');
 
     for (const set of sets) {
       const setCard = this.cardContainer.createComponent<StudySetCardComponent>(StudySetCardComponent);
@@ -23,6 +33,8 @@ export class ViewComponent implements OnInit {
       setCard.instance.title = set.title;
       setCard.instance.description = set.description ? set.description : '';
       setCard.instance.id = set.id;
+      setCard.instance.cards = set.cards;
+      setCard.instance.private = set.private;
     }
   }
 }

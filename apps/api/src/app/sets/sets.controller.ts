@@ -22,7 +22,7 @@ export class SetsController {
   constructor(private setsService: SetsService, private usersService: UsersService) {}
 
   @Get(':setId')
-  async set({params}: { params: { setId: string } }) {
+  async set(@Param() params: { setId: string }) {
     return await this.setsService.set({
       id: params.setId
     });

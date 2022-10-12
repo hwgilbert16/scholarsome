@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light fs-5">
   <div class="container-fluid">
-    <a [routerLink]="''"><img class="navbar-brand img-fluid mt-1" src="assets/scholarsome-logo-purple-lowercase.svg" width="10%" height="10%"></a>
+    <a [routerLink]="this.cookieService.get('authenticated') ? '/view' : ''"><img class="navbar-brand img-fluid mt-1" src="assets/scholarsome-logo-purple-lowercase.svg" width="10%" height="10%"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -21,7 +21,7 @@
         </li>
       </ul>
       <div class="d-flex">
-        <div *ngIf="!getCookie('authenticated');else user">
+        <div *ngIf="!this.cookieService.get('authenticated');else user">
           <a>
             <button type="button" class="btn btn-outline-dark pr-6" (click)="openModal(login)">
               Log in

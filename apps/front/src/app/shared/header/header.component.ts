@@ -1,5 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { faClone, faUser, faCaretSquareLeft } from '@fortawesome/free-regular-svg-icons';
+import { Component, TemplateRef, ViewChild } from '@angular/core';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
@@ -11,7 +10,7 @@ import { CookieService } from "ngx-cookie";
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
   @ViewChild('register')
   registerModal: TemplateRef<any>
 
@@ -20,6 +19,8 @@ export class HeaderComponent implements OnInit {
 
   @ViewChild('registerForm')
   registerForm: NgForm
+
+  modalRef?: BsModalRef;
 
   constructor(
     private bsModalService: BsModalService,
@@ -32,12 +33,6 @@ export class HeaderComponent implements OnInit {
         this.modalRef = this.bsModalService.show(this.registerModal);
       }
     })
-  }
-
-  modalRef?: BsModalRef;
-
-  getCookie(key: string) {
-    return this.cookieService.get(key);
   }
 
   openModal(template: TemplateRef<any>) {
@@ -62,6 +57,4 @@ export class HeaderComponent implements OnInit {
       window.location.reload();
     })
   }
-
-  ngOnInit() {}
 }

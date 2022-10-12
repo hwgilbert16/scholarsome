@@ -1,8 +1,11 @@
-<div class="col">
-  <div class="card shadow set-card" role="button" [routerLink]="['sets', id]">
-    <div class="card-body">
-      <h5 class="card-title">{{title}}</h5>
-      <p class="card-text">{{description}}</p>
+<a [routerLink]="['sets', id]" class="text-decoration-none">
+  <div class="col">
+    <div class="card shadow set-card" role="button">
+      <div class="card-body">
+        <h5 class="card-title">{{title}} <fa-icon *ngIf="private" [icon]="['far', 'eye-slash']" popover="This set is not public" triggers="mouseenter:mouseleave"></fa-icon></h5>
+        <h6 class="card-subtitle mb-4 text-muted">{{cards.length}} term{{cards.length > 1 ? 's' : ''}}</h6>
+        <p class="card-text">{{description}}</p>
+      </div>
     </div>
   </div>
-</div>
+</a>

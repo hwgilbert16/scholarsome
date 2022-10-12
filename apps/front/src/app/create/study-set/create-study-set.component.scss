@@ -6,3 +6,17 @@ textarea {
   cursor: pointer;
   text-decoration: underline;
 }
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+  .create-header {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
+  .create-header {
+    margin-left: 3rem;
+    margin-right: 3rem;
+  }
+}

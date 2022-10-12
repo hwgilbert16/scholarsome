@@ -18,6 +18,7 @@ import {
   faArrowAltCircleUp,
   faArrowAltCircleDown,
   faCheckSquare,
+  faEyeSlash
 } from '@fortawesome/free-regular-svg-icons';
 import { CreateModule } from './create/create.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -53,7 +54,8 @@ export class AppModule {
       faTrashCan,
       faArrowAltCircleUp,
       faArrowAltCircleDown,
-      faCheckSquare
+      faCheckSquare,
+      faEyeSlash
     );
   }
 }

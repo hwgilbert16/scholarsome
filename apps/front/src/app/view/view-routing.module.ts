@@ -13,7 +13,6 @@ const routes: Routes = [
   {
     path: 'sets/:setId',
     component: ViewStudySetsComponent,
-    canActivate: [AuthGuardService],
   }
 ];
 

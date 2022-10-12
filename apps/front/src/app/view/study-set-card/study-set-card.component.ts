@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Card } from '@prisma/client';
 
 @Component({
   selector: 'scholarsome-study-set-card',
@@ -11,4 +12,6 @@ export class StudySetCardComponent {
   @Input() title: string;
   @Input() description: string;
   @Input() id: string;
+  @Input() cards: Card[];
+  @Input() private: boolean;
 }

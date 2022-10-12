@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma, Set } from "@prisma/client";
+import { SetWithRelations } from "@scholarsome/api-interfaces";
 
 @Injectable()
 export class SetsService {
@@ -8,9 +9,10 @@ export class SetsService {
 
   async set(
     setWhereUniqueInput: Prisma.SetWhereUniqueInput,
-  ): Promise<Set | null> {
+  ): Promise<SetWithRelations | null> {
     return this.prisma.set.findUnique({
       where: setWhereUniqueInput,
+      include: { cards: true, author: true }
     });
   }
 
@@ -20,7 +22,7 @@ export class SetsService {
     cursor?: Prisma.SetWhereUniqueInput;
     where?: Prisma.SetWhereInput;
     orderBy?: Prisma.SetOrderByWithRelationInput;
-  }): Promise<Set[]> {
+  }): Promise<SetWithRelations[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.set.findMany({
       skip,
@@ -28,6 +30,10 @@ export class SetsService {
       cursor,
       where,
       orderBy,
+      include: {
+        cards: true,
+        author: true,
+      }
     });
   }
 
