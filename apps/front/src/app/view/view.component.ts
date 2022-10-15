@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
-import { StudySetCardComponent } from "./study-set-card/study-set-card.component";
+import { StudySetDescriptionComponent } from "./study-set-description/study-set-description.component";
 import { SetWithRelations } from "@scholarsome/api-interfaces";
 
 @Component({
@@ -28,7 +28,7 @@ export class ViewComponent implements OnInit {
     this.container.nativeElement.removeAttribute('hidden');
 
     for (const set of sets) {
-      const setCard = this.cardContainer.createComponent<StudySetCardComponent>(StudySetCardComponent);
+      const setCard = this.cardContainer.createComponent<StudySetDescriptionComponent>(StudySetDescriptionComponent);
 
       setCard.instance.title = set.title;
       setCard.instance.description = set.description ? set.description : '';

@@ -13,6 +13,7 @@ export class ViewStudySetsComponent implements OnInit {
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
   @ViewChild('spinner', { static: true }) spinner: ElementRef;
+  @ViewChild('container', { static: true }) container: ElementRef;
 
   setId: string | null;
 
@@ -28,8 +29,6 @@ export class ViewStudySetsComponent implements OnInit {
 
     this.title = set.title;
     this.author = set.author.username;
-    // this.container.nativeElement.removeAttribute('hidden');
-
-    console.log(set.authorId);
+    this.container.nativeElement.removeAttribute('hidden');
   }
 }
