@@ -4,4 +4,37 @@
   </div>
 </div>
 
-<p>study-set works!</p>
+<div class="container-fluid set-view overflow-hidden">
+  <div class="d-flex justify-content-center mt-2">
+    <h1>{{title}}</h1>
+  </div>
+  <div class="d-flex justify-content-evenly">
+    <div class="row-cols-sm-4 col-md-6 m-auto w-50">
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'clone']"></fa-icon> Flashcards</button>
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow" disabled><fa-icon [icon]="['far', 'comments']"></fa-icon> Study</button>
+    </div>
+    <div class="row-cols-sm-4 col-md-6 m-auto w-50">
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow" disabled><fa-icon [icon]="['far', 'pen-to-square']"></fa-icon> Quiz</button>
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow" disabled><fa-icon [icon]="['far', 'flag']"></fa-icon> Game</button>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between mt-4">
+    <div>
+      <fa-icon [icon]="['far', 'user']"></fa-icon> Created by {{author}}
+    </div>
+    <div>
+      <button type="button" class="btn btn-light bg-white rounded-circle shadow"><fa-icon [icon]="['far', 'user']"></fa-icon></button>
+    </div>
+  </div>
+  <hr>
+</div>
+
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <a href="#" class="card-link">Card link</a>
+    <a href="#" class="card-link">Another link</a>
+  </div>
+</div>
