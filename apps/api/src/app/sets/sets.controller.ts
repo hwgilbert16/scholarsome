@@ -38,10 +38,7 @@ export class SetsController {
       const author = this.usersService.getUserInfo(req);
 
       if (!author) throw new UnauthorizedException();
-
-      if (!(await this.verifyOwnership(author.id, params.setId))) {
-        throw new UnauthorizedException();
-      }
+      if (!(await this.verifyOwnership(author.id, params.setId))) throw new UnauthorizedException();
     }
 
     return set;
@@ -75,17 +72,13 @@ export class SetsController {
   async createSet(@Body() body: CreateSetDto, @Request() req) {
     const user = this.usersService.getUserInfo(req);
 
-    if (!user) {
-      throw new NotFoundException();
-    }
+    if (!user) throw new NotFoundException();
 
     const author = await this.usersService.user({
       email: user.email,
     });
 
-    if (!author) {
-      throw new HttpException('Conflict', HttpStatus.BAD_REQUEST);
-    }
+    if (!author) throw new HttpException('Conflict', HttpStatus.BAD_REQUEST);
 
     return await this.setsService.createSet({
       author: {
@@ -116,7 +109,12 @@ export class SetsController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete(':setId')
-  async deleteSet(@Param() params: { setId: string }) {
+  async deleteSet(@Param() params: { setId: string }, @Request() req) {
+    const author = this.usersService.getUserInfo(req);
+
+    if (!author) throw new UnauthorizedException();
+    if (!(await this.verifyOwnership(author.id, params.setId))) throw new UnauthorizedException();
+
     return await this.setsService.deleteSet({
       id: params.setId
     });

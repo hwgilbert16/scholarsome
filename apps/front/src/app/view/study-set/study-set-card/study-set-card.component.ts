@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'scholarsome-study-set-card',
   templateUrl: './study-set-card.component.html',
   styleUrls: ['./study-set-card.component.scss'],
 })
-export class StudySetCardComponent implements OnInit {
+export class StudySetCardComponent {
   constructor() {}
 
-  ngOnInit(): void {}
+  @Input() term: string;
+  @Input() definition: string;
 }

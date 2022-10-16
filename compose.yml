@@ -4,9 +4,15 @@ services:
     image: mariadb
     ports:
       - "3306:3306"
+    restart: always
   scholarsome:
     image: scholarsome
     links:
       - "db:database"
     ports:
       - "3333:3333"
+    environment:
+      - HOST=docker
+    depends_on:
+      - "db"
+    restart: always
