@@ -3,6 +3,7 @@ import { NgModule } from "@angular/core";
 import { ViewComponent } from "./view.component";
 import { AuthGuardService } from "../auth/auth-guard.service";
 import { ViewStudySetsComponent } from "./study-set/view-study-sets.component";
+import { StudySetFlashcardsComponent } from "./study-set/study-set-flashcards/study-set-flashcards.component";
 
 const routes: Routes = [
   {
@@ -13,6 +14,10 @@ const routes: Routes = [
   {
     path: 'sets/:setId',
     component: ViewStudySetsComponent,
+  },
+  {
+    path: 'sets/:setId/flashcards',
+    component: StudySetFlashcardsComponent,
   }
 ];
 

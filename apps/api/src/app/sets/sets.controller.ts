@@ -34,6 +34,8 @@ export class SetsController {
       id: params.setId
     });
 
+    if (!set) throw new NotFoundException();
+
     if (set.private) {
       const author = this.usersService.getUserInfo(req);
 

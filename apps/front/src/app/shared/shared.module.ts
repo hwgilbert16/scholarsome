@@ -8,7 +8,8 @@ import { FormsModule } from '@angular/forms';
 import { CookieModule } from 'ngx-cookie';
 import { AlertComponent } from './alert/alert.component';
 import { AlertModule } from 'ngx-bootstrap/alert';
-import { CommonModule } from "@angular/common";
+import { CommonModule } from '@angular/common';
+import { NotfoundComponent } from './notfound/notfound.component';
 
 @NgModule({
   imports: [
@@ -19,9 +20,13 @@ import { CommonModule } from "@angular/common";
     FormsModule,
     CookieModule,
     AlertModule,
-    CommonModule
+    CommonModule,
   ],
-  declarations: [HeaderComponent, AlertComponent],
+  declarations: [
+    HeaderComponent,
+    AlertComponent,
+    NotfoundComponent,
+  ],
   exports: [HeaderComponent, AlertComponent],
 })
 export class SharedModule {}
