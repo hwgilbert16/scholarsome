@@ -26,7 +26,7 @@ export class ViewStudySetsComponent implements OnInit {
   setId: string | null;
 
   setLength: number;
-  set: SetWithRelations | undefined;
+  set: SetWithRelations | null;
 
   async ngOnInit(): Promise<void> {
     this.setId = this.route.snapshot.paramMap.get('setId');

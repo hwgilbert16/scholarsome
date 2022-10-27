@@ -8,6 +8,7 @@ import { StudySetDescriptionComponent } from './study-set-description/study-set-
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { StudySetCardComponent } from './study-set/study-set-card/study-set-card.component';
 import { StudySetFlashcardsComponent } from './study-set/study-set-flashcards/study-set-flashcards.component';
+import { StudySetFlashcardComponent } from './study-set/study-set-flashcards/study-set-flashcard/study-set-flashcard.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { StudySetFlashcardsComponent } from './study-set/study-set-flashcards/st
     StudySetDescriptionComponent,
     StudySetCardComponent,
     StudySetFlashcardsComponent,
+    StudySetFlashcardComponent,
   ],
   imports: [CommonModule, FontAwesomeModule, ViewRoutingModule, PopoverModule],
 })

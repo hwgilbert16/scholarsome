@@ -9,13 +9,13 @@ import { lastValueFrom } from "rxjs";
 export class SetsService {
   constructor(private http: HttpClient) {}
 
-  public async set(setId: string): Promise<SetWithRelations | undefined> {
+  async set(setId: string | null): Promise<SetWithRelations | null> {
     let set: SetWithRelations | undefined;
 
     try {
-      set = await lastValueFrom(this.http.get<SetWithRelations>('/api/sets/' + setId));
+      set = await lastValueFrom(this.http.get<SetWithRelations>('/api/sets/' + (setId ? setId : 'self')));
     } catch (e) {
-      return undefined;
+      return null;
     }
 
     return set;
