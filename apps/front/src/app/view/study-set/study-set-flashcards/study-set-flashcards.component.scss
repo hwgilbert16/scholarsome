@@ -2,3 +2,34 @@
   width: 6rem;
   height: 6rem;
 }
+
+.flashcard:hover {
+  cursor: pointer;
+}
+
+.flashcard-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.back-arrow:hover {
+  animation: button-color-change 0.25s;
+  animation-fill-mode: forwards;
+  cursor: pointer;
+}
+
+.btn-outline-primary:focus {
+  box-shadow: none;
+}
+
+@keyframes button-color-change {
+  0% {
+    color: #212529;
+  }
+
+  100% {
+    color: #8438ff;
+  }
+}

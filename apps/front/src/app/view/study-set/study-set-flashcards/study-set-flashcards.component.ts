@@ -1,7 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { SetsService } from "../../../shared/http/sets.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import { StudySetFlashcardComponent } from "./study-set-flashcard/study-set-flashcard.component";
+import { ActivatedRoute, Router, } from "@angular/router";
+import { Card } from '@prisma/client';
 
 @Component({
   selector: 'scholarsome-study-set-flashcards',
@@ -16,29 +16,62 @@ export class StudySetFlashcardsComponent implements OnInit {
   ) {}
 
   @ViewChild('spinner', { static: true }) spinner: ElementRef;
-  @ViewChild('container', { static: true, read: ViewContainerRef }) container: ViewContainerRef;
+  @ViewChild('container', { static: true }) container: ElementRef;
+  @ViewChild('flashcard', { static: true }) flashcard: ElementRef;
+  @ViewChild('controlbar', { static: true }) controlbar: ElementRef;
+
+  cards: Card[];
+
+  setId: string | null;
+
+  answer = 'definition';
+  side = 'Term';
+  index = 0;
+
+  updateIndex() {
+    this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
+  }
+
+  flipCard() {
+    if (this.side === 'Term') {
+      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
+      this.side = 'Definition';
+    } else {
+      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].term;
+      this.side = 'Term';
+    }
+  }
+
+  changeCard(direction: number) {
+    this.index += direction;
+    this.updateIndex();
+
+    this.side = this.answer;
+
+    this.flashcard.nativeElement.children[0].textContent =
+      this.answer === 'Definition' ? this.cards[this.index].term : this.cards[this.index].definition;
+  }
 
   async ngOnInit(): Promise<void> {
-    const setId = this.route.snapshot.paramMap.get('setId');
-    if (!setId) {
+    this.setId = this.route.snapshot.paramMap.get('setId');
+    if (!this.setId) {
       await this.router.navigate(['404']);
       return;
     }
 
-    const set = await this.sets.set(setId);
+    const set = await this.sets.set(this.setId);
     if (!set) {
       await this.router.navigate(['404']);
       return;
     }
 
-    this.spinner.nativeElement.remove();
-    this.container.element.nativeElement.removeAttribute('hidden');
+    this.cards = set.cards;
 
-    for (const card of set.cards) {
-      const cardComponent = this.container.createComponent<StudySetFlashcardComponent>(StudySetFlashcardComponent);
-      cardComponent.instance.term = card.term;
-      cardComponent.instance.definition = card.definition;
-    }
+    this.spinner.nativeElement.remove();
+    this.container.nativeElement.removeAttribute('hidden');
+
+    this.updateIndex();
+    this.flashcard.nativeElement.children[0].textContent = this.cards[0].term;
   }
 
 }

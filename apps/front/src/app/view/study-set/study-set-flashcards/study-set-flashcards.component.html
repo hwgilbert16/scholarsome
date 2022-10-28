@@ -4,10 +4,28 @@
   </div>
 </div>
 
-<div class="mt-5" #container></div>
+<div hidden #container>
+  <div class="container-fluid flashcard-container">
+    <div class="row justify-content-center align-items-center">
+      <div class="flashcard card text-center shadow-sm w-75" (click)="flipCard()" style="height: 70vh" #flashcard>
+        <div class="card-body fs-1"></div>
+        <hr>
+        <div class="d-flex justify-content-around align-items-center" *ngIf="cards">
+          <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [attr.disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [attr.disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
+        </div>
+        <div class="d-flex justify-content-center align-items-center">
+          <p class="fs-5 text-secondary">{{side}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div class="w-100 bg-white fixed-bottom shadow text-center">
-  <div class="fs-4">
-    aaaaaaaaaaaaaaaaaaaaaaaaaaa
+  <div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center" #controlbar>
+    <fa-icon class="fs-2 back-arrow" [routerLink]="['/view', 'sets', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+    <div class="fs-2"></div>
+    <div class="ms-2">
+      <button type="button" class="btn btn-outline-primary">Settings</button>
+    </div>
   </div>
 </div>
