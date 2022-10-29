@@ -5,17 +5,18 @@
 </div>
 
 <div hidden #container>
-  <div class="container-fluid flashcard-container">
+  <div class="container-fluid flashcard-container" style="max-width: 100%; min-width: 100%;">
     <div class="row justify-content-center align-items-center">
-      <div class="flashcard card text-center shadow-sm w-75" (click)="flipCard()" style="height: 70vh" #flashcard>
-        <div class="card-body fs-1"></div>
+      <div class="flashcard card text-center shadow-sm w-75" (click)="flipCard()" #flashcard>
+        <!-- style="height: 60vh;" -->
+        <div class="card-body fs-1" onmousedown="return false"></div>
         <hr>
-        <div class="d-flex justify-content-around align-items-center" *ngIf="cards">
+        <div class="mt-2 d-flex justify-content-around align-items-center" *ngIf="cards">
           <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [attr.disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
           <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [attr.disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
         </div>
-        <div class="d-flex justify-content-center align-items-center">
-          <p class="fs-5 text-secondary">{{side}}</p>
+        <div class="mx-2 d-flex justify-content-start align-items-center">
+          <p class="text-secondary">{{side}}</p>
         </div>
       </div>
     </div>
@@ -24,8 +25,27 @@
   <div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center" #controlbar>
     <fa-icon class="fs-2 back-arrow" [routerLink]="['/view', 'sets', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
     <div class="fs-2"></div>
-    <div class="ms-2">
-      <button type="button" class="btn btn-outline-primary">Settings</button>
+    <div class="ms-2 my-2">
+      <button type="button" class="btn btn-outline-primary" (click)="this.openSettings();">Settings</button>
     </div>
   </div>
 </div>
+
+<ng-template #settings>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left fs-1">Settings</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="fs-5 mb-1">Answer with</div>
+    <div class="btn-group" role="group" aria-label="Basic radio toggle button group" #answerWith>
+      <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" (click)="answer = 'Term'">
+      <label class="btn btn-outline-secondary" for="btnradio1">Term</label>
+
+      <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" (click)="answer = 'Definition'">
+      <label class="btn btn-outline-secondary" for="btnradio2">Definition</label>
+    </div>
+  </div>
+</ng-template>

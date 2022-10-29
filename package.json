@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "nx",
     "start": "nx serve",
-    "start:front": "npx nx serve",
+    "start:front": "npx nx serve --host=0.0.0.0",
     "start:api": "npx nx serve api",
     "generate": "npx prisma generate",
     "dev": "concurrently -p=\"{name}\" -n=\"Angular,NestJS\" -c=\"green,blue\" \"npm run start:front\" \"npm run start:api\"",

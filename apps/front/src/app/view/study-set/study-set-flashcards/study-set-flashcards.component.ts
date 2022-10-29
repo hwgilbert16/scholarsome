@@ -1,7 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SetsService } from "../../../shared/http/sets.service";
 import { ActivatedRoute, Router, } from "@angular/router";
 import { Card } from '@prisma/client';
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 
 @Component({
   selector: 'scholarsome-study-set-flashcards',
@@ -12,19 +13,25 @@ export class StudySetFlashcardsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private sets: SetsService,
-    private router: Router
+    private router: Router,
+    public modalService: BsModalService
   ) {}
+
+  modalRef?: BsModalRef;
 
   @ViewChild('spinner', { static: true }) spinner: ElementRef;
   @ViewChild('container', { static: true }) container: ElementRef;
   @ViewChild('flashcard', { static: true }) flashcard: ElementRef;
   @ViewChild('controlbar', { static: true }) controlbar: ElementRef;
+  @ViewChild('answerWith', { read: ElementRef }) answerWith: ElementRef;
+
+  @ViewChild('settings') settings: TemplateRef<any>;
 
   cards: Card[];
 
   setId: string | null;
 
-  answer = 'definition';
+  answer = 'Definition';
   side = 'Term';
   index = 0;
 
@@ -50,6 +57,18 @@ export class StudySetFlashcardsComponent implements OnInit {
 
     this.flashcard.nativeElement.children[0].textContent =
       this.answer === 'Definition' ? this.cards[this.index].term : this.cards[this.index].definition;
+  }
+
+  openSettings() {
+    this.modalRef = this.modalService.show(this.settings);
+
+    console.log(this.answerWith);
+
+    if (this.answer === 'Definition') {
+      this.answerWith.nativeElement.children[0].setAttribute('checked', true);
+    } else {
+      this.answerWith.nativeElement.children[2].setAttribute('checked', true);
+    }
   }
 
   async ngOnInit(): Promise<void> {
