@@ -24,7 +24,8 @@ import {
   faComments,
   faFlag,
   faArrowAltCircleLeft,
-  faArrowAltCircleRight
+  faArrowAltCircleRight,
+  faRectangleList
 } from '@fortawesome/free-regular-svg-icons';
 import { CreateModule } from './create/create.module';
 import { AppRoutingModule } from './app-routing.module';
@@ -67,7 +68,8 @@ export class AppModule {
       faCircleQuestion,
       faPenToSquare,
       faComments,
-      faFlag
+      faFlag,
+      faRectangleList
     );
   }
 }

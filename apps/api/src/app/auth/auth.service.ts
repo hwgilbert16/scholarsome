@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from "../providers/database/users/users.service";
 import * as bcrypt from 'bcrypt';
 import { RegisterDto } from "./dto/register.dto";
@@ -20,6 +20,8 @@ export class AuthService {
       email
     });
 
+    if (!user) throw new UnauthorizedException();
+
     return !!(await bcrypt.compare(password, user.password));
   }
 
@@ -32,8 +34,9 @@ export class AuthService {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email }), { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 14)) })
-    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) })
+    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email }), { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
+    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
+
     return;
   }
 

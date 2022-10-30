@@ -11,7 +11,7 @@
     "dev": "concurrently -p=\"{name}\" -n=\"Angular,NestJS\" -c=\"green,blue\" \"npm run start:front\" \"npm run start:api\"",
     "build": "npx nx run-many --target=build --projects=front,api",
     "test": "nx test",
-    "serve": "node dist/apps/api/main.js"
+    "serve": "npx prisma migrate deploy && node dist/apps/api/main.js"
   },
   "private": true,
   "dependencies": {

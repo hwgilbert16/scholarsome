@@ -40,21 +40,14 @@ export class HeaderComponent {
   }
 
   submitLogin(form: NgForm) {
-    this.authService.login(form.value).subscribe(() => {
-      this.modalRef?.hide();
-      window.location.reload();
-    })
+    this.authService.login(form.value).subscribe(() => window.location.assign('/view'));
   }
 
   submitRegister(form: NgForm) {
-    this.authService.register(form.value).subscribe(() => {
-      console.log('Registered');
-    })
+    this.authService.register(form.value).subscribe(() => window.location.assign('/view'));
   }
 
   submitLogout() {
-    this.authService.logout().subscribe(() => {
-      window.location.reload();
-    })
+    this.authService.logout().subscribe(() => window.location.replace('/'));
   }
 }

@@ -23,7 +23,6 @@ export class StudySetFlashcardsComponent implements OnInit {
   @ViewChild('container', { static: true }) container: ElementRef;
   @ViewChild('flashcard', { static: true }) flashcard: ElementRef;
   @ViewChild('controlbar', { static: true }) controlbar: ElementRef;
-  @ViewChild('answerWith', { read: ElementRef }) answerWith: ElementRef;
 
   @ViewChild('settings') settings: TemplateRef<any>;
 
@@ -31,12 +30,30 @@ export class StudySetFlashcardsComponent implements OnInit {
 
   setId: string | null;
 
+  shuffle = false;
+
   answer = 'Definition';
   side = 'Term';
   index = 0;
 
   updateIndex() {
     this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
+  }
+
+  shuffleCards() {
+    this.shuffle = !this.shuffle;
+    if (this.shuffle) {
+      this.cards = this.cards.sort(() => 0.5 - Math.random());
+    }
+
+    this.index = 0;
+    this.updateIndex();
+
+    if (this.side === 'Term') {
+      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].term;
+    } else {
+      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
+    }
   }
 
   flipCard() {
@@ -57,18 +74,6 @@ export class StudySetFlashcardsComponent implements OnInit {
 
     this.flashcard.nativeElement.children[0].textContent =
       this.answer === 'Definition' ? this.cards[this.index].term : this.cards[this.index].definition;
-  }
-
-  openSettings() {
-    this.modalRef = this.modalService.show(this.settings);
-
-    console.log(this.answerWith);
-
-    if (this.answer === 'Definition') {
-      this.answerWith.nativeElement.children[0].setAttribute('checked', true);
-    } else {
-      this.answerWith.nativeElement.children[2].setAttribute('checked', true);
-    }
   }
 
   async ngOnInit(): Promise<void> {

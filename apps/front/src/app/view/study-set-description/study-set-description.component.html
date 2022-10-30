@@ -2,7 +2,7 @@
   <div class="col">
     <div class="card shadow set-card" role="button">
       <div class="card-body">
-        <h5 class="card-title">{{title}} <fa-icon *ngIf="private" [icon]="['far', 'eye-slash']" popover="This set is not public" triggers="mouseenter:mouseleave"></fa-icon></h5>
+        <h5 class="card-title">{{title}} <fa-icon *ngIf="private" [icon]="['far', 'eye-slash']" tooltip="This set is not public" [delay]="500" triggers="mouseenter:mouseleave"></fa-icon></h5>
         <h6 class="card-subtitle mb-4 text-muted">{{cards.length}} term{{cards.length > 1 ? 's' : ''}}</h6>
         <p class="card-text">{{description}}</p>
       </div>

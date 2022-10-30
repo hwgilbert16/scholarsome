@@ -3,7 +3,13 @@
   height: 6rem;
 }
 
-.flashcard:hover {
+.card-body:hover {
+  cursor: pointer;
+}
+
+.shuffle:hover {
+  animation: button-color-change 0.25s;
+  animation-fill-mode: forwards;
   cursor: pointer;
 }
 

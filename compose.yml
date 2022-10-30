@@ -1,18 +1,20 @@
-version: 3.9
+version: "3.9"
 services:
   db:
     image: mariadb
     ports:
       - "3306:3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
+      - "MYSQL_DATABASE=scholarsome"
     restart: always
   scholarsome:
     image: scholarsome
-    links:
-      - "db:database"
     ports:
       - "3333:3333"
     environment:
-      - HOST=docker
+      - "DATABASE_URL=mysql://root:${DB_PASSWORD}@db:3306/scholarsome"
+      - "JWT_TOKEN=${JWT_TOKEN}"
     depends_on:
       - "db"
     restart: always
