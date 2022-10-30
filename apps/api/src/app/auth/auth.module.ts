@@ -8,6 +8,7 @@ import { JwtStrategy } from "./jwt.strategy";
 import { ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "../providers/database/database.module";
 import { SelfStrategy } from "./self.strategy";
+import { MailModule } from "../providers/mail/mail.module";
 
 @Module({
   /*
@@ -23,7 +24,8 @@ import { SelfStrategy } from "./self.strategy";
         signOptions: { expiresIn: '14d' },
       }),
       inject: [ConfigService],
-    })
+    }),
+    MailModule
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, SelfStrategy],

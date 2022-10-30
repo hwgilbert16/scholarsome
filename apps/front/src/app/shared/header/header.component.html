@@ -22,16 +22,12 @@
       </ul>
       <div class="d-flex">
         <div *ngIf="!this.cookieService.get('authenticated');else user">
-          <a>
-            <button type="button" class="btn btn-outline-dark pr-6" (click)="openModal(login)">
-              Log in
-            </button>
-          </a>
-          <a>
-            <button type="button" class="btn btn-warning ms-4" (click)="openModal(register)">
-              Sign up
-            </button>
-          </a>
+          <button type="button" class="btn btn-outline-dark pr-6" (click)="openModal(login)">
+            Log in
+          </button>
+          <button type="button" class="btn btn-warning ms-4" (click)="openModal(register)">
+            Sign up
+          </button>
         </div>
         <ng-template #user>
           <ul class="nav navbar-nav">

@@ -5,10 +5,15 @@ import { RegisterDto } from "./dto/register.dto";
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login.dto";
 import { Response } from "express";
+import { MailService } from "../providers/mail/mail.service";
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+    private mailService: MailService
+  ) {}
 
   logoutUser(res: Response): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
@@ -48,7 +53,7 @@ export class AuthService {
         username: registerDto.username,
         email: registerDto.email,
         password: await bcrypt.hash(registerDto.password, 10),
-      })
+      });
     }
   }
 }

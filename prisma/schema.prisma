@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sets      Set[]
+  id               String   @id @default(uuid())
+  username         String   @unique
+  email            String   @unique
+  password         String
+  verified         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  sets             Set[]
 }
 
 model Set {

@@ -5,7 +5,8 @@ import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './providers/database/database.module';
 import { ConfigModule } from '@nestjs/config';
-import { SetsModule } from "./sets/sets.module";
+import { SetsModule } from './sets/sets.module';
+import { MailModule } from './providers/mail/mail.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SetsModule } from "./sets/sets.module";
     AuthModule,
     DatabaseModule,
     SetsModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [],
