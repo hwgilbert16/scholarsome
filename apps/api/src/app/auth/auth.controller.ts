@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from "../providers/database/users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { AuthService } from "./auth.service";
@@ -6,7 +6,9 @@ import { LocalAuthGuard } from "./local-auth.guard";
 import { LoginDto } from "./dto/login.dto";
 import { Response } from "express";
 import { AuthenticatedGuard } from "./authenticated.guard";
+import { ThrottlerGuard } from "@nestjs/throttler";
 
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor (private usersService: UsersService, private authService: AuthService) {}
@@ -16,6 +18,7 @@ export class AuthController {
     return this.authService.registerUser(registerDto);
   }
 
+  @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {

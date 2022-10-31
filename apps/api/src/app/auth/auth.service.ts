@@ -6,18 +6,34 @@ import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login.dto";
 import { Response } from "express";
 import { MailService } from "../providers/mail/mail.service";
+import { HttpService } from "@nestjs/axios";
+import { ConfigService } from "@nestjs/config";
+import { lastValueFrom } from "rxjs";
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private mailService: MailService
+    private mailService: MailService,
+    private httpService: HttpService,
+    private configService: ConfigService
   ) {}
 
   logoutUser(res: Response): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
+  }
+
+  async validateRecaptcha(token: string) {
+    const body = {
+      secret: this.configService.get<string>('RECAPTCHA_SECRET'),
+      response: token
+    };
+
+    const req = await lastValueFrom(this.httpService.post('https://developers.google.com/recaptcha/docs/verify#api_request', body));
+
+    console.log(req);
   }
 
   async validateUser(email: string, password: string): Promise<boolean> {
@@ -46,7 +62,11 @@ export class AuthService {
   }
 
   async registerUser(registerDto: RegisterDto) {
-    if (await this.usersService.user({ email: registerDto.email })) {
+    if (
+      await this.usersService.user({ email: registerDto.email })
+      ||
+      await this.usersService.user({ username: registerDto.username })
+    ) {
       throw new HttpException('Conflict', HttpStatus.CONFLICT);
     } else {
       await this.usersService.createUser({

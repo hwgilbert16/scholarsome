@@ -56,6 +56,7 @@
       <div class="mb-3">
         <label for="login-email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="login-email" name="email" required ngModel>
+        <div *ngIf="invalidLogin" id="emailHelp" class="form-text text-danger">The email or password is incorrect.</div>
       </div>
       <div class="mb-3">
         <div class="d-flex justify-content-between">
@@ -63,6 +64,9 @@
           <a class="form-text" [routerLink]="[]">Forgot?</a>
         </div>
         <input type="password" class="form-control" id="login-password" name="password" required ngModel>
+        <div class="form-text recaptcha-text">This site is protected by reCAPTCHA and the Google
+          <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+          <a href="https://policies.google.com/terms">Terms of Service</a> apply.</div>
       </div>
       <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)">Sign up.</a></div>
       <div class="modal-footer">
@@ -100,6 +104,9 @@
       <div class="mb-3">
         <label for="register-confirm-password" class="form-label">Confirm Password</label>
         <input type="password" class="form-control" id="register-confirm-password" name="confirmPassword" ngModel required>
+        <div class="form-text recaptcha-text">This site is protected by reCAPTCHA and the Google
+          <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+          <a href="https://policies.google.com/terms">Terms of Service</a> apply.</div>
       </div>
       <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)">Log in.</a></div>
       <div class="modal-footer">

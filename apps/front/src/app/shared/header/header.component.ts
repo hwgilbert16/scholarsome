@@ -4,6 +4,8 @@ import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
 import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
+import { ReCaptchaV3Service } from "ng-recaptcha";
+import { lastValueFrom } from "rxjs";
 
 @Component({
   selector: 'scholarsome-header',
@@ -22,11 +24,15 @@ export class HeaderComponent {
 
   modalRef?: BsModalRef;
 
+  invalidLogin = false;
+  invalidRegistration = false;
+
   constructor(
     private bsModalService: BsModalService,
     private modalService: ModalService,
     private authService: AuthService,
-    public cookieService: CookieService
+    private recaptchaV3Service: ReCaptchaV3Service,
+    public cookieService: CookieService,
   ) {
     this.modalService.modal.subscribe(e => {
       if (e === 'register-open') {
@@ -39,8 +45,22 @@ export class HeaderComponent {
     this.modalRef = this.bsModalService.show(template);
   }
 
-  submitLogin(form: NgForm) {
-    this.authService.login(form.value).subscribe(() => window.location.assign('/view'));
+  async submitLogin(form: NgForm) {
+    const req = await this.authService.login(form.value);
+    this.invalidLogin = false;
+
+    if (!req) {
+      this.invalidLogin = true;
+      return;
+    }
+
+    console.log(req.status);
+
+    if (req.status === 200) {
+      window.location.assign('/view');
+    } else {
+      this.invalidLogin = true;
+    }
   }
 
   submitRegister(form: NgForm) {

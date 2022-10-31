@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Provider } from '@angular/core';
 import { HeaderComponent } from './header/header.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -10,6 +10,7 @@ import { AlertComponent } from './alert/alert.component';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { CommonModule } from '@angular/common';
 import { NotfoundComponent } from './notfound/notfound.component';
+import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 
 @NgModule({
   imports: [
@@ -21,6 +22,13 @@ import { NotfoundComponent } from './notfound/notfound.component';
     CookieModule,
     AlertModule,
     CommonModule,
+    RecaptchaV3Module
+  ],
+  providers: [
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useValue: '6LfqLcgiAAAAAJDsjWEEywU_kyb4w_jr4VjvJljW',
+    },
   ],
   declarations: [
     HeaderComponent,

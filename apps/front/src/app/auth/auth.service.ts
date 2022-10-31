@@ -1,20 +1,35 @@
 import { Injectable } from '@angular/core';
-import { LoginForm, RegisterForm } from "../shared/models/Auth";
-import { HttpClient } from "@angular/common/http";
-import { shareReplay } from "rxjs";
+import { LoginForm, LoginFormCaptcha, RegisterForm } from "../shared/models/Auth";
+import { HttpClient, HttpResponse } from "@angular/common/http";
+import { lastValueFrom, shareReplay } from "rxjs";
+import { ReCaptchaV3Service } from "ng-recaptcha";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) { }
 
-  login(loginForm: LoginForm) {
-    return this.http.post<LoginForm>('/api/auth/login', loginForm).pipe(shareReplay());
+  async login(loginForm: LoginForm): Promise<HttpResponse<LoginFormCaptcha> | Promise<null>> {
+    const body: LoginFormCaptcha = {
+      ...loginForm,
+      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('login'))
+    }
+
+    let req;
+
+    try {
+      req = await lastValueFrom(this.http.post<LoginFormCaptcha>('/api/auth/login', body, { observe: 'response' }));
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+
+    return req;
   }
 
   register(registerForm: RegisterForm) {
-    return this.http.post<RegisterForm>('/api/auth/register', registerForm).pipe(shareReplay());
+    return this.http.post<RegisterForm>('/api/auth/register', registerForm, { observe: 'response' }).pipe(shareReplay());
   }
 
   logout() {

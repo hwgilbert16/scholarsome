@@ -9,6 +9,8 @@ import { ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "../providers/database/database.module";
 import { SelfStrategy } from "./self.strategy";
 import { MailModule } from "../providers/mail/mail.module";
+import { ThrottlerModule } from "@nestjs/throttler";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
   /*
@@ -25,7 +27,12 @@ import { MailModule } from "../providers/mail/mail.module";
       }),
       inject: [ConfigService],
     }),
-    MailModule
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
+    MailModule,
+    HttpModule
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, SelfStrategy],
