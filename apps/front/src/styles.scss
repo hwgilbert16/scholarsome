@@ -25,3 +25,7 @@ body {
 .btn-primary pre:focus {
   outline: 0 !important;
 }
+
+.grecaptcha-badge {
+  visibility: hidden;
+}

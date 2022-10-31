@@ -25,7 +25,7 @@
           <button type="button" class="btn btn-outline-dark pr-6" (click)="openModal(login)">
             Log in
           </button>
-          <button type="button" class="btn btn-warning ms-4" (click)="openModal(register)">
+          <button type="button" class="btn btn-primary ms-4 shadow" (click)="openModal(register)">
             Sign up
           </button>
         </div>
@@ -56,7 +56,9 @@
       <div class="mb-3">
         <label for="login-email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="login-email" name="email" required ngModel>
-        <div *ngIf="invalidLogin" id="emailHelp" class="form-text text-danger">The email or password is incorrect.</div>
+        <div *ngIf="loginReq === 500" class="form-text text-danger">There was an issue with login.</div>
+        <div *ngIf="loginReq === 401" class="form-text text-danger">The email or password is incorrect.</div>
+        <div *ngIf="loginReq === 429" class="form-text text-danger">You are being rate limited.</div>
       </div>
       <div class="mb-3">
         <div class="d-flex justify-content-between">
@@ -71,10 +73,12 @@
       <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)">Sign up.</a></div>
       <div class="modal-footer">
         <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="login-enable-cookies" name="enableCookies">
+          <input type="checkbox" class="form-check-input" id="login-enable-cookies" name="enableCookies" [disabled]="loginReq === 0 || loginReq === 200">
           <label class="form-check-label" for="login-enable-cookies">Remember me</label>
         </div>
-        <button type="submit" class="btn btn-primary">Log in</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loginReq === 0 || loginReq === 200">
+          <span *ngIf="loginReq === 0 || loginReq === 200" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Log in</button>
       </div>
     </form>
   </div>
@@ -92,6 +96,9 @@
       <div class="mb-3">
         <label for="register-username" class="form-label">Username</label>
         <input type="text" class="form-control" id="register-username" name="username" ngModel required>
+        <div *ngIf="registrationReq === 500" class="form-text text-danger">There was an issue with registration.</div>
+        <div *ngIf="registrationReq === 409" class="form-text text-danger">That username or email already has an account.</div>
+        <div *ngIf="registrationReq === 429" class="form-text text-danger">You are being rate limited.</div>
       </div>
       <div class="mb-3">
         <label for="register-email" class="form-label">Email address</label>
@@ -110,7 +117,9 @@
       </div>
       <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)">Log in.</a></div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Sign up</button>
+        <button type="submit" class="btn btn-primary" [disabled]="registrationReq === 0 || registrationReq === 201">
+          <span *ngIf="registrationReq === 0 || registrationReq === 201" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Sign up</button>
       </div>
     </form>
   </div>

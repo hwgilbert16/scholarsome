@@ -1,18 +1,18 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
 import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
-import { ReCaptchaV3Service } from "ng-recaptcha";
-import { lastValueFrom } from "rxjs";
+import { HttpResponse } from "@angular/common/http";
+import { LoginFormCaptcha, RegisterFormCaptcha } from "../models/Auth";
 
 @Component({
   selector: 'scholarsome-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   @ViewChild('register')
   registerModal: TemplateRef<any>
 
@@ -25,13 +25,14 @@ export class HeaderComponent {
   modalRef?: BsModalRef;
 
   invalidLogin = false;
-  invalidRegistration = false;
+
+  loginReq: HttpResponse<LoginFormCaptcha> | number | null;
+  registrationReq: HttpResponse<RegisterFormCaptcha> | number | null;
 
   constructor(
     private bsModalService: BsModalService,
     private modalService: ModalService,
     private authService: AuthService,
-    private recaptchaV3Service: ReCaptchaV3Service,
     public cookieService: CookieService,
   ) {
     this.modalService.modal.subscribe(e => {
@@ -46,28 +47,31 @@ export class HeaderComponent {
   }
 
   async submitLogin(form: NgForm) {
-    const req = await this.authService.login(form.value);
-    this.invalidLogin = false;
+    this.loginReq = 0;
+    this.loginReq = await this.authService.login(form.value);
 
-    if (!req) {
-      this.invalidLogin = true;
-      return;
-    }
-
-    console.log(req.status);
-
-    if (req.status === 200) {
-      window.location.assign('/view');
-    } else {
-      this.invalidLogin = true;
-    }
+    if (this.loginReq === 200) {
+      window.location.assign('view');
+    } else return;
   }
 
-  submitRegister(form: NgForm) {
-    this.authService.register(form.value).subscribe(() => window.location.assign('/view'));
+  async submitRegister(form: NgForm) {
+    this.registrationReq = 0;
+    this.registrationReq = await this.authService.register(form.value);
+
+    if (this.registrationReq === 201) {
+      window.location.assign('/view');
+    } else return;
   }
 
   submitLogout() {
     this.authService.logout().subscribe(() => window.location.replace('/'));
+  }
+
+  ngOnInit(): void {
+    this.bsModalService.onHide.subscribe(() => {
+      this.loginReq = null;
+      this.registrationReq = null;
+    })
   }
 }

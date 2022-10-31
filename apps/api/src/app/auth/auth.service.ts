@@ -9,6 +9,7 @@ import { MailService } from "../providers/mail/mail.service";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
+import { RecaptchaResponse } from "./auth";
 
 @Injectable()
 export class AuthService {
@@ -25,15 +26,22 @@ export class AuthService {
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
   }
 
-  async validateRecaptcha(token: string) {
+  async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
       secret: this.configService.get<string>('RECAPTCHA_SECRET'),
       response: token
     };
 
-    const req = await lastValueFrom(this.httpService.post('https://developers.google.com/recaptcha/docs/verify#api_request', body));
+    const googleRes = await lastValueFrom(this.httpService.post<RecaptchaResponse>(
+      'https://www.google.com/recaptcha/api/siteverify',
+      new URLSearchParams(Object.entries(body)).toString(),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }));
 
-    console.log(req);
+    if (googleRes.data["error-codes"]) return false;
+
+    return googleRes.data.score >= 0.5;
   }
 
   async validateUser(email: string, password: string): Promise<boolean> {

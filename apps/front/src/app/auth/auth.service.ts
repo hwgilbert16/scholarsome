@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { LoginForm, LoginFormCaptcha, RegisterForm } from "../shared/models/Auth";
-import { HttpClient, HttpResponse } from "@angular/common/http";
+import { LoginForm, LoginFormCaptcha, RegisterForm, RegisterFormCaptcha } from "../shared/models/Auth";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { lastValueFrom, shareReplay } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
 
@@ -10,7 +10,7 @@ import { ReCaptchaV3Service } from "ng-recaptcha";
 export class AuthService {
   constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) { }
 
-  async login(loginForm: LoginForm): Promise<HttpResponse<LoginFormCaptcha> | Promise<null>> {
+  async login(loginForm: LoginForm): Promise<number> {
     const body: LoginFormCaptcha = {
       ...loginForm,
       recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('login'))
@@ -21,15 +21,35 @@ export class AuthService {
     try {
       req = await lastValueFrom(this.http.post<LoginFormCaptcha>('/api/auth/login', body, { observe: 'response' }));
     } catch (e) {
-      console.log(e);
-      return null;
+      if (e instanceof HttpErrorResponse) {
+        return e.status;
+      } else {
+        return 500;
+      }
     }
 
-    return req;
+    return req.status;
   }
 
-  register(registerForm: RegisterForm) {
-    return this.http.post<RegisterForm>('/api/auth/register', registerForm, { observe: 'response' }).pipe(shareReplay());
+  async register(registerForm: RegisterForm): Promise<number> {
+    const body: RegisterFormCaptcha = {
+      ...registerForm,
+      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('register'))
+    }
+
+    let req;
+
+    try {
+      req = await lastValueFrom(this.http.post<RegisterFormCaptcha>('/api/auth/register', body, { observe: 'response' }));
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        return e.status;
+      } else {
+        return 500;
+      }
+    }
+
+    return req.status;
   }
 
   logout() {
