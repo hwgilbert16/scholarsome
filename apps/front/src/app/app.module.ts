@@ -46,7 +46,7 @@ import { CommonModule } from '@angular/common';
     CookieModule.withOptions(),
     AppRoutingModule,
     BrowserAnimationsModule,
-    CommonModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent],

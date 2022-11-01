@@ -1,17 +1,21 @@
-import { Body, Controller, HttpCode, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from "../providers/database/users/users.service";
 import { RegisterDto } from "./dto/register.dto";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { LoginDto } from "./dto/login.dto";
 import { Response } from "express";
-import { AuthenticatedGuard } from "./authenticated.guard";
 import { ThrottlerGuard } from "@nestjs/throttler";
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor (private usersService: UsersService, private authService: AuthService) {}
+
+  @Get('verify/:token')
+  async verify(@Param() params: { token: string }, @Res() res: Response) {
+    return this.authService.verifyUserEmail(params.token, res);
+  }
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<void> {
@@ -28,12 +32,5 @@ export class AuthController {
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
     return this.authService.logoutUser(res);
-  }
-
-  @UseGuards(AuthenticatedGuard)
-  @Post('test')
-  async test(@Body() body: any) {
-    console.log(body);
-    return true;
   }
 }

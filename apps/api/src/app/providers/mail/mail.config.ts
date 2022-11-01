@@ -17,7 +17,7 @@ export class MailConfig implements MailerOptionsFactory {
         },
       },
       defaults: {
-        from: '"Scholarsome" <noreply@scholarsome.com>',
+        from: 'Scholarsome <noreply@scholarsome.com>',
       },
     }
   }

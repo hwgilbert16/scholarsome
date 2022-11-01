@@ -10,6 +10,7 @@ import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import { RecaptchaResponse } from "./auth";
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,28 @@ export class AuthService {
   logoutUser(res: Response): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
+  }
+
+  async verifyUserEmail(token: string, res: Response) {
+    const email = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string };
+    if (!email) return false;
+
+    const verification = await this.usersService.updateUser({
+      where: {
+        email: email.email,
+      },
+      data: {
+        verified: true,
+      }
+    });
+
+    if (verification) {
+      res.cookie('verified', true, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
+    } else {
+      res.cookie('verified', false, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
+    }
+
+    return res.redirect('/');
   }
 
   async validateRecaptcha(token: string): Promise<boolean> {
@@ -49,7 +72,7 @@ export class AuthService {
       email
     });
 
-    if (!user) throw new UnauthorizedException();
+    if (!user || !user.verified) throw new UnauthorizedException();
 
     return !!(await bcrypt.compare(password, user.password));
   }
@@ -69,7 +92,7 @@ export class AuthService {
     return;
   }
 
-  async registerUser(registerDto: RegisterDto) {
+  async registerUser(registerDto: RegisterDto): Promise<void> {
     if (
       await this.usersService.user({ email: registerDto.email })
       ||
@@ -82,6 +105,8 @@ export class AuthService {
         email: registerDto.email,
         password: await bcrypt.hash(registerDto.password, 10),
       });
+
+      await this.mailService.sendEmailConfirmation(registerDto.email);
     }
   }
 }

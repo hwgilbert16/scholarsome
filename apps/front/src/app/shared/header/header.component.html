@@ -96,6 +96,7 @@
       <div class="mb-3">
         <label for="register-username" class="form-label">Username</label>
         <input type="text" class="form-control" id="register-username" name="username" ngModel required>
+        <div *ngIf="registrationReq === 201" class="form-text text-success">Thanks! Check your email for a message from us and click on the link to verify your account.</div>
         <div *ngIf="registrationReq === 500" class="form-text text-danger">There was an issue with registration.</div>
         <div *ngIf="registrationReq === 409" class="form-text text-danger">That username or email already has an account.</div>
         <div *ngIf="registrationReq === 429" class="form-text text-danger">You are being rate limited.</div>
@@ -118,7 +119,7 @@
       <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)">Log in.</a></div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" [disabled]="registrationReq === 0 || registrationReq === 201">
-          <span *ngIf="registrationReq === 0 || registrationReq === 201" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span *ngIf="registrationReq === 0" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Sign up</button>
       </div>
     </form>
