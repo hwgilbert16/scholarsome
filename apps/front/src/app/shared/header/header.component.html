@@ -56,6 +56,7 @@
       <div class="mb-3">
         <label for="login-email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="login-email" name="email" required ngModel>
+        <div *ngIf="verificationResult" class="form-text text-success">Your email has been successfully verified. You may now login.</div>
         <div *ngIf="loginReq === 500" class="form-text text-danger">There was an issue with login.</div>
         <div *ngIf="loginReq === 401" class="form-text text-danger">The email or password is incorrect.</div>
         <div *ngIf="loginReq === 429" class="form-text text-danger">You are being rate limited.</div>

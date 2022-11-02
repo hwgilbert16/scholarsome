@@ -78,6 +78,8 @@ export class AuthService {
   }
 
   async authenticateUser(loginDto: LoginDto, res: Response): Promise<void> {
+    res.cookie('verified', '', { httpOnly: false, expires: new Date() });
+
     const user = await this.usersService.user({
       email: loginDto.email
     });

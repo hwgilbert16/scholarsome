@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
@@ -12,13 +12,16 @@ import { LoginFormCaptcha, RegisterFormCaptcha } from "../models/Auth";
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild('register') registerModal: TemplateRef<any>
+  @ViewChild('login') loginModal: TemplateRef<any>
+
   @ViewChild('loginForm') loginForm: NgForm
   @ViewChild('registerForm') registerForm: NgForm
 
   modalRef?: BsModalRef;
 
+  verificationResult: boolean | null;
   loginReq: HttpResponse<LoginFormCaptcha> | number | null;
   registrationReq: HttpResponse<RegisterFormCaptcha> | number | null;
 
@@ -58,9 +61,21 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      if (!cookie.includes('verified')) continue;
+
+      this.verificationResult = cookie.includes('true');
+    }
+
     this.bsModalService.onHide.subscribe(() => {
       this.loginReq = null;
       this.registrationReq = null;
-    })
+      this.verificationResult = null;
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.verificationResult) this.modalRef = this.bsModalService.show(this.loginModal);
   }
 }
