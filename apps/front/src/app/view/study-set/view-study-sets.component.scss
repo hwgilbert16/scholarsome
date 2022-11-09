@@ -3,6 +3,11 @@
   height: 6rem;
 }
 
+.new-card:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
   .set-view {
     width: 100%;

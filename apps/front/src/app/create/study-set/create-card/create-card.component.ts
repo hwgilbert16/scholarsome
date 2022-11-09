@@ -10,6 +10,8 @@ export class CreateCardComponent {
   @Input() cardIndex: number;
   @Input() upArrow = true;
   @Input() downArrow = true;
+  @Input() termValue?: string;
+  @Input() definitionValue?: string;
 
   @Output() deleteCardEvent = new EventEmitter<number>();
   @Output() moveCardEvent = new EventEmitter<{ index: number, direction: number }>();

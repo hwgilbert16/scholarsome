@@ -4,9 +4,9 @@
       <div class="d-flex justify-content-between">
         <span>{{cardIndex + 1}}.</span>
         <div>
-          <fa-icon *ngIf="upArrow" [icon]="['far', 'arrow-alt-circle-up']" class="mx-3 card-button" popover="Move this card up one" triggers="mouseenter:mouseleave" (click)="moveCard(-1)"></fa-icon>
-          <fa-icon *ngIf="downArrow" [icon]="['far', 'arrow-alt-circle-down']" class="mx-3 card-button" popover="Move this card down one" triggers="mouseenter:mouseleave" (click)="moveCard(1)"></fa-icon>
-          <fa-icon [icon]="['far', 'trash-can']" class="ms-3 card-button" popover="Delete this card" triggers="mouseenter:mouseleave" (click)="deleteCard()"></fa-icon>
+          <fa-icon *ngIf="upArrow" [icon]="['far', 'arrow-alt-circle-up']" class="mx-3 card-button" (click)="moveCard(-1)"></fa-icon>
+          <fa-icon *ngIf="downArrow" [icon]="['far', 'arrow-alt-circle-down']" class="mx-3 card-button" (click)="moveCard(1)"></fa-icon>
+          <fa-icon [icon]="['far', 'trash-can']" class="ms-3 card-button" (click)="deleteCard()"></fa-icon>
         </div>
       </div>
     </div>
@@ -14,11 +14,11 @@
       <div class="row">
         <div class="col-lg">
           <label for="term" class="form-label">Term</label>
-          <input type="email" class="form-control" id="term" #term>
+          <input type="email" class="form-control" id="term" [value]="termValue ? termValue : ''" #term>
         </div>
         <div class="col-lg">
           <label for="definition" class="form-label">Definition</label>
-          <input type="email" class="form-control" id="definition" #definition>
+          <input type="email" class="form-control" id="definition" [value]="definitionValue ? definitionValue : ''" #definition>
         </div>
       </div>
     </div>

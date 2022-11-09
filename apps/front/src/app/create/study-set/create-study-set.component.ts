@@ -1,5 +1,4 @@
 import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { CreateCardDirective } from "./create-card/create-card.directive";
 import { CreateCardComponent } from "./create-card/create-card.component";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
@@ -13,7 +12,7 @@ import { Router } from "@angular/router";
 export class CreateStudySetComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
-  @ViewChild(CreateCardDirective, { static: true }) cardList: CreateCardDirective;
+  @ViewChild('cardList', { static: true, read: ViewContainerRef }) cardList: ViewContainerRef;
 
   @ViewChild('title', { static: false, read: ViewContainerRef }) titleInput: ViewContainerRef;
   @ViewChild('description') descriptionInput: ElementRef;
@@ -75,12 +74,12 @@ export class CreateStudySetComponent implements OnInit {
   }
 
   addCard() {
-    const card = this.cardList.viewContainerRef.createComponent<CreateCardComponent>(CreateCardComponent);
-    card.instance.cardIndex = this.cardList.viewContainerRef.length - 1;
+    const card = this.cardList.createComponent<CreateCardComponent>(CreateCardComponent);
+    card.instance.cardIndex = this.cardList.length - 1;
 
     card.instance.deleteCardEvent.subscribe(e => {
-      if (this.cardList.viewContainerRef.length > 1) {
-        this.cardList.viewContainerRef.get(e)?.destroy();
+      if (this.cardList.length > 1) {
+        this.cardList.get(e)?.destroy();
 
         this.cards.splice(this.cards.map(c => c.index).indexOf(e), 1);
 
@@ -89,10 +88,10 @@ export class CreateStudySetComponent implements OnInit {
     });
 
     card.instance.moveCardEvent.subscribe(e => {
-      if (this.cardList.viewContainerRef.length > 1) {
+      if (this.cardList.length > 1) {
         const cardIndex = this.cards.map(c => c.index).indexOf(e.index);
 
-        this.cardList.viewContainerRef.move(this.cards[cardIndex].component.hostView, e.index + e.direction);
+        this.cardList.move(this.cards[cardIndex].component.hostView, e.index + e.direction);
 
         this.cards[this.cards.map(c => c.index).indexOf(e.index + e.direction)].index = e.index;
         this.cards[cardIndex].index = e.index + e.direction;
@@ -105,7 +104,7 @@ export class CreateStudySetComponent implements OnInit {
 
     this.cards.push({
       component: card,
-      index: this.cardList.viewContainerRef.length - 1
+      index: this.cardList.length - 1
     });
 
     this.updateCardIndices();

@@ -6,7 +6,7 @@
 
 <div class="container-fluid set-view overflow-hidden" #container hidden>
   <div class="d-flex justify-content-center mt-2">
-    <h1>{{title}}</h1>
+    <h1 *ngIf="set">{{this.set.title}}</h1>
   </div>
   <div class="d-flex justify-content-evenly">
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
@@ -22,14 +22,16 @@
     <div class="mt-2">
       <fa-icon [icon]="['far', 'user']"></fa-icon> Created by {{author}}
     </div>
+    <div></div>
     <div>
       <button type="button" class="btn btn-light bg-white rounded-circle shadow"><fa-icon [icon]="['far', 'user']"></fa-icon></button>
     </div>
   </div>
   <hr>
-  <div class="container-fluid align-items-center" #cards>
+  <div class="container-fluid align-items-center">
     <div class="mb-4">
-      <h5>{{setLength}} term{{setLength > 1 ? 's' : ''}} in this set</h5>
+      <h5 *ngIf="cards">{{cards.length}} term{{cards.length > 1 ? 's' : ''}} in this set</h5>
     </div>
+    <div #cardsContainer></div>
   </div>
 </div>
