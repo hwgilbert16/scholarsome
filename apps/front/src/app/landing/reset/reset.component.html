@@ -1,0 +1,34 @@
+<div class="w-75 mt-4 mx-auto" *ngIf="!this.cookieService.get('resetToken')">
+  <form class="mx-3" (ngSubmit)="submitReset(resetForm)" #resetForm="ngForm" ngNativeValidate>
+    <div class="mb-3">
+      <div class="form-text mb-4">Forgot your account's password? Enter your email below and we'll send you a reset link.</div>
+      <label for="reset-password" class="form-label">Email address</label>
+      <input type="email" class="form-control" id="reset-password" name="email" required ngModel>
+      <div *ngIf="resetReq === 200" class="form-text text-success">If that email exists, we've sent a message. Check for a reset link from us.</div>
+      <div *ngIf="resetReq === 500" class="form-text text-danger">There was an issue with login.</div>
+      <div *ngIf="resetReq === 429" class="form-text text-danger">You are being rate limited.</div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" [disabled]="resetReq === 0 || resetReq === 200">
+        <span *ngIf="resetReq === 0" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Send recovery email</button>
+    </div>
+  </form>
+</div>
+
+<div class="w-75 mt-4 mx-auto" *ngIf="this.cookieService.get('resetToken')">
+  <form class="mx-3" (ngSubmit)="setPassword(setPasswordForm)" #setPasswordForm="ngForm" ngNativeValidate>
+    <div class="mb-3">
+      <div class="form-text mb-4">Enter your new account password below</div>
+      <input type="password" class="form-control" id="new-password" name="password" required ngModel>
+      <div *ngIf="resetReq === 201" class="form-text text-success">Your password has been successfully changed. You can now log in.</div>
+      <div *ngIf="resetReq === 500" class="form-text text-danger">There was an issue with changing your password.</div>
+      <div *ngIf="resetReq === 429" class="form-text text-danger">You are being rate limited.</div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" [disabled]="resetReq === 0 || resetReq === 201">
+        <span *ngIf="resetReq === 0" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Change password</button>
+    </div>
+  </form>
+</div>

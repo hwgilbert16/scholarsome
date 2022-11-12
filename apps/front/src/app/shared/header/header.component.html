@@ -64,7 +64,7 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between">
           <label for="login-password" class="form-label">Password</label>
-          <a class="form-text" [routerLink]="[]">Forgot?</a>
+          <a class="form-text" [routerLink]="['reset']" (click)="modalRef?.hide()">Forgot?</a>
         </div>
         <input type="password" class="form-control" id="login-password" name="password" required ngModel>
         <div class="form-text recaptcha-text">This site is protected by reCAPTCHA and the Google

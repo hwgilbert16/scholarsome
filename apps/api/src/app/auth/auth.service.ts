@@ -4,13 +4,15 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from "./dto/register.dto";
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login.dto";
-import { Response } from "express";
+import { Response, Request } from "express";
 import { MailService } from "../providers/mail/mail.service";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import { RecaptchaResponse } from "./auth";
 import * as jwt from 'jsonwebtoken';
+import { ResetPasswordDto } from "./dto/reset.dto";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -25,6 +27,39 @@ export class AuthService {
   logoutUser(res: Response): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
+  }
+
+  setResetCookie(token: string, res: Response): void {
+    const decoded = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
+
+    if (decoded && decoded.reset) {
+      res.cookie('resetToken', token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
+    }
+
+    return res.redirect('/reset');
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto, res: Response, req: Request): Promise<User | boolean> {
+    const decoded = jwt.verify(req.cookies['resetToken'], this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
+
+    if (!decoded || !decoded.reset) return false;
+
+    return await this.usersService.updateUser({
+      where: {
+        email: decoded.email
+      },
+      data: {
+        password: await bcrypt.hash(resetPasswordDto.password, 10)
+      }
+    });
+  }
+
+  async sendPasswordReset(email: string): Promise<void> {
+    const user = this.usersService.user({ email });
+
+    if (!user) return;
+
+    return await this.mailService.sendPasswordReset(email);
   }
 
   async verifyUserEmail(token: string, res: Response) {

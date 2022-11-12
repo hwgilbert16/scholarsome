@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { LoginForm, LoginFormCaptcha, RegisterForm, RegisterFormCaptcha } from "../shared/models/Auth";
+import {
+  LoginForm,
+  LoginFormCaptcha,
+  RegisterForm,
+  RegisterFormCaptcha,
+  ResetForm,
+  SubmitResetForm
+} from "../shared/models/Auth";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { lastValueFrom, shareReplay } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
@@ -8,7 +15,39 @@ import { ReCaptchaV3Service } from "ng-recaptcha";
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) { }
+  constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) {}
+
+  async submitResetPassword(submitResetForm: SubmitResetForm): Promise<number> {
+    let req;
+
+    try {
+      req = await lastValueFrom(this.http.get('/api/auth/reset/password/' + submitResetForm.email, { observe: 'response' }));
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        return e.status;
+      } else {
+        return 500;
+      }
+    }
+
+    return req.status;
+  }
+
+  async setPassword(resetForm: ResetForm): Promise<number> {
+    let req;
+
+    try {
+      req = await lastValueFrom(this.http.post<ResetForm>('/api/auth/reset/password', resetForm, { observe: 'response' }));
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        return e.status;
+      } else {
+        return 500;
+      }
+    }
+
+    return req.status;
+  }
 
   async login(loginForm: LoginForm): Promise<number> {
     const body: LoginFormCaptcha = {

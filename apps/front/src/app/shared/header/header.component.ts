@@ -13,8 +13,8 @@ import { LoginFormCaptcha, RegisterFormCaptcha } from "../models/Auth";
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
-  @ViewChild('register') registerModal: TemplateRef<any>
-  @ViewChild('login') loginModal: TemplateRef<any>
+  @ViewChild('register') registerModal: TemplateRef<any>;
+  @ViewChild('login') loginModal: TemplateRef<any>;
 
   @ViewChild('loginForm') loginForm: NgForm
   @ViewChild('registerForm') registerForm: NgForm
@@ -22,6 +22,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   modalRef?: BsModalRef;
 
   verificationResult: boolean | null;
+
   loginReq: HttpResponse<LoginFormCaptcha> | number | null;
   registrationReq: HttpResponse<RegisterFormCaptcha> | number | null;
 
@@ -46,9 +47,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.loginReq = 0;
     this.loginReq = await this.authService.login(form.value);
 
-    if (this.loginReq === 200) {
-      window.location.assign('view');
-    }
+    if (this.loginReq === 200) window.location.assign('view');
   }
 
   async submitRegister(form: NgForm) {

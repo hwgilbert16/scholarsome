@@ -3,6 +3,14 @@ export interface LoginForm {
   password: string;
 }
 
+export interface SubmitResetForm {
+  email: string;
+}
+
+export interface ResetForm {
+  password: string;
+}
+
 export interface LoginFormCaptcha extends LoginForm {
   recaptchaToken: string;
 }
