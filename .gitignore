@@ -43,3 +43,4 @@ Thumbs.db
 # Environment files
 .env
 .env.dev
+apps/front/src/environments/*

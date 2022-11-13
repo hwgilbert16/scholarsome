@@ -9,7 +9,7 @@
     "start:api": "npx nx serve api",
     "generate": "npx prisma generate",
     "dev": "concurrently -p=\"{name}\" -n=\"Angular,NestJS\" -c=\"green,blue\" \"npm run start:front\" \"npm run start:api\"",
-    "build": "npx nx run-many --target=build --projects=front,api",
+    "build": "npx nx run-many --target=build --projects=front,api && node tools/setAngularEnv.js",
     "test": "nx test",
     "serve": "npx prisma migrate deploy && node dist/apps/api/main.js"
   },

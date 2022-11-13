@@ -5,20 +5,26 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
+      - "MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}"
       - "MYSQL_DATABASE=scholarsome"
     restart: always
   scholarsome:
-    image: scholarsome
+    image: hwgilbert16/scholarsome
     ports:
-      - "3333:3333"
+      - "${HTTP_PORT}:3333"
     environment:
-      - "DATABASE_URL=mysql://root:${DB_PASSWORD}@db:3306/scholarsome"
+      - "NODE_ENV=${NODE_ENV}"
+      - "DATABASE_URL=mysql://root:${DATABASE_PASSWORD}@db:3306/scholarsome"
       - "JWT_TOKEN=${JWT_TOKEN}"
       - "SMTP_HOST=${SMTP_HOST}"
       - "SMTP_PORT=${SMTP_PORT}"
       - "SMTP_USERNAME=${SMTP_USERNAME}"
       - "SMTP_PASSWORD=${SMTP_PASSWORD}"
+      - "HOST=${HOST}"
+      - "SSL_KEY_PATH=${SSL_KEY_PATH}"
+      - "SSL_CERT_PATH=${SSL_CERT_PATH}"
+      - "RECAPTCHA_SITE=${RECAPTCHA_SITE}"
+      - "RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
     depends_on:
       - "db"
     restart: always

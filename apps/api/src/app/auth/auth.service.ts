@@ -129,7 +129,7 @@ export class AuthService {
     return;
   }
 
-  async registerUser(registerDto: RegisterDto): Promise<void> {
+  async registerUser(registerDto: RegisterDto, res: Response): Promise<void> {
     if (
       await this.usersService.user({ email: registerDto.email })
       ||
@@ -141,9 +141,15 @@ export class AuthService {
         username: registerDto.username,
         email: registerDto.email,
         password: await bcrypt.hash(registerDto.password, 10),
+        verified: !this.configService.get<boolean>('SMTP_HOST')
       });
 
-      await this.mailService.sendEmailConfirmation(registerDto.email);
+      if (this.configService.get<boolean>('SMTP_HOST')) {
+        await this.mailService.sendEmailConfirmation(registerDto.email);
+        res.status(201);
+      } else {
+        res.status(200);
+      }
     }
   }
 }
