@@ -21,11 +21,11 @@ async function bootstrap() {
   if (process.env.SSL_KEY_PATH && process.env.SSL_KEY_PATH.length > 0) {
     https.createServer({
       key: fs.readFileSync(path.join(__dirname, process.env.SSL_KEY_PATH)),
-      cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT_PATH))
-    }, server).listen(443);
+      cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT_PATH)),
+    }, server).listen(8443);
   }
 
-  const port = process.env.PORT || 3333;
+  const port = process.env.HTTP_PORT || 8080;
   await app.init();
 
   http.createServer(server).listen(port);
