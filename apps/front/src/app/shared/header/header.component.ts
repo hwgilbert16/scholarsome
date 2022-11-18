@@ -6,6 +6,7 @@ import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
 import { HttpResponse } from "@angular/common/http";
 import { LoginFormCaptcha, RegisterFormCaptcha } from "../models/Auth";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 @Component({
   selector: 'scholarsome-header',
@@ -25,6 +26,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   loginReq: HttpResponse<LoginFormCaptcha> | number | null;
   registrationReq: HttpResponse<RegisterFormCaptcha> | number | null;
+
+  faGithub = faGithub;
 
   constructor(
     private bsModalService: BsModalService,

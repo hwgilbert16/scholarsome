@@ -21,6 +21,7 @@
         </li>
       </ul>
       <div class="d-flex">
+        <span class="navbar-text mx-3"><a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="github"><fa-icon [icon]="faGithub"></fa-icon></a></span>
         <div *ngIf="!this.cookieService.get('authenticated');else user">
           <button type="button" class="btn btn-outline-dark pr-6" (click)="openModal(login)">
             Log in

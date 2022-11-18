@@ -23,9 +23,3 @@ Before starting installation, be sure that Docker is installed on the system tha
 - [Linux](https://docs.docker.com/linux/started/)
 - [Windows](https://docs.docker.com/windows/started)
 - [MacOS (OS X)](https://docs.docker.com/mac/started/)
-
-Pull the container image. This may take a few minutes.
-
-```
-docker pull hwgilbert16/scholarsome
-```

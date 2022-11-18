@@ -13,7 +13,7 @@
     "build": "npx nx run-many --target=build --projects=front,api && node tools/setAngularEnv.js",
     "test": "nx test",
     "serve:node": "npm run migrate && node tools/setAngularEnv.js && node dist/apps/api/main.js",
-    "serve:pm2": "npm run migrate && node tools/setAngularEnv.js && pm2 start dist/apps/api/main.js"
+    "serve:pm2": "npm run migrate && node tools/setAngularEnv.js && pm2 start dist/apps/api/main.js --name \"scholarsome\""
   },
   "private": true,
   "dependencies": {
