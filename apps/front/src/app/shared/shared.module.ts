@@ -27,14 +27,14 @@ import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
   providers: [
     {
       provide: RECAPTCHA_V3_SITE_KEY,
-      useValue: '6LfqLcgiAAAAAJDsjWEEywU_kyb4w_jr4VjvJljW',
-    },
+      useValue: '6LfqLcgiAAAAAJDsjWEEywU_kyb4w_jr4VjvJljW'
+    }
   ],
   declarations: [
     HeaderComponent,
     AlertComponent,
-    NotfoundComponent,
+    NotfoundComponent
   ],
-  exports: [HeaderComponent, AlertComponent],
+  exports: [HeaderComponent, AlertComponent]
 })
 export class SharedModule {}

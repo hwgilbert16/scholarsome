@@ -97,7 +97,7 @@ export class SetsController {
     if (!user) throw new NotFoundException();
 
     const author = await this.usersService.user({
-      email: user.email,
+      email: user.email
     });
     if (!author) throw new HttpException('Conflict', HttpStatus.BAD_REQUEST);
 
@@ -117,10 +117,10 @@ export class SetsController {
               index: c.index,
               term: c.term,
               definition: c.definition
-            }
+            };
           })
         }
-      },
+      }
     });
   }
 

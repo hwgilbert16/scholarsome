@@ -9,17 +9,17 @@ import { JwtModule } from "@nestjs/jwt";
   imports: [
     MailerModule.forRootAsync({
       imports: [ConfigModule],
-      useClass: MailConfig,
+      useClass: MailConfig
     }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_TOKEN'),
-        signOptions: { expiresIn: '14d' },
+        signOptions: { expiresIn: '14d' }
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     })
   ],
   providers: [MailConfig, MailService],
-  exports: [MailService],
+  exports: [MailService]
 })
 export class MailModule {}

@@ -4,6 +4,6 @@ import { DatabaseModule } from "../providers/database/database.module";
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [SetsController],
+  controllers: [SetsController]
 })
 export class SetsModule {}

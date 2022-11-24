@@ -15,6 +15,6 @@ import { FormsModule } from "@angular/forms";
     CommonModule,
     FormsModule
   ],
-  declarations: [LandingComponent, ResetComponent],
+  declarations: [LandingComponent, ResetComponent]
 })
 export class LandingModule {}

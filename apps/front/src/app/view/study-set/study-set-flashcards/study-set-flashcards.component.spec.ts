@@ -8,7 +8,7 @@ describe('StudySetFlashcardsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StudySetFlashcardsComponent],
+      declarations: [StudySetFlashcardsComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(StudySetFlashcardsComponent);

@@ -1,13 +1,13 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SetsService } from "../../../shared/http/sets.service";
-import { ActivatedRoute, Router, } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from '@prisma/client';
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 
 @Component({
   selector: 'scholarsome-study-set-flashcards',
   templateUrl: './study-set-flashcards.component.html',
-  styleUrls: ['./study-set-flashcards.component.scss'],
+  styleUrls: ['./study-set-flashcards.component.scss']
 })
 export class StudySetFlashcardsComponent implements OnInit {
   constructor(

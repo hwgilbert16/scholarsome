@@ -3,10 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'scholarsome-notfound',
   templateUrl: './notfound.component.html',
-  styleUrls: ['./notfound.component.scss'],
+  styleUrls: ['./notfound.component.scss']
 })
-export class NotfoundComponent implements OnInit {
+export class NotfoundComponent {
   constructor() {}
-
-  ngOnInit(): void {}
 }

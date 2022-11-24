@@ -8,7 +8,7 @@ export class SetsService {
   constructor(private prisma: PrismaService) {}
 
   async set(
-    setWhereUniqueInput: Prisma.SetWhereUniqueInput,
+    setWhereUniqueInput: Prisma.SetWhereUniqueInput
   ): Promise<SetWithRelations | null> {
     return this.prisma.set.findUnique({
       where: setWhereUniqueInput,
@@ -32,14 +32,14 @@ export class SetsService {
       orderBy,
       include: {
         cards: true,
-        author: true,
+        author: true
       }
     });
   }
 
   async createSet(data: Prisma.SetCreateInput): Promise<Set> {
     return this.prisma.set.create({
-      data,
+      data
     });
   }
 
@@ -50,13 +50,13 @@ export class SetsService {
     const { where, data } = params;
     return this.prisma.set.update({
       data,
-      where,
+      where
     });
   }
 
   async deleteSet(where: Prisma.SetWhereUniqueInput): Promise<Set> {
     return this.prisma.set.delete({
-      where,
+      where
     });
   }
 }

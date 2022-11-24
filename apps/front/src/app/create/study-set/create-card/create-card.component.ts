@@ -4,7 +4,7 @@ import { AlertComponent } from "../../../shared/alert/alert.component";
 @Component({
   selector: 'scholarsome-create-card',
   templateUrl: './create-card.component.html',
-  styleUrls: ['./create-card.component.scss'],
+  styleUrls: ['./create-card.component.scss']
 })
 export class CreateCardComponent {
   @Input() cardIndex: number;

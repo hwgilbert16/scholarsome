@@ -7,7 +7,7 @@ import { Router } from "@angular/router";
 @Component({
   selector: 'scholarsome-create',
   templateUrl: './create-study-set.component.html',
-  styleUrls: ['./create-study-set.component.scss'],
+  styleUrls: ['./create-study-set.component.scss']
 })
 export class CreateStudySetComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
@@ -57,7 +57,7 @@ export class CreateStudySetComponent implements OnInit {
         title: this.titleInput.element.nativeElement.value,
         description: this.descriptionInput.nativeElement.value,
         private: this.privateCheckbox.nativeElement.checked,
-        cards,
+        cards
       },
       { observe: 'response' }
     ).subscribe(async (data: HttpResponse<any>) => await this.router.navigate(['/view/sets/' + data.body.id]));

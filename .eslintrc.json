@@ -24,7 +24,13 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nrwl/nx/typescript"],
-      "rules": {}
+      "rules": {
+        "semi": "error",
+        "comma-dangle": ["error", "never"],
+        "no-empty-function": ["error", { "allow": ["constructors"] }],
+        "@typescript-eslint/no-empty-function": "off",
+        "@angular-eslint/no-empty-lifecycle-method": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
