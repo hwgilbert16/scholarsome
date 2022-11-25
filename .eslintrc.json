@@ -29,7 +29,9 @@
         "comma-dangle": ["error", "never"],
         "no-empty-function": ["error", { "allow": ["constructors"] }],
         "@typescript-eslint/no-empty-function": "off",
-        "@angular-eslint/no-empty-lifecycle-method": "off"
+        "@angular-eslint/no-empty-lifecycle-method": "off",
+        "no-trailing-spaces": "error",
+        "eol-last": ["error", "always"]
       }
     },
     {

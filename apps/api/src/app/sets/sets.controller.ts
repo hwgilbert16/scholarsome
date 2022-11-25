@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -16,7 +17,6 @@ import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../providers/database/sets/sets.service";
 import { CreateSetBodyDto } from "./dto/createSetBody.dto";
 import { UsersService } from "../providers/database/users/users.service";
-import { SelfGuard } from "../auth/self.guard";
 import { Request as ExpressRequest } from 'express';
 import { UpdateSetBodyDto } from "./dto/updateSetBody.dto";
 import { SetIdParam } from "./dto/setIdParam";
@@ -39,25 +39,37 @@ export class SetsController {
     const user = await this.usersService.user({
       id: accessToken.id
     });
-    if (!user) return false;
 
     const set = await this.setsService.set({
       id: setId
     });
-    if (!set) return false;
+
+    if (!set || !user) return false;
 
     return set.author.id === user.id;
   }
 
-  @UseGuards(SelfGuard)
   @Get(':setId')
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
-    const set = await this.setsService.set({
-      id: params.setId
-    });
-    if (!set) throw new NotFoundException();
+    const userCookie = this.usersService.getUserInfo(req);
+    if (!userCookie) {
+      throw new NotFoundException();
+    }
 
-    if (!set.private && !(await this.verifyOwnership(req, params.setId))) throw new UnauthorizedException();
+    const user = await this.usersService.user({
+      id: userCookie.id
+    });
+
+    const setId = req.originalUrl.split('/')[3];
+    if (!setId || !user) throw new BadRequestException();
+
+    const set = await this.setsService.set({
+      id: setId
+    });
+
+    if (set.private && (set.authorId !== userCookie.id)) throw new UnauthorizedException();
+
+    if (!set) throw new NotFoundException();
 
     return set;
   }

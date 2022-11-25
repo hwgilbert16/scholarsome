@@ -7,7 +7,6 @@ import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./jwt.strategy";
 import { ConfigService } from "@nestjs/config";
 import { DatabaseModule } from "../providers/database/database.module";
-import { SelfStrategy } from "./self.strategy";
 import { MailModule } from "../providers/mail/mail.module";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { HttpModule } from "@nestjs/axios";
@@ -35,7 +34,7 @@ import { HttpModule } from "@nestjs/axios";
     HttpModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, SelfStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService]
 })
 export class AuthModule {}
