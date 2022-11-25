@@ -1,15 +1,22 @@
-import { ArrayMinSize, IsArray, IsBoolean, IsNotEmpty, IsString, MaxLength, ValidateNested } from "class-validator";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested
+} from "class-validator";
 import { Type } from "class-transformer";
 import { CardDto } from "./card.dto";
 
-export class CreateSetDto {
+export class CreateSetBodyDto {
   @IsString()
-  @MaxLength(255)
   @IsNotEmpty()
   title: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
   @IsBoolean()

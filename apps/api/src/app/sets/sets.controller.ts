@@ -8,58 +8,66 @@ import {
   Param,
   Post,
   Put,
-  Request, UnauthorizedException,
+  Request,
+  UnauthorizedException,
   UseGuards
 } from '@nestjs/common';
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../providers/database/sets/sets.service";
-import { CreateSetDto } from "./dto/createSet.dto";
+import { CreateSetBodyDto } from "./dto/createSetBody.dto";
 import { UsersService } from "../providers/database/users/users.service";
 import { SelfGuard } from "../auth/self.guard";
-import { Request as RequestType } from 'express';
+import { Request as ExpressRequest } from 'express';
+import { UpdateSetBodyDto } from "./dto/updateSetBody.dto";
+import { SetIdParam } from "./dto/setIdParam";
+import { AuthorIdParam } from "./dto/authorIdParam";
+import jwt_decode from "jwt-decode";
 
 @Controller('sets')
 export class SetsController {
   constructor(private setsService: SetsService, private usersService: UsersService) {}
 
-  async verifyOwnership(authorId: string, setId: string): Promise<boolean> {
+  async verifyOwnership(req: ExpressRequest, setId: string): Promise<boolean> {
+    let accessToken: { id: string; email: string; };
+
+    if (req.cookies['access_token']) {
+      accessToken = jwt_decode(req.cookies['access_token']) as { id: string; email: string; };
+    } else {
+      return false;
+    }
+
+    const user = await this.usersService.user({
+      id: accessToken.id
+    });
+    if (!user) return false;
+
     const set = await this.setsService.set({
       id: setId
     });
+    if (!set) return false;
 
-    return !(!set || set.authorId !== authorId);
+    return set.author.id === user.id;
   }
 
   @UseGuards(SelfGuard)
   @Get(':setId')
-  async set(@Param() params: { setId: string }, @Request() req) {
+  async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
     const set = await this.setsService.set({
       id: params.setId
     });
     if (!set) throw new NotFoundException();
 
-    if (set.private) {
-      const author = this.usersService.getUserInfo(req);
-
-      if (!author) throw new UnauthorizedException();
-      if (!(await this.verifyOwnership(author.id, params.setId))) throw new UnauthorizedException();
-    }
+    if (!set.private && !(await this.verifyOwnership(req, params.setId))) throw new UnauthorizedException();
 
     return set;
   }
 
   @Get('/user/:authorId')
-  async sets(@Param() params: { authorId: string }, @Request() req: RequestType) {
+  async sets(@Param() params: AuthorIdParam, @Request() req: ExpressRequest) {
     const user = this.usersService.getUserInfo(req);
     if (!user) {
       throw new NotFoundException();
     }
-
-    const sets = await this.setsService.sets({
-      where: {
-        authorId: user.id
-      }
-    });
 
     if (params.authorId === 'self') {
       return await this.setsService.sets({
@@ -92,7 +100,7 @@ export class SetsController {
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createSet(@Body() body: CreateSetDto, @Request() req) {
+  async createSet(@Body() body: CreateSetBodyDto, @Request() req) {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new NotFoundException();
 
@@ -126,15 +134,30 @@ export class SetsController {
 
   @UseGuards(AuthenticatedGuard)
   @Put(':setId')
-  async updateSet(@Param() params: { setId: string }) {}
+  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetBodyDto, @Request() req: ExpressRequest) {
+    const set = await this.setsService.set({
+      id: params.setId
+    });
+    if (!set) throw new NotFoundException();
+
+    if (!(await this.verifyOwnership(req, params.setId))) throw new UnauthorizedException();
+
+    await this.setsService.updateSet({
+      where: {
+        id: set.id
+      },
+      data: {
+        title: body.title,
+        description: body.description,
+        private: body.private
+      }
+    });
+  }
 
   @UseGuards(AuthenticatedGuard)
   @Delete(':setId')
-  async deleteSet(@Param() params: { setId: string }, @Request() req) {
-    const author = this.usersService.getUserInfo(req);
-    if (!author) throw new UnauthorizedException();
-
-    if (!(await this.verifyOwnership(author.id, params.setId))) throw new UnauthorizedException();
+  async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
+    if (!(await this.verifyOwnership(req, params.setId))) throw new UnauthorizedException();
 
     return await this.setsService.deleteSet({
       id: params.setId

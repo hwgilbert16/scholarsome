@@ -13,7 +13,7 @@ async function bootstrap() {
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, disableErrorMessages: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, disableErrorMessages: process.env.NODE_ENV === 'production' }));
 
   app.setGlobalPrefix('api');
   app.use(cookieParser());

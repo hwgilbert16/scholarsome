@@ -13,6 +13,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SetsModule } from './sets/sets.module';
 import { MailModule } from './providers/mail/mail.module';
 import { HttpsRedirectMiddleware } from './providers/https-redirect.middleware';
+import { CardsController } from './cards/cards.controller';
+import { UsersController } from './users/users.controller';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { HttpsRedirectMiddleware } from './providers/https-redirect.middleware';
     SetsModule,
     MailModule
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, CardsController, UsersController],
   providers: []
 })
 export class AppModule implements NestModule {
