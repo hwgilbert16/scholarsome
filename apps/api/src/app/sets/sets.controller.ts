@@ -4,8 +4,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus, NotFoundException,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -21,33 +20,10 @@ import { Request as ExpressRequest } from 'express';
 import { UpdateSetBodyDto } from "./dto/updateSetBody.dto";
 import { SetIdParam } from "./dto/setIdParam";
 import { AuthorIdParam } from "./dto/authorIdParam";
-import jwt_decode from "jwt-decode";
 
 @Controller('sets')
 export class SetsController {
   constructor(private setsService: SetsService, private usersService: UsersService) {}
-
-  async verifyOwnership(req: ExpressRequest, setId: string): Promise<boolean> {
-    let accessToken: { id: string; email: string; };
-
-    if (req.cookies['access_token']) {
-      accessToken = jwt_decode(req.cookies['access_token']) as { id: string; email: string; };
-    } else {
-      return false;
-    }
-
-    const user = await this.usersService.user({
-      id: accessToken.id
-    });
-
-    const set = await this.setsService.set({
-      id: setId
-    });
-
-    if (!set || !user) return false;
-
-    return set.author.id === user.id;
-  }
 
   @Get(':setId')
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
@@ -59,12 +35,10 @@ export class SetsController {
     const user = await this.usersService.user({
       id: userCookie.id
     });
-
-    const setId = req.originalUrl.split('/')[3];
-    if (!setId || !user) throw new BadRequestException();
+    if (!user) throw new BadRequestException();
 
     const set = await this.setsService.set({
-      id: setId
+      id: params.setId
     });
 
     if (set.private && (set.authorId !== userCookie.id)) throw new UnauthorizedException();
@@ -87,7 +61,9 @@ export class SetsController {
           authorId: user.id
         }
       });
-    } else if (params.authorId === user.id) {
+    }
+
+    if (params.authorId === user.id) {
       return await this.setsService.sets({
         where: {
           authorId: params.authorId
@@ -112,14 +88,14 @@ export class SetsController {
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createSet(@Body() body: CreateSetBodyDto, @Request() req) {
+  async createSet(@Body() body: CreateSetBodyDto, @Request() req: ExpressRequest) {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new NotFoundException();
 
     const author = await this.usersService.user({
       email: user.email
     });
-    if (!author) throw new HttpException('Conflict', HttpStatus.BAD_REQUEST);
+    if (!author) throw new NotFoundException();
 
     return await this.setsService.createSet({
       author: {
@@ -152,9 +128,9 @@ export class SetsController {
     });
     if (!set) throw new NotFoundException();
 
-    if (!(await this.verifyOwnership(req, params.setId))) throw new UnauthorizedException();
+    if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
-    await this.setsService.updateSet({
+    return await this.setsService.updateSet({
       where: {
         id: set.id
       },
@@ -169,7 +145,7 @@ export class SetsController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':setId')
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
-    if (!(await this.verifyOwnership(req, params.setId))) throw new UnauthorizedException();
+    if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
     return await this.setsService.deleteSet({
       id: params.setId

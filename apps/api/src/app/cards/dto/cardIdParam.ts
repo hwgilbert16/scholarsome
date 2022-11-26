@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class AuthorIdParam {
+export class CardIdParam {
   @IsString()
   @IsNotEmpty()
-  authorId: string;
+  cardId: string;
 }

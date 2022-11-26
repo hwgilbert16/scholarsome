@@ -6,6 +6,6 @@ import { CardsService } from './cards/cards.service';
 
 @Module({
   providers: [PrismaService, UsersService, SetsService, CardsService],
-  exports: [PrismaService, UsersService, SetsService]
+  exports: [PrismaService, UsersService, SetsService, CardsService]
 })
 export class DatabaseModule {}

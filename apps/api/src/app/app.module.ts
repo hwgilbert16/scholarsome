@@ -6,15 +6,14 @@ import {
 } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './providers/database/database.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SetsModule } from './sets/sets.module';
 import { MailModule } from './providers/mail/mail.module';
 import { HttpsRedirectMiddleware } from './providers/https-redirect.middleware';
-import { CardsController } from './cards/cards.controller';
-import { UsersController } from './users/users.controller';
+import { CardsModule } from './cards/cards.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -27,9 +26,11 @@ import { UsersController } from './users/users.controller';
     AuthModule,
     DatabaseModule,
     SetsModule,
-    MailModule
+    MailModule,
+    CardsModule,
+    UsersModule
   ],
-  controllers: [AuthController, CardsController, UsersController],
+  controllers: [],
   providers: []
 })
 export class AppModule implements NestModule {

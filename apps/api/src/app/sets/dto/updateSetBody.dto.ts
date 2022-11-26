@@ -3,13 +3,13 @@ import { IsBoolean, IsOptional, IsString } from "class-validator";
 export class UpdateSetBodyDto {
   @IsString()
   @IsOptional()
-  title: string;
+  title?: string;
 
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
   @IsBoolean()
   @IsOptional()
-  private: boolean;
+  private?: boolean;
 }
