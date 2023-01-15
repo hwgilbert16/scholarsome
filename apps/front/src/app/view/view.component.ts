@@ -7,7 +7,7 @@ import { SetWithRelations } from "@scholarsome/api-interfaces";
 @Component({
   selector: 'scholarsome-view',
   templateUrl: './view.component.html',
-  styleUrls: ['./view.component.scss'],
+  styleUrls: ['./view.component.scss']
 })
 export class ViewComponent implements OnInit {
   constructor(private http: HttpClient) {}

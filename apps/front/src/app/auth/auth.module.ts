@@ -4,6 +4,6 @@ import { CookieModule } from "ngx-cookie";
 @NgModule({
   imports: [CookieModule],
   declarations: [],
-  exports: [],
+  exports: []
 })
 export class AuthModule {}

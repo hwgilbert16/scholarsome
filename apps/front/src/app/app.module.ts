@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import {
   FontAwesomeModule,
-  FaIconLibrary,
+  FaIconLibrary
 } from '@fortawesome/angular-fontawesome';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CookieModule } from 'ngx-cookie';
@@ -49,7 +49,7 @@ import { CommonModule } from '@angular/common';
     CommonModule
   ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {

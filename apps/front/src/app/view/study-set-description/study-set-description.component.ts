@@ -4,7 +4,7 @@ import { Card } from '@prisma/client';
 @Component({
   selector: 'scholarsome-study-set-description',
   templateUrl: './study-set-description.component.html',
-  styleUrls: ['./study-set-description.component.scss'],
+  styleUrls: ['./study-set-description.component.scss']
 })
 export class StudySetDescriptionComponent {
   constructor() {}

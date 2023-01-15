@@ -68,10 +68,10 @@ export class AuthService {
 
     const verification = await this.usersService.updateUser({
       where: {
-        email: email.email,
+        email: email.email
       },
       data: {
-        verified: true,
+        verified: true
       }
     });
 
@@ -94,7 +94,7 @@ export class AuthService {
       'https://www.google.com/recaptcha/api/siteverify',
       new URLSearchParams(Object.entries(body)).toString(),
       {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
       }));
 
     if (googleRes.data["error-codes"]) return false;

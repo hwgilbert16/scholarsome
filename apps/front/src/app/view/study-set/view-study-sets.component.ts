@@ -9,7 +9,7 @@ import { CreateCardComponent } from "../../create/study-set/create-card/create-c
 @Component({
   selector: 'scholarsome-view-study-sets',
   templateUrl: './view-study-sets.component.html',
-  styleUrls: ['./view-study-sets.component.scss'],
+  styleUrls: ['./view-study-sets.component.scss']
 })
 export class ViewStudySetsComponent implements OnInit {
   constructor(

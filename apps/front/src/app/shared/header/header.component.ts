@@ -17,8 +17,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild('register') registerModal: TemplateRef<any>;
   @ViewChild('login') loginModal: TemplateRef<any>;
 
-  @ViewChild('loginForm') loginForm: NgForm
-  @ViewChild('registerForm') registerForm: NgForm
+  @ViewChild('loginForm') loginForm: NgForm;
+  @ViewChild('registerForm') registerForm: NgForm;
 
   modalRef?: BsModalRef;
 
@@ -33,13 +33,13 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private bsModalService: BsModalService,
     private modalService: ModalService,
     private authService: AuthService,
-    public cookieService: CookieService,
+    public cookieService: CookieService
   ) {
     this.modalService.modal.subscribe(e => {
       if (e === 'register-open') {
         this.modalRef = this.bsModalService.show(this.registerModal);
       }
-    })
+    });
   }
 
   openModal(template: TemplateRef<any>) {

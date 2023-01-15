@@ -8,7 +8,7 @@ import { CookieService } from "ngx-cookie";
 @Component({
   selector: 'scholarsome-reset',
   templateUrl: './reset.component.html',
-  styleUrls: ['./reset.component.scss'],
+  styleUrls: ['./reset.component.scss']
 })
 export class ResetComponent {
   constructor(private authService: AuthService, public cookieService: CookieService) {}

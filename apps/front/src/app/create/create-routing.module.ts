@@ -7,12 +7,12 @@ const routes: Routes = [
   {
     path: 'set',
     component: CreateStudySetComponent,
-    canActivate: [AuthGuardService],
+    canActivate: [AuthGuardService]
   }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class CreateRoutingModule {}

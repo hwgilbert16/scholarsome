@@ -16,7 +16,7 @@ import { TooltipModule } from "ngx-bootstrap/tooltip";
     ViewComponent,
     StudySetDescriptionComponent,
     StudySetCardComponent,
-    StudySetFlashcardsComponent,
+    StudySetFlashcardsComponent
   ],
   imports: [
     CommonModule,
@@ -24,6 +24,6 @@ import { TooltipModule } from "ngx-bootstrap/tooltip";
     ViewRoutingModule,
     PopoverModule,
     TooltipModule
-  ],
+  ]
 })
 export class ViewModule {}

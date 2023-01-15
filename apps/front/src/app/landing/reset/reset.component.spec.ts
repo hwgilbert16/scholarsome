@@ -8,7 +8,7 @@ describe('ResetComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ResetComponent],
+      declarations: [ResetComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResetComponent);

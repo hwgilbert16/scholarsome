@@ -9,15 +9,15 @@ const routes: Routes = [
   {
     path: '',
     component: ViewComponent,
-    canActivate: [AuthGuardService],
+    canActivate: [AuthGuardService]
   },
   {
     path: 'sets/:setId',
-    component: ViewStudySetsComponent,
+    component: ViewStudySetsComponent
   },
   {
     path: 'sets/:setId/flashcards',
-    component: StudySetFlashcardsComponent,
+    component: StudySetFlashcardsComponent
   }
 ];
 

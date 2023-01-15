@@ -53,7 +53,7 @@ export class AuthService {
     const body: LoginFormCaptcha = {
       ...loginForm,
       recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('login'))
-    }
+    };
 
     let req;
 
@@ -74,7 +74,7 @@ export class AuthService {
     const body: RegisterFormCaptcha = {
       ...registerForm,
       recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('register'))
-    }
+    };
 
     let req;
 

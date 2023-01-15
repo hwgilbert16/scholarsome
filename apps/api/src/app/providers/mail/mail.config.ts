@@ -13,12 +13,12 @@ export class MailConfig implements MailerOptionsFactory {
         port: this.configService.get<number>('SMTP_PORT'),
         auth: {
           user: this.configService.get<string>('SMTP_USERNAME'),
-          pass: this.configService.get<string>('SMTP_PASSWORD'),
-        },
+          pass: this.configService.get<string>('SMTP_PASSWORD')
+        }
       },
       defaults: {
-        from: 'Scholarsome <noreply@scholarsome.com>',
-      },
-    }
+        from: 'Scholarsome <noreply@scholarsome.com>'
+      }
+    };
   }
 }

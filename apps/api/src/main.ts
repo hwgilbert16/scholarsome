@@ -13,7 +13,7 @@ async function bootstrap() {
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, disableErrorMessages: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, disableErrorMessages: process.env.NODE_ENV === 'production' }));
 
   app.setGlobalPrefix('api');
   app.use(cookieParser());
@@ -21,7 +21,7 @@ async function bootstrap() {
   if (process.env.SSL_KEY_PATH && process.env.SSL_KEY_PATH.length > 0) {
     https.createServer({
       key: fs.readFileSync(path.join(__dirname, process.env.SSL_KEY_PATH)),
-      cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT_PATH)),
+      cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT_PATH))
     }, server).listen(8443);
   }
 
