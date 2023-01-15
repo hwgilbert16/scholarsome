@@ -70,7 +70,11 @@ export class StudySetFlashcardsComponent implements OnInit {
     this.index += direction;
     this.updateIndex();
 
-    this.side = this.answer;
+    if (this.answer === 'Definition') {
+      this.side = 'Term';
+    } else {
+      this.side = 'Definition';
+    }
 
     this.flashcard.nativeElement.children[0].textContent =
       this.answer === 'Definition' ? this.cards[this.index].term : this.cards[this.index].definition;
