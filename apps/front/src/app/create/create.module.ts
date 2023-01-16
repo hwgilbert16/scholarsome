@@ -5,9 +5,11 @@ import { CreateCardComponent } from './study-set/create-card/create-card.compone
 import { CreateCardDirective } from "./study-set/create-card/create-card.directive";
 import { CommonModule } from "@angular/common";
 import { CreateRoutingModule } from "./create-routing.module";
+import { ViewModule } from "../view/view.module";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
-  imports: [FontAwesomeModule, CreateRoutingModule, CommonModule],
+  imports: [FontAwesomeModule, CreateRoutingModule, CommonModule, ViewModule, SharedModule],
   declarations: [CreateStudySetComponent, CreateCardComponent, CreateCardDirective]
 })
 export class CreateModule {}

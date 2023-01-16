@@ -11,19 +11,22 @@ import { StudySetFlashcardsComponent } from './study-set/study-set-flashcards/st
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 
 @NgModule({
-  declarations: [
-    ViewStudySetsComponent,
-    ViewComponent,
-    StudySetDescriptionComponent,
-    StudySetCardComponent,
-    StudySetFlashcardsComponent
-  ],
-  imports: [
-    CommonModule,
-    FontAwesomeModule,
-    ViewRoutingModule,
-    PopoverModule,
-    TooltipModule
-  ]
+    declarations: [
+        ViewStudySetsComponent,
+        ViewComponent,
+        StudySetDescriptionComponent,
+        StudySetCardComponent,
+        StudySetFlashcardsComponent
+    ],
+    exports: [
+        StudySetCardComponent
+    ],
+    imports: [
+        CommonModule,
+        FontAwesomeModule,
+        ViewRoutingModule,
+        PopoverModule,
+        TooltipModule
+    ]
 })
 export class ViewModule {}

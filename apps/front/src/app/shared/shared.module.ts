@@ -11,6 +11,7 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import { CommonModule } from '@angular/common';
 import { NotfoundComponent } from './notfound/notfound.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
+import { CardComponent } from './card/card.component';
 
 @NgModule({
   imports: [
@@ -33,8 +34,9 @@ import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
   declarations: [
     HeaderComponent,
     AlertComponent,
-    NotfoundComponent
+    NotfoundComponent,
+    CardComponent
   ],
-  exports: [HeaderComponent, AlertComponent]
+    exports: [HeaderComponent, AlertComponent, CardComponent]
 })
 export class SharedModule {}

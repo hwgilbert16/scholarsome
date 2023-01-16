@@ -20,6 +20,7 @@ export class CreateStudySetComponent implements OnInit {
 
   formDisabled = false;
 
+  // index starts at 0
   cards: { component: ComponentRef<CreateCardComponent>, index: number }[] = [];
 
   async createSet() {
@@ -51,6 +52,7 @@ export class CreateStudySetComponent implements OnInit {
 
     this.formDisabled = true;
 
+    // TODO: use service for set requests
     this.http.post(
       '/api/sets',
       {
