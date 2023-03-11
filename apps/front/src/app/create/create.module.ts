@@ -9,7 +9,7 @@ import { ViewModule } from "../view/view.module";
 import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
-  imports: [FontAwesomeModule, CreateRoutingModule, CommonModule, ViewModule, SharedModule],
+  imports: [FontAwesomeModule, CreateRoutingModule, CommonModule, SharedModule],
   declarations: [CreateStudySetComponent, CreateCardComponent, CreateCardDirective]
 })
 export class CreateModule {}
