@@ -3,6 +3,7 @@ import { CreateCardComponent } from "./create-card/create-card.component";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
 import { Router } from "@angular/router";
+import { SetsService } from "../../shared/http/sets.service";
 
 @Component({
   selector: 'scholarsome-create',
@@ -10,7 +11,11 @@ import { Router } from "@angular/router";
   styleUrls: ['./create-study-set.component.scss']
 })
 export class CreateStudySetComponent implements OnInit {
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private sets: SetsService
+  ) {}
 
   @ViewChild('cardList', { static: true, read: ViewContainerRef }) cardList: ViewContainerRef;
 
@@ -52,17 +57,14 @@ export class CreateStudySetComponent implements OnInit {
 
     this.formDisabled = true;
 
-    // TODO: use service for set requests
-    this.http.post(
-      '/api/sets',
-      {
-        title: this.titleInput.element.nativeElement.value,
-        description: this.descriptionInput.nativeElement.value,
-        private: this.privateCheckbox.nativeElement.checked,
-        cards
-      },
-      { observe: 'response' }
-    ).subscribe(async (data: HttpResponse<any>) => await this.router.navigate(['/view/sets/' + data.body.id]));
+    const set = await this.sets.createSet({
+      title: this.titleInput.element.nativeElement.value,
+      description: this.descriptionInput.nativeElement.value,
+      private: this.privateCheckbox.nativeElement.checked,
+      cards
+    });
+
+    await this.router.navigate(['/view/sets/' + set?.id]);
   }
 
   updateCardIndices() {

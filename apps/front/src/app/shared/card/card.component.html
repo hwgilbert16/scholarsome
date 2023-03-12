@@ -12,19 +12,19 @@
     </div>
     <div class="container-fluid" #inputsContainer>
       <div class="row">
-        <div class="col border-end fs-5 w-50">
+        <div class="col border-end fs-5 w-50" [hidden]="editingEnabled">
           {{termValue}}
         </div>
-        <div class="col fs-5 w-50">
+        <div class="col fs-5 w-50" [hidden]="editingEnabled">
           {{definitionValue}}
         </div>
         <div class="col-lg" [hidden]="!editingEnabled">
           <label for="term" class="form-label">Term</label>
-          <input type="email" class="form-control" id="term" [value]="term ? term : ''" #term>
+          <input type="text" class="form-control" id="term" [value]="termValue ? termValue : ''" #term>
         </div>
         <div class="col-lg" [hidden]="!editingEnabled">
           <label for="definition" class="form-label">Definition</label>
-          <input type="email" class="form-control" id="definition" [value]="definition ? definition : ''" #definition>
+          <input type="text" class="form-control" id="definition" [value]="definitionValue ? definitionValue : ''" #definition>
         </div>
       </div>
     </div>

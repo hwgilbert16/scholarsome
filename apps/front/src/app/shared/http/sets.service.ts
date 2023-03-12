@@ -20,4 +20,42 @@ export class SetsService {
 
     return set;
   }
+
+  async sets(userId: string | null): Promise<SetWithRelations[] | null> {
+    let sets: SetWithRelations[] | undefined;
+
+    try {
+      sets = await lastValueFrom(this.http.get<SetWithRelations[]>('/api/sets/user' + userId));
+    } catch (e) {
+      return null;
+    }
+
+    return sets;
+  }
+
+  async createSet(body: {
+    title: string;
+    description?: string;
+    private: boolean;
+    cards: {
+      index: number;
+      term: string;
+      definition: string;
+    }[];
+  }): Promise<SetWithRelations | null> {
+    let set: SetWithRelations | undefined;
+
+    try {
+      set = await lastValueFrom(this.http.post<SetWithRelations>('/api/sets', {
+        title: body.title,
+        description: body.description,
+        private: body.private,
+        cards: body.cards
+      }));
+    } catch (e) {
+      return null;
+    }
+
+    return set;
+  }
 }

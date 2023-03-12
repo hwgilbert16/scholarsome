@@ -7,7 +7,7 @@ import { AlertComponent } from "../alert/alert.component";
   styleUrls: ['./card.component.scss']
 })
 export class CardComponent {
-  @Input() editingEnabled: boolean;
+  @Input() editingEnabled = false;
 
   @Input() cardIndex: number;
   @Input() upArrow = true;
