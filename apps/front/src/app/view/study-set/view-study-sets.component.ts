@@ -59,21 +59,23 @@ export class ViewStudySetsComponent implements OnInit {
   }
 
   addCard(opts: {
-    index: number;
+    id?: string;
+    index?: number;
     editingEnabled: boolean;
-    upArrow: boolean;
-    downArrow: boolean;
-    term: string;
-    definition: string;
+    upArrow?: boolean;
+    downArrow?: boolean;
+    term?: string;
+    definition?: string;
   }) {
     const card = this.cardsContainer.createComponent<CardComponent>(CardComponent);
 
-    card.instance.cardIndex = opts.index;
+    card.instance.cardId = opts.id ? opts.id : '';
+    card.instance.cardIndex = opts.index ? opts.index : this.cards.length;
     card.instance.editingEnabled = opts.editingEnabled;
-    card.instance.upArrow = opts.upArrow;
-    card.instance.downArrow = opts.downArrow;
-    card.instance.termValue = opts.term;
-    card.instance.definitionValue = opts.definition;
+    card.instance.upArrow = opts.upArrow ? opts.upArrow : false;
+    card.instance.downArrow = opts.downArrow ? opts.downArrow : false;
+    card.instance.termValue = opts.term ? opts.term : '';
+    card.instance.definitionValue = opts.definition ? opts.definition : '';
 
     card.instance.deleteCardEvent.subscribe(e => {
       if (this.cardsContainer.length > 1) {
@@ -97,6 +99,7 @@ export class ViewStudySetsComponent implements OnInit {
     });
 
     this.cards.push(card);
+    this.updateCardIndices();
   }
 
   editCards() {
@@ -106,29 +109,38 @@ export class ViewStudySetsComponent implements OnInit {
       card.instance.editingEnabled = true;
       card.instance.cardIndex = i;
 
-      card.instance.deleteCardEvent.subscribe(e => {
-        if (this.cardsContainer.length > 1) {
-          this.cardsContainer.get(e)?.destroy();
-
-          this.cards.splice(this.cards.map(c => c.instance.cardIndex).indexOf(e), 1);
-
-          this.updateCardIndices();
-        }
-      });
-
-      card.instance.moveCardEvent.subscribe(e => {
-        if (this.cardsContainer.length > 1) {
-          this.cards.splice(card.instance.cardIndex + e.direction, 0, this.cards.splice(card.instance.cardIndex, 1)[0]);
-
-          this.cardsContainer.move(card.hostView, e.index + e.direction);
-          card.instance.cardIndex = e.index + e.direction;
-
-          this.updateCardIndices();
-        }
-      });
-
       card.instance.upArrow = i !== 0;
       card.instance.downArrow = this.cards.length - 1 !== i;
+    }
+  }
+
+  async saveCards() {
+    if (this.set) {
+      for (const card of this.cards) {
+        if (card.instance.term.length < 1 || card.instance.definition.length < 1) {
+          return card.instance.notifyEmptyInput();
+        }
+      }
+
+      for (const card of this.cards) {
+        card.instance.editingEnabled = false;
+        card.instance.termValue = card.instance.term;
+        card.instance.definitionValue = card.instance.definition;
+      }
+
+      await this.sets.updateSet({
+        id: this.set.id,
+        cards: this.cards.map(c => {
+          return {
+            id: c.instance.cardId,
+            index: c.instance.cardIndex,
+            term: c.instance.term,
+            definition: c.instance.definition
+          };
+        })
+      });
+
+      this.editing = false;
     }
   }
 
@@ -139,13 +151,16 @@ export class ViewStudySetsComponent implements OnInit {
     this.cardsContainer.clear();
 
     if (this.set) {
-      for (const card of this.set.cards) {
-        const cardComponent = this.cardsContainer.createComponent<CardComponent>(CardComponent);
-
-        cardComponent.instance.termValue = card.term;
-        cardComponent.instance.definitionValue = card.definition;
-
-        this.cards.push(cardComponent);
+      for (const card of this.set.cards.sort((a, b) => {
+        return a.index - b.index;
+      })) {
+        this.addCard({
+          id: card.id,
+          index: card.index,
+          editingEnabled: false,
+          term: card.term,
+          definition: card.definition
+        });
       }
     }
   }

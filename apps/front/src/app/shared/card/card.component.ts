@@ -9,7 +9,9 @@ import { AlertComponent } from "../alert/alert.component";
 export class CardComponent {
   @Input() editingEnabled = false;
 
+  @Input() cardId: string;
   @Input() cardIndex: number;
+
   @Input() upArrow = true;
   @Input() downArrow = true;
 

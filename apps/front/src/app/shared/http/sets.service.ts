@@ -58,4 +58,32 @@ export class SetsService {
 
     return set;
   }
+
+  async updateSet(body: {
+    id: string;
+    title?: string;
+    description?: string;
+    private?: string;
+    cards?: {
+      id: string;
+      index: number;
+      term: string;
+      definition: string;
+    }[];
+  }): Promise<SetWithRelations | null> {
+    let set: SetWithRelations | undefined;
+
+    try {
+      set = await lastValueFrom(this.http.put<SetWithRelations>('/api/sets/' + body.id, {
+        title: body.title,
+        description: body.description,
+        private: body.private,
+        cards: body.cards
+      }));
+    } catch (e) {
+      return null;
+    }
+
+    return set;
+  }
 }

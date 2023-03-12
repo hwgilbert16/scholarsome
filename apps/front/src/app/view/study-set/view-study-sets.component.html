@@ -33,7 +33,7 @@
       <div>
         <button type="submit" class="btn btn-primary" [hidden]="editing" (click)="editCards()">Edit</button>
         <div class="d-flex">
-          <button type="submit" class="btn btn-primary mx-2" [hidden]="!editing" (click)="viewCards()">Save</button>
+          <button type="submit" class="btn btn-primary mx-2" [hidden]="!editing" (click)="saveCards()">Save</button>
           <button type="submit" class="btn btn-secondary" [hidden]="!editing" (click)="viewCards()">Cancel</button>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="container-fluid" [hidden]="!editing">
         <div class="row">
           <div class="card my-3 bg-white">
-            <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard()">
+            <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard({ editingEnabled: true })">
               <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>
             </div>
           </div>

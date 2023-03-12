@@ -137,7 +137,23 @@ export class SetsController {
       data: {
         title: body.title,
         description: body.description,
-        private: body.private
+        private: body.private,
+        cards: body.cards ? {
+          deleteMany: {
+            id: {
+              in: body.cards.map(c => c.id)
+            }
+          },
+          createMany: {
+            data: body.cards.map(c => {
+              return {
+                index: c.index,
+                term: c.term,
+                definition: c.definition
+              };
+            })
+          }
+        } : null
       }
     });
   }
