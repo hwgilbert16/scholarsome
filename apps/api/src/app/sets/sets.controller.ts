@@ -27,23 +27,17 @@ export class SetsController {
 
   @Get(':setId')
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
-    const userCookie = this.usersService.getUserInfo(req);
-    if (!userCookie) {
-      throw new NotFoundException();
-    }
-
-    const user = await this.usersService.user({
-      id: userCookie.id
-    });
-    if (!user) throw new BadRequestException();
-
     const set = await this.setsService.set({
       id: params.setId
     });
-
-    if (set.private && (set.authorId !== userCookie.id)) throw new UnauthorizedException();
-
     if (!set) throw new NotFoundException();
+
+    if (set.private) {
+      const userCookie = this.usersService.getUserInfo(req);
+
+      if (!userCookie) throw new NotFoundException();
+      if (set.authorId !== userCookie.id) throw new UnauthorizedException();
+    }
 
     return set;
   }

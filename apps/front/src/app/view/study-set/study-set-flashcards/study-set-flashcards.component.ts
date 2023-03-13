@@ -93,7 +93,8 @@ export class StudySetFlashcardsComponent implements OnInit {
       return;
     }
 
-    this.cards = set.cards;
+    // sort the cards by index
+    this.cards = set.cards.sort((a, b) => { return a.index - b.index; });
 
     this.spinner.nativeElement.remove();
     this.container.nativeElement.removeAttribute('hidden');

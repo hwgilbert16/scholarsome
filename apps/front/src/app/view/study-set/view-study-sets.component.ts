@@ -151,6 +151,7 @@ export class ViewStudySetsComponent implements OnInit {
     this.cardsContainer.clear();
 
     if (this.set) {
+      // sort the cards by index
       for (const card of this.set.cards.sort((a, b) => {
         return a.index - b.index;
       })) {
