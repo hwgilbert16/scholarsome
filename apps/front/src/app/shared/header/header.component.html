@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link text-black" aria-current="page" [routerLink]="this.cookieService.get('authenticated') ? '/view' : ''">Home</a>
+          <a class="nav-link text-black" aria-current="page" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="this.cookieService.get('authenticated') ? '/view' : ''">Home</a>
         </li>
         <li class="btn-group create-button" dropdown>
           <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle fs-5"
@@ -16,7 +16,7 @@
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
               role="menu" aria-labelledby="button-basic">
-            <li role="menuitem"><a class="dropdown-item" [routerLink]="'create/set'"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
+            <li role="menuitem"><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="'create/set'"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
           </ul>
         </li>
       </ul>
@@ -35,7 +35,7 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
               <div class="dropdown-menu dropdown-menu-end">
-                <a class="dropdown-item" (click)="submitLogout()"><fa-icon [icon]="['far', 'caret-square-left']"></fa-icon> Logout</a>
+                <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="['far', 'caret-square-left']"></fa-icon> Logout</a>
               </div>
             </li>
           </ul>

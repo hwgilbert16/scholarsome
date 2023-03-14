@@ -7,6 +7,7 @@ import { CookieService } from "ngx-cookie";
 import { HttpResponse } from "@angular/common/http";
 import { LoginFormCaptcha, RegisterFormCaptcha } from "../models/Auth";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { DeviceDetectorService } from "ngx-device-detector";
 
 @Component({
   selector: 'scholarsome-header',
@@ -21,6 +22,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild('registerForm') registerForm: NgForm;
 
   modalRef?: BsModalRef;
+  isMobile: boolean;
 
   verificationResult: boolean | null;
 
@@ -33,6 +35,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private bsModalService: BsModalService,
     private modalService: ModalService,
     private authService: AuthService,
+    private deviceService: DeviceDetectorService,
     public cookieService: CookieService
   ) {
     this.modalService.modal.subscribe(e => {
@@ -69,6 +72,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
       this.verificationResult = cookie.includes('true');
     }
+
+    if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;
 
     this.bsModalService.onHide.subscribe(() => {
       this.loginReq = null;

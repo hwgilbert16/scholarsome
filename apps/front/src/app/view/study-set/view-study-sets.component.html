@@ -13,25 +13,21 @@
       <a [routerLink]="['/view', 'sets', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'clone']"></fa-icon> Flashcards</button></a>
       <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow" disabled><fa-icon [icon]="['far', 'comments']"></fa-icon> Study</button>
     </div>
+    <div class="row mx-1"></div>
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
       <button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow" disabled><fa-icon [icon]="['far', 'pen-to-square']"></fa-icon> Quiz</button>
       <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow" disabled><fa-icon [icon]="['far', 'flag']"></fa-icon> Game</button>
     </div>
   </div>
-  <div class="d-flex justify-content-between mt-4">
-    <div class="mt-2">
-      <fa-icon [icon]="['far', 'user']"></fa-icon> Created by {{author}}
-    </div>
-    <div>
-      <button type="button" class="btn btn-light bg-white rounded-circle shadow"><fa-icon [icon]="['far', 'user']"></fa-icon></button>
-    </div>
+  <div class="mt-4">
+    <button type="button" class="btn btn-light bg-white shadow"><fa-icon [icon]="['far', 'user']"></fa-icon> Created by <span class="fw-bold">{{author}}</span></button>
   </div>
   <hr>
   <div class="container-fluid">
     <div class="d-flex justify-content-between">
       <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>
       <div>
-        <button type="submit" class="btn btn-primary" [hidden]="editing" (click)="editCards()">Edit</button>
+        <button type="submit" class="btn btn-primary" [hidden]="editing || !userIsAuthor" (click)="editCards()">Edit</button>
         <div class="d-flex">
           <button type="submit" class="btn btn-primary mx-2" [hidden]="!editing" (click)="saveCards()">Save</button>
           <button type="submit" class="btn btn-secondary" [hidden]="!editing" (click)="viewCards()">Cancel</button>
