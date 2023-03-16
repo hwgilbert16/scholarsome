@@ -13,10 +13,9 @@ import { ResetPasswordDto } from "./dto/reset.dto";
 export class AuthController {
   constructor (private usersService: UsersService, private authService: AuthService) {}
 
-  @Get('verify/email/:token')
-  async verify(@Param() params: { token: string }, @Res() res: Response) {
-    return this.authService.verifyUserEmail(params.token, res);
-  }
+  /*
+  Password reset routes
+   */
 
   @Post('reset/password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
@@ -34,10 +33,23 @@ export class AuthController {
     return this.authService.sendPasswordReset(params.email);
   }
 
+  /*
+  Registration routes
+   */
+
+  @Get('verify/email/:token')
+  async verify(@Param() params: { token: string }, @Res() res: Response) {
+    return this.authService.verifyUserEmail(params.token, res);
+  }
+
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<void> {
     return this.authService.registerUser(registerDto, res);
   }
+
+  /*
+  Login routes
+   */
 
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)

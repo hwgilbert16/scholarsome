@@ -14,6 +14,7 @@ import { MailModule } from './providers/mail/mail.module';
 import { HttpsRedirectMiddleware } from './providers/https-redirect.middleware';
 import { CardsModule } from './cards/cards.module';
 import { UsersModule } from './users/users.module';
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 @Module({
   imports: [
@@ -22,6 +23,17 @@ import { UsersModule } from './users/users.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true
+    }),
+    RedisModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          host: configService.get<string>('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT'),
+          username: configService.get<string>('REDIS_USERNAME'),
+          password: configService.get<string>('REDIS_PASSWORD')
+        }
+      })
     }),
     AuthModule,
     DatabaseModule,

@@ -13,6 +13,8 @@ import { RecaptchaResponse } from "./auth";
 import * as jwt from 'jsonwebtoken';
 import { ResetPasswordDto } from "./dto/reset.dto";
 import { User } from "@prisma/client";
+import { InjectRedis } from "@liaoliaots/nestjs-redis";
+import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +23,8 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
     private httpService: HttpService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    @InjectRedis() private readonly redis: Redis
   ) {}
 
   logoutUser(res: Response): void {
