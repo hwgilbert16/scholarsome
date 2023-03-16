@@ -27,9 +27,15 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis
   ) {}
 
-  logoutUser(res: Response): void {
+  logoutUser(res: Response, req: Request): void {
     res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
+    res.cookie('refresh_token', '', { httpOnly: true, expires: new Date() });
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
+
+    const user = jwt.decode(req.cookies.access_token);
+    if (user['email']) {
+      this.redis.del(user['email']);
+    }
   }
 
   setResetCookie(token: string, res: Response): void {
@@ -126,7 +132,12 @@ export class AuthService {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email }), { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
+    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: 'refresh' });
+
+    res.cookie('refresh_token', refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    this.redis.set(user.email, refreshToken);
+
+    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email, type: 'access' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
     res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
 
     return;

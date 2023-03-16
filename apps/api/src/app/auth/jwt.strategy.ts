@@ -3,11 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { ConfigService } from "@nestjs/config";
-import { HttpService } from "@nestjs/axios";
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService, private httpService: HttpService) {
+  constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
         if (
@@ -16,14 +16,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ) {
           return req.cookies.access_token;
         }
-        return null;
+        return new UnauthorizedException();
       }]),
-      ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_TOKEN')
+      ignoreExpiration: true,
+      secretOrKey: configService.get<string>('JWT_TOKEN'),
+      passReqToCallback: true
     });
   }
 
-  async validate(payload: any) {
+  async validate(req, payload: any) {
+    try {
+      jwt.verify(req.cookies.access_token, this.configService.get<string>('JWT_TOKEN'));
+    } catch (e) {
+      throw new UnauthorizedException('Token expired');
+    }
+
     if (!payload) {
       throw new UnauthorizedException();
     }
