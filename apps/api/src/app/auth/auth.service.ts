@@ -27,26 +27,11 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis
   ) {}
 
-  logoutUser(res: Response, req: Request): void {
-    res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
-    res.cookie('refresh_token', '', { httpOnly: true, expires: new Date() });
-    res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
-
-    const user = jwt.decode(req.cookies.access_token);
-    if (user['email']) {
-      this.redis.del(user['email']);
-    }
-  }
-
-  setResetCookie(token: string, res: Response): void {
-    const decoded = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
-
-    if (decoded && decoded.reset) {
-      res.cookie('resetToken', token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
-    }
-
-    return res.redirect('/reset');
-  }
+  /*
+  *
+  * Password reset methods
+  *
+  */
 
   async resetPassword(resetPasswordDto: ResetPasswordDto, res: Response, req: Request): Promise<User | boolean> {
     const decoded = jwt.verify(req.cookies['resetToken'], this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
@@ -63,7 +48,17 @@ export class AuthService {
     });
   }
 
-  async sendPasswordReset(email: string): Promise<void> {
+  setResetCookie(token: string, res: Response): void {
+    const decoded = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
+
+    if (decoded && decoded.reset) {
+      res.cookie('resetToken', token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
+    }
+
+    return res.redirect('/reset');
+  }
+
+  async sendReset(email: string): Promise<void> {
     const user = this.usersService.user({ email });
 
     if (!user) return;
@@ -71,7 +66,13 @@ export class AuthService {
     return await this.mailService.sendPasswordReset(email);
   }
 
-  async verifyUserEmail(token: string, res: Response) {
+  /*
+  *
+  * Registration methods
+  *
+  */
+
+  async verifyEmail(token: string, res: Response) {
     const email = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string };
     if (!email) return false;
 
@@ -91,6 +92,79 @@ export class AuthService {
     }
 
     return res.redirect('/');
+  }
+
+  async register(registerDto: RegisterDto, res: Response): Promise<void> {
+    if (
+      await this.usersService.user({ email: registerDto.email })
+      ||
+      await this.usersService.user({ username: registerDto.username })
+    ) {
+      throw new HttpException('Conflict', HttpStatus.CONFLICT);
+    } else {
+      await this.usersService.createUser({
+        username: registerDto.username,
+        email: registerDto.email,
+        password: await bcrypt.hash(registerDto.password, 10),
+        verified: !this.configService.get<boolean>('SMTP_HOST')
+      });
+
+      if (this.configService.get<boolean>('SMTP_HOST')) {
+        await this.mailService.sendEmailConfirmation(registerDto.email);
+        res.status(201);
+      } else {
+        res.status(200);
+      }
+    }
+  }
+
+  /*
+  *
+  * Login methods
+  *
+  */
+
+  checkAuthenticated(req: Request) {
+    try {
+      jwt.verify(req.cookies['access_token'], this.configService.get<string>('JWT_TOKEN'));
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async login(loginDto: LoginDto, res: Response): Promise<void> {
+    res.cookie('verified', '', { httpOnly: false, expires: new Date() });
+
+    const user = await this.usersService.user({
+      email: loginDto.email
+    });
+
+    if (!user) {
+      throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: 'refresh' });
+
+    res.cookie('refresh_token', refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    this.redis.set(user.email, refreshToken);
+
+    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email, type: 'access' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
+
+    return;
+  }
+
+  logout(res: Response, req: Request): void {
+    res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
+    res.cookie('refresh_token', '', { httpOnly: true, expires: new Date() });
+    res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
+
+    const user = jwt.decode(req.cookies.access_token);
+    if (user['email']) {
+      this.redis.del(user['email']);
+    }
   }
 
   async validateRecaptcha(token: string): Promise<boolean> {
@@ -119,51 +193,5 @@ export class AuthService {
     if (!user || !user.verified) throw new UnauthorizedException();
 
     return !!(await bcrypt.compare(password, user.password));
-  }
-
-  async authenticateUser(loginDto: LoginDto, res: Response): Promise<void> {
-    res.cookie('verified', '', { httpOnly: false, expires: new Date() });
-
-    const user = await this.usersService.user({
-      email: loginDto.email
-    });
-
-    if (!user) {
-      throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: 'refresh' });
-
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
-    this.redis.set(user.email, refreshToken);
-
-    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email, type: 'access' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
-
-    return;
-  }
-
-  async registerUser(registerDto: RegisterDto, res: Response): Promise<void> {
-    if (
-      await this.usersService.user({ email: registerDto.email })
-      ||
-      await this.usersService.user({ username: registerDto.username })
-    ) {
-      throw new HttpException('Conflict', HttpStatus.CONFLICT);
-    } else {
-      await this.usersService.createUser({
-        username: registerDto.username,
-        email: registerDto.email,
-        password: await bcrypt.hash(registerDto.password, 10),
-        verified: !this.configService.get<boolean>('SMTP_HOST')
-      });
-
-      if (this.configService.get<boolean>('SMTP_HOST')) {
-        await this.mailService.sendEmailConfirmation(registerDto.email);
-        res.status(201);
-      } else {
-        res.status(200);
-      }
-    }
   }
 }

@@ -14,8 +14,10 @@ export class AuthController {
   constructor (private usersService: UsersService, private authService: AuthService) {}
 
   /*
-  Password reset routes
-   */
+  *
+  * Password reset routes
+  *
+  */
 
   @Post('reset/password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
@@ -30,36 +32,45 @@ export class AuthController {
   @Throttle(1, 600)
   @Get('reset/password/:email')
   async sendReset(@Param() params: { email: string }) {
-    return this.authService.sendPasswordReset(params.email);
+    return this.authService.sendReset(params.email);
   }
 
   /*
-  Registration routes
-   */
+  *
+  * Registration routes
+  *
+  */
 
   @Get('verify/email/:token')
-  async verify(@Param() params: { token: string }, @Res() res: Response) {
-    return this.authService.verifyUserEmail(params.token, res);
+  async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
+    return this.authService.verifyEmail(params.token, res);
   }
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<void> {
-    return this.authService.registerUser(registerDto, res);
+    return this.authService.register(registerDto, res);
   }
 
   /*
-  Login routes
-   */
+  *
+  * Login routes
+  *
+  */
+
+  @Get('authenticated')
+  checkAuthenticated(@Req() req: Request) {
+    return this.authService.checkAuthenticated(req);
+  }
 
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
-    return this.authService.authenticateUser(loginDto, res);
+    return this.authService.login(loginDto, res);
   }
 
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
-    return this.authService.logoutUser(res, req);
+    return this.authService.logout(res, req);
   }
 }
