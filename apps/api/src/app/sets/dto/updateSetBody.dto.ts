@@ -20,5 +20,5 @@ export class UpdateSetBodyDto {
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
   @Type(() => CardDto)
-  cards: CardDto[];
+  cards?: CardDto[];
 }

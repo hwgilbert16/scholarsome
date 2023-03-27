@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -147,7 +146,7 @@ export class SetsController {
               };
             })
           }
-        } : null
+        } : undefined
       }
     });
   }

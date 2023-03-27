@@ -37,6 +37,6 @@ import { CardComponent } from './card/card.component';
     NotfoundComponent,
     CardComponent
   ],
-    exports: [HeaderComponent, AlertComponent, CardComponent]
+  exports: [HeaderComponent, AlertComponent, CardComponent]
 })
 export class SharedModule {}

@@ -124,12 +124,29 @@ export class AuthService {
   *
   */
 
-  checkAuthenticated(req: Request) {
+  checkToken(req: Request): boolean {
     try {
       jwt.verify(req.cookies['access_token'], this.configService.get<string>('JWT_TOKEN'));
     } catch (e) {
       return false;
     }
+
+    return true;
+  }
+
+  refreshAccessToken(req: Request, res: Response): boolean {
+    let refresh: { id: string; email: string; type: 'refresh' };
+
+    try {
+      if (!this.redis.get(req.cookies['refresh_token'])) return false;
+
+      refresh = jwt.verify(req.cookies['refresh_token'], this.configService.get<string>('JWT_TOKEN')) as { id: string; email: string; type: 'refresh' };
+    } catch (e) {
+      this.logout(res, req);
+      return false;
+    }
+
+    res.cookie('access_token', this.jwtService.sign({ id: refresh.id, email: refresh.email, type: 'access' }, { expiresIn: '15m' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
 
     return true;
   }
@@ -145,13 +162,13 @@ export class AuthService {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: 'refresh' });
+    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: 'refresh' }, { expiresIn: '182d' });
 
     res.cookie('refresh_token', refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
     this.redis.set(user.email, refreshToken);
 
-    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email, type: 'access' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 14)) });
+    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email, type: 'access' }, { expiresIn: '15m' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
 
     return;
   }
@@ -162,7 +179,7 @@ export class AuthService {
     res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
 
     const user = jwt.decode(req.cookies.access_token);
-    if (user['email']) {
+    if (user && 'email' in (user as jwt.JwtPayload)) {
       this.redis.del(user['email']);
     }
   }

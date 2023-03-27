@@ -8,7 +8,7 @@ import {
   SubmitResetForm
 } from "../shared/models/Auth";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { lastValueFrom, shareReplay } from "rxjs";
+import { lastValueFrom } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
 
 @Injectable({
@@ -91,7 +91,31 @@ export class AuthService {
     return req.status;
   }
 
-  logout() {
-    return this.http.post('/api/auth/logout', {}).pipe(shareReplay());
+  async logout() {
+    return await lastValueFrom(this.http.post('/api/auth/logout', {}));
+  }
+
+  async checkAuthenticated(): Promise<boolean> {
+    let res: boolean;
+
+    try {
+      res = await lastValueFrom(this.http.get<boolean>('/api/auth/authenticated'));
+    } catch (e) {
+      return false;
+    }
+
+    return res;
+  }
+
+  async refreshAccessToken(): Promise<boolean> {
+    let res: boolean;
+
+    try {
+      res = await lastValueFrom(this.http.post<boolean>('/api/auth/refresh', {}));
+    } catch (e) {
+      return false;
+    }
+
+    return res;
   }
 }

@@ -74,10 +74,6 @@
       </div>
       <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)">Sign up.</a></div>
       <div class="modal-footer">
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" id="login-enable-cookies" name="enableCookies" [disabled]="loginReq === 0 || loginReq === 200">
-          <label class="form-check-label" for="login-enable-cookies">Remember me</label>
-        </div>
         <button type="submit" class="btn btn-primary" [disabled]="loginReq === 0 || loginReq === 200">
           <span *ngIf="loginReq === 0 || loginReq === 200" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Log in</button>

@@ -61,8 +61,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.registrationReq = await this.authService.register(form.value);
   }
 
-  submitLogout() {
-    this.authService.logout().subscribe(() => window.location.replace('/'));
+  async submitLogout() {
+    await this.authService.logout();
+    window.location.replace('/');
   }
 
   ngOnInit(): void {

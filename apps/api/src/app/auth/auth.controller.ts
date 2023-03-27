@@ -58,8 +58,14 @@ export class AuthController {
   */
 
   @Get('authenticated')
-  checkAuthenticated(@Req() req: Request) {
-    return this.authService.checkAuthenticated(req);
+  checkToken(@Req() req: Request) {
+    return this.authService.checkToken(req);
+  }
+
+  @Throttle(1, 600)
+  @Post('refresh')
+  refreshAccessToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.authService.refreshAccessToken(req, res);
   }
 
   @HttpCode(200)
