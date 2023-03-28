@@ -3,8 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import * as cookieParser from 'cookie-parser';
 import * as https from 'https';
-import * as fs from 'fs';
-import * as path from 'path';
 import * as http from "http";
 import * as express from 'express';
 import { ExpressAdapter } from "@nestjs/platform-express";
@@ -18,10 +16,14 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser());
 
-  if (process.env.SSL_KEY_PATH && process.env.SSL_KEY_PATH.length > 0) {
+  if (
+    process.env.SSL_KEY_BASE64 && process.env.SSL_KEY_BASE64.length > 0
+    &&
+    process.env.SSL_CERT_BASE64 && process.env.SSL_CERT_BASE64.length > 0
+  ) {
     https.createServer({
-      key: fs.readFileSync(path.join(__dirname, process.env.SSL_KEY_PATH)),
-      cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT_PATH))
+      key: Buffer.from(process.env.SSL_KEY_BASE64, 'base64').toString(),
+      cert: Buffer.from(process.env.SSL_CERT_BASE64, 'base64').toString()
     }, server).listen(8443);
   }
 
