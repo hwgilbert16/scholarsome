@@ -1,6 +1,14 @@
 version: "3.9"
 services:
-  db:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    command: "redis-server --save 20 1 --requirepass ${DATABASE_PASSWORD}"
+    volumes:
+      - cache:/data
+    restart: always
+  mariadb:
     image: mariadb
     ports:
       - "3306:3306"
@@ -14,8 +22,12 @@ services:
       - "${HTTP_PORT}:3333"
     environment:
       - "NODE_ENV=${NODE_ENV}"
-      - "DATABASE_URL=mysql://root:${DATABASE_PASSWORD}@db:3306/scholarsome"
+      - "DATABASE_URL=mysql://root:${DATABASE_PASSWORD}@mariadb:3306/scholarsome"
       - "JWT_TOKEN=${JWT_TOKEN}"
+      - "REDIS_HOST=127.0.0.1"
+      - "REDIS_PORT=6379"
+      - "REDIS_USERNAME="
+      - "REDIS_PASSWORD=${DATABASE_PASSWORD}"
       - "SMTP_HOST=${SMTP_HOST}"
       - "SMTP_PORT=${SMTP_PORT}"
       - "SMTP_USERNAME=${SMTP_USERNAME}"
@@ -26,5 +38,9 @@ services:
       - "RECAPTCHA_SITE=${RECAPTCHA_SITE}"
       - "RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
     depends_on:
-      - "db"
+      - "mariadb"
+      - "redis"
     restart: always
+volumes:
+  cache:
+    driver: local

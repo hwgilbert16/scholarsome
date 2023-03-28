@@ -42,5 +42,9 @@ RUN echo "SSL_KEY_PATH=$SSL_KEY_PATH\n" >> .env
 RUN echo "SSL_CERT_PATH=$SSL_CERT_PATH\n" >> .env
 RUN echo "RECAPTCHA_SITE=$RECAPTCHA_SITE\n" >> .env
 RUN echo "RECAPTCHA_SECRET=$RECAPTCHA_SECRET\n" >> .env
+RUN echo "REDIS_HOST=$REDIS_HOST" >> .env
+RUN echo "REDIS_PORT=$REDIS_PORT" >> .env
+RUN echo "REDIS_USERNAME=$REDIS_USERNAME" >> .env
+RUN echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> .env
 
 CMD [ "npm", "run", "serve" ]
