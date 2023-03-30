@@ -2,19 +2,21 @@ version: "3.9"
 services:
   redis:
     image: redis
-    ports:
+    expose:
       - "6379:6379"
     command: "redis-server --save 20 1 --requirepass ${DATABASE_PASSWORD}"
     volumes:
-      - cache:/data
+      - redis:/data
     restart: always
   mariadb:
     image: mariadb
-    ports:
+    expose:
       - "3306:3306"
     environment:
       - "MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}"
       - "MYSQL_DATABASE=scholarsome"
+    volumes:
+      - mariadb:/var/lib/mysql
     restart: always
   scholarsome:
     image: hwgilbert16/scholarsome
@@ -33,8 +35,8 @@ services:
       - "SMTP_USERNAME=${SMTP_USERNAME}"
       - "SMTP_PASSWORD=${SMTP_PASSWORD}"
       - "HOST=${HOST}"
-      - "SSL_KEY_PATH=${SSL_KEY_PATH}"
-      - "SSL_CERT_PATH=${SSL_CERT_PATH}"
+      - "SSL_KEY_BASE64=${SSL_KEY_BASE64}"
+      - "SSL_CERT_BASE64=${SSL_CERT_BASE64}"
       - "RECAPTCHA_SITE=${RECAPTCHA_SITE}"
       - "RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
     depends_on:
@@ -42,5 +44,6 @@ services:
       - "redis"
     restart: always
 volumes:
-  cache:
+  redis:
     driver: local
+  mariadb:
