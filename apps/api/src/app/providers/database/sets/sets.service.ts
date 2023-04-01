@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma, Set } from "@prisma/client";
-import { SetWithRelations } from "@scholarsome/api-interfaces";
+import { Prisma, Set as PrismaSet } from "@prisma/client";
+import { Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
@@ -34,7 +34,7 @@ export class SetsService {
 
   async set(
     setWhereUniqueInput: Prisma.SetWhereUniqueInput
-  ): Promise<SetWithRelations | null> {
+  ): Promise<Set | null> {
     return this.prisma.set.findUnique({
       where: setWhereUniqueInput,
       include: { cards: true, author: true }
@@ -47,7 +47,7 @@ export class SetsService {
     cursor?: Prisma.SetWhereUniqueInput;
     where?: Prisma.SetWhereInput;
     orderBy?: Prisma.SetOrderByWithRelationInput;
-  }): Promise<SetWithRelations[]> {
+  }): Promise<Set[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.set.findMany({
       skip,
@@ -62,7 +62,7 @@ export class SetsService {
     });
   }
 
-  async createSet(data: Prisma.SetCreateInput): Promise<Set> {
+  async createSet(data: Prisma.SetCreateInput): Promise<PrismaSet> {
     return this.prisma.set.create({
       data
     });
@@ -71,7 +71,7 @@ export class SetsService {
   async updateSet(params: {
     where: Prisma.SetWhereUniqueInput;
     data: Prisma.SetUpdateInput;
-  }): Promise<Set> {
+  }): Promise<PrismaSet> {
     const { where, data } = params;
     return this.prisma.set.update({
       data,
@@ -79,7 +79,7 @@ export class SetsService {
     });
   }
 
-  async deleteSet(where: Prisma.SetWhereUniqueInput): Promise<Set> {
+  async deleteSet(where: Prisma.SetWhereUniqueInput): Promise<PrismaSet> {
     return this.prisma.set.delete({
       where
     });

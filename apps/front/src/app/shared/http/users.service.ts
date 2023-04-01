@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { UserWithRelations } from "@scholarsome/api-interfaces";
+import { User } from "@scholarsome/shared";
 import { lastValueFrom } from "rxjs";
 
 @Injectable({
@@ -9,11 +9,11 @@ import { lastValueFrom } from "rxjs";
 export class UsersService {
   constructor(private http: HttpClient) {}
 
-  async user(userId: string | null): Promise<UserWithRelations | null> {
-    let user: UserWithRelations | undefined;
+  async user(userId: string | null): Promise<User | null> {
+    let user: User | undefined;
 
     try {
-      user = await lastValueFrom(this.http.get<UserWithRelations>('/api/users/' + userId));
+      user = await lastValueFrom(this.http.get<User>('/api/users/' + userId));
     } catch (e) {
       return null;
     }

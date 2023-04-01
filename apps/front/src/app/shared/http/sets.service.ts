@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { SetWithRelations } from "@scholarsome/api-interfaces";
 import { lastValueFrom } from "rxjs";
+import { Set } from '@scholarsome/shared';
 
 @Injectable({
   providedIn: 'root'
@@ -9,11 +9,11 @@ import { lastValueFrom } from "rxjs";
 export class SetsService {
   constructor(private http: HttpClient) {}
 
-  async set(setId: string | null): Promise<SetWithRelations | null> {
-    let set: SetWithRelations | undefined;
+  async set(setId: string | null): Promise<Set | null> {
+    let set: Set | undefined;
 
     try {
-      set = await lastValueFrom(this.http.get<SetWithRelations>('/api/sets/' + (setId ? setId : 'self')));
+      set = await lastValueFrom(this.http.get<Set>('/api/sets/' + (setId ? setId : 'self')));
     } catch (e) {
       return null;
     }
@@ -21,11 +21,11 @@ export class SetsService {
     return set;
   }
 
-  async sets(userId: string | null): Promise<SetWithRelations[] | null> {
-    let sets: SetWithRelations[] | undefined;
+  async sets(userId: string | null): Promise<Set[] | null> {
+    let sets: Set[] | undefined;
 
     try {
-      sets = await lastValueFrom(this.http.get<SetWithRelations[]>('/api/sets/user' + userId));
+      sets = await lastValueFrom(this.http.get<Set[]>('/api/sets/user' + userId));
     } catch (e) {
       return null;
     }
@@ -42,11 +42,11 @@ export class SetsService {
       term: string;
       definition: string;
     }[];
-  }): Promise<SetWithRelations | null> {
-    let set: SetWithRelations | undefined;
+  }): Promise<Set | null> {
+    let set: Set | undefined;
 
     try {
-      set = await lastValueFrom(this.http.post<SetWithRelations>('/api/sets', {
+      set = await lastValueFrom(this.http.post<Set>('/api/sets', {
         title: body.title,
         description: body.description,
         private: body.private,
@@ -70,11 +70,11 @@ export class SetsService {
       term: string;
       definition: string;
     }[];
-  }): Promise<SetWithRelations | null> {
-    let set: SetWithRelations | undefined;
+  }): Promise<Set | null> {
+    let set: Set | undefined;
 
     try {
-      set = await lastValueFrom(this.http.put<SetWithRelations>('/api/sets/' + body.id, {
+      set = await lastValueFrom(this.http.put<Set>('/api/sets/' + body.id, {
         title: body.title,
         description: body.description,
         private: body.private,

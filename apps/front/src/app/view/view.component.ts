@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@ang
 import { HttpClient } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
 import { StudySetDescriptionComponent } from "./study-set-description/study-set-description.component";
-import { SetWithRelations } from "@scholarsome/api-interfaces";
+import { Set } from "@scholarsome/shared";
 
 @Component({
   selector: 'scholarsome-view',
@@ -18,7 +18,7 @@ export class ViewComponent implements OnInit {
   @ViewChild('spinner', { static: true }) spinner: ElementRef;
 
   async ngOnInit(): Promise<void> {
-    const sets = await lastValueFrom(this.http.get<SetWithRelations[]>('/api/sets/user/self'));
+    const sets = await lastValueFrom(this.http.get<Set[]>('/api/sets/user/self'));
 
     sets.sort((a,b) => {
       return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();

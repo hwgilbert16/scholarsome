@@ -1,10 +1,7 @@
 import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
-import type { SetWithRelations } from "@scholarsome/api-interfaces";
-import { StudySetCardComponent } from "./study-set-card/study-set-card.component";
+import { Set } from "@scholarsome/shared";
 import { SetsService } from "../../shared/http/sets.service";
-import { Card } from '@prisma/client';
-import { CreateCardComponent } from "../../create/study-set/create-card/create-card.component";
 import { CardComponent } from "../../shared/card/card.component";
 import { UsersService } from "../../shared/http/users.service";
 
@@ -36,7 +33,7 @@ export class ViewStudySetsComponent implements OnInit {
 
   cards: ComponentRef<CardComponent>[] = [];
 
-  set: SetWithRelations | null;
+  set: Set | null;
 
   cookieExists(name: string): boolean {
     const cookies = document.cookie.split(';');

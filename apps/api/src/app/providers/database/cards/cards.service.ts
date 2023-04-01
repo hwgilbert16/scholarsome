@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../prisma/prisma.service";
-import { Prisma, Card } from "@prisma/client";
-import { CardWithRelations } from "@scholarsome/api-interfaces";
+import { Prisma, Card as PrismaCard } from "@prisma/client";
+import { Card } from '@scholarsome/shared';
 
 @Injectable()
 export class CardsService {
@@ -9,7 +9,7 @@ export class CardsService {
 
   async card(
     cardWhereUniqueInput: Prisma.CardWhereUniqueInput
-  ): Promise<CardWithRelations | null> {
+  ): Promise<Card | null> {
     return this.prisma.card.findUnique({
       where: cardWhereUniqueInput,
       include: { set: true }
@@ -22,7 +22,7 @@ export class CardsService {
     cursor?: Prisma.CardWhereUniqueInput;
     where?: Prisma.CardWhereInput;
     orderBy?: Prisma.CardOrderByWithRelationInput;
-  }): Promise<CardWithRelations[]> {
+  }): Promise<Card[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.card.findMany({
       skip,
@@ -36,7 +36,7 @@ export class CardsService {
     });
   }
 
-  async createCard(data: Prisma.CardCreateInput): Promise<Card> {
+  async createCard(data: Prisma.CardCreateInput): Promise<PrismaCard> {
     return this.prisma.card.create({
       data
     });
@@ -45,7 +45,7 @@ export class CardsService {
   async updateCard(params: {
     where: Prisma.CardWhereUniqueInput;
     data: Prisma.CardUpdateInput;
-  }): Promise<Card> {
+  }): Promise<PrismaCard> {
     const { where, data } = params;
     return this.prisma.card.update({
       data,
@@ -53,7 +53,7 @@ export class CardsService {
     });
   }
 
-  async deleteCard(where: Prisma.CardWhereUniqueInput): Promise<Card> {
+  async deleteCard(where: Prisma.CardWhereUniqueInput): Promise<PrismaCard> {
     return this.prisma.card.delete({
       where
     });
