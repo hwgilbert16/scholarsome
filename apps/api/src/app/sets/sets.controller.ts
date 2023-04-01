@@ -12,8 +12,8 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
-import { SetsService } from "../providers/database/sets/sets.service";
-import { UsersService } from "../providers/database/users/users.service";
+import { SetsService } from "./sets.service";
+import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest } from 'express';
 import { AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
 

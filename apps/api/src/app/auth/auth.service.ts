@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from "../providers/database/users/users.service";
+import { UsersService } from "../users/users.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { MailService } from "../providers/mail/mail.service";

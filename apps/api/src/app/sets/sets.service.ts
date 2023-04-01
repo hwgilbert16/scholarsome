@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma, Set as PrismaSet } from "@prisma/client";
 import { Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";

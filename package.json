@@ -103,6 +103,7 @@
     "concurrently": "^7.4.0",
     "cypress": "^12.2.0",
     "eslint": "~8.15.0",
+    "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.10.3",
     "jest": "29.4.3",

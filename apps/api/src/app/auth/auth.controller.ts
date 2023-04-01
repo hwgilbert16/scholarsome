@@ -11,7 +11,7 @@ import {
   Res,
   UseGuards
 } from '@nestjs/common';
-import { UsersService } from "../providers/database/users/users.service";
+import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth.guard";
 import { Response, Request } from "express";

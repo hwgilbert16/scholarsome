@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../providers/database/prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import { Request } from "express";
 import jwt_decode from "jwt-decode";

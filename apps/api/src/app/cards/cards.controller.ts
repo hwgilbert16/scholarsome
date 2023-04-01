@@ -14,10 +14,10 @@ import {
   Delete
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
-import { CardsService } from "../providers/database/cards/cards.service";
-import { UsersService } from "../providers/database/users/users.service";
+import { CardsService } from "./cards.service";
+import { UsersService } from "../users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
-import { SetsService } from "../providers/database/sets/sets.service";
+import { SetsService } from "../sets/sets.service";
 import { CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
 
 @Controller('cards')

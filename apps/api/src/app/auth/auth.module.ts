@@ -10,6 +10,7 @@ import { DatabaseModule } from "../providers/database/database.module";
 import { MailModule } from "../providers/mail/mail.module";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { HttpModule } from "@nestjs/axios";
+import { UsersModule } from "../users/users.module";
 
 @Module({
   /*
@@ -31,7 +32,8 @@ import { HttpModule } from "@nestjs/axios";
       limit: 10
     }),
     MailModule,
-    HttpModule
+    HttpModule,
+    UsersModule
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
