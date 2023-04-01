@@ -1,9 +1,3 @@
-export interface RecaptchaRequest {
-  secret: string;
-  response: string;
-  remoteip?: string;
-}
-
 export interface RecaptchaResponse {
   success: boolean;
   challenge_ts?: string;

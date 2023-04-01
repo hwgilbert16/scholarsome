@@ -11,7 +11,9 @@ export class MailService {
     private configService: ConfigService
   ) {}
 
-  async sendEmailConfirmation(email: string) {
+  async sendEmailConfirmation(email: string): Promise<boolean> {
+    if (!this.configService.get<boolean>('SMTP_HOST')) return false;
+
     const token = this.jwtService.sign({ email });
 
     await this.mailerService.sendMail({
@@ -20,6 +22,8 @@ export class MailService {
       subject: 'Confirm your email address',
       text: `Hey there,\n\nWelcome to Scholarsome! We're glad to have you here. Before getting started, we need to confirm your email address.\n\nTo confirm your email, please click this link:\n\nhttp${this.configService.get<string>('SSL_KEY_PATH') ? 's' : ''}://${this.configService.get<string>('HOST')}/api/auth/verify/email/${token}`
     });
+
+    return true;
   }
 
   async sendPasswordReset(email: string) {

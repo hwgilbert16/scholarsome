@@ -1,18 +1,14 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from "../providers/database/users/users.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
-import { Response, Request } from "express";
 import { MailService } from "../providers/mail/mail.service";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
-import { RecaptchaResponse } from "./auth";
-import * as jwt from 'jsonwebtoken';
-import { User } from "@prisma/client";
+import { RecaptchaResponse } from "@scholarsome/shared";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from 'ioredis';
-import { LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 
 @Injectable()
 export class AuthService {
@@ -24,163 +20,6 @@ export class AuthService {
     private configService: ConfigService,
     @InjectRedis() private readonly redis: Redis
   ) {}
-
-  /*
-  *
-  * Password reset methods
-  *
-  */
-
-  async resetPassword(resetPasswordDto: ResetPasswordDto, res: Response, req: Request): Promise<User | boolean> {
-    const decoded = jwt.verify(req.cookies['resetToken'], this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
-
-    if (!decoded || !decoded.reset) return false;
-
-    return await this.usersService.updateUser({
-      where: {
-        email: decoded.email
-      },
-      data: {
-        password: await bcrypt.hash(resetPasswordDto.password, 10)
-      }
-    });
-  }
-
-  setResetCookie(token: string, res: Response): void {
-    const decoded = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string, reset: boolean };
-
-    if (decoded && decoded.reset) {
-      res.cookie('resetToken', token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
-    }
-
-    return res.redirect('/reset');
-  }
-
-  async sendReset(email: string): Promise<void> {
-    const user = this.usersService.user({ email });
-
-    if (!user) return;
-
-    return await this.mailService.sendPasswordReset(email);
-  }
-
-  /*
-  *
-  * Registration methods
-  *
-  */
-
-  async verifyEmail(token: string, res: Response) {
-    const email = jwt.verify(token, this.configService.get<string>('JWT_TOKEN')) as { email: string };
-    if (!email) return false;
-
-    const verification = await this.usersService.updateUser({
-      where: {
-        email: email.email
-      },
-      data: {
-        verified: true
-      }
-    });
-
-    if (verification) {
-      res.cookie('verified', true, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
-    } else {
-      res.cookie('verified', false, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
-    }
-
-    return res.redirect('/');
-  }
-
-  async register(registerDto: RegisterDto, res: Response): Promise<void> {
-    if (
-      await this.usersService.user({ email: registerDto.email })
-      ||
-      await this.usersService.user({ username: registerDto.username })
-    ) {
-      throw new HttpException('Conflict', HttpStatus.CONFLICT);
-    } else {
-      await this.usersService.createUser({
-        username: registerDto.username,
-        email: registerDto.email,
-        password: await bcrypt.hash(registerDto.password, 10),
-        verified: !this.configService.get<boolean>('SMTP_HOST')
-      });
-
-      if (this.configService.get<boolean>('SMTP_HOST')) {
-        await this.mailService.sendEmailConfirmation(registerDto.email);
-        res.status(201);
-      } else {
-        res.status(200);
-      }
-    }
-  }
-
-  /*
-  *
-  * Login methods
-  *
-  */
-
-  checkToken(req: Request): boolean {
-    try {
-      jwt.verify(req.cookies['access_token'], this.configService.get<string>('JWT_TOKEN'));
-    } catch (e) {
-      return false;
-    }
-
-    return true;
-  }
-
-  refreshAccessToken(req: Request, res: Response): boolean {
-    let refresh: { id: string; email: string; type: 'refresh' };
-
-    try {
-      if (!this.redis.get(req.cookies['refresh_token'])) return false;
-
-      refresh = jwt.verify(req.cookies['refresh_token'], this.configService.get<string>('JWT_TOKEN')) as { id: string; email: string; type: 'refresh' };
-    } catch (e) {
-      this.logout(res, req);
-      return false;
-    }
-
-    res.cookie('access_token', this.jwtService.sign({ id: refresh.id, email: refresh.email, type: 'access' }, { expiresIn: '15m' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-
-    return true;
-  }
-
-  async login(loginDto: LoginDto, res: Response): Promise<void> {
-    res.cookie('verified', '', { httpOnly: false, expires: new Date() });
-
-    const user = await this.usersService.user({
-      email: loginDto.email
-    });
-
-    if (!user) {
-      throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: 'refresh' }, { expiresIn: '182d' });
-
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
-    this.redis.set(user.email, refreshToken);
-
-    res.cookie('access_token', this.jwtService.sign({ id: user.id, email: user.email, type: 'access' }, { expiresIn: '15m' }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-    res.cookie('authenticated', true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
-
-    return;
-  }
-
-  logout(res: Response, req: Request): void {
-    res.cookie('access_token', '', { httpOnly: true, expires: new Date() });
-    res.cookie('refresh_token', '', { httpOnly: true, expires: new Date() });
-    res.cookie('authenticated', '', { httpOnly: false, expires: new Date() });
-
-    const user = jwt.decode(req.cookies.access_token);
-    if (user && 'email' in (user as jwt.JwtPayload)) {
-      this.redis.del(user['email']);
-    }
-  }
 
   async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
