@@ -1,6 +1,6 @@
 import { IsNumber, IsOptional, IsString } from "class-validator";
 
-export class UpdateCardBody {
+export class UpdateCardDto {
   @IsNumber()
   @IsOptional()
   index?: number;

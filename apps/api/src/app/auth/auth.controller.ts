@@ -1,12 +1,10 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from "../providers/database/users/users.service";
-import { RegisterDto } from "./dto/register.dto";
 import { AuthService } from "./auth.service";
 import { LocalAuthGuard } from "./local-auth.guard";
-import { LoginDto } from "./dto/login.dto";
 import { Response, Request } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import { ResetPasswordDto } from "./dto/reset.dto";
+import { LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')

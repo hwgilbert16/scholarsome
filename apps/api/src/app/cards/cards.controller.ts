@@ -13,14 +13,12 @@ import {
   Put,
   Delete
 } from '@nestjs/common';
-import { CardIdParam } from "./dto/cardIdParam";
 import { Request as ExpressRequest } from 'express';
 import { CardsService } from "../providers/database/cards/cards.service";
 import { UsersService } from "../providers/database/users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
-import { CreateCardBody } from "./dto/createCardBody.dto";
 import { SetsService } from "../providers/database/sets/sets.service";
-import { UpdateCardBody } from "./dto/updateCardBody.dto";
+import { CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
 
 @Controller('cards')
 export class CardsController {
@@ -50,7 +48,7 @@ export class CardsController {
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createCard(@Body() body: CreateCardBody, @Request() req: ExpressRequest) {
+  async createCard(@Body() body: CreateCardDto, @Request() req: ExpressRequest) {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new NotFoundException();
 
@@ -77,7 +75,7 @@ export class CardsController {
 
   @UseGuards(AuthenticatedGuard)
   @Put(':cardId')
-  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardBody, @Request() req: ExpressRequest) {
+  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto, @Request() req: ExpressRequest) {
     const card = await this.cardsService.card({
       id: params.cardId
     });

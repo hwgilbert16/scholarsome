@@ -8,9 +8,9 @@ import {
   ValidateNested
 } from "class-validator";
 import { Type } from "class-transformer";
-import { CardDto } from "./card.dto";
+import { CardValidator } from "../cards/cardValidator.validator";
 
-export class CreateSetBodyDto {
+export class CreateSetDto {
   @IsString()
   @IsNotEmpty()
   title: string;
@@ -26,6 +26,6 @@ export class CreateSetBodyDto {
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => CardDto)
-  cards: CardDto[];
+  @Type(() => CardValidator)
+  cards: CardValidator[];
 }

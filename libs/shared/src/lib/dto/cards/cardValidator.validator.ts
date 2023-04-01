@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
-export class CreateCardBody {
+export class CardValidator {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  setId: string;
+  id: string;
 
   @IsNumber()
   @IsNotEmpty()

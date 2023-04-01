@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Param, Req } from '@nestjs/common';
-import { UserIdParam } from "./dto/userIdParam";
+import { UserIdParam } from "@scholarsome/shared";
 import { UsersService } from "../providers/database/users/users.service";
 import { Request as ExpressRequest } from 'express';
 

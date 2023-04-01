@@ -1,9 +1,7 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from "../providers/database/users/users.service";
 import * as bcrypt from 'bcrypt';
-import { RegisterDto } from "./dto/register.dto";
 import { JwtService } from "@nestjs/jwt";
-import { LoginDto } from "./dto/login.dto";
 import { Response, Request } from "express";
 import { MailService } from "../providers/mail/mail.service";
 import { HttpService } from "@nestjs/axios";
@@ -11,10 +9,10 @@ import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import { RecaptchaResponse } from "./auth";
 import * as jwt from 'jsonwebtoken';
-import { ResetPasswordDto } from "./dto/reset.dto";
 import { User } from "@prisma/client";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from 'ioredis';
+import { LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 
 @Injectable()
 export class AuthService {

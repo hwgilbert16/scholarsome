@@ -1,8 +1,8 @@
 import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { CardDto } from "./card.dto";
+import { CardValidator } from "../cards/cardValidator.validator";
 
-export class UpdateSetBodyDto {
+export class UpdateSetDto {
   @IsString()
   @IsOptional()
   title?: string;
@@ -19,6 +19,6 @@ export class UpdateSetBodyDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => CardDto)
-  cards?: CardDto[];
+  @Type(() => CardValidator)
+  cards?: CardValidator[];
 }

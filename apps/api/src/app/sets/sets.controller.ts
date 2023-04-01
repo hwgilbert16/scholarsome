@@ -13,12 +13,9 @@ import {
 } from '@nestjs/common';
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../providers/database/sets/sets.service";
-import { CreateSetBodyDto } from "./dto/createSetBody.dto";
 import { UsersService } from "../providers/database/users/users.service";
 import { Request as ExpressRequest } from 'express';
-import { UpdateSetBodyDto } from "./dto/updateSetBody.dto";
-import { SetIdParam } from "./dto/setIdParam";
-import { AuthorIdParam } from "./dto/authorIdParam";
+import { AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
 
 @Controller('sets')
 export class SetsController {
@@ -81,7 +78,7 @@ export class SetsController {
 
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createSet(@Body() body: CreateSetBodyDto, @Request() req: ExpressRequest) {
+  async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest) {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new NotFoundException();
 
@@ -115,7 +112,7 @@ export class SetsController {
 
   @UseGuards(AuthenticatedGuard)
   @Put(':setId')
-  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetBodyDto, @Request() req: ExpressRequest) {
+  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest) {
     const set = await this.setsService.set({
       id: params.setId
     });
