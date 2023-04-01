@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
-import { Set } from '@scholarsome/shared';
+import { Set } from "@scholarsome/shared";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class SetsService {
   constructor(private http: HttpClient) {}
@@ -13,7 +13,7 @@ export class SetsService {
     let set: Set | undefined;
 
     try {
-      set = await lastValueFrom(this.http.get<Set>('/api/sets/' + (setId ? setId : 'self')));
+      set = await lastValueFrom(this.http.get<Set>("/api/sets/" + (setId ? setId : "self")));
     } catch (e) {
       return null;
     }
@@ -25,7 +25,7 @@ export class SetsService {
     let sets: Set[] | undefined;
 
     try {
-      sets = await lastValueFrom(this.http.get<Set[]>('/api/sets/user' + userId));
+      sets = await lastValueFrom(this.http.get<Set[]>("/api/sets/user" + userId));
     } catch (e) {
       return null;
     }
@@ -46,7 +46,7 @@ export class SetsService {
     let set: Set | undefined;
 
     try {
-      set = await lastValueFrom(this.http.post<Set>('/api/sets', {
+      set = await lastValueFrom(this.http.post<Set>("/api/sets", {
         title: body.title,
         description: body.description,
         private: body.private,
@@ -74,7 +74,7 @@ export class SetsService {
     let set: Set | undefined;
 
     try {
-      set = await lastValueFrom(this.http.put<Set>('/api/sets/' + body.id, {
+      set = await lastValueFrom(this.http.put<Set>("/api/sets/" + body.id, {
         title: body.title,
         description: body.description,
         private: body.private,

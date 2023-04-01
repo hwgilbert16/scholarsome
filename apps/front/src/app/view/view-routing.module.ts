@@ -7,16 +7,16 @@ import { StudySetFlashcardsComponent } from "./study-set/study-set-flashcards/st
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: ViewComponent,
     canActivate: [AuthGuardService]
   },
   {
-    path: 'sets/:setId',
+    path: "sets/:setId",
     component: ViewStudySetsComponent
   },
   {
-    path: 'sets/:setId/flashcards',
+    path: "sets/:setId/flashcards",
     component: StudySetFlashcardsComponent
   }
 ];

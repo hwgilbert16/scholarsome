@@ -5,20 +5,20 @@ import { CardValidator } from "../cards/cardValidator.validator";
 export class UpdateSetDto {
   @IsString()
   @IsOptional()
-  title?: string;
+    title?: string;
 
   @IsString()
   @IsOptional()
-  description?: string;
+    description?: string;
 
   @IsBoolean()
   @IsOptional()
-  private?: boolean;
+    private?: boolean;
 
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
   @Type(() => CardValidator)
-  cards?: CardValidator[];
+    cards?: CardValidator[];
 }

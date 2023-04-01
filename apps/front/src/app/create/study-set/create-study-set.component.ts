@@ -1,14 +1,14 @@
-import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { CreateCardComponent } from "./create-card/create-card.component";
-import { HttpClient, HttpResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
 import { Router } from "@angular/router";
 import { SetsService } from "../../shared/http/sets.service";
 
 @Component({
-  selector: 'scholarsome-create',
-  templateUrl: './create-study-set.component.html',
-  styleUrls: ['./create-study-set.component.scss']
+  selector: "scholarsome-create",
+  templateUrl: "./create-study-set.component.html",
+  styleUrls: ["./create-study-set.component.scss"]
 })
 export class CreateStudySetComponent implements OnInit {
   constructor(
@@ -17,11 +17,11 @@ export class CreateStudySetComponent implements OnInit {
     private sets: SetsService
   ) {}
 
-  @ViewChild('cardList', { static: true, read: ViewContainerRef }) cardList: ViewContainerRef;
+  @ViewChild("cardList", { static: true, read: ViewContainerRef }) cardList: ViewContainerRef;
 
-  @ViewChild('title', { static: false, read: ViewContainerRef }) titleInput: ViewContainerRef;
-  @ViewChild('description') descriptionInput: ElementRef;
-  @ViewChild('privateCheck') privateCheckbox: ElementRef;
+  @ViewChild("title", { static: false, read: ViewContainerRef }) titleInput: ViewContainerRef;
+  @ViewChild("description") descriptionInput: ElementRef;
+  @ViewChild("privateCheck") privateCheckbox: ElementRef;
 
   formDisabled = false;
 
@@ -34,10 +34,10 @@ export class CreateStudySetComponent implements OnInit {
     if (!this.titleInput.element.nativeElement.value) {
       const alert = this.titleInput.createComponent<AlertComponent>(AlertComponent);
 
-      alert.instance.message = 'Title must not be empty';
-      alert.instance.type = 'danger';
+      alert.instance.message = "Title must not be empty";
+      alert.instance.type = "danger";
       alert.instance.dismiss = true;
-      alert.instance.spacingClass = 'mt-3';
+      alert.instance.spacingClass = "mt-3";
 
       return;
     }
@@ -64,7 +64,7 @@ export class CreateStudySetComponent implements OnInit {
       cards
     });
 
-    await this.router.navigate(['/view/sets/' + set?.id]);
+    await this.router.navigate(["/view/sets/" + set?.id]);
   }
 
   updateCardIndices() {
@@ -81,23 +81,23 @@ export class CreateStudySetComponent implements OnInit {
     const card = this.cardList.createComponent<CreateCardComponent>(CreateCardComponent);
     card.instance.cardIndex = this.cardList.length - 1;
 
-    card.instance.deleteCardEvent.subscribe(e => {
+    card.instance.deleteCardEvent.subscribe((e) => {
       if (this.cardList.length > 1) {
         this.cardList.get(e)?.destroy();
 
-        this.cards.splice(this.cards.map(c => c.index).indexOf(e), 1);
+        this.cards.splice(this.cards.map((c) => c.index).indexOf(e), 1);
 
         this.updateCardIndices();
       }
     });
 
-    card.instance.moveCardEvent.subscribe(e => {
+    card.instance.moveCardEvent.subscribe((e) => {
       if (this.cardList.length > 1) {
-        const cardIndex = this.cards.map(c => c.index).indexOf(e.index);
+        const cardIndex = this.cards.map((c) => c.index).indexOf(e.index);
 
         this.cardList.move(this.cards[cardIndex].component.hostView, e.index + e.direction);
 
-        this.cards[this.cards.map(c => c.index).indexOf(e.index + e.direction)].index = e.index;
+        this.cards[this.cards.map((c) => c.index).indexOf(e.index + e.direction)].index = e.index;
         this.cards[cardIndex].index = e.index + e.direction;
 
         this.cards.sort((a, b) => a.index - b.index);

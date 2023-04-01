@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../providers/database/prisma/prisma.service';
-import { User, Prisma } from '@prisma/client';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../providers/database/prisma/prisma.service";
+import { User, Prisma } from "@prisma/client";
 import { Request } from "express";
 import jwt_decode from "jwt-decode";
 
@@ -9,13 +9,13 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   getUserInfo(req: Request): false | { id: string; email: string; } {
-    if (req.cookies['access_token']) {
-      return jwt_decode(req.cookies['access_token']);
+    if (req.cookies["access_token"]) {
+      return jwt_decode(req.cookies["access_token"]);
     } else return false;
   }
 
   async user(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput
+      userWhereUniqueInput: Prisma.UserWhereUniqueInput
   ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput

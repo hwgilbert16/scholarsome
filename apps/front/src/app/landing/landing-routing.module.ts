@@ -5,11 +5,11 @@ import { ResetComponent } from "./reset/reset.component";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: LandingComponent
   },
   {
-    path: 'reset',
+    path: "reset",
     component: ResetComponent
   }
 ];

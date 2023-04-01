@@ -1,6 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { MailService } from "../providers/mail/mail.service";
 import { HttpService } from "@nestjs/axios";
@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import { RecaptchaResponse } from "@scholarsome/shared";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
-import Redis from 'ioredis';
+import Redis from "ioredis";
 
 @Injectable()
 export class AuthService {
@@ -23,16 +23,16 @@ export class AuthService {
 
   async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
-      secret: this.configService.get<string>('RECAPTCHA_SECRET'),
+      secret: this.configService.get<string>("RECAPTCHA_SECRET"),
       response: token
     };
 
     const googleRes = await lastValueFrom(this.httpService.post<RecaptchaResponse>(
-      'https://www.google.com/recaptcha/api/siteverify',
-      new URLSearchParams(Object.entries(body)).toString(),
-      {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" }
-      }));
+        "https://www.google.com/recaptcha/api/siteverify",
+        new URLSearchParams(Object.entries(body)).toString(),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        }));
 
     if (googleRes.data["error-codes"]) return false;
 

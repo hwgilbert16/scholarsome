@@ -3,13 +3,13 @@ import { IsNumber, IsOptional, IsString } from "class-validator";
 export class UpdateCardDto {
   @IsNumber()
   @IsOptional()
-  index?: number;
+    index?: number;
 
   @IsString()
   @IsOptional()
-  term?: string;
+    term?: string;
 
   @IsString()
   @IsOptional()
-  definition?: string;
+    definition?: string;
 }

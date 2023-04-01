@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { ResetComponent } from './reset.component';
+import { ResetComponent } from "./reset.component";
 
-describe('ResetComponent', () => {
+describe("ResetComponent", () => {
   let component: ResetComponent;
   let fixture: ComponentFixture<ResetComponent>;
 
@@ -16,7 +16,7 @@ describe('ResetComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

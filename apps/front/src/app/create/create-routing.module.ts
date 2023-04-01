@@ -5,7 +5,7 @@ import { NgModule } from "@angular/core";
 
 const routes: Routes = [
   {
-    path: 'set',
+    path: "set",
     component: CreateStudySetComponent,
     canActivate: [AuthGuardService]
   }

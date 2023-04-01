@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { Card } from '@prisma/client';
+import { Component, Input } from "@angular/core";
+import { Card } from "@prisma/client";
 
 @Component({
-  selector: 'scholarsome-study-set-description',
-  templateUrl: './study-set-description.component.html',
-  styleUrls: ['./study-set-description.component.scss']
+  selector: "scholarsome-study-set-description",
+  templateUrl: "./study-set-description.component.html",
+  styleUrls: ["./study-set-description.component.scss"]
 })
 export class StudySetDescriptionComponent {
   constructor() {}

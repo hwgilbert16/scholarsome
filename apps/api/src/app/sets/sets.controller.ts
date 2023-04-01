@@ -10,18 +10,18 @@ import {
   Request,
   UnauthorizedException,
   UseGuards
-} from '@nestjs/common';
+} from "@nestjs/common";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
-import { Request as ExpressRequest } from 'express';
+import { Request as ExpressRequest } from "express";
 import { AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
 
-@Controller('sets')
+@Controller("sets")
 export class SetsController {
   constructor(private setsService: SetsService, private usersService: UsersService) {}
 
-  @Get(':setId')
+  @Get(":setId")
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
     const set = await this.setsService.set({
       id: params.setId
@@ -38,14 +38,14 @@ export class SetsController {
     return set;
   }
 
-  @Get('/user/:authorId')
+  @Get("/user/:authorId")
   async sets(@Param() params: AuthorIdParam, @Request() req: ExpressRequest) {
     const user = this.usersService.getUserInfo(req);
     if (!user) {
       throw new NotFoundException();
     }
 
-    if (params.authorId === 'self') {
+    if (params.authorId === "self") {
       return await this.setsService.sets({
         where: {
           authorId: user.id
@@ -68,7 +68,7 @@ export class SetsController {
 
       for (const set of sets) {
         if (set.private) {
-          sets = sets.filter(s => s.id !== set.id);
+          sets = sets.filter((s) => s.id !== set.id);
         }
       }
 
@@ -98,7 +98,7 @@ export class SetsController {
       private: body.private,
       cards: {
         createMany: {
-          data: body.cards.map(c => {
+          data: body.cards.map((c) => {
             return {
               index: c.index,
               term: c.term,
@@ -111,7 +111,7 @@ export class SetsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Put(':setId')
+  @Put(":setId")
   async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest) {
     const set = await this.setsService.set({
       id: params.setId
@@ -131,11 +131,11 @@ export class SetsController {
         cards: body.cards ? {
           deleteMany: {
             id: {
-              in: body.cards.map(c => c.id)
+              in: body.cards.map((c) => c.id)
             }
           },
           createMany: {
-            data: body.cards.map(c => {
+            data: body.cards.map((c) => {
               return {
                 index: c.index,
                 term: c.term,
@@ -149,7 +149,7 @@ export class SetsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':setId')
+  @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 

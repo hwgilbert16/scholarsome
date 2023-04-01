@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma, Set as PrismaSet } from "@prisma/client";
 import { Set } from "@scholarsome/shared";
@@ -13,8 +13,8 @@ export class SetsService {
   public async verifySetOwnership(req: ExpressRequest, setId: string): Promise<boolean> {
     let accessToken: { id: string; email: string; };
 
-    if (req.cookies['access_token']) {
-      accessToken = jwt_decode(req.cookies['access_token']) as { id: string; email: string; };
+    if (req.cookies["access_token"]) {
+      accessToken = jwt_decode(req.cookies["access_token"]) as { id: string; email: string; };
     } else {
       return false;
     }
@@ -33,7 +33,7 @@ export class SetsService {
   }
 
   async set(
-    setWhereUniqueInput: Prisma.SetWhereUniqueInput
+      setWhereUniqueInput: Prisma.SetWhereUniqueInput
   ): Promise<Set | null> {
     return this.prisma.set.findUnique({
       where: setWhereUniqueInput,

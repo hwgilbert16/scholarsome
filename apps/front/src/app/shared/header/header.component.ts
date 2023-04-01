@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
@@ -10,16 +10,16 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 
 @Component({
-  selector: 'scholarsome-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  selector: "scholarsome-header",
+  templateUrl: "./header.component.html",
+  styleUrls: ["./header.component.scss"]
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
-  @ViewChild('register') registerModal: TemplateRef<any>;
-  @ViewChild('login') loginModal: TemplateRef<any>;
+  @ViewChild("register") registerModal: TemplateRef<any>;
+  @ViewChild("login") loginModal: TemplateRef<any>;
 
-  @ViewChild('loginForm') loginForm: NgForm;
-  @ViewChild('registerForm') registerForm: NgForm;
+  @ViewChild("loginForm") loginForm: NgForm;
+  @ViewChild("registerForm") registerForm: NgForm;
 
   modalRef?: BsModalRef;
   isMobile: boolean;
@@ -38,8 +38,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private deviceService: DeviceDetectorService,
     public cookieService: CookieService
   ) {
-    this.modalService.modal.subscribe(e => {
-      if (e === 'register-open') {
+    this.modalService.modal.subscribe((e) => {
+      if (e === "register-open") {
         this.modalRef = this.bsModalService.show(this.registerModal);
       }
     });
@@ -53,7 +53,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.loginReq = 0;
     this.loginReq = await this.authService.login(form.value);
 
-    if (this.loginReq === 200) window.location.assign('view');
+    if (this.loginReq === 200) window.location.assign("view");
   }
 
   async submitRegister(form: NgForm) {
@@ -63,15 +63,15 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   async submitLogout() {
     await this.authService.logout();
-    window.location.replace('/');
+    window.location.replace("/");
   }
 
   ngOnInit(): void {
-    const cookies = document.cookie.split(';');
+    const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
-      if (!cookie.includes('verified')) continue;
+      if (!cookie.includes("verified")) continue;
 
-      this.verificationResult = cookie.includes('true');
+      this.verificationResult = cookie.includes("true");
     }
 
     if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;

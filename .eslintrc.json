@@ -23,15 +23,21 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nrwl/nx/typescript"],
+      "extends": ["plugin:@nrwl/nx/typescript", "google"],
       "rules": {
-        "semi": "error",
+        "semi": ["error", "always"],
         "comma-dangle": ["error", "never"],
         "no-empty-function": ["error", { "allow": ["constructors"] }],
         "@typescript-eslint/no-empty-function": "off",
         "@angular-eslint/no-empty-lifecycle-method": "off",
         "no-trailing-spaces": "error",
-        "eol-last": ["error", "always"]
+        "eol-last": ["error", "always"],
+        "quotes": ["error", "double"],
+        "object-curly-spacing": ["error", "always"],
+        "new-cap": "off",
+        "max-len": "off",
+        "require-jsdoc": "off",
+        "camelcase": ["error", { "allow": ["jwt_decode"] }]
       }
     },
     {

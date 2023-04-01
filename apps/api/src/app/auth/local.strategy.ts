@@ -1,7 +1,7 @@
-import { Strategy } from 'passport-local';
-import { PassportStrategy } from '@nestjs/passport';
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { Strategy } from "passport-local";
+import { PassportStrategy } from "@nestjs/passport";
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
+import { AuthService } from "./auth.service";
 import { LoginDto } from "@scholarsome/shared";
 import { ConfigService } from "@nestjs/config";
 
@@ -9,7 +9,7 @@ import { ConfigService } from "@nestjs/config";
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService, private configService: ConfigService) {
     super({
-      usernameField: 'email',
+      usernameField: "email",
       passReqToCallback: true
     });
   }
@@ -20,9 +20,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    if (this.configService.get<string>('RECAPTCHA_SECRET')) {
+    if (this.configService.get<string>("RECAPTCHA_SECRET")) {
       const captchaCheck = await this.authService.validateRecaptcha((req.body as LoginDto).recaptchaToken);
-      if (!captchaCheck) throw new HttpException('Too many requests', HttpStatus.TOO_MANY_REQUESTS);
+      if (!captchaCheck) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
     }
 
     return user;

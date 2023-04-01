@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
 const cardWithRelations = Prisma.validator<Prisma.CardArgs>()({
   include: { set: true }

@@ -9,15 +9,15 @@ export class MailConfig implements MailerOptionsFactory {
   createMailerOptions(): MailerOptions {
     return {
       transport: {
-        host: this.configService.get<string>('SMTP_HOST'),
-        port: this.configService.get<number>('SMTP_PORT'),
+        host: this.configService.get<string>("SMTP_HOST"),
+        port: this.configService.get<number>("SMTP_PORT"),
         auth: {
-          user: this.configService.get<string>('SMTP_USERNAME'),
-          pass: this.configService.get<string>('SMTP_PASSWORD')
+          user: this.configService.get<string>("SMTP_USERNAME"),
+          pass: this.configService.get<string>("SMTP_PASSWORD")
         }
       },
       defaults: {
-        from: 'Scholarsome <noreply@scholarsome.com>'
+        from: "Scholarsome <noreply@scholarsome.com>"
       }
     };
   }

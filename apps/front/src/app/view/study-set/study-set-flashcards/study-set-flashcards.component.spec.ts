@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { StudySetFlashcardsComponent } from './study-set-flashcards.component';
+import { StudySetFlashcardsComponent } from "./study-set-flashcards.component";
 
-describe('StudySetFlashcardsComponent', () => {
+describe("StudySetFlashcardsComponent", () => {
   let component: StudySetFlashcardsComponent;
   let fixture: ComponentFixture<StudySetFlashcardsComponent>;
 
@@ -16,7 +16,7 @@ describe('StudySetFlashcardsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

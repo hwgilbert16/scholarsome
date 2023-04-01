@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import {
   LoginForm,
   LoginFormCaptcha,
@@ -12,7 +12,7 @@ import { lastValueFrom } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class AuthService {
   constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) {}
@@ -21,7 +21,7 @@ export class AuthService {
     let req;
 
     try {
-      req = await lastValueFrom(this.http.get('/api/auth/reset/password/' + submitResetForm.email, { observe: 'response' }));
+      req = await lastValueFrom(this.http.get("/api/auth/reset/password/" + submitResetForm.email, { observe: "response" }));
     } catch (e) {
       if (e instanceof HttpErrorResponse) {
         return e.status;
@@ -37,7 +37,7 @@ export class AuthService {
     let req;
 
     try {
-      req = await lastValueFrom(this.http.post<ResetForm>('/api/auth/reset/password', resetForm, { observe: 'response' }));
+      req = await lastValueFrom(this.http.post<ResetForm>("/api/auth/reset/password", resetForm, { observe: "response" }));
     } catch (e) {
       if (e instanceof HttpErrorResponse) {
         return e.status;
@@ -52,13 +52,13 @@ export class AuthService {
   async login(loginForm: LoginForm): Promise<number> {
     const body: LoginFormCaptcha = {
       ...loginForm,
-      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('login'))
+      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute("login"))
     };
 
     let req;
 
     try {
-      req = await lastValueFrom(this.http.post<LoginFormCaptcha>('/api/auth/login', body, { observe: 'response' }));
+      req = await lastValueFrom(this.http.post<LoginFormCaptcha>("/api/auth/login", body, { observe: "response" }));
     } catch (e) {
       if (e instanceof HttpErrorResponse) {
         return e.status;
@@ -73,13 +73,13 @@ export class AuthService {
   async register(registerForm: RegisterForm): Promise<number> {
     const body: RegisterFormCaptcha = {
       ...registerForm,
-      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute('register'))
+      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute("register"))
     };
 
     let req;
 
     try {
-      req = await lastValueFrom(this.http.post<RegisterFormCaptcha>('/api/auth/register', body, { observe: 'response' }));
+      req = await lastValueFrom(this.http.post<RegisterFormCaptcha>("/api/auth/register", body, { observe: "response" }));
     } catch (e) {
       if (e instanceof HttpErrorResponse) {
         return e.status;
@@ -92,14 +92,14 @@ export class AuthService {
   }
 
   async logout() {
-    return await lastValueFrom(this.http.post('/api/auth/logout', {}));
+    return await lastValueFrom(this.http.post("/api/auth/logout", {}));
   }
 
   async checkAuthenticated(): Promise<boolean> {
     let res: boolean;
 
     try {
-      res = await lastValueFrom(this.http.get<boolean>('/api/auth/authenticated'));
+      res = await lastValueFrom(this.http.get<boolean>("/api/auth/authenticated"));
     } catch (e) {
       return false;
     }
@@ -111,7 +111,7 @@ export class AuthService {
     let res: boolean;
 
     try {
-      res = await lastValueFrom(this.http.post<boolean>('/api/auth/refresh', {}));
+      res = await lastValueFrom(this.http.post<boolean>("/api/auth/refresh", {}));
     } catch (e) {
       return false;
     }

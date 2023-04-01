@@ -12,19 +12,19 @@ import {
   ConflictException,
   Put,
   Delete
-} from '@nestjs/common';
-import { Request as ExpressRequest } from 'express';
+} from "@nestjs/common";
+import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
 import { CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
 
-@Controller('cards')
+@Controller("cards")
 export class CardsController {
   constructor(private cardsService: CardsService, private setsService: SetsService, private usersService: UsersService) {}
 
-  @Get(':cardId')
+  @Get(":cardId")
   async card(@Param() params: CardIdParam, @Request() req: ExpressRequest) {
     const userCookie = this.usersService.getUserInfo(req);
     if (!userCookie) {
@@ -74,7 +74,7 @@ export class CardsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Put(':cardId')
+  @Put(":cardId")
   async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto, @Request() req: ExpressRequest) {
     const card = await this.cardsService.card({
       id: params.cardId
@@ -96,7 +96,7 @@ export class CardsController {
   }
 
   @UseGuards(AuthenticatedGuard)
-  @Delete(':cardId')
+  @Delete(":cardId")
   async deleteCard(@Param() params: CardIdParam, @Request() req: ExpressRequest) {
     const card = await this.cardsService.card({
       id: params.cardId

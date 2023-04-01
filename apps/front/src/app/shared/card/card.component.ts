@@ -1,10 +1,10 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from "@angular/core";
 import { AlertComponent } from "../alert/alert.component";
 
 @Component({
-  selector: 'scholarsome-card',
-  templateUrl: './card.component.html',
-  styleUrls: ['./card.component.scss']
+  selector: "scholarsome-card",
+  templateUrl: "./card.component.html",
+  styleUrls: ["./card.component.scss"]
 })
 export class CardComponent {
   @Input() editingEnabled = false;
@@ -21,9 +21,9 @@ export class CardComponent {
   @Output() deleteCardEvent = new EventEmitter<number>();
   @Output() moveCardEvent = new EventEmitter<{ index: number, direction: number }>();
 
-  @ViewChild('term', { static: false }) termElement: ElementRef;
-  @ViewChild('definition', { static: false }) definitionElement: ElementRef;
-  @ViewChild('inputsContainer', { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
+  @ViewChild("term", { static: false }) termElement: ElementRef;
+  @ViewChild("definition", { static: false }) definitionElement: ElementRef;
+  @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
 
   get term(): string {
     return this.termElement.nativeElement.value;
@@ -40,10 +40,10 @@ export class CardComponent {
   notifyEmptyInput() {
     const alert = this.inputsContainer.createComponent<AlertComponent>(AlertComponent);
 
-    alert.instance.message = 'Both fields cannot be empty';
-    alert.instance.type = 'danger';
+    alert.instance.message = "Both fields cannot be empty";
+    alert.instance.type = "danger";
     alert.instance.dismiss = true;
-    alert.instance.spacingClass = 'mt-4';
+    alert.instance.spacingClass = "mt-4";
   }
 
   moveCard(direction: number) {

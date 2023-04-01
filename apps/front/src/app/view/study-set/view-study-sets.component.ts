@@ -1,4 +1,4 @@
-import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Set } from "@scholarsome/shared";
 import { SetsService } from "../../shared/http/sets.service";
@@ -6,9 +6,9 @@ import { CardComponent } from "../../shared/card/card.component";
 import { UsersService } from "../../shared/http/users.service";
 
 @Component({
-  selector: 'scholarsome-view-study-sets',
-  templateUrl: './view-study-sets.component.html',
-  styleUrls: ['./view-study-sets.component.scss']
+  selector: "scholarsome-view-study-sets",
+  templateUrl: "./view-study-sets.component.html",
+  styleUrls: ["./view-study-sets.component.scss"]
 })
 export class ViewStudySetsComponent implements OnInit {
   constructor(
@@ -18,12 +18,12 @@ export class ViewStudySetsComponent implements OnInit {
     private router: Router
   ) {}
 
-  @ViewChild('spinner', { static: true }) spinner: ElementRef;
-  @ViewChild('container', { static: true }) container: ElementRef;
+  @ViewChild("spinner", { static: true }) spinner: ElementRef;
+  @ViewChild("container", { static: true }) container: ElementRef;
 
-  @ViewChild('editButton', { static: true }) editButton: ElementRef;
+  @ViewChild("editButton", { static: true }) editButton: ElementRef;
 
-  @ViewChild('cardsContainer', { static: true, read: ViewContainerRef }) cardsContainer: ViewContainerRef;
+  @ViewChild("cardsContainer", { static: true, read: ViewContainerRef }) cardsContainer: ViewContainerRef;
 
   userIsAuthor = false;
   editing = false;
@@ -36,7 +36,7 @@ export class ViewStudySetsComponent implements OnInit {
   set: Set | null;
 
   cookieExists(name: string): boolean {
-    const cookies = document.cookie.split(';');
+    const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
       if (cookie.includes(name)) {
         return true;
@@ -66,25 +66,25 @@ export class ViewStudySetsComponent implements OnInit {
   }) {
     const card = this.cardsContainer.createComponent<CardComponent>(CardComponent);
 
-    card.instance.cardId = opts.id ? opts.id : '';
+    card.instance.cardId = opts.id ? opts.id : "";
     card.instance.cardIndex = opts.index ? opts.index : this.cards.length;
     card.instance.editingEnabled = opts.editingEnabled;
     card.instance.upArrow = opts.upArrow ? opts.upArrow : false;
     card.instance.downArrow = opts.downArrow ? opts.downArrow : false;
-    card.instance.termValue = opts.term ? opts.term : '';
-    card.instance.definitionValue = opts.definition ? opts.definition : '';
+    card.instance.termValue = opts.term ? opts.term : "";
+    card.instance.definitionValue = opts.definition ? opts.definition : "";
 
-    card.instance.deleteCardEvent.subscribe(e => {
+    card.instance.deleteCardEvent.subscribe((e) => {
       if (this.cardsContainer.length > 1) {
         this.cardsContainer.get(e)?.destroy();
 
-        this.cards.splice(this.cards.map(c => c.instance.cardIndex).indexOf(e), 1);
+        this.cards.splice(this.cards.map((c) => c.instance.cardIndex).indexOf(e), 1);
 
         this.updateCardIndices();
       }
     });
 
-    card.instance.moveCardEvent.subscribe(e => {
+    card.instance.moveCardEvent.subscribe((e) => {
       if (this.cardsContainer.length > 1) {
         this.cards.splice(card.instance.cardIndex + e.direction, 0, this.cards.splice(card.instance.cardIndex, 1)[0]);
 
@@ -127,7 +127,7 @@ export class ViewStudySetsComponent implements OnInit {
 
       await this.sets.updateSet({
         id: this.set.id,
-        cards: this.cards.map(c => {
+        cards: this.cards.map((c) => {
           return {
             id: c.instance.cardId,
             index: c.instance.cardIndex,
@@ -164,20 +164,20 @@ export class ViewStudySetsComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.setId = this.route.snapshot.paramMap.get('setId');
+    this.setId = this.route.snapshot.paramMap.get("setId");
     if (!this.setId) {
-      await this.router.navigate(['404']);
+      await this.router.navigate(["404"]);
       return;
     }
 
     this.set = await this.sets.set(this.setId);
     if (!this.set) {
-      await this.router.navigate(['404']);
+      await this.router.navigate(["404"]);
       return;
     }
 
-    if (this.cookieExists('authenticated')) {
-      const user = await this.users.user('self');
+    if (this.cookieExists("authenticated")) {
+      const user = await this.users.user("self");
 
       if (user && user.id === this.set.author.id) {
         this.userIsAuthor = true;
@@ -187,7 +187,7 @@ export class ViewStudySetsComponent implements OnInit {
     this.spinner.nativeElement.remove();
 
     this.author = this.set.author.username;
-    this.container.nativeElement.removeAttribute('hidden');
+    this.container.nativeElement.removeAttribute("hidden");
 
     this.viewCards();
   }

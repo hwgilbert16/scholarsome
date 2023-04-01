@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { LocalStrategy } from "./local.strategy";
@@ -22,8 +22,8 @@ import { UsersModule } from "../users/users.module";
     PassportModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_TOKEN'),
-        signOptions: { expiresIn: '14d' }
+        secret: configService.get("JWT_TOKEN"),
+        signOptions: { expiresIn: "14d" }
       }),
       inject: [ConfigService]
     }),

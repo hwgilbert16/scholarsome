@@ -3,17 +3,17 @@ import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 export class CardValidator {
   @IsOptional()
   @IsString()
-  id: string;
+    id: string;
 
   @IsNumber()
   @IsNotEmpty()
-  index: number;
+    index: number;
 
   @IsString()
   @IsNotEmpty()
-  term: string;
+    term: string;
 
   @IsString()
   @IsNotEmpty()
-  definition: string;
+    definition: string;
 }

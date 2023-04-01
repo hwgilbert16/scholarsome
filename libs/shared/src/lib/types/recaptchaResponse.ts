@@ -4,5 +4,5 @@ export interface RecaptchaResponse {
   hostname?: string;
   score?: number;
   action?: string;
-  'error-codes': string[];
+  "error-codes": string[];
 }

@@ -3,13 +3,13 @@ import { UserIdParam } from "@scholarsome/shared";
 import { UsersService } from "./users.service";
 import { Request as ExpressRequest } from "express";
 
-@Controller('users')
+@Controller("users")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Get(':userId')
+  @Get(":userId")
   async user(@Param() params: UserIdParam, @Req() req: ExpressRequest) {
-    if (params.userId === 'self') {
+    if (params.userId === "self") {
       const cookies = this.usersService.getUserInfo(req);
       if (!cookies) {
         throw new NotFoundException();

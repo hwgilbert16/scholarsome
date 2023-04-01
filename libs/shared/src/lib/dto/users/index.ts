@@ -1,1 +1,1 @@
-export * from './userIdParam.param';
+export * from "./userIdParam.param";
