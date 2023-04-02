@@ -1,3 +1,7 @@
+/**
+ * @file Strategy for checking whether a user's password is valid and if they pass captcha
+ */
+
 import { Strategy } from "passport-local";
 import { PassportStrategy } from "@nestjs/passport";
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
@@ -7,6 +11,9 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
+  /**
+   * @ignore
+   */
   constructor(private authService: AuthService, private configService: ConfigService) {
     super({
       usernameField: "email",

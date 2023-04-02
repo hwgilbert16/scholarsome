@@ -7,6 +7,11 @@ import { Request as ExpressRequest } from "express";
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  /**
+   * Gets a user given a user ID
+   *
+   * @returns `User` object
+   */
   @Get(":userId")
   async user(@Param() params: UserIdParam, @Req() req: ExpressRequest) {
     if (params.userId === "self") {

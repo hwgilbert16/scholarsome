@@ -11,6 +11,9 @@ import { UsersService } from "../../shared/http/users.service";
   styleUrls: ["./view-study-sets.component.scss"]
 })
 export class ViewStudySetsComponent implements OnInit {
+  /**
+   * @ignore
+   */
   constructor(
     private route: ActivatedRoute,
     private sets: SetsService,

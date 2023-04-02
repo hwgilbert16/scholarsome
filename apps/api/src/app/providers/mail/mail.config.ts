@@ -4,6 +4,9 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class MailConfig implements MailerOptionsFactory {
+  /**
+   * @ignore
+   */
   constructor(private configService: ConfigService) {}
 
   createMailerOptions(): MailerOptions {

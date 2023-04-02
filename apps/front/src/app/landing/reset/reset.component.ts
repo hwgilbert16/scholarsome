@@ -1,7 +1,7 @@
 import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { HttpResponse } from "@angular/common/http";
-import { ResetForm } from "../../shared/models/Auth";
+import { ResetForm } from "@scholarsome/shared";
 import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
 

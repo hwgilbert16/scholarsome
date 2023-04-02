@@ -10,6 +10,9 @@ import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
   styleUrls: ["./study-set-flashcards.component.scss"]
 })
 export class StudySetFlashcardsComponent implements OnInit {
+  /**
+   * @ignore
+   */
   constructor(
     private route: ActivatedRoute,
     private sets: SetsService,

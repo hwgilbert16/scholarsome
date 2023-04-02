@@ -13,10 +13,6 @@ import { HttpModule } from "@nestjs/axios";
 import { UsersModule } from "../users/users.module";
 
 @Module({
-  /*
-  TODO: Change to access/refresh token architecture
-  This is only temporary
-   */
   imports: [
     DatabaseModule,
     PassportModule,

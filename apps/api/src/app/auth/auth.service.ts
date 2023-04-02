@@ -12,6 +12,9 @@ import Redis from "ioredis";
 
 @Injectable()
 export class AuthService {
+  /**
+   * @ignore
+   */
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -21,6 +24,12 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis
   ) {}
 
+  /**
+   * Validates whether a recaptcha token passes a score of >= 0.5
+   *
+   * @param token Generated client-side recaptcha token
+   * @returns Result of whether token is >= 0.5
+   */
   async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
       secret: this.configService.get<string>("RECAPTCHA_SECRET"),
@@ -39,6 +48,13 @@ export class AuthService {
     return googleRes.data.score >= 0.5;
   }
 
+  /**
+   * Validates whether a user's input password matches the hashed database version
+   *
+   * @param email Email of the user
+   * @param password Password of the user
+   * @returns Whether the user's password matches their hashed password
+   */
   async validateUser(email: string, password: string): Promise<boolean> {
     const user = await this.usersService.user({
       email
@@ -46,6 +62,6 @@ export class AuthService {
 
     if (!user || !user.verified) throw new UnauthorizedException();
 
-    return !!(await bcrypt.compare(password, user.password));
+    return !!(bcrypt.compare(password, user.password));
   }
 }

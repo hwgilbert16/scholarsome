@@ -8,8 +8,19 @@ import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class SetsService {
+  /**
+   * @ignore
+   */
   constructor(private prisma: PrismaService, private usersService: UsersService) {}
 
+  /**
+   * Verifies whether a set belongs to a user given their access token cookie
+   *
+   * @param req Request object of the user
+   * @param setId ID of the set to check against
+   *
+   * @returns Whether the set belongs to the user
+   */
   public async verifySetOwnership(req: ExpressRequest, setId: string): Promise<boolean> {
     let accessToken: { id: string; email: string; };
 
@@ -32,6 +43,13 @@ export class SetsService {
     return set.author.id === user.id;
   }
 
+  /**
+   * Queries the database for a unique set
+   *
+   * @param setWhereUniqueInput Prisma `SetWhereUniqueInput` selector
+   *
+   * @returns Queried `Set` object
+   */
   async set(
       setWhereUniqueInput: Prisma.SetWhereUniqueInput
   ): Promise<Set | null> {
@@ -41,6 +59,17 @@ export class SetsService {
     });
   }
 
+  /**
+   * Queries the database for multiple sets
+   *
+   * @param params.skip Optional, Prisma skip selector
+   * @param params.take Optional, Prisma take selector
+   * @param params.cursor Optional, Prisma cursor selector
+   * @param params.where Optional, Prisma where selector
+   * @param params.orderBy Optional, Prisma orderBy selector
+   *
+   * @returns Array of queried `Set` objects
+   */
   async sets(params: {
     skip?: number;
     take?: number;
@@ -62,12 +91,27 @@ export class SetsService {
     });
   }
 
+  /**
+   * Creates a set in the database
+   *
+   * @param data Prisma `SetCreateInput` selector
+   *
+   * @returns Created `Set` object
+   */
   async createSet(data: Prisma.SetCreateInput): Promise<PrismaSet> {
     return this.prisma.set.create({
       data
     });
   }
 
+  /**
+   * Updates a set in the database
+   *
+   * @param params.where Prisma where selector
+   * @param params.data Prisma data selector
+   *
+   * @returns Updated `Set` object
+   */
   async updateSet(params: {
     where: Prisma.SetWhereUniqueInput;
     data: Prisma.SetUpdateInput;
@@ -79,6 +123,13 @@ export class SetsService {
     });
   }
 
+  /**
+   * Deletes a set from the database
+   *
+   * @param where Prisma `SetWhereUniqueInput` selector
+   *
+   * @returns `Set` object that was deleted
+   */
   async deleteSet(where: Prisma.SetWhereUniqueInput): Promise<PrismaSet> {
     return this.prisma.set.delete({
       where

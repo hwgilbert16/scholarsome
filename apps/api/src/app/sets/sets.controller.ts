@@ -19,8 +19,17 @@ import { AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholars
 
 @Controller("sets")
 export class SetsController {
+  /**
+   * @ignore
+   */
   constructor(private setsService: SetsService, private usersService: UsersService) {}
 
+
+  /**
+   * Gets a set given a set ID
+   *
+   * @returns `Set` object
+   */
   @Get(":setId")
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
     const set = await this.setsService.set({
@@ -38,6 +47,11 @@ export class SetsController {
     return set;
   }
 
+  /**
+   * Gets the sets of a user given an author ID
+   *
+   * @returns Array of `Set` objects that belong to the user
+   */
   @Get("/user/:authorId")
   async sets(@Param() params: AuthorIdParam, @Request() req: ExpressRequest) {
     const user = this.usersService.getUserInfo(req);
@@ -76,6 +90,11 @@ export class SetsController {
     }
   }
 
+  /**
+   * Creates a set
+   *
+   * @returns Created `Set` object
+   */
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest) {
@@ -110,6 +129,12 @@ export class SetsController {
     });
   }
 
+
+  /**
+   * Updates a set
+   *
+   * @returns Updated `Set` object
+   */
   @UseGuards(AuthenticatedGuard)
   @Put(":setId")
   async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest) {
@@ -148,6 +173,11 @@ export class SetsController {
     });
   }
 
+  /**
+   * Deletes a set
+   *
+   * @returns Deleted `Set` Object
+   */
   @UseGuards(AuthenticatedGuard)
   @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest) {

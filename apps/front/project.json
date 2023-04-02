@@ -88,5 +88,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["scope:client"]
 }

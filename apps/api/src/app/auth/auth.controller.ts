@@ -41,18 +41,21 @@ export class AuthController {
   ) {}
 
   /*
-  *
   * Password reset routes
-  *
   */
 
+  /**
+   * Resets the password of a user after checking for a valid reset token in their cookies.
+   *
+   * @returns Whether the user's password was successfully updated
+   */
   @Post("reset/password")
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request) {
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<boolean> {
     const decoded = jwt.verify(req.cookies["resetToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
 
     if (!decoded || !decoded.reset) return false;
 
-    return await this.usersService.updateUser({
+    await this.usersService.updateUser({
       where: {
         email: decoded.email
       },
@@ -60,10 +63,18 @@ export class AuthController {
         password: await bcrypt.hash(resetPasswordDto.password, 10)
       }
     });
+
+    return true;
   }
 
+  /**
+   * Adds a reset token in cookies that can be used in the /api/auth/reset/password route to reset a password.
+   *
+   * @remarks This is the link that is emailed to users when a password reset is requested.
+   * @returns Void, redirect to /api/auth/redirect
+   */
   @Get("reset/password/setCookie/:token")
-  async setResetCookie(@Param() params: { token: string }, @Res() res: Response) {
+  async setResetCookie(@Param() params: { token: string }, @Res() res: Response): Promise<void> {
     const decoded = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
 
     if (decoded && decoded.reset) {
@@ -73,6 +84,12 @@ export class AuthController {
     return res.redirect("/reset");
   }
 
+  /**
+   * Sends a password reset for a given user
+   *
+   * @remarks Throttled to 1 request per 40 seconds
+   * @returns Call to send a password reset email
+   */
   @Throttle(1, 600)
   @Get("reset/password/:email")
   async sendReset(@Param() params: { email: string }) {
@@ -84,11 +101,15 @@ export class AuthController {
   }
 
   /*
-  *
   * Registration routes
-  *
   */
 
+  /**
+   * Verifies a users email given a successfully validated token
+   *
+   * @remarks This is the link that users click on to verify their email
+   * @returns Void, redirect to '/'
+   */
   @Get("verify/email/:token")
   async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
     const email = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string };
@@ -112,6 +133,13 @@ export class AuthController {
     return res.redirect("/");
   }
 
+  /**
+   * Registers a new user
+   *
+   * @remarks Throttled to 1 request per 15 minutes
+   * @returns Void, HTTP 201 if successful email confirmation, 200 if email disabled
+   */
+  @Throttle(1, 900)
   @Post("register")
   async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<void> {
     if (
@@ -136,11 +164,14 @@ export class AuthController {
   }
 
   /*
-  *
   * Login routes
-  *
   */
 
+  /**
+   * Checks whether an access token is still valid
+   *
+   * @returns Whether the access token is still valid
+   */
   @Get("authenticated")
   checkToken(@Req() req: Request) {
     try {
@@ -152,6 +183,11 @@ export class AuthController {
     return true;
   }
 
+  /**
+   * Refreshes a user's access token
+   *
+   * @returns True if refresh is successful, false if not
+   */
   @Throttle(1, 600)
   @Post("refresh")
   refreshAccessToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
@@ -171,6 +207,12 @@ export class AuthController {
     return true;
   }
 
+
+  /**
+   * Logs a user in and sets relevant cookies
+   *
+   * @returns Void, HTTP 200 if successful
+   */
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Post("login")
@@ -196,6 +238,11 @@ export class AuthController {
     return;
   }
 
+  /**
+   * Logs a user out and removes relevant cookies
+   *
+   * @returns Void
+   */
   @Post("logout")
   logout(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
     res.cookie("access_token", "", { httpOnly: true, expires: new Date() });

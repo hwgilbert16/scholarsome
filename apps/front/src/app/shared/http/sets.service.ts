@@ -7,8 +7,18 @@ import { Set } from "@scholarsome/shared";
   providedIn: "root"
 })
 export class SetsService {
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient) {}
 
+  /**
+   * Makes a request to find a unique set
+   *
+   * @param setId ID of the set to find
+   *
+   * @returns Queried `Set` object
+   */
   async set(setId: string | null): Promise<Set | null> {
     let set: Set | undefined;
 
@@ -21,6 +31,13 @@ export class SetsService {
     return set;
   }
 
+  /**
+   * Makes a request to find the sets of a user
+   *
+   * @param userId ID of the user
+   *
+   * @returns Array of `Set` objects
+   */
   async sets(userId: string | null): Promise<Set[] | null> {
     let sets: Set[] | undefined;
 
@@ -33,6 +50,19 @@ export class SetsService {
     return sets;
   }
 
+  /**
+   * Makes a request to create a set
+   *
+   * @param body.title Title of the set
+   * @param body.description Optional, description of the set
+   * @param body.private Whether the set should be publicly visible
+   * @param body.cards Array of the cards of the set
+   * @param body.cards.index Index of the card
+   * @param body.cards.term Term of the card
+   * @param body.cards.definition Definition of the card
+   *
+   * @returns Created `Set` object
+   */
   async createSet(body: {
     title: string;
     description?: string;
@@ -59,6 +89,20 @@ export class SetsService {
     return set;
   }
 
+  /**
+   * Makes a request to update a set
+   *
+   * @param body.title Title of the set
+   * @param body.description Optional, description of the set
+   * @param body.private Optional, whether the set should be publicly visible
+   * @param body.cards Optional, array of the cards of the set
+   * @param body.cards.id ID of the card
+   * @param body.cards.index Index of the card
+   * @param body.cards.term Term of the card
+   * @param body.cards.definition Definition of the card
+   *
+   * @returns Updated `Set` object
+   */
   async updateSet(body: {
     id: string;
     title?: string;

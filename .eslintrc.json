@@ -10,11 +10,19 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "allow": [],
+            "allow": ["@scholarsome/shared"],
             "depConstraints": [
               {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
+                "sourceTag": "scope:shared",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
+              },
+              {
+                "sourceTag": "scope:admin",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:admin"]
+              },
+              {
+                "sourceTag": "scope:client",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:client"]
               }
             ]
           }
@@ -37,7 +45,8 @@
         "new-cap": "off",
         "max-len": "off",
         "require-jsdoc": "off",
-        "camelcase": ["error", { "allow": ["jwt_decode"] }]
+        "camelcase": ["error", { "allow": ["jwt_decode"] }],
+        "valid-jsdoc": "off"
       }
     },
     {

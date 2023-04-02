@@ -5,12 +5,22 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class MailService {
+  /**
+   * @ignore
+   */
   constructor(
     private mailerService: MailerService,
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
 
+  /**
+   * Sends an email confirmation to verify an address
+   *
+   * @param email Email address to send the verification to
+   *
+   * @returns Whether the email successfully sent
+   */
   async sendEmailConfirmation(email: string): Promise<boolean> {
     if (!this.configService.get<boolean>("SMTP_HOST")) return false;
 
@@ -26,16 +36,21 @@ export class MailService {
     return true;
   }
 
+  /**
+   * Sends a password reset email
+   *
+   * @param email Email address to send the reset to
+   *
+   * @returns Whether the email successfully sent
+   */
   async sendPasswordReset(email: string) {
     const token = this.jwtService.sign({ email, reset: true }, { expiresIn: "10m" });
 
-    console.log(token);
-
-    // await this.mailerService.sendMail({
-    //   to: email,
-    //   from: 'noreply@scholarsome.com',
-    //   subject: 'Reset your password',
-    //   text: `Hey there,\n\nIf you did not request a password change, you can ignore this email.\n\nYou're receiving this because you requested a password reset. Follow the link below to choose a new password.\n\nThis link will expire in 10 minutes.\n\nhttp${this.configService.get<string>('SSL_KEY_PATH') ? 's' : ''}://${this.configService.get<string>('HOST')}/api/auth/reset/password/setCookie/${token}`
-    // });
+    await this.mailerService.sendMail({
+      to: email,
+      from: "noreply@scholarsome.com",
+      subject: "Reset your password",
+      text: `Hey there,\n\nIf you did not request a password change, you can ignore this email.\n\nYou're receiving this because you requested a password reset. Follow the link below to choose a new password.\n\nThis link will expire in 10 minutes.\n\nhttp${this.configService.get<string>("SSL_KEY_PATH") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/reset/password/setCookie/${token}`
+    });
   }
 }

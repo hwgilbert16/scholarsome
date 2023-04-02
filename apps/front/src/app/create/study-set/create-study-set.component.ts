@@ -11,6 +11,9 @@ import { SetsService } from "../../shared/http/sets.service";
   styleUrls: ["./create-study-set.component.scss"]
 })
 export class CreateStudySetComponent implements OnInit {
+  /**
+   * @ignore
+   */
   constructor(
     private http: HttpClient,
     private router: Router,

@@ -9,6 +9,9 @@ import { Router } from "@angular/router";
   styleUrls: ["./landing.component.scss"]
 })
 export class LandingComponent implements OnInit {
+  /**
+   * @ignore
+   */
   constructor(public modalService: ModalService, private cookieService: CookieService, private router: Router) {}
 
   async ngOnInit(): Promise<void> {

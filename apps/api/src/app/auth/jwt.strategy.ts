@@ -1,3 +1,7 @@
+/**
+ * @file Strategy for checking whether a user's access token is still valid
+ */
+
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
@@ -7,6 +11,9 @@ import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  /**
+   * @ignore
+   */
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {

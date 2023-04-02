@@ -10,6 +10,9 @@ import { Set } from "@scholarsome/shared";
   styleUrls: ["./view.component.scss"]
 })
 export class ViewComponent implements OnInit {
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient) {}
 
   @ViewChild("cards", { static: true, read: ViewContainerRef }) cardContainer: ViewContainerRef;

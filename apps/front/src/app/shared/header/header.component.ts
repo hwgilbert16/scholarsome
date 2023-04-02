@@ -5,7 +5,7 @@ import { ModalService } from "../modal.service";
 import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
 import { HttpResponse } from "@angular/common/http";
-import { LoginFormCaptcha, RegisterFormCaptcha } from "../models/Auth";
+import { LoginFormCaptcha, RegisterFormCaptcha } from "@scholarsome/shared";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 
@@ -31,6 +31,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   faGithub = faGithub;
 
+  /**
+   * @ignore
+   */
   constructor(
     private bsModalService: BsModalService,
     private modalService: ModalService,

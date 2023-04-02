@@ -6,7 +6,7 @@ import {
   RegisterFormCaptcha,
   ResetForm,
   SubmitResetForm
-} from "../shared/models/Auth";
+} from "@scholarsome/shared";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
@@ -15,8 +15,19 @@ import { ReCaptchaV3Service } from "ng-recaptcha";
   providedIn: "root"
 })
 export class AuthService {
+  /**
+   * @ignore
+   */
   constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) {}
 
+
+  /**
+   * Makes a request to submit a password reset based on information from `SubmitResetForm`
+   *
+   * @param submitResetForm `SubmitResetForm` object
+   *
+   * @returns HTTP response of request
+   */
   async submitResetPassword(submitResetForm: SubmitResetForm): Promise<number> {
     let req;
 
@@ -33,6 +44,13 @@ export class AuthService {
     return req.status;
   }
 
+  /**
+   * Makes a request to update the password of a user based on information from `ResetForm`
+   *
+   * @param resetForm `ResetForm` object
+   *
+   * @returns HTTP status of request
+   */
   async setPassword(resetForm: ResetForm): Promise<number> {
     let req;
 
@@ -49,6 +67,13 @@ export class AuthService {
     return req.status;
   }
 
+  /**
+   * Makes a request to log in a user
+   *
+   * @param loginForm `LoginForm` object
+   *
+   * @returns HTTP status of request
+   */
   async login(loginForm: LoginForm): Promise<number> {
     const body: LoginFormCaptcha = {
       ...loginForm,
@@ -70,6 +95,13 @@ export class AuthService {
     return req.status;
   }
 
+  /**
+   * Makes a request to register a user
+   *
+   * @param registerForm `RegisterForm` object
+   *
+   * @returns HTTP status of request
+   */
   async register(registerForm: RegisterForm): Promise<number> {
     const body: RegisterFormCaptcha = {
       ...registerForm,
@@ -91,10 +123,21 @@ export class AuthService {
     return req.status;
   }
 
+  /**
+   * Makes a request to logout a user
+   *
+   * @returns Response object of the request
+   */
   async logout() {
     return await lastValueFrom(this.http.post("/api/auth/logout", {}));
   }
 
+
+  /**
+   * Makes a request to check whether a user's access token is valid
+   *
+   * @returns Response object of the request
+   */
   async checkAuthenticated(): Promise<boolean> {
     let res: boolean;
 
@@ -107,6 +150,11 @@ export class AuthService {
     return res;
   }
 
+  /**
+   * Makes a request to refresh the access token of a user
+   *
+   * @returns Response object of the request
+   */
   async refreshAccessToken(): Promise<boolean> {
     let res: boolean;
 

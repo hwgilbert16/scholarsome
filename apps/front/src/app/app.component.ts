@@ -9,6 +9,9 @@ import { CookieService } from "ngx-cookie";
   styleUrls: ["./app.component.scss"]
 })
 export class AppComponent implements OnInit {
+  /**
+   * @ignore
+   */
   constructor(private router: Router, private authService: AuthService, private cookieService: CookieService) {}
 
   ngOnInit(): void {
