@@ -9,11 +9,11 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { LocalAuthGuard } from "./local-auth.guard";
 import { Response, Request } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
@@ -214,9 +214,17 @@ export class AuthController {
    * @returns Void, HTTP 200 if successful
    */
   @HttpCode(200)
-  @UseGuards(LocalAuthGuard)
   @Post("login")
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    if (!(await this.authService.validateUser(loginDto.email, loginDto.password))) {
+      throw new UnauthorizedException();
+    }
+
+    if (this.configService.get<string>("RECAPTCHA_SECRET")) {
+      const captchaCheck = await this.authService.validateRecaptcha(loginDto.recaptchaToken);
+      if (!captchaCheck) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     res.cookie("verified", "", { httpOnly: false, expires: new Date() });
 
     const user = await this.usersService.user({

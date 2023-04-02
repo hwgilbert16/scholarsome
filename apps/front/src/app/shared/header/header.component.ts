@@ -15,8 +15,8 @@ import { DeviceDetectorService } from "ngx-device-detector";
   styleUrls: ["./header.component.scss"]
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
-  @ViewChild("register") registerModal: TemplateRef<any>;
-  @ViewChild("login") loginModal: TemplateRef<any>;
+  @ViewChild("register") registerModal: TemplateRef<HTMLElement>;
+  @ViewChild("login") loginModal: TemplateRef<HTMLElement>;
 
   @ViewChild("loginForm") loginForm: NgForm;
   @ViewChild("registerForm") registerForm: NgForm;
@@ -48,7 +48,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openModal(template: TemplateRef<any>) {
+  openModal(template: TemplateRef<HTMLElement>) {
     this.modalRef = this.bsModalService.show(template);
   }
 

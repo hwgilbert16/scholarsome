@@ -27,7 +27,7 @@ export class StudySetFlashcardsComponent implements OnInit {
   @ViewChild("flashcard", { static: true }) flashcard: ElementRef;
   @ViewChild("controlbar", { static: true }) controlbar: ElementRef;
 
-  @ViewChild("settings") settings: TemplateRef<any>;
+  @ViewChild("settings") settings: TemplateRef<HTMLElement>;
 
   cards: Card[];
 
