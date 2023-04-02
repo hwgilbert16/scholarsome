@@ -35,20 +35,25 @@ export class CardsController {
   @Get(":cardId")
   async card(@Param() params: CardIdParam, @Request() req: ExpressRequest) {
     const userCookie = this.usersService.getUserInfo(req);
-    if (!userCookie) {
-      throw new NotFoundException();
-    }
 
-    const user = await this.usersService.user({
-      id: userCookie.id
-    });
-    if (!user) throw new BadRequestException();
+    let userId = "";
+
+    if (
+      userCookie &&
+      await this.usersService.user({
+        id: userCookie.id
+      })
+    ) {
+      userId = (await this.usersService.user({
+        id: userCookie.id
+      })).id;
+    }
 
     const card = await this.cardsService.card({
       id: params.cardId
     });
 
-    if (card.set.private && (card.set.authorId !== userCookie.id)) throw new UnauthorizedException();
+    if (card.set.private && (card.set.authorId !== userId)) throw new UnauthorizedException();
     if (!card) throw new NotFoundException();
 
     return card;
