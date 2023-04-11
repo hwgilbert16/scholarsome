@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Get,
   NotFoundException,
@@ -9,7 +8,6 @@ import {
   Post,
   UseGuards,
   Body,
-  ConflictException,
   Put,
   Delete
 } from "@nestjs/common";
@@ -19,6 +17,9 @@ import { UsersService } from "../users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
 import { CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
+import { CreateCardGuard } from "./guards/create-card.guard";
+import { DeleteCardGuard } from "./guards/delete-card.guard";
+import { UpdateCardGuard } from "./guards/update-card.guard";
 
 @Controller("cards")
 export class CardsController {
@@ -53,8 +54,8 @@ export class CardsController {
       id: params.cardId
     });
 
-    if (card.set.private && (card.set.authorId !== userId)) throw new UnauthorizedException();
     if (!card) throw new NotFoundException();
+    if (card.set.private && (card.set.authorId !== userId)) throw new UnauthorizedException();
 
     return card;
   }
@@ -64,21 +65,9 @@ export class CardsController {
    *
    * @returns Created `Card` object
    */
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, CreateCardGuard)
   @Post()
-  async createCard(@Body() body: CreateCardDto, @Request() req: ExpressRequest) {
-    const user = this.usersService.getUserInfo(req);
-    if (!user) throw new NotFoundException();
-
-    const set = await this.setsService.set({
-      id: body.setId
-    });
-    if (!set || set.authorId !== user.id) throw new UnauthorizedException();
-
-    for (const card of set.cards) {
-      if (card.index === body.index) throw new ConflictException();
-    }
-
+  async createCard(@Body() body: CreateCardDto) {
     return await this.cardsService.createCard({
       index: body.index,
       term: body.term,
@@ -96,19 +85,12 @@ export class CardsController {
    *
    * @returns Updated `Card` object
    */
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, UpdateCardGuard)
   @Put(":cardId")
-  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto, @Request() req: ExpressRequest) {
-    const card = await this.cardsService.card({
-      id: params.cardId
-    });
-    if (!card) throw new NotFoundException();
-
-    if (!(await this.setsService.verifySetOwnership(req, card.setId))) throw new UnauthorizedException();
-
+  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto) {
     return await this.cardsService.updateCard({
       where: {
-        id: card.id
+        id: params.cardId
       },
       data: {
         index: body.index,
@@ -123,16 +105,9 @@ export class CardsController {
    *
    * @returns Deleted `Card` object
    */
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, DeleteCardGuard)
   @Delete(":cardId")
-  async deleteCard(@Param() params: CardIdParam, @Request() req: ExpressRequest) {
-    const card = await this.cardsService.card({
-      id: params.cardId
-    });
-    if (!card) throw new NotFoundException();
-
-    if (!(await this.setsService.verifySetOwnership(req, card.setId))) throw new UnauthorizedException();
-
+  async deleteCard(@Param() params: CardIdParam) {
     return await this.cardsService.deleteCard({
       id: params.cardId
     });

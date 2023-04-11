@@ -24,7 +24,7 @@ export class SetsService {
   public async verifySetOwnership(req: ExpressRequest, setId: string): Promise<boolean> {
     let accessToken: { id: string; email: string; };
 
-    if (req.cookies["access_token"]) {
+    if (req.cookies && req.cookies["access_token"]) {
       accessToken = jwt_decode(req.cookies["access_token"]) as { id: string; email: string; };
     } else {
       return false;
