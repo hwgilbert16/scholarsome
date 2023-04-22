@@ -28,6 +28,16 @@ export class GlobalInterceptor implements NestInterceptor {
 
     if (
       req.cookies &&
+      "authenticated" in req.cookies &&
+      !("access_token" in req.cookies) &&
+      !("refresh_token" in req.cookies)
+    ) {
+      this.authService.logout(req, context.switchToHttp().getResponse());
+      return next.handle();
+    }
+
+    if (
+      req.cookies &&
       "authenticated" in req.cookies
     ) {
       // if you have an access token but no refresh token, we know you need a new one
@@ -58,6 +68,7 @@ export class GlobalInterceptor implements NestInterceptor {
 
     if (!this.redis.get(req.cookies.refresh_token)) {
       this.authService.logout(req, res);
+      console.log("b");
       return true;
     }
 
@@ -65,6 +76,7 @@ export class GlobalInterceptor implements NestInterceptor {
       refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_TOKEN")) as { id: string; email: string; type: "refresh" };
     } catch (e) {
       this.authService.logout(req, res);
+      console.log("c");
       return true;
     }
 
