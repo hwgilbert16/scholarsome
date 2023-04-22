@@ -15,9 +15,9 @@ import { HttpsRedirectMiddleware } from "./providers/https-redirect.middleware";
 import { CardsModule } from "./cards/cards.module";
 import { UsersModule } from "./users/users.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
-import { GlobalGuard } from "./auth/global.guard";
 import { JwtModule } from "@nestjs/jwt";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_INTERCEPTOR } from "@nestjs/core";
+import { GlobalInterceptor } from "./auth/global.interceptor";
 
 @Module({
   imports: [
@@ -55,8 +55,8 @@ import { APP_GUARD } from "@nestjs/core";
   controllers: [],
   providers: [
     {
-      provide: APP_GUARD,
-      useClass: GlobalGuard
+      provide: APP_INTERCEPTOR,
+      useClass: GlobalInterceptor
     }
   ]
 })
