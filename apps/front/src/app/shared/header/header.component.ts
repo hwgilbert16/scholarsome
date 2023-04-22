@@ -75,8 +75,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async submitLogout() {
-    window.location.replace("/");
     await this.authService.logout();
+    window.location.replace("/");
   }
 
   ngOnInit(): void {
