@@ -1,5 +1,15 @@
-<div class="text-center py-5 px-2">
-  <h1 class="display-1 fw-bold">Free studying and learning for all</h1>
-  <p class="pt-2 fs-5">All your favorite study tools from the other guys, all without the ads and no premium plan to pay for.</p>
-  <button class="btn btn-lg btn-primary mt-4" (click)="this.modalService.modal.next('register-open')">Sign up for free</button>
+<div class="background">
+  <div class="login-desktop mt-3 me-3">
+    <button class="btn btn-lg btn-outline-light me-2" (click)="this.modalService.modal.next('login-open')">Log in</button>
+    <button class="btn btn-lg btn-outline-light"><a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="github"><fa-icon [icon]="faGithub"></fa-icon></a></button>
+  </div>
+  <img class="logo" src="assets/scholarsome-logo-purple-lowercase.svg">
+  <div class="information">
+    <h1 class="display-2 fw-bold">Studying done the <span class="text-decoration-underline">correct</span> way</h1>
+    <p class="display-6 subheader">No monthly fees or upsells to get between you and your study tools. Just flashcards.</p>
+    <div class="d-flex gap-2">
+      <button class="btn btn-lg btn-primary mt-4" (click)="this.modalService.modal.next('register-open')">Sign up for free</button>
+      <button class="btn btn-lg btn-outline-primary mt-4 login-mobile" (click)="this.modalService.modal.next('login-open')">Log in</button>
+    </div>
+  </div>
 </div>

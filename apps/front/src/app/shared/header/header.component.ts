@@ -8,6 +8,7 @@ import { HttpResponse } from "@angular/common/http";
 import { LoginFormCaptcha, RegisterFormCaptcha } from "@scholarsome/shared";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
+import { Location } from "@angular/common";
 
 @Component({
   selector: "scholarsome-header",
@@ -30,6 +31,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   registrationReq: HttpResponse<RegisterFormCaptcha> | number | null;
 
   faGithub = faGithub;
+  hidden = false;
 
   /**
    * @ignore
@@ -39,11 +41,19 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private modalService: ModalService,
     private authService: AuthService,
     private deviceService: DeviceDetectorService,
-    public cookieService: CookieService
+    public cookieService: CookieService,
+    private location: Location
   ) {
+    this.hidden = location.path() === "";
+
     this.modalService.modal.subscribe((e) => {
-      if (e === "register-open") {
-        this.modalRef = this.bsModalService.show(this.registerModal);
+      switch (e) {
+        case "register-open":
+          this.modalRef = this.bsModalService.show(this.registerModal);
+          break;
+        case "login-open":
+          this.modalRef = this.bsModalService.show(this.loginModal);
+          break;
       }
     });
   }
@@ -65,8 +75,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async submitLogout() {
-    await this.authService.logout();
     window.location.replace("/");
+    await this.authService.logout();
   }
 
   ngOnInit(): void {

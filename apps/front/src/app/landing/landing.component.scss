@@ -1,0 +1,109 @@
+.background {
+  background-image: url('img/desktop.svg');
+  background-color: #FFFFFF;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  min-height: 100vh;
+
+  overflow: hidden;
+}
+
+.display-2 {
+  color: #8338ff;
+}
+
+.information {
+  //outline: 5px dotted green;
+}
+
+.github {
+  color: white;
+}
+
+.logo {
+  animation: 1s ease-out 0s 1 slideInFromBottom;
+}
+
+.login-desktop {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+@media only screen and (min-device-width : 1px) and (max-device-width : 480px) {
+  .background {
+    background-image: url('img/mobile.svg');
+  }
+
+  .login-desktop {
+    display: none;
+  }
+
+  .login-mobile {
+    display: inherit;
+  }
+
+  .logo {
+    margin-top: 5%;
+    margin-left: 5%;
+    width: 50%;
+    height: 50%;
+  }
+
+  .information {
+    margin-right: 5%;
+  }
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
+  .background {
+    background-image: url('img/desktop.svg');
+  }
+
+  .login-mobile {
+    display: none;
+  }
+
+  .logo {
+    margin-left: 4%;
+    margin-top: 5%;
+    width: 25%;
+    height: 25%;
+  }
+
+  .information {
+    width: 45%;
+  }
+
+  .subheader {
+    width: 90%;
+  }
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(1000%);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 100;
+  }
+}
+
+.information {
+  animation: 1.75s ease-out 0s 1 slideInFromBottom;
+  margin-left: 5%;
+  margin-top: 10%;
+}
+
+//html {
+//  overflow-y: hidden !important;
+//  overflow-x: hidden !important;
+//}
