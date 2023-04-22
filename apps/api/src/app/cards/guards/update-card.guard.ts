@@ -10,7 +10,7 @@ import { CardIdParam, UpdateCardDto } from "@scholarsome/shared";
 import { UsersService } from "../../users/users.service";
 import { SetsService } from "../../sets/sets.service";
 import { CardsService } from "../cards.service";
-import { plainToClass, plainToInstance } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { Request } from "express";
 

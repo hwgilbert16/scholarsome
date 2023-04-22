@@ -9,6 +9,8 @@ import { lastValueFrom } from "rxjs";
 import { RecaptchaResponse } from "@scholarsome/shared";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
+import { Request, Response } from "express";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
@@ -63,5 +65,19 @@ export class AuthService {
     if (!user || !user.verified) throw new UnauthorizedException();
 
     return !!(bcrypt.compare(password, user.password));
+  }
+
+  /**
+   * Logs a user out
+   */
+  async logout(req: Request, res: Response) {
+    res.cookie("access_token", "", { httpOnly: true, expires: new Date() });
+    res.cookie("refresh_token", "", { httpOnly: true, expires: new Date() });
+    res.cookie("authenticated", "", { httpOnly: false, expires: new Date() });
+
+    const user = jwt.decode(req.cookies.access_token);
+    if (user && "email" in (user as jwt.JwtPayload)) {
+      this.redis.del(user["email"]);
+    }
   }
 }

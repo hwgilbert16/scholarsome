@@ -168,47 +168,6 @@ export class AuthController {
   */
 
   /**
-   * Checks whether an access token is still valid
-   *
-   * @returns Whether the access token is still valid
-   */
-  @Get("authenticated")
-  checkToken(@Req() req: Request) {
-    try {
-      jwt.verify(req.cookies["access_token"], this.configService.get<string>("JWT_TOKEN"));
-    } catch (e) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Refreshes a user's access token
-   *
-   * @returns True if refresh is successful, false if not
-   */
-  @Throttle(1, 600)
-  @Post("refresh")
-  refreshAccessToken(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    let refresh: { id: string; email: string; type: "refresh" };
-
-    try {
-      if (!this.redis.get(req.cookies["refresh_token"])) return false;
-
-      refresh = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_TOKEN")) as { id: string; email: string; type: "refresh" };
-    } catch (e) {
-      this.logout(res, req);
-      return false;
-    }
-
-    res.cookie("access_token", this.jwtService.sign({ id: refresh.id, email: refresh.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-
-    return true;
-  }
-
-
-  /**
    * Logs a user in and sets relevant cookies
    *
    * @returns Void, HTTP 200 if successful
@@ -252,14 +211,7 @@ export class AuthController {
    * @returns Void
    */
   @Post("logout")
-  logout(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
-    res.cookie("access_token", "", { httpOnly: true, expires: new Date() });
-    res.cookie("refresh_token", "", { httpOnly: true, expires: new Date() });
-    res.cookie("authenticated", "", { httpOnly: false, expires: new Date() });
-
-    const user = jwt.decode(req.cookies.access_token);
-    if (user && "email" in (user as jwt.JwtPayload)) {
-      this.redis.del(user["email"]);
-    }
+  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return this.authService.logout(req, res);
   }
 }

@@ -131,39 +131,4 @@ export class AuthService {
   async logout() {
     return await lastValueFrom(this.http.post("/api/auth/logout", {}));
   }
-
-
-  /**
-   * Makes a request to check whether a user's access token is valid
-   *
-   * @returns Response object of the request
-   */
-  async checkAuthenticated(): Promise<boolean> {
-    let res: boolean;
-
-    try {
-      res = await lastValueFrom(this.http.get<boolean>("/api/auth/authenticated"));
-    } catch (e) {
-      return false;
-    }
-
-    return res;
-  }
-
-  /**
-   * Makes a request to refresh the access token of a user
-   *
-   * @returns Response object of the request
-   */
-  async refreshAccessToken(): Promise<boolean> {
-    let res: boolean;
-
-    try {
-      res = await lastValueFrom(this.http.post<boolean>("/api/auth/refresh", {}));
-    } catch (e) {
-      return false;
-    }
-
-    return res;
-  }
 }

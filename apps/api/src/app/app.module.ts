@@ -15,6 +15,9 @@ import { HttpsRedirectMiddleware } from "./providers/https-redirect.middleware";
 import { CardsModule } from "./cards/cards.module";
 import { UsersModule } from "./users/users.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
+import { GlobalGuard } from "./auth/global.guard";
+import { JwtModule } from "@nestjs/jwt";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
   imports: [
@@ -40,10 +43,22 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
     SetsModule,
     MailModule,
     CardsModule,
-    UsersModule
+    UsersModule,
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get("JWT_TOKEN"),
+        signOptions: { expiresIn: "14d" }
+      }),
+      inject: [ConfigService]
+    })
   ],
   controllers: [],
-  providers: []
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GlobalGuard
+    }
+  ]
 })
 export class AppModule implements NestModule {
   constructor(private configService: ConfigService) {}
