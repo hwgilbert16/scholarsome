@@ -4,6 +4,7 @@ import { CookieService } from "ngx-cookie";
 import { Router } from "@angular/router";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { Location } from "@angular/common";
 
 @Component({
   selector: "scholarsome-landing",
@@ -18,6 +19,7 @@ export class LandingComponent implements OnInit {
     public modalService: ModalService,
     private cookieService: CookieService,
     private router: Router,
+    private location: Location,
     private deviceService: DeviceDetectorService
   ) {}
 
@@ -28,6 +30,7 @@ export class LandingComponent implements OnInit {
     this.isDesktop = this.deviceService.isDesktop();
 
     if (this.cookieService.get("authenticated") === "true") {
+      this.location.go("view");
       await this.router.navigate(["view"]);
     }
   }

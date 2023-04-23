@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, OnChanges, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
@@ -8,14 +8,14 @@ import { HttpResponse } from "@angular/common/http";
 import { LoginFormCaptcha, RegisterFormCaptcha } from "@scholarsome/shared";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
-import { Location } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "scholarsome-header",
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"]
 })
-export class HeaderComponent implements OnInit, AfterViewInit {
+export class HeaderComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild("register") registerModal: TemplateRef<HTMLElement>;
   @ViewChild("login") loginModal: TemplateRef<HTMLElement>;
 
@@ -42,10 +42,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private deviceService: DeviceDetectorService,
     public cookieService: CookieService,
-    private location: Location
+    private router: Router
   ) {
-    this.hidden = location.path() === "";
-
     this.modalService.modal.subscribe((e) => {
       switch (e) {
         case "register-open":
@@ -77,6 +75,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   async submitLogout() {
     await this.authService.logout();
     window.location.replace("/");
+  }
+
+  ngOnChanges() {
+    this.hidden = this.router.url === "/";
   }
 
   ngOnInit(): void {
