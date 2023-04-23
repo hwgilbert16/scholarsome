@@ -68,7 +68,6 @@ export class GlobalInterceptor implements NestInterceptor {
 
     if (!this.redis.get(req.cookies.refresh_token)) {
       this.authService.logout(req, res);
-      console.log("b");
       return true;
     }
 
@@ -76,7 +75,6 @@ export class GlobalInterceptor implements NestInterceptor {
       refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_TOKEN")) as { id: string; email: string; type: "refresh" };
     } catch (e) {
       this.authService.logout(req, res);
-      console.log("c");
       return true;
     }
 

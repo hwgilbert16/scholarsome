@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnChanges, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
@@ -8,14 +8,14 @@ import { HttpResponse } from "@angular/common/http";
 import { LoginFormCaptcha, RegisterFormCaptcha } from "@scholarsome/shared";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
-import { Router } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 
 @Component({
   selector: "scholarsome-header",
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"]
 })
-export class HeaderComponent implements OnInit, AfterViewInit, OnChanges {
+export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild("register") registerModal: TemplateRef<HTMLElement>;
   @ViewChild("login") loginModal: TemplateRef<HTMLElement>;
 
@@ -77,11 +77,13 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnChanges {
     window.location.replace("/");
   }
 
-  ngOnChanges() {
-    this.hidden = this.router.url === "/";
-  }
-
   ngOnInit(): void {
+    this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        this.hidden = this.router.url === "/";
+      }
+    });
+
     const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
       if (!cookie.includes("verified")) continue;
