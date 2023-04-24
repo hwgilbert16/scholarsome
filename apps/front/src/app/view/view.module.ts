@@ -9,6 +9,9 @@ import { PopoverModule } from "ngx-bootstrap/popover";
 import { StudySetCardComponent } from "./study-set/study-set-card/study-set-card.component";
 import { StudySetFlashcardsComponent } from "./study-set/study-set-flashcards/study-set-flashcards.component";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
+import { StudySetQuizComponent } from "./study-set/study-set-quiz/study-set-quiz.component";
+import { FormsModule } from "@angular/forms";
+import { StudySetQuizQuestionComponent } from "./study-set/study-set-quiz/study-set-quiz-question/study-set-quiz-question.component";
 
 @NgModule({
   declarations: [
@@ -16,17 +19,18 @@ import { TooltipModule } from "ngx-bootstrap/tooltip";
     ViewComponent,
     StudySetDescriptionComponent,
     StudySetCardComponent,
-    StudySetFlashcardsComponent
+    StudySetFlashcardsComponent,
+    StudySetQuizComponent,
+    StudySetQuizQuestionComponent
   ],
-  exports: [
-    StudySetCardComponent
-  ],
+  exports: [StudySetCardComponent],
   imports: [
     CommonModule,
     FontAwesomeModule,
     ViewRoutingModule,
     PopoverModule,
-    TooltipModule
+    TooltipModule,
+    FormsModule
   ]
 })
 export class ViewModule {}

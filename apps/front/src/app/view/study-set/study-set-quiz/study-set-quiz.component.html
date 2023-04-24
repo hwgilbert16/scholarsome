@@ -1,0 +1,45 @@
+<div class="container-fluid options-container rounded" [hidden]="created">
+  <div class="row justify-content-center align-items-center">
+    <div class="quiz-creator text-center shadow rounded mb-3">
+      <h1 class="mt-3 mb-5">Create a Quiz</h1>
+      <form #optionsForm="ngForm" (ngSubmit)="beginQuiz(optionsForm)" class="fs-5 options-form" ngNativeValidate>
+        <div class="form-check form-switch options-buttons">
+          <div class="d-flex justify-content-between">
+            <p>Written</p>
+            <input class="form-check-input options-selector" type="checkbox" role="switch" name="written" [disabled]="!trueOrFalseSelected && !multipleChoiceSelected" [(ngModel)]="writtenSelected" checked>
+          </div>
+          <div class="d-flex justify-content-between">
+            <p>True/False</p>
+            <input class="form-check-input options-selector" type="checkbox" role="switch" name="trueOrFalse" [disabled]="!writtenSelected && !multipleChoiceSelected" [(ngModel)]="trueOrFalseSelected" checked>
+          </div>
+          <div class="d-flex justify-content-between">
+            <p>Multiple Choice</p>
+            <input class="form-check-input options-selector" type="checkbox" role="switch" name="multipleChoice" [disabled]="!writtenSelected && !trueOrFalseSelected" [(ngModel)]="multipleChoiceSelected" checked>
+          </div>
+          <hr class="mb-4">
+          <div class="d-flex justify-content-between options-dropdown">
+            <p class="options-text">Answer with</p>
+            <select class="form-select w-50 h-50 options-dropdown" name="answerWith" required ngModel>
+              <option selected disabled>Select</option>
+              <option value="term">Term</option>
+              <option value="definition">Definition</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <p class="options-text">Number of questions <span class="fs-6 fw-light text-secondary ms-2 options-disclaimer">(selecting more than 10 will create more than 1 question per card)</span></p>
+            <input type="number" class="form-control h-50 w-25" name="numberOfQuestions" value="1" id="aa" min="1" required ngModel>
+          </div>
+          <div class="d-flex justify-content-end mt-4 mb-4">
+            <button type="submit" class="btn btn-primary">Begin quiz</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid quiz">
+  <form #quiz>
+  </form>
+</div>

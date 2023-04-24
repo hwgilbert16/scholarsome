@@ -4,6 +4,7 @@ import { ViewComponent } from "./view.component";
 import { AuthGuardService } from "../auth/auth-guard.service";
 import { ViewStudySetsComponent } from "./study-set/view-study-sets.component";
 import { StudySetFlashcardsComponent } from "./study-set/study-set-flashcards/study-set-flashcards.component";
+import { StudySetQuizComponent } from "./study-set/study-set-quiz/study-set-quiz.component";
 
 const routes: Routes = [
   {
@@ -18,6 +19,10 @@ const routes: Routes = [
   {
     path: "sets/:setId/flashcards",
     component: StudySetFlashcardsComponent
+  },
+  {
+    path: "sets/:setId/quiz",
+    component: StudySetQuizComponent
   }
 ];
 

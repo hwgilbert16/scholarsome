@@ -10,6 +10,25 @@ body {
   background-color: white;
 }
 
+.btn-outline-primary:hover {
+  background-color: #8438ff !important;
+  outline: #8438ff !important;
+  border-color: #8438ff !important;
+  box-shadow: none !important;
+}
+
+.btn-outline-primary:active {
+  background-color: #8438ff !important;
+  outline: #8438ff !important;
+  border-color: #8438ff !important;
+  box-shadow: none !important;
+}
+
+.btn-outline-primary {
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
 .show > .btn-primary.dropdown-toggle {
   background-color: #8438ff;
   outline: none !important;
