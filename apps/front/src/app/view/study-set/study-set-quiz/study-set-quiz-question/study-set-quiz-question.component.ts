@@ -1,4 +1,6 @@
 import { Component, Input } from "@angular/core";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { QuizQuestion } from "@scholarsome/shared";
 
 @Component({
   selector: "scholarsome-study-set-quiz-question",
@@ -6,9 +8,21 @@ import { Component, Input } from "@angular/core";
   styleUrls: ["./study-set-quiz-question.component.scss"]
 })
 export class StudySetQuizQuestionComponent {
-  @Input() question: string;
-  @Input() questionType: "written" | "trueOrFalse" | "multipleChoice";
-  @Input() questionNumber: number;
-  @Input() termOrDefinition: string;
-  @Input() questionOptions?: { option: string; correct: boolean; }[] | null;
+  @Input() question: QuizQuestion;
+
+  faArrowRight = faArrowRight;
+  tfOption2: string;
+
+  constructor() {
+    if (
+      this.question &&
+      this.question.options &&
+      this.question.options.length === 2
+    ) {
+      console.log(this.tfOption2);
+      this.tfOption2 = this.question.options[1].option;
+    }
+  }
+
+  protected readonly webkitURL = webkitURL;
 }

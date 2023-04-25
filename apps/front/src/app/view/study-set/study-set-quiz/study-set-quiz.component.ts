@@ -100,16 +100,18 @@ export class StudySetQuizComponent implements OnInit {
             answer: this.set.cards[index][questionAnswerWith]
           });
         } else if (questionType.type === "trueOrFalse") {
-          const answer = Math.floor(Math.random() * 2) + 1 === 1 ? "True" : "False";
+          // 30% chance that the answer is true
+          // otherwise the chance is 1/number of cards in set
+          const trueResult = Math.random() >= 0.7;
 
           let options: { option: string; correct: boolean; }[] = [
             {
-              option: answer,
-              correct: true
+              option: "True",
+              correct: trueResult
             },
             {
-              option: answer === "True" ? "False" : "True",
-              correct: false
+              option: "False",
+              correct: !trueResult
             }
           ];
 
@@ -120,10 +122,10 @@ export class StudySetQuizComponent implements OnInit {
             number: questions.length + 1,
             answerWith: questionAnswerWith,
             // this might need a +1, need to check
-            trueOrFalseOption: this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith],
+            trueOrFalseOption: trueResult ? this.set.cards[index][questionAnswerWith] : this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith],
             type: "trueOrFalse",
             options,
-            answer
+            answer: trueResult.toString()
           });
         } else {
           let options: { option: string; correct: boolean; }[] = [
@@ -159,11 +161,7 @@ export class StudySetQuizComponent implements OnInit {
     for (const question of questions) {
       const qComponent = this.quiz.createComponent<StudySetQuizQuestionComponent>(StudySetQuizQuestionComponent);
 
-      qComponent.instance.question = question.question;
-      qComponent.instance.questionType = question.type;
-      qComponent.instance.questionNumber = question.number;
-      qComponent.instance.termOrDefinition = question.answerWith;
-      qComponent.instance.questionOptions = question.options ? question.options : null;
+      qComponent.instance.question = question;
     }
   }
 

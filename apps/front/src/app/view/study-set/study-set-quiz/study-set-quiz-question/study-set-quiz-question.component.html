@@ -1,19 +1,29 @@
-<div class="d-flex d-flex mt-3 shadow rounded quiz-question align-items-center">
-  <p class="text-secondary fs-5 ms-4 mt-3">#{{questionNumber}}<br><span class="fs-6">{{termOrDefinition}}</span></p>
+<div class="d-flex d-flex mt-5 shadow rounded quiz-question align-items-center">
+  <p class="text-secondary fs-5 ms-4 mt-3">#{{question.number}}</p>
   <div class="mx-4 container-fluid mt-3 mb-4">
-    <p class="fs-1 text-center">{{question}}</p>
-    <div class="quiz-question-written" hidden>
-      <input type="email" class="form-control shadow-sm fs-4" id="exampleInputEmail1" aria-describedby="emailHelp">
+    <p class="fs-1 text-center" [hidden]="question.type === 'trueOrFalse'">{{question.question}}</p>
+    <p class="fs-1 text-center" [hidden]="question.type !== 'trueOrFalse'">{{question.question}} <fa-icon [icon]="faArrowRight"></fa-icon> {{question.trueOrFalseOption ? question.trueOrFalseOption : ''}}</p>
+    <div class="quiz-question-written" [hidden]="question.type !== 'written'">
+      <p class="text-secondary text-center">Answer with the corresponding {{question.answerWith}}</p>
+      <input type="text" class="form-control text-center shadow-sm fs-4">
     </div>
-    <div class="quiz-question-selection text-center" [hidden]="!questionOptions">
-      <input type="radio" class="btn-check" name="options" id="option2" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="option2">This is a very big and extended question</label>
-      <input type="radio" class="btn-check" name="options" id="option4" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="option4">This is an even larger and more written out question with a lot of information for people to interpret</label>
-      <input type="radio" class="btn-check" name="options" id="option3" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="option3">This is an even larger and more written out question with a lot of information for people to interpret</label>
-      <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="option1">This is an even larger and more written out question with a lot of information for people to interpret</label>
+    <div class="quiz-question-tf text-center" [hidden]="question.type !== 'trueOrFalse'">
+      <p class="text-secondary text-center">Answer with whether this is true or false</p>
+      <input type="radio" class="btn-check" name="options" id="tf-option1" autocomplete="off">
+      <label class="btn btn-outline-primary mx-1 my-1" for="tf-option1">True</label>
+      <input type="radio" class="btn-check" name="options" id="tf-option2" autocomplete="off">
+      <label class="btn btn-outline-primary mx-1 my-1" for="tf-option2">False</label>
+    </div>
+    <div class="quiz-question-mc text-center" [hidden]="question.type !== 'multipleChoice'">
+      <p class="text-secondary text-center">Answer by selecting which option is correct</p>
+      <input type="radio" class="btn-check" name="options" id="mc-option1" autocomplete="off">
+      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option1">This is a very big and extended question</label>
+      <input type="radio" class="btn-check" name="options" id="mc-option2" autocomplete="off">
+      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option2">This is an even larger and more written out question with a lot of information for people to interpret</label>
+      <input type="radio" class="btn-check" name="options" id="mc-option3" autocomplete="off">
+      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option3">This is an even larger and more written out question with a lot of information for people to interpret</label>
+      <input type="radio" class="btn-check" name="options" id="mc-option4" autocomplete="off">
+      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option4">This is an even larger and more written out question with a lot of information for people to interpret</label>
     </div>
   </div>
 </div>
