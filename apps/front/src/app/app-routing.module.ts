@@ -12,8 +12,8 @@ const routes: Routes = [
     loadChildren: () => import("./create/create.module").then((m) => m.CreateModule)
   },
   {
-    path: "view",
-    loadChildren: () => import("./view/view.module").then((m) => m.ViewModule)
+    path: "homepage",
+    loadChildren: () => import("./homepage/homepage.module").then((m) => m.HomepageModule)
   },
   {
     path: "study-set",

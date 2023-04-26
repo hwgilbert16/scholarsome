@@ -8,7 +8,6 @@ import {
   StudySetQuizQuestionComponent
 } from "./study-set-quiz/study-set-quiz-question/study-set-quiz-question.component";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { PopoverModule } from "ngx-bootstrap/popover";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
@@ -27,7 +26,6 @@ import { StudySetRoutingModule } from "./study-set-routing.module";
     CommonModule,
     StudySetRoutingModule,
     FontAwesomeModule,
-    PopoverModule,
     TooltipModule,
     FormsModule,
     RouterModule

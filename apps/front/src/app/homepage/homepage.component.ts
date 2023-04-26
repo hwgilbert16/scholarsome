@@ -1,15 +1,15 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
-import { StudySetDescriptionComponent } from "./study-set-description/study-set-description.component";
+import { HomepageSetDescriptionComponent } from "./homepage-set-description/homepage-set-description.component";
 import { Set } from "@scholarsome/shared";
 
 @Component({
   selector: "scholarsome-view",
-  templateUrl: "./view.component.html",
-  styleUrls: ["./view.component.scss"]
+  templateUrl: "./homepage.component.html",
+  styleUrls: ["./homepage.component.scss"]
 })
-export class ViewComponent implements OnInit {
+export class HomepageComponent implements OnInit {
   /**
    * @ignore
    */
@@ -31,7 +31,7 @@ export class ViewComponent implements OnInit {
     this.container.nativeElement.removeAttribute("hidden");
 
     for (const set of sets) {
-      const setCard = this.cardContainer.createComponent<StudySetDescriptionComponent>(StudySetDescriptionComponent);
+      const setCard = this.cardContainer.createComponent<HomepageSetDescriptionComponent>(HomepageSetDescriptionComponent);
 
       setCard.instance.title = set.title;
       setCard.instance.description = set.description ? set.description : "";

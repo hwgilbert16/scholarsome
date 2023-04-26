@@ -64,7 +64,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.loginReq = 0;
     this.loginReq = await this.authService.login(form.value);
 
-    if (this.loginReq === 200) window.location.assign("view");
+    if (this.loginReq === 200) window.location.assign("homepage");
   }
 
   async submitRegister(form: NgForm) {

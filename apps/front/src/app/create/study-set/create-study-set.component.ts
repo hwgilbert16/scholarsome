@@ -67,7 +67,7 @@ export class CreateStudySetComponent implements OnInit {
       cards
     });
 
-    await this.router.navigate(["/view/sets/" + set?.id]);
+    await this.router.navigate(["/study-set/" + set?.id]);
   }
 
   updateCardIndices() {

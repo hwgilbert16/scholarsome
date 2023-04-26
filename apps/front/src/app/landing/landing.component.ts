@@ -30,8 +30,8 @@ export class LandingComponent implements OnInit {
     this.isDesktop = this.deviceService.isDesktop();
 
     if (this.cookieService.get("authenticated") === "true") {
-      this.location.go("view");
-      await this.router.navigate(["view"]);
+      this.location.go("homepage");
+      await this.router.navigate(["homepage"]);
     }
   }
 }
