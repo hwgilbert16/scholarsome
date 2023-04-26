@@ -24,7 +24,7 @@
   </div>
 
   <div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center" #controlbar>
-    <fa-icon class="fs-2 back-arrow" [routerLink]="['/view', 'sets', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+    <fa-icon class="fs-2 back-arrow" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
     <div class="fs-2"></div>
     <div class="ms-2 my-2">
       <button type="button" class="btn btn-outline-primary" (click)="this.modalRef = this.modalService.show(this.settings);">Settings</button>

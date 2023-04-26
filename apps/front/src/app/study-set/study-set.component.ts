@@ -1,16 +1,16 @@
 import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Set } from "@scholarsome/shared";
-import { SetsService } from "../../shared/http/sets.service";
-import { CardComponent } from "../../shared/card/card.component";
-import { UsersService } from "../../shared/http/users.service";
+import { SetsService } from "../shared/http/sets.service";
+import { CardComponent } from "../shared/card/card.component";
+import { UsersService } from "../shared/http/users.service";
 
 @Component({
-  selector: "scholarsome-view-study-sets",
-  templateUrl: "./view-study-sets.component.html",
-  styleUrls: ["./view-study-sets.component.scss"]
+  selector: "scholarsome-study-set",
+  templateUrl: "./study-set.component.html",
+  styleUrls: ["./study-set.component.scss"]
 })
-export class ViewStudySetsComponent implements OnInit {
+export class StudySetComponent implements OnInit {
   /**
    * @ignore
    */

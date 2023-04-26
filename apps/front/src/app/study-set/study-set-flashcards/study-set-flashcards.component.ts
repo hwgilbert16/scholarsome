@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from "@angular/core";
-import { SetsService } from "../../../shared/http/sets.service";
+import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";

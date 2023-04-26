@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { SetsService } from "../../../shared/http/sets.service";
+import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
 import { StudySetQuizQuestionComponent } from "./study-set-quiz-question/study-set-quiz-question.component";
