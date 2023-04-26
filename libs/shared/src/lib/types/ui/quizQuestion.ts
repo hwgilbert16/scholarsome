@@ -1,6 +1,6 @@
 export interface QuizQuestion {
   question: string;
-  number: number;
+  index: number;
   answerWith: string;
   trueOrFalseOption?: string;
   type: "written" | "trueOrFalse" | "multipleChoice";

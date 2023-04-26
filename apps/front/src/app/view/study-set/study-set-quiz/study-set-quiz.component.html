@@ -39,7 +39,9 @@
   </div>
 </div>
 
-<div class="container-fluid quiz">
-  <form #quiz>
+<div class="container-fluid quiz" [hidden]="!created">
+  <form (ngSubmit)="submitQuiz(quizForm)" #quizForm="ngForm" ngNativeValidate>
+    <div #quiz></div>
+    <button type="submit" class="btn btn-primary container-fluid my-5">Submit quiz</button>
   </form>
 </div>

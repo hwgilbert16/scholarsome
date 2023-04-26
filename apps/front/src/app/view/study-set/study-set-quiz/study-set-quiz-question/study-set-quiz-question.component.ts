@@ -11,18 +11,4 @@ export class StudySetQuizQuestionComponent {
   @Input() question: QuizQuestion;
 
   faArrowRight = faArrowRight;
-  tfOption2: string;
-
-  constructor() {
-    if (
-      this.question &&
-      this.question.options &&
-      this.question.options.length === 2
-    ) {
-      console.log(this.tfOption2);
-      this.tfOption2 = this.question.options[1].option;
-    }
-  }
-
-  protected readonly webkitURL = webkitURL;
 }

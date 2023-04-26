@@ -18,6 +18,7 @@ export class StudySetQuizComponent implements OnInit {
   ) {}
 
   @ViewChild("quiz", { static: true, read: ViewContainerRef }) quiz: ViewContainerRef;
+  @ViewChild("quizForm") quizForm: NgForm;
 
   writtenSelected = true;
   trueOrFalseSelected = true;
@@ -30,7 +31,7 @@ export class StudySetQuizComponent implements OnInit {
   beginQuiz(form: NgForm) {
     this.created = true;
 
-    const questions: QuizQuestion[] = [];
+    let questions: QuizQuestion[] = [];
     let unusedIndices = Array.from(Array(this.set.cards.length).keys());
 
     const answerWith = form.controls["answerWith"].value;
@@ -94,7 +95,7 @@ export class StudySetQuizComponent implements OnInit {
         if (questionType.type === "written") {
           questions.push({
             question: this.set.cards[index][questionAskWith],
-            number: questions.length + 1,
+            index: 0,
             answerWith: questionAnswerWith,
             type: "written",
             answer: this.set.cards[index][questionAnswerWith]
@@ -104,7 +105,7 @@ export class StudySetQuizComponent implements OnInit {
           // otherwise the chance is 1/number of cards in set
           const trueResult = Math.random() >= 0.7;
 
-          let options: { option: string; correct: boolean; }[] = [
+          const options: { option: string; correct: boolean; }[] = [
             {
               option: "True",
               correct: trueResult
@@ -115,14 +116,22 @@ export class StudySetQuizComponent implements OnInit {
             }
           ];
 
-          options = options.sort(() => 0.5 - Math.random());
+          let trueOrFalseOption = "";
+
+          if (trueResult) {
+            trueOrFalseOption = this.set.cards[index][questionAnswerWith];
+          } else {
+            do {
+              trueOrFalseOption = this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith];
+            } while (trueOrFalseOption === this.set.cards[index][questionAnswerWith]);
+          }
 
           questions.push({
             question: this.set.cards[index][questionAskWith],
-            number: questions.length + 1,
+            index: 0,
             answerWith: questionAnswerWith,
             // this might need a +1, need to check
-            trueOrFalseOption: trueResult ? this.set.cards[index][questionAnswerWith] : this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith],
+            trueOrFalseOption,
             type: "trueOrFalse",
             options,
             answer: trueResult.toString()
@@ -134,12 +143,16 @@ export class StudySetQuizComponent implements OnInit {
               correct: true
             }
           ];
-          let questionIndices = Array.from(Array(this.set.cards.length).keys()).sort(() => 0.5 - Math.random());
-          questionIndices = questionIndices.splice(0, 3);
 
-          for (let i = 0; i < questionIndices.length; i++) {
+          for (let i = 0; i < 3; i++) {
+            let option = "";
+
+            do {
+              option = this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith];
+            } while (options.filter((o) => o.option === option).length > 0);
+
             options.push({
-              option: this.set.cards[questionIndices[i]][questionAnswerWith],
+              option,
               correct: false
             });
           }
@@ -148,7 +161,7 @@ export class StudySetQuizComponent implements OnInit {
 
           questions.push({
             question: this.set.cards[index][questionAskWith],
-            number: questions.length + 1,
+            index: 0,
             answerWith: questionAnswerWith,
             type: "multipleChoice",
             answer: this.set.cards[index][questionAnswerWith],
@@ -158,11 +171,19 @@ export class StudySetQuizComponent implements OnInit {
       }
     }
 
-    for (const question of questions) {
+    questions = questions.sort(() => 0.5 - Math.random());
+
+    for (let i = 0; i < questions.length; i++) {
+      questions[i].index = i;
+
       const qComponent = this.quiz.createComponent<StudySetQuizQuestionComponent>(StudySetQuizQuestionComponent);
 
-      qComponent.instance.question = question;
+      qComponent.instance.question = questions[i];
     }
+  }
+
+  submitQuiz(form: NgForm) {
+    console.log(form.controls);
   }
 
   async ngOnInit(): Promise<void> {

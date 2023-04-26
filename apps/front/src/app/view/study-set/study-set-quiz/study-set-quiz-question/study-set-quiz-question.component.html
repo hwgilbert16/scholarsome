@@ -1,29 +1,25 @@
 <div class="d-flex d-flex mt-5 shadow rounded quiz-question align-items-center">
-  <p class="text-secondary fs-5 ms-4 mt-3">#{{question.number}}</p>
+  <p class="text-secondary fs-5 ms-4 mt-3">#{{question.index + 1}}</p>
   <div class="mx-4 container-fluid mt-3 mb-4">
     <p class="fs-1 text-center" [hidden]="question.type === 'trueOrFalse'">{{question.question}}</p>
     <p class="fs-1 text-center" [hidden]="question.type !== 'trueOrFalse'">{{question.question}} <fa-icon [icon]="faArrowRight"></fa-icon> {{question.trueOrFalseOption ? question.trueOrFalseOption : ''}}</p>
     <div class="quiz-question-written" [hidden]="question.type !== 'written'">
       <p class="text-secondary text-center">Answer with the corresponding {{question.answerWith}}</p>
-      <input type="text" class="form-control text-center shadow-sm fs-4">
+      <input type="text" class="form-control text-center shadow-sm fs-4" [name]="'q' + question.index" [id]="'q' + question.index + '-written'" [required]="question.type === 'written'" ngModel>
     </div>
     <div class="quiz-question-tf text-center" [hidden]="question.type !== 'trueOrFalse'">
       <p class="text-secondary text-center">Answer with whether this is true or false</p>
-      <input type="radio" class="btn-check" name="options" id="tf-option1" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="tf-option1">True</label>
-      <input type="radio" class="btn-check" name="options" id="tf-option2" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="tf-option2">False</label>
+      <input type="radio" class="btn-check" [name]="'q' + question.index" [id]="'q' + question.index + '-tf-option1'" [required]="question.type === 'trueOrFalse'" autocomplete="off" ngModel>
+      <label class="btn btn-outline-primary mx-1 my-1" [for]="'q' + question.index + '-tf-option1'">True</label>
+      <input type="radio" class="btn-check" [name]="'q' + question.index" [id]="'q' + question.index + '-tf-option2'" [required]="question.type === 'trueOrFalse'" autocomplete="off" ngModel>
+      <label class="btn btn-outline-primary mx-1 my-1" [for]="'q' + question.index + '-tf-option2'">False</label>
     </div>
     <div class="quiz-question-mc text-center" [hidden]="question.type !== 'multipleChoice'">
-      <p class="text-secondary text-center">Answer by selecting which option is correct</p>
-      <input type="radio" class="btn-check" name="options" id="mc-option1" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option1">This is a very big and extended question</label>
-      <input type="radio" class="btn-check" name="options" id="mc-option2" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option2">This is an even larger and more written out question with a lot of information for people to interpret</label>
-      <input type="radio" class="btn-check" name="options" id="mc-option3" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option3">This is an even larger and more written out question with a lot of information for people to interpret</label>
-      <input type="radio" class="btn-check" name="options" id="mc-option4" autocomplete="off">
-      <label class="btn btn-outline-primary mx-1 my-1" for="mc-option4">This is an even larger and more written out question with a lot of information for people to interpret</label>
+      <p class="text-secondary text-center">Answer by selecting the correct option</p>
+      <div *ngFor="let option of question.options; index as i">
+        <input type="radio" class="btn-check" [name]="'q' + question.index" [id]="'q' + question.index + '-mc-option' + i" [required]="question.type === 'multipleChoice'" autocomplete="off">
+        <label class="btn btn-outline-primary mx-1 my-1" [for]="'q' + question.index + '-mc-option' + i">{{option.option}}</label>
+      </div>
     </div>
   </div>
 </div>
