@@ -10,7 +10,7 @@ export class SetsService {
   /**
    * @ignore
    */
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   /**
    * Makes a request to find a unique set
