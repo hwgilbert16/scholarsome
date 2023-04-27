@@ -1,3 +1,17 @@
+.set-card:hover {
+  --bs-card-border-color: #8438ff;
+}
+
+.card-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+a {
+  color: inherit;
+}
+
 .spinner-border {
   width: 6rem;
   height: 6rem;
