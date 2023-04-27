@@ -12,7 +12,7 @@ export class HomepageComponent implements OnInit {
   /**
    * @ignore
    */
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   @ViewChild("cards", { static: true, read: ViewContainerRef }) cardContainer: ViewContainerRef;
   @ViewChild("container", { static: true }) container: ElementRef;
