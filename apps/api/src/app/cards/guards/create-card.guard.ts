@@ -16,8 +16,8 @@ import { plainToClass } from "class-transformer";
 @Injectable()
 export class CreateCardGuard implements CanActivate {
   constructor(
-    private usersService: UsersService,
-    private setsService: SetsService
+    private readonly usersService: UsersService,
+    private readonly setsService: SetsService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

@@ -32,11 +32,11 @@ export class AuthController {
    * @ignore
    */
   constructor(
-    private usersService: UsersService,
-    private authService: AuthService,
-    private configService: ConfigService,
-    private mailService: MailService,
-    private jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
+    private readonly jwtService: JwtService,
     @InjectRedis() private readonly redis: Redis
   ) {}
 

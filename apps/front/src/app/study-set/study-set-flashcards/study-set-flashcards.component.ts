@@ -14,10 +14,10 @@ export class StudySetFlashcardsComponent implements OnInit {
    * @ignore
    */
   constructor(
-    private route: ActivatedRoute,
-    private sets: SetsService,
-    private router: Router,
-    public modalService: BsModalService
+    private readonly route: ActivatedRoute,
+    private readonly sets: SetsService,
+    private readonly router: Router,
+    public readonly modalService: BsModalService
   ) {}
 
   modalRef?: BsModalRef;
@@ -33,8 +33,7 @@ export class StudySetFlashcardsComponent implements OnInit {
 
   setId: string | null;
 
-  shuffle = false;
-
+  shufflingEnabled = false;
   answer = "Definition";
   side = "Term";
   index = 0;
@@ -44,8 +43,8 @@ export class StudySetFlashcardsComponent implements OnInit {
   }
 
   shuffleCards() {
-    this.shuffle = !this.shuffle;
-    if (this.shuffle) {
+    this.shufflingEnabled = !this.shufflingEnabled;
+    if (this.shufflingEnabled) {
       this.cards = this.cards.sort(() => 0.5 - Math.random());
     }
 

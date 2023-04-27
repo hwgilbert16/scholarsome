@@ -26,7 +26,11 @@ export class CardsController {
   /**
    * @ignore
    */
-  constructor(private cardsService: CardsService, private setsService: SetsService, private usersService: UsersService) {}
+  constructor(
+    private readonly cardsService: CardsService,
+    private readonly setsService: SetsService,
+    private readonly usersService: UsersService
+  ) {}
 
   /**
    * Gets a card given a card ID

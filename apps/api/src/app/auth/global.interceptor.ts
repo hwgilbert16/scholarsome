@@ -12,9 +12,9 @@ import { Observable } from "rxjs";
 @Injectable()
 export class GlobalInterceptor implements NestInterceptor {
   constructor(
-    private configService: ConfigService,
-    private jwtService: JwtService,
-    private authService: AuthService,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+    private readonly authService: AuthService,
     @InjectRedis() private readonly redis: Redis
   ) {}
 

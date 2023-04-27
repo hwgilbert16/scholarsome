@@ -37,12 +37,12 @@ export class HeaderComponent implements OnInit, AfterViewInit {
    * @ignore
    */
   constructor(
-    private bsModalService: BsModalService,
-    private modalService: ModalService,
-    private authService: AuthService,
-    private deviceService: DeviceDetectorService,
-    public cookieService: CookieService,
-    private router: Router
+    private readonly bsModalService: BsModalService,
+    private readonly modalService: ModalService,
+    private readonly authService: AuthService,
+    private readonly deviceService: DeviceDetectorService,
+    private readonly router: Router,
+    public readonly cookieService: CookieService
   ) {
     this.modalService.modal.subscribe((e) => {
       switch (e) {

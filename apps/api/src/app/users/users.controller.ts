@@ -5,7 +5,7 @@ import { Request as ExpressRequest } from "express";
 
 @Controller("users")
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   /**
    * Gets a user given a user ID

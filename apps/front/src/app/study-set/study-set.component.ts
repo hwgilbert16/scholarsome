@@ -15,27 +15,24 @@ export class StudySetComponent implements OnInit {
    * @ignore
    */
   constructor(
-    private route: ActivatedRoute,
-    private sets: SetsService,
-    private users: UsersService,
-    private router: Router
+    private readonly route: ActivatedRoute,
+    private readonly sets: SetsService,
+    private readonly users: UsersService,
+    private readonly router: Router
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
   @ViewChild("container", { static: true }) container: ElementRef;
-
   @ViewChild("editButton", { static: true }) editButton: ElementRef;
-
   @ViewChild("cardsContainer", { static: true, read: ViewContainerRef }) cardsContainer: ViewContainerRef;
 
   userIsAuthor = false;
-  editing = false;
-
+  isEditing = false;
   setId: string | null;
+
   author: string;
 
   cards: ComponentRef<CardComponent>[] = [];
-
   set: Set | null;
 
   cookieExists(name: string): boolean {
@@ -103,7 +100,7 @@ export class StudySetComponent implements OnInit {
   }
 
   editCards() {
-    this.editing = true;
+    this.isEditing = true;
 
     for (const [i, card] of this.cards.entries()) {
       card.instance.editingEnabled = true;
@@ -140,12 +137,12 @@ export class StudySetComponent implements OnInit {
         })
       });
 
-      this.editing = false;
+      this.isEditing = false;
     }
   }
 
   viewCards() {
-    this.editing = false;
+    this.isEditing = false;
 
     this.cards = [];
     this.cardsContainer.clear();

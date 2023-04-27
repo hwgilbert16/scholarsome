@@ -8,7 +8,7 @@ export class CardsService {
   /**
    * @ignore
    */
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Queries the database for a unique card

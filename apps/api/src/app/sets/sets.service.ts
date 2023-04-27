@@ -11,7 +11,10 @@ export class SetsService {
   /**
    * @ignore
    */
-  constructor(private prisma: PrismaService, private usersService: UsersService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usersService: UsersService
+  ) {}
 
   /**
    * Verifies whether a set belongs to a user given their access token cookie

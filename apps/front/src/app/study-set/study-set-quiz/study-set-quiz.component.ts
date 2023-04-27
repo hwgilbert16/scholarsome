@@ -12,9 +12,9 @@ import { StudySetQuizQuestionComponent } from "./study-set-quiz-question/study-s
 })
 export class StudySetQuizComponent implements OnInit {
   constructor(
-    private sets: SetsService,
-    private route: ActivatedRoute,
-    private router: Router
+    private readonly sets: SetsService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   @ViewChild("quiz", { static: true, read: ViewContainerRef }) quiz: ViewContainerRef;

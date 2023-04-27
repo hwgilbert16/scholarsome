@@ -17,9 +17,9 @@ import { Request } from "express";
 @Injectable()
 export class UpdateCardGuard implements CanActivate {
   constructor(
-    private usersService: UsersService,
-    private setsService: SetsService,
-    private cardsService: CardsService
+    private readonly usersService: UsersService,
+    private readonly setsService: SetsService,
+    private readonly cardsService: CardsService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

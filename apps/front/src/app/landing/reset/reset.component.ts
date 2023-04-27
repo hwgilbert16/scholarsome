@@ -11,7 +11,10 @@ import { CookieService } from "ngx-cookie";
   styleUrls: ["./reset.component.scss"]
 })
 export class ResetComponent {
-  constructor(private authService: AuthService, public cookieService: CookieService) {}
+  constructor(
+    private readonly authService: AuthService,
+    public readonly cookieService: CookieService
+  ) {}
 
   @ViewChild("resetForm") resetForm: NgForm;
 

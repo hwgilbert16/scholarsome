@@ -6,7 +6,7 @@ import jwt_decode from "jwt-decode";
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Decodes the access token JWT

@@ -18,11 +18,11 @@ export class AuthService {
    * @ignore
    */
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private mailService: MailService,
-    private httpService: HttpService,
-    private configService: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
     @InjectRedis() private readonly redis: Redis
   ) {}
 

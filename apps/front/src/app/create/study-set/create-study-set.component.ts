@@ -15,9 +15,9 @@ export class CreateStudySetComponent implements OnInit {
    * @ignore
    */
   constructor(
-    private http: HttpClient,
-    private router: Router,
-    private sets: SetsService
+    private readonly http: HttpClient,
+    private readonly router: Router,
+    private readonly sets: SetsService
   ) {}
 
   @ViewChild("cardList", { static: true, read: ViewContainerRef }) cardList: ViewContainerRef;

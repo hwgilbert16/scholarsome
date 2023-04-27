@@ -9,9 +9,9 @@ export class MailService {
    * @ignore
    */
   constructor(
-    private mailerService: MailerService,
-    private jwtService: JwtService,
-    private configService: ConfigService
+    private readonly mailerService: MailerService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService
   ) {}
 
   /**

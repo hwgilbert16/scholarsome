@@ -16,11 +16,11 @@ export class LandingComponent implements OnInit {
    * @ignore
    */
   constructor(
-    public modalService: ModalService,
-    private cookieService: CookieService,
-    private router: Router,
-    private location: Location,
-    private deviceService: DeviceDetectorService
+    private readonly cookieService: CookieService,
+    private readonly router: Router,
+    private readonly location: Location,
+    private readonly deviceService: DeviceDetectorService,
+    public readonly modalService: ModalService
   ) {}
 
   isDesktop: boolean;

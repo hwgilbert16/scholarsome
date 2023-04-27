@@ -16,8 +16,8 @@ import { validate } from "class-validator";
 @Injectable()
 export class DeleteCardGuard implements CanActivate {
   constructor(
-    private cardsService: CardsService,
-    private setsService: SetsService
+    private readonly cardsService: CardsService,
+    private readonly setsService: SetsService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

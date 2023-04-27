@@ -22,7 +22,10 @@ export class SetsController {
   /**
    * @ignore
    */
-  constructor(private setsService: SetsService, private usersService: UsersService) {}
+  constructor(
+    private readonly setsService: SetsService,
+    private readonly usersService: UsersService
+  ) {}
 
 
   /**
