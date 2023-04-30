@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { User } from "@scholarsome/shared";
-import { lastValueFrom } from "rxjs";
+import { lastValueFrom, Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root"
@@ -29,5 +29,9 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  user$(userId: string | null): Observable<User> {
+    return this.http.get<User>("/api/users/" + userId);
   }
 }

@@ -4,6 +4,7 @@ import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
+import { catchError, EMPTY, forkJoin } from "rxjs";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -33,7 +34,9 @@ export class StudySetComponent implements OnInit {
   author: string;
 
   cards: ComponentRef<CardComponent>[] = [];
-  set: Set | null;
+  set: Set;
+
+  test: Set;
 
   cookieExists(name: string): boolean {
     const cookies = document.cookie.split(";");
@@ -166,29 +169,34 @@ export class StudySetComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.setId = this.route.snapshot.paramMap.get("setId");
     if (!this.setId) {
-      await this.router.navigate(["404"]);
+      this.router.navigate(["404"]);
       return;
     }
 
-    this.set = await this.sets.set(this.setId);
-    if (!this.set) {
-      await this.router.navigate(["404"]);
-      return;
-    }
+    forkJoin([
+      this.sets.set$(this.setId),
+      this.users.user$("self").pipe(
+          catchError((err) => {
+            return EMPTY;
+          })
+      )
+    ]).
+        subscribe(([set, user]) => {
+          this.set = set;
 
-    if (this.cookieExists("authenticated")) {
-      const user = await this.users.user("self");
+          if (!set) {
+            this.router.navigate(["404"]);
+            return;
+          }
 
-      if (user && user.id === this.set.author.id) {
-        this.userIsAuthor = true;
-      }
-    }
+          if (user && user.id) this.userIsAuthor = true;
 
-    this.spinner.nativeElement.remove();
+          this.spinner.nativeElement.remove();
 
-    this.author = this.set.author.username;
-    this.container.nativeElement.removeAttribute("hidden");
+          this.author = this.set.author.username;
+          this.container.nativeElement.removeAttribute("hidden");
 
-    this.viewCards();
+          this.viewCards();
+        });
   }
 }

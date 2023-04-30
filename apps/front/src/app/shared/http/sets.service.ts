@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { lastValueFrom } from "rxjs";
+import { lastValueFrom, Observable } from "rxjs";
 import { Set } from "@scholarsome/shared";
 
 @Injectable({
@@ -31,6 +31,10 @@ export class SetsService {
     return set;
   }
 
+  set$(setId: string | null): Observable<Set> {
+    return this.http.get<Set>("/api/sets/" + (setId ? setId : "self"));
+  }
+
   /**
    * Makes a request to find the sets of a user
    *
@@ -48,6 +52,10 @@ export class SetsService {
     }
 
     return sets;
+  }
+
+  sets$(userId: string | null): Observable<Set[]> {
+    return this.http.get<Set[]>("/api/sets/user" + userId);
   }
 
   /**
