@@ -10,15 +10,15 @@
       </div>
       <div class="quiz-question-tf text-center" formGroupName="trueOrFalse" *ngIf="question.type === 'trueOrFalse'">
         <p class="text-secondary text-center">Answer with whether this is true or false</p>
-        <input type="radio" class="btn-check" formControlName="tf-option-0" [id]="'q' + question.index + '-tf-option0'" [required]="question.type === 'trueOrFalse'" autocomplete="off">
+        <input type="radio" class="btn-check" formControlName="tf-option" [id]="'q' + question.index + '-tf-option0'" [required]="question.type === 'trueOrFalse'" value="0" autocomplete="off">
         <label class="btn btn-outline-primary mx-1 my-1" [for]="'q' + question.index + '-tf-option0'">True</label>
-        <input type="radio" class="btn-check" formControlName="tf-option-1" [id]="'q' + question.index + '-tf-option1'" [required]="question.type === 'trueOrFalse'" autocomplete="off">
+        <input type="radio" class="btn-check" formControlName="tf-option" [id]="'q' + question.index + '-tf-option1'" [required]="question.type === 'trueOrFalse'" value="1" autocomplete="off">
         <label class="btn btn-outline-primary mx-1 my-1" [for]="'q' + question.index + '-tf-option1'">False</label>
       </div>
       <div class="quiz-question-mc text-center" [formGroupName]="'multipleChoice'" *ngIf="question.type === 'multipleChoice'">
         <p class="text-secondary text-center">Answer by selecting the correct option</p>
         <div *ngFor="let option of question.options; index as i">
-          <input type="radio" class="btn-check" [formControlName]="'mc-option' + i" [id]="'q' + question.index + '-mc-option' + i" [required]="question.type === 'multipleChoice'" autocomplete="off">
+          <input type="radio" class="btn-check" formControlName="mc-option" [id]="'q' + question.index + '-mc-option' + i" [value]="i" [required]="question.type === 'multipleChoice'" autocomplete="off">
           <label class="btn btn-outline-primary mx-1 my-1" [for]="'q' + question.index + '-mc-option' + i">{{option.option}}</label>
         </div>
       </div>

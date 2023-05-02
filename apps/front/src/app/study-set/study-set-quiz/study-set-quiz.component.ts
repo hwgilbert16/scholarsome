@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, NgForm, Validators } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
@@ -183,7 +183,6 @@ export class StudySetQuizComponent implements OnInit {
 
     for (let i = 0; i < questions.length; i++) {
       const questionGroup = new FormGroup<any>({});
-      const multipleChoiceGroup = new FormGroup<any>({});
 
       switch (questions[i].type) {
         case "written":
@@ -193,18 +192,14 @@ export class StudySetQuizComponent implements OnInit {
           break;
         case "trueOrFalse":
           questionGroup.addControl("trueOrFalse", this.fb.group({
-            ["tf-option-0"]: ["", Validators.required],
-            ["tf-option-1"]: ["", Validators.required]
+            ["tf-option"]: ["", Validators.required]
           }));
           break;
         case "multipleChoice":
           if (questions[i].options) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            for (let x = 0; x < questions[i].options!.length; x++) {
-              multipleChoiceGroup.addControl("mc-option" + x, new FormControl("", Validators.required));
-            }
-
-            questionGroup.addControl("multipleChoice", multipleChoiceGroup);
+            questionGroup.addControl("multipleChoice", this.fb.group({
+              ["mc-option"]: ["", Validators.required]
+            }));
           }
       }
 
