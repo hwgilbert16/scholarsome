@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
-import { StudySetQuizQuestionComponent } from "./study-set-quiz-question/study-set-quiz-question.component";
 
 @Component({
   selector: "scholarsome-study-set-quiz",
@@ -14,11 +13,11 @@ export class StudySetQuizComponent implements OnInit {
   constructor(
     private readonly sets: SetsService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly fb: FormBuilder
   ) {}
 
-  @ViewChild("quiz", { static: true, read: ViewContainerRef }) quiz: ViewContainerRef;
-  @ViewChild("quizForm") quizForm: NgForm;
+  @ViewChild("quiz", { static: false, read: ViewContainerRef }) quiz: ViewContainerRef;
 
   writtenSelected = true;
   trueOrFalseSelected = true;
@@ -26,12 +25,16 @@ export class StudySetQuizComponent implements OnInit {
 
   created = false;
 
+  quizForm: FormGroup;
+
   set: Set;
+  questions: QuizQuestion[];
 
   beginQuiz(form: NgForm) {
-    this.created = true;
+    this.quizForm = new FormGroup<any>({});
 
     let questions: QuizQuestion[] = [];
+    this.questions = questions;
     let unusedIndices = Array.from(Array(this.set.cards.length).keys());
 
     const answerWith = form.controls["answerWith"].value;
@@ -48,14 +51,18 @@ export class StudySetQuizComponent implements OnInit {
     const typePercentage = 1 / questionTypes.filter((t) => t.enabled).length;
     let generatedQuestions = 0;
 
+    this.created = true;
+
     for (const questionType of questionTypes) {
+      if (!questionType.enabled) continue;
+
       let numQuestions = 0;
 
       if (questionTypes[questionTypes.length - 1].type === questionType.type) {
         // change this to questions.length when done
         numQuestions = form.controls["numberOfQuestions"].value - generatedQuestions;
       } else {
-        numQuestions = Math.ceil(form.controls["numberOfQuestions"].value * typePercentage);
+        numQuestions = Math.floor(form.controls["numberOfQuestions"].value * typePercentage);
       }
 
       // remove this when done
@@ -172,17 +179,40 @@ export class StudySetQuizComponent implements OnInit {
     }
 
     questions = questions.sort(() => 0.5 - Math.random());
+    questions.map((q, index) => q.index = index);
 
     for (let i = 0; i < questions.length; i++) {
-      questions[i].index = i;
+      const questionGroup = new FormGroup<any>({});
+      const multipleChoiceGroup = new FormGroup<any>({});
 
-      const qComponent = this.quiz.createComponent<StudySetQuizQuestionComponent>(StudySetQuizQuestionComponent);
+      switch (questions[i].type) {
+        case "written":
+          questionGroup.addControl("written-group", this.fb.group({
+            written: ["", Validators.required]
+          }));
+          break;
+        case "trueOrFalse":
+          questionGroup.addControl("trueOrFalse", this.fb.group({
+            ["tf-option-0"]: ["", Validators.required],
+            ["tf-option-1"]: ["", Validators.required]
+          }));
+          break;
+        case "multipleChoice":
+          if (questions[i].options) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            for (let x = 0; x < questions[i].options!.length; x++) {
+              multipleChoiceGroup.addControl("mc-option" + x, new FormControl("", Validators.required));
+            }
 
-      qComponent.instance.question = questions[i];
+            questionGroup.addControl("multipleChoice", multipleChoiceGroup);
+          }
+      }
+
+      this.quizForm.addControl("q" + i, questionGroup);
     }
   }
 
-  submitQuiz(form: NgForm) {
+  submitQuiz(form: FormGroup) {
     console.log(form.controls);
   }
 
@@ -195,6 +225,7 @@ export class StudySetQuizComponent implements OnInit {
       await this.router.navigate(["404"]);
       return;
     }
+
 
     this.set = set;
   }

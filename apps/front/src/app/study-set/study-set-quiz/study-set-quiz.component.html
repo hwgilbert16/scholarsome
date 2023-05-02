@@ -27,7 +27,7 @@
             </select>
           </div>
           <div class="d-flex justify-content-between">
-            <p class="options-text">Number of questions <span class="fs-6 fw-light text-secondary ms-2 options-disclaimer">(selecting more than 10 will create more than 1 question per card)</span></p>
+            <p class="options-text">Number of questions <span class="fs-6 fw-light text-secondary ms-2 options-disclaimer" hidden>(selecting more than 10 will create more than 1 question per card)</span></p>
             <input type="number" class="form-control h-50 w-25" name="numberOfQuestions" value="1" id="aa" min="1" required ngModel>
           </div>
           <div class="d-flex justify-content-end mt-4 mb-4">
@@ -39,9 +39,11 @@
   </div>
 </div>
 
-<div class="container-fluid quiz" [hidden]="!created">
-  <form (ngSubmit)="submitQuiz(quizForm)" #quizForm="ngForm" ngNativeValidate>
-    <div #quiz></div>
+<div class="container-fluid quiz" *ngIf="created">
+  <form [formGroup]="quizForm" (ngSubmit)="submitQuiz(quizForm)">
+    <div *ngFor="let question of questions">
+      <scholarsome-study-set-quiz-question [question]="question" [parentForm]="quizForm"></scholarsome-study-set-quiz-question>
+    </div>
     <button type="submit" class="btn btn-primary container-fluid my-5">Submit quiz</button>
   </form>
 </div>
