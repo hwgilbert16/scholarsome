@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light fs-5" [hidden]="hidden">
+<nav class="navbar navbar-expand-lg fixed-top bg-white fs-5 shadow-sm" [hidden]="hidden">
   <div class="container-fluid">
     <a [routerLink]="this.cookieService.get('authenticated') ? '/homepage' : ''"><img class="navbar-brand img-fluid mt-1" src="assets/scholarsome-logo-purple-lowercase.svg" width="10%" height="10%"></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

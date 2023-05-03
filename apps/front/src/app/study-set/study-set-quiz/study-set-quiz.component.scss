@@ -2,32 +2,8 @@
   margin-right: 2.5vw;
 }
 
-@media only screen and (min-device-width : 1px) and (max-device-width : 480px) {
+@media only screen and (min-device-width : 768px) {
   .options-container {
-    position: absolute;
-    left: 50%;
-    bottom: 50%;
-    transform: translate(-50%, 50%);
-  }
-
-  .options-disclaimer {
-    display: none;
-  }
-
-  .options-form {
-    margin-right: 5vw;
-  }
-}
-
-@media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
-  .options-container {
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translate(-50%, 50%);
-  }
-
-  .quiz-creator {
     width: 50%;
   }
 

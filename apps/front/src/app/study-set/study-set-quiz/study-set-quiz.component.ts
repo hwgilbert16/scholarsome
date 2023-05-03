@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
-import { FormBuilder, FormGroup, NgForm, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
@@ -33,7 +33,7 @@ export class StudySetQuizComponent implements OnInit {
   beginQuiz(form: NgForm) {
     this.quizForm = new FormGroup<any>({});
 
-    let questions: QuizQuestion[] = [];
+    const questions: QuizQuestion[] = [];
     this.questions = questions;
     let unusedIndices = Array.from(Array(this.set.cards.length).keys());
 
@@ -178,33 +178,14 @@ export class StudySetQuizComponent implements OnInit {
       }
     }
 
-    questions = questions.sort(() => 0.5 - Math.random());
-    questions.map((q, index) => q.index = index);
+    questions.sort(() => 0.5 - Math.random());
+    questions.map((q, index) => {
+      q.index = index;
 
-    for (let i = 0; i < questions.length; i++) {
-      const questionGroup = new FormGroup<any>({});
-
-      switch (questions[i].type) {
-        case "written":
-          questionGroup.addControl("written-group", this.fb.group({
-            written: ["", Validators.required]
-          }));
-          break;
-        case "trueOrFalse":
-          questionGroup.addControl("trueOrFalse", this.fb.group({
-            ["tf-option"]: ["", Validators.required]
-          }));
-          break;
-        case "multipleChoice":
-          if (questions[i].options) {
-            questionGroup.addControl("multipleChoice", this.fb.group({
-              ["mc-option"]: ["", Validators.required]
-            }));
-          }
-      }
-
-      this.quizForm.addControl("q" + i, questionGroup);
-    }
+      this.quizForm.addControl("q" + index, this.fb.group({
+        [q.type]: ""
+      }));
+    });
   }
 
   submitQuiz(form: FormGroup) {

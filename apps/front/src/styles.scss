@@ -7,6 +7,9 @@ $theme-colors: map-merge($theme-colors, (
   "primary": #8438ff
 ));
 
+$form-check-input-checked-bg-color: $primary !important;
+$form-check-input-checked-border-color: $primary !important;
+
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
 body {
@@ -16,3 +19,11 @@ body {
 .grecaptcha-badge {
   visibility: hidden;
 }
+
+.navbar-spacing {
+  margin-top: 7vh;
+}
+
+//.form-check-input {
+//  background-color: $primary !important;
+//}
