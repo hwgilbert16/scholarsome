@@ -47,11 +47,19 @@
   <div class="navbar-spacing"></div>
 
   <div class="container-fluid quiz">
-    <form [formGroup]="quizForm" (ngSubmit)="submitQuiz(quizForm)">
-      <div *ngFor="let question of questions">
-        <scholarsome-study-set-quiz-question [question]="question" [parentForm]="quizForm"></scholarsome-study-set-quiz-question>
+    <div class="d-flex d-flex shadow rounded quiz-question align-items-center" *ngIf="submitted">
+      <div class="mx-4 container-fluid mt-3 mb-4">
+        <div class="progress bg-danger" role="progressbar" aria-label="Warning example">
+          <div class="progress-bar text-bg-danger" style="width: 100%" *ngIf="percentCorrect === 0">0%</div>
+          <div class="progress-bar text-bg-success" [ngStyle]="{'width': percentCorrect + '%'}">{{percentCorrect}}%</div>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary container-fluid my-5">Submit quiz</button>
+    </div>
+    <form [formGroup]="quizForm" (ngSubmit)="submitQuiz(quizForm, questions)">
+      <div *ngFor="let question of questions">
+        <scholarsome-study-set-quiz-question [question]="question" [submitted]="submitted" [correct]="question.correct" [parentForm]="quizForm"></scholarsome-study-set-quiz-question>
+      </div>
+      <button type="submit" class="btn btn-primary container-fluid my-5" [disabled]="submitted">Submit quiz</button>
     </form>
   </div>
 </div>

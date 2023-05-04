@@ -24,11 +24,14 @@ export class StudySetQuizComponent implements OnInit {
   multipleChoiceSelected = true;
 
   created = false;
+  submitted = false;
 
   quizForm: FormGroup;
 
   set: Set;
   questions: QuizQuestion[];
+
+  percentCorrect: number;
 
   beginQuiz(form: NgForm) {
     this.quizForm = new FormGroup<any>({});
@@ -105,23 +108,12 @@ export class StudySetQuizComponent implements OnInit {
             index: 0,
             answerWith: questionAnswerWith,
             type: "written",
-            answer: this.set.cards[index][questionAnswerWith]
+            answer: this.set.cards[index][questionAnswerWith],
+            correct: false
           });
         } else if (questionType.type === "trueOrFalse") {
           // 30% chance that the answer is true
-          // otherwise the chance is 1/number of cards in set
           const trueResult = Math.random() >= 0.7;
-
-          const options: { option: string; correct: boolean; }[] = [
-            {
-              option: "True",
-              correct: trueResult
-            },
-            {
-              option: "False",
-              correct: !trueResult
-            }
-          ];
 
           let trueOrFalseOption = "";
 
@@ -137,31 +129,23 @@ export class StudySetQuizComponent implements OnInit {
             question: this.set.cards[index][questionAskWith],
             index: 0,
             answerWith: questionAnswerWith,
-            // this might need a +1, need to check
             trueOrFalseOption,
             type: "trueOrFalse",
-            options,
-            answer: trueResult.toString()
+            options: ["True", "False"],
+            answer: trueResult ? "True" : "False",
+            correct: false
           });
         } else {
-          let options: { option: string; correct: boolean; }[] = [
-            {
-              option: this.set.cards[index][questionAnswerWith],
-              correct: true
-            }
-          ];
+          let options = [this.set.cards[index][questionAnswerWith]];
 
           for (let i = 0; i < 3; i++) {
             let option = "";
 
             do {
               option = this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith];
-            } while (options.filter((o) => o.option === option).length > 0);
+            } while (options.filter((o) => o === option).length > 0);
 
-            options.push({
-              option,
-              correct: false
-            });
+            options.push(option);
           }
 
           options = options.sort(() => 0.5 - Math.random());
@@ -172,7 +156,8 @@ export class StudySetQuizComponent implements OnInit {
             answerWith: questionAnswerWith,
             type: "multipleChoice",
             answer: this.set.cards[index][questionAnswerWith],
-            options
+            options,
+            correct: false
           });
         }
       }
@@ -183,13 +168,42 @@ export class StudySetQuizComponent implements OnInit {
       q.index = index;
 
       this.quizForm.addControl("q" + index, this.fb.group({
-        [q.type]: ""
+        [q.type]: "",
+        index: q.index
       }));
     });
   }
 
-  submitQuiz(form: FormGroup) {
-    console.log(form.controls);
+  submitQuiz(form: FormGroup, questions: QuizQuestion[]) {
+    this.submitted = true;
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: "smooth"
+    });
+    form.disable();
+
+    let count = 0;
+
+    for (const question of Object.values(form.controls)) {
+      const response = Object.values(question.value)[0] as string;
+
+      switch (Object.keys(question.value)[0]) {
+        case "written":
+          if (response.toLowerCase() === questions[question.value["index"]].answer.toLowerCase()) count++;
+          questions[question.value["index"]].correct = response.toLowerCase() === questions[question.value["index"]].answer.toLowerCase();
+          break;
+        case "trueOrFalse":
+          if (questions[question.value["index"]].answer === questions[question.value["index"]].options![question.value["trueOrFalse"] as number]) count++;
+          break;
+        case "multipleChoice":
+          if (questions[question.value["index"]].answer === questions[question.value["index"]].options![question.value["multipleChoice"] as number]) count++;
+      }
+    }
+
+    this.percentCorrect = Math.floor(100 / questions.length * count);
+
+    console.log(count);
   }
 
   async ngOnInit(): Promise<void> {

@@ -11,6 +11,8 @@ import { FormGroup } from "@angular/forms";
 export class StudySetQuizQuestionComponent {
   @Input() question: QuizQuestion;
   @Input() parentForm: FormGroup;
+  @Input() submitted: boolean;
+  @Input() correct: boolean;
 
   faArrowRight = faArrowRight;
 }

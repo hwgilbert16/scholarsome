@@ -4,9 +4,7 @@ export interface QuizQuestion {
   answerWith: string;
   trueOrFalseOption?: string;
   type: "written" | "trueOrFalse" | "multipleChoice";
-  options?: {
-    option: string;
-    correct: boolean;
-  }[];
+  options?: string[];
   answer: string;
+  correct: boolean;
 }
