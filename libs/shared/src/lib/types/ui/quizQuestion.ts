@@ -4,7 +4,10 @@ export interface QuizQuestion {
   answerWith: string;
   trueOrFalseOption?: string;
   type: "written" | "trueOrFalse" | "multipleChoice";
-  options?: string[];
+  options?: {
+    option: string;
+    correct: boolean;
+  }[];
   answer: string;
   correct: boolean;
 }

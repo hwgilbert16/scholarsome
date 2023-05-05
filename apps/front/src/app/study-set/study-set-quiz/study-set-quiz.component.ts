@@ -131,19 +131,35 @@ export class StudySetQuizComponent implements OnInit {
             answerWith: questionAnswerWith,
             trueOrFalseOption,
             type: "trueOrFalse",
-            options: ["True", "False"],
+            options: [
+              {
+                option: "True",
+                correct: trueResult
+              }, {
+                option: "False",
+                correct: !trueResult
+              }
+            ],
             answer: trueResult ? "True" : "False",
             correct: false
           });
         } else {
-          let options = [this.set.cards[index][questionAnswerWith]];
+          let options = [
+            {
+              option: this.set.cards[index][questionAnswerWith],
+              correct: true
+            }
+          ];
 
           for (let i = 0; i < 3; i++) {
-            let option = "";
+            let option: { option: string; correct: boolean; };
 
             do {
-              option = this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith];
-            } while (options.filter((o) => o === option).length > 0);
+              option = {
+                option: this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith],
+                correct: false
+              };
+            } while (options.filter((o) => o.option === option.option).length > 0);
 
             options.push(option);
           }
@@ -190,20 +206,35 @@ export class StudySetQuizComponent implements OnInit {
 
       switch (Object.keys(question.value)[0]) {
         case "written":
-          if (response.toLowerCase() === questions[question.value["index"]].answer.toLowerCase()) count++;
+          if (
+            response.toLowerCase() ===
+            questions[question.value["index"]].answer.toLowerCase()
+          ) count++;
           questions[question.value["index"]].correct = response.toLowerCase() === questions[question.value["index"]].answer.toLowerCase();
+
           break;
         case "trueOrFalse":
-          if (questions[question.value["index"]].answer === questions[question.value["index"]].options![question.value["trueOrFalse"] as number]) count++;
+          if (
+            questions[question.value["index"]].answer ===
+            questions[question.value["index"]].options![question.value["trueOrFalse"] as number].option
+          ) {
+            questions[question.value["index"]].correct = true;
+            count++;
+          }
+
           break;
         case "multipleChoice":
-          if (questions[question.value["index"]].answer === questions[question.value["index"]].options![question.value["multipleChoice"] as number]) count++;
+          if (
+            questions[question.value["index"]].answer ===
+            questions[question.value["index"]].options![question.value["multipleChoice"] as number].option
+          ) {
+            questions[question.value["index"]].correct = true;
+            count++;
+          }
       }
     }
 
     this.percentCorrect = Math.floor(100 / questions.length * count);
-
-    console.log(count);
   }
 
   async ngOnInit(): Promise<void> {
@@ -215,7 +246,6 @@ export class StudySetQuizComponent implements OnInit {
       await this.router.navigate(["404"]);
       return;
     }
-
 
     this.set = set;
   }
