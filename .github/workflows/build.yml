@@ -1,0 +1,22 @@
+name: Build
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.JS
+        uses: actions/step-node@v3
+        with:
+          node-version: 'lts'
+
+      - name: npm install and migrate
+        run: |
+          npm install --legacy-peer-deps
+          npm run migrate
+
+      - name: Nx build
+        run: npm run build
+
