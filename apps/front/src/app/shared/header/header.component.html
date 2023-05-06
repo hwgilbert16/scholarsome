@@ -22,24 +22,14 @@
       </ul>
       <div class="d-flex align-items-baseline">
         <span class="navbar-text mx-3"><a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="github"><fa-icon [icon]="faGithub"></fa-icon></a></span>
-        <div *ngIf="!this.cookieService.get('authenticated');else user">
-          <button type="button" class="btn btn-outline-dark pr-6" (click)="openModal(login)">
-            Log in
-          </button>
-          <button type="button" class="btn btn-primary ms-4 shadow" (click)="openModal(register)">
-            Sign up
-          </button>
-        </div>
-        <ng-template #user>
-          <ul class="nav navbar-nav">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
-              <div class="dropdown-menu dropdown-menu-end">
-                <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="['far', 'caret-square-left']"></fa-icon> Logout</a>
-              </div>
-            </li>
-          </ul>
-        </ng-template>
+        <ul class="nav navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="['far', 'caret-square-left']"></fa-icon> Logout</a>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -72,7 +62,7 @@
           <a href="https://policies.google.com/privacy">Privacy Policy</a> and
           <a href="https://policies.google.com/terms">Terms of Service</a> apply.</div>
       </div>
-      <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)">Sign up.</a></div>
+      <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)" class="text-primary">Sign up.</a></div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" [disabled]="loginReq === 0 || loginReq === 200">
           <span *ngIf="loginReq === 0 || loginReq === 200" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -115,7 +105,7 @@
           <a href="https://policies.google.com/privacy">Privacy Policy</a> and
           <a href="https://policies.google.com/terms">Terms of Service</a> apply.</div>
       </div>
-      <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)">Log in.</a></div>
+      <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)" class="text-primary">Log in.</a></div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" [disabled]="registrationReq === 0 || registrationReq === 201">
           <span *ngIf="registrationReq === 0" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
