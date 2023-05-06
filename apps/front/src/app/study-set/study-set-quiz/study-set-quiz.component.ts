@@ -39,6 +39,15 @@ export class StudySetQuizComponent implements OnInit {
 
     const questions: QuizQuestion[] = [];
     this.questions = questions;
+
+    if (form.controls["numberOfQuestions"].value > this.set.cards.length) {
+      const existingCards = this.set.cards;
+
+      for (let i = 0; i < Math.ceil(form.controls["numberOfQuestions"].value / this.set.cards.length); i++) {
+        this.set.cards.push(...existingCards);
+      }
+    }
+
     let unusedIndices = Array.from(Array(this.set.cards.length).keys());
 
     const answerWith = form.controls["answerWith"].value;
@@ -240,6 +249,10 @@ export class StudySetQuizComponent implements OnInit {
     }
 
     this.percentCorrect = Math.floor(100 / questions.length * count);
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 
   async ngOnInit(): Promise<void> {

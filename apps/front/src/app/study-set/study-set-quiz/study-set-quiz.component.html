@@ -30,7 +30,7 @@
               </div>
               <div class="d-flex justify-content-between">
                 <p class="options-text">Number of questions <span class="fs-6 fw-light text-secondary ms-2 options-disclaimer" hidden>(selecting more than 10 will create more than 1 question per card)</span></p>
-                <input *ngIf="set" type="number" class="form-control h-50 w-25" name="numberOfQuestions" min="1" [max]="set.cards.length" required ngModel>
+                <input type="number" class="form-control h-50 w-25" name="numberOfQuestions" min="1" required ngModel>
               </div>
               <div class="d-flex justify-content-between mt-4 mb-4">
                 <p class="text-secondary fs-6 fw-light">* These quizzes are local and do not save between reloads</p>
@@ -48,6 +48,7 @@
   <div class="navbar-spacing"></div>
 
   <div class="container-fluid quiz">
+    <button type="submit" class="btn btn-primary container-fluid my-5" *ngIf="submitted" (click)="reloadPage()">Take another quiz</button>
     <div class="d-flex d-flex shadow rounded quiz-question align-items-center" *ngIf="submitted">
       <div class="mx-4 container-fluid mt-3 mb-4">
         <div class="progress bg-danger" role="progressbar" aria-label="Warning example">
