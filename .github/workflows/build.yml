@@ -15,7 +15,7 @@ jobs:
       - name: npm install and migrate
         run: |
           npm install --legacy-peer-deps
-          npm run migrate
+          npm run generate
 
       - name: Nx build
         run: npm run build
