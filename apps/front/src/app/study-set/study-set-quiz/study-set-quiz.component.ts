@@ -28,6 +28,7 @@ export class StudySetQuizComponent implements OnInit {
 
   quizForm: FormGroup;
 
+  setId: string | null;
   set: Set;
   questions: QuizQuestion[];
 
@@ -214,6 +215,8 @@ export class StudySetQuizComponent implements OnInit {
 
           break;
         case "trueOrFalse":
+          if (question.value["trueOrFalse"].length < 1) break;
+
           if (
             questions[question.value["index"]].answer ===
             questions[question.value["index"]].options![question.value["trueOrFalse"] as number].option
@@ -224,6 +227,8 @@ export class StudySetQuizComponent implements OnInit {
 
           break;
         case "multipleChoice":
+          if (question.value["multipleChoice"].length < 1) break;
+
           if (
             questions[question.value["index"]].answer ===
             questions[question.value["index"]].options![question.value["multipleChoice"] as number].option
@@ -238,9 +243,10 @@ export class StudySetQuizComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const set = await this.sets.set(
-        this.route.snapshot.paramMap.get("setId")
-    );
+    this.percentCorrect = -1;
+    this.setId = this.route.snapshot.paramMap.get("setId");
+
+    const set = await this.sets.set(this.setId);
 
     if (!set) {
       await this.router.navigate(["404"]);

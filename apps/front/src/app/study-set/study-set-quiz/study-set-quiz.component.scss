@@ -2,6 +2,12 @@
   margin-right: 2.5vw;
 }
 
+.back-arrow:hover {
+  animation: button-color-change 0.25s;
+  animation-fill-mode: forwards;
+  cursor: pointer;
+}
+
 @media only screen and (min-device-width : 768px) {
   .options-container {
     width: 50%;
@@ -9,5 +15,15 @@
 
   .quiz {
     width: 50%;
+  }
+}
+
+@keyframes button-color-change {
+  0% {
+    color: #212529;
+  }
+
+  100% {
+    color: #8438ff;
   }
 }
