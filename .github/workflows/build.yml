@@ -10,7 +10,7 @@ jobs:
       - name: Setup Node.JS
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts'
+          node-version: 'lts/Hydrogen'
 
       - name: npm install and migrate
         run: |
