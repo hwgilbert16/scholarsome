@@ -26,6 +26,7 @@ export class StudySetComponent implements OnInit {
   @ViewChild("container", { static: true }) container: ElementRef;
   @ViewChild("editButton", { static: true }) editButton: ElementRef;
   @ViewChild("cardsContainer", { static: true, read: ViewContainerRef }) cardsContainer: ViewContainerRef;
+  @ViewChild("privateCheck", { static: true }) privateCheck: ElementRef;
 
   userIsAuthor = false;
   isEditing = false;
@@ -130,6 +131,7 @@ export class StudySetComponent implements OnInit {
 
       await this.sets.updateSet({
         id: this.set.id,
+        private: this.privateCheck.nativeElement.children[0].checked,
         cards: this.cards.map((c) => {
           return {
             id: c.instance.cardId,

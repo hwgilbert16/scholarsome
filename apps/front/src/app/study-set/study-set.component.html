@@ -30,7 +30,11 @@
       <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>
       <div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
+          <div class="mb-2 form-check me-3" [hidden]="!isEditing" #privateCheck>
+            <input type="checkbox" class="form-check-input" id="privateCheck" *ngIf="set" [checked]="set.private">
+            <label class="form-check-label" for="privateCheck">Viewable only to me</label>
+          </div>
           <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" (click)="saveCards()">Save</button>
           <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards()">Cancel</button>
         </div>

@@ -32,7 +32,8 @@
                 <p class="options-text">Number of questions <span class="fs-6 fw-light text-secondary ms-2 options-disclaimer" hidden>(selecting more than 10 will create more than 1 question per card)</span></p>
                 <input *ngIf="set" type="number" class="form-control h-50 w-25" name="numberOfQuestions" min="1" [max]="set.cards.length" required ngModel>
               </div>
-              <div class="d-flex justify-content-end mt-4 mb-4">
+              <div class="d-flex justify-content-between mt-4 mb-4">
+                <p class="text-secondary fs-6 fw-light">* These quizzes are local and do not save between reloads</p>
                 <button type="submit" class="btn btn-primary">Begin quiz</button>
               </div>
             </div>
