@@ -17,6 +17,8 @@ jobs:
           npm install --legacy-peer-deps
           npm run generate
 
-      - name: Nx build
-        run: npm run build
+      - name: Nx actions
+        run: |
+          npm run build
+          npm run lint
 

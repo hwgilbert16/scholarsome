@@ -35,7 +35,7 @@ export class StudySetQuizComponent implements OnInit {
   percentCorrect: number;
 
   beginQuiz(form: NgForm) {
-    this.quizForm = new FormGroup<any>({});
+    this.quizForm = new FormGroup({});
 
     const questions: QuizQuestion[] = [];
     this.questions = questions;
@@ -228,7 +228,7 @@ export class StudySetQuizComponent implements OnInit {
 
           if (
             questions[question.value["index"]].answer ===
-            questions[question.value["index"]].options![question.value["trueOrFalse"] as number].option
+            questions[question.value["index"]].options?.[question.value["trueOrFalse"] as number].option
           ) {
             questions[question.value["index"]].correct = true;
             count++;
@@ -240,7 +240,7 @@ export class StudySetQuizComponent implements OnInit {
 
           if (
             questions[question.value["index"]].answer ===
-            questions[question.value["index"]].options![question.value["multipleChoice"] as number].option
+            questions[question.value["index"]].options?.[question.value["multipleChoice"] as number].option
           ) {
             questions[question.value["index"]].correct = true;
             count++;

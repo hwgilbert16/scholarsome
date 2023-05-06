@@ -178,7 +178,7 @@ export class StudySetComponent implements OnInit {
     forkJoin([
       this.sets.set$(this.setId),
       this.users.user$("self").pipe(
-          catchError((err) => {
+          catchError(() => {
             return EMPTY;
           })
       )
