@@ -8,4 +8,4 @@ export const environment = {
 };
 `;
 
-writeFile('./apps/front/src/environments/environmet.ts', fileContent, () => {});
+writeFile('./apps/front/src/environments/environment.ts', fileContent, () => {});
