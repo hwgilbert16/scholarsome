@@ -47,4 +47,4 @@ RUN echo "REDIS_PORT=$REDIS_PORT" >> .env
 RUN echo "REDIS_USERNAME=$REDIS_USERNAME" >> .env
 RUN echo "REDIS_PASSWORD=$REDIS_PASSWORD" >> .env
 
-CMD [ "npm", "run", "serve" ]
+CMD [ "npm", "run", "serve:node" ]

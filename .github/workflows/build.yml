@@ -1,4 +1,4 @@
-name: Build
+name: Build test
 on: [push]
 
 jobs:
@@ -12,12 +12,12 @@ jobs:
         with:
           node-version: 'lts/Hydrogen'
 
-      - name: npm install and migrate
+      - name: npm install and prisma generate
         run: |
           npm install --legacy-peer-deps
           npm run generate
 
-      - name: Nx actions
+      - name: Nx build and lint
         run: |
           npm run build
           npm run lint
