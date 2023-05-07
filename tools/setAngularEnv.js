@@ -1,16 +1,19 @@
 const { writeFile } = require('fs');
 require('dotenv').config();
 
-const production = process.env.NODE_ENV === 'production';
-const recaptcha = process.env.RECAPTCHA_SITE;
-
-const filePath = production ? './apps/front/src/environments/environment.prod.ts' : './apps/front/src/environments/environment.ts';
-
-const fileContent = `
+const prodContent = `
 export const environment = {
-   production: ${production},
-   recaptchaSiteKey: '${recaptcha}',
+   production: true,
+   recaptchaSiteKey: '${process.env.RECAPTCHA_SITE}',
 };
 `;
 
-writeFile(filePath, fileContent, () => {});
+const nonProdContent = `
+export const environment = {
+   production: false,
+   recaptchaSiteKey: '${process.env.RECAPTCHA_SITE}',
+};
+`;
+
+writeFile('./apps/front/src/environments/environment.prod.ts', prodContent, () => {});
+writeFile('./apps/front/src/environments/environment.ts', nonProdContent, () => {});
