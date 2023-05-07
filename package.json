@@ -6,7 +6,7 @@
     "ng": "nx",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate deploy",
-    "build": "npx nx run-many --target=build --projects=front,api",
+    "build": " npm run setEnv && npx nx run-many --target=build --projects=front,api",
     "setEnv": "node tools/setAngularEnv.js",
     "test": "nx test",
     "documentation:serve": "npx @compodoc/compodoc -p tsconfig.base.json --serve",
