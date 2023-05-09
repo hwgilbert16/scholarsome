@@ -37,8 +37,8 @@ services:
       - "HOST=${HOST}"
       - "SSL_KEY_BASE64=${SSL_KEY_BASE64}"
       - "SSL_CERT_BASE64=${SSL_CERT_BASE64}"
-      - "RECAPTCHA_SITE=${RECAPTCHA_SITE}"
-      - "RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
+      - "SCHOLARSOME_RECAPTCHA_SITE=${RECAPTCHA_SITE}"
+      - "SCHOLARSOME_RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
     depends_on:
       - "mariadb"
       - "redis"

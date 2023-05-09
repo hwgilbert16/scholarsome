@@ -6,8 +6,10 @@
   "prefix": "scholarsome",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "builder": "@ngx-env/builder:browser",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/front",
         "index": "apps/front/src/index.html",
@@ -15,9 +17,17 @@
         "polyfills": "apps/front/src/polyfills.ts",
         "tsConfig": "apps/front/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": ["apps/front/src/favicon.ico", "apps/front/src/assets"],
-        "styles": ["apps/front/src/styles.scss"],
-        "scripts": []
+        "assets": [
+          "apps/front/src/favicon.ico",
+          "apps/front/src/assets"
+        ],
+        "styles": [
+          "apps/front/src/styles.scss"
+        ],
+        "scripts": [],
+        "ngxEnv": {
+          "prefix": "SCHOLARSOME_"
+        }
       },
       "configurations": {
         "production": {
@@ -47,7 +57,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@ngx-env/builder:dev-server",
       "configurations": {
         "production": {
           "browserTarget": "front:build:production"
@@ -62,7 +72,7 @@
       }
     },
     "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@ngx-env/builder:extract-i18n",
       "options": {
         "browserTarget": "front:build"
       }
@@ -70,17 +80,24 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/front/**/*.ts", "apps/front/**/*.html"]
+        "lintFilePatterns": [
+          "apps/front/**/*.ts",
+          "apps/front/**/*.html"
+        ]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/front"],
+      "executor": "@ngx-env/builder:karma",
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/front"
+      ],
       "options": {
         "jestConfig": "apps/front/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["scope:client"]
+  "tags": [
+    "scope:client"
+  ]
 }

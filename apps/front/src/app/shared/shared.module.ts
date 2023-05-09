@@ -28,7 +28,7 @@ import { CardComponent } from "./card/card.component";
   providers: [
     {
       provide: RECAPTCHA_V3_SITE_KEY,
-      useValue: "6LfqLcgiAAAAAJDsjWEEywU_kyb4w_jr4VjvJljW"
+      useValue: process.env["SCHOLARSOME_RECAPTCHA_SITE"]
     }
   ],
   declarations: [
