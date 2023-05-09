@@ -6,6 +6,7 @@
   "prefix": "scholarsome",
   "targets": {
     "build": {
+      "executor": "@ngx-env/builder:browser",
       "builder": "@ngx-env/builder:browser",
       "outputs": [
         "{options.outputPath}"
