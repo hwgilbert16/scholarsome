@@ -2,29 +2,31 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { MailService } from "../providers/mail/mail.service";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import { RecaptchaResponse } from "@scholarsome/shared";
-import { InjectRedis } from "@liaoliaots/nestjs-redis";
+import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
+  private readonly redis: Redis;
+
   /**
    * @ignore
    */
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
-    @InjectRedis() private readonly redis: Redis
-  ) {}
+    private readonly redisService: RedisService
+  ) {
+    this.redis = this.redisService.getClient();
+  }
 
   /**
    * Validates whether a recaptcha token passes a score of >= 0.5

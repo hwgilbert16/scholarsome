@@ -1,4 +1,4 @@
-name: Build test
+name: Run tests
 on: [push]
 
 jobs:
@@ -21,4 +21,7 @@ jobs:
         run: |
           npm run build
           npm run lint
+
+      - name: Run tests
+        run: npx nx test api
 

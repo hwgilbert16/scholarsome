@@ -44,13 +44,16 @@ import { GlobalInterceptor } from "./auth/global.interceptor";
     MailModule,
     CardsModule,
     UsersModule,
-    JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get("JWT_TOKEN"),
-        signOptions: { expiresIn: "14d" }
+    {
+      ...JwtModule.registerAsync({
+        useFactory: (configService: ConfigService) => ({
+          secret: configService.get("JWT_TOKEN"),
+          signOptions: { expiresIn: "14d" }
+        }),
+        inject: [ConfigService]
       }),
-      inject: [ConfigService]
-    })
+      global: true
+    }
   ],
   controllers: [],
   providers: [
@@ -58,7 +61,8 @@ import { GlobalInterceptor } from "./auth/global.interceptor";
       provide: APP_INTERCEPTOR,
       useClass: GlobalInterceptor
     }
-  ]
+  ],
+  exports: [JwtModule]
 })
 export class AppModule implements NestModule {
   constructor(private configService: ConfigService) {}

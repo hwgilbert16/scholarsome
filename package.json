@@ -85,6 +85,7 @@
     "@angular/cli": "~14.2.0",
     "@angular/language-service": "~14.2.0",
     "@compodoc/compodoc": "^1.1.19",
+    "@golevelup/ts-jest": "^0.3.7",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
     "@nrwl/cli": "15.9.2",
