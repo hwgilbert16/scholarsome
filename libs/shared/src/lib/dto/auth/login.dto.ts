@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class LoginDto {
   @IsEmail()
@@ -10,6 +10,6 @@ export class LoginDto {
     password: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
     recaptchaToken: string;
 }

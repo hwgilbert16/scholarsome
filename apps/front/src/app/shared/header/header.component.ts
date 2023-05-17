@@ -4,11 +4,10 @@ import { NgForm } from "@angular/forms";
 import { ModalService } from "../modal.service";
 import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
-import { HttpResponse } from "@angular/common/http";
-import { LoginFormCaptcha, RegisterFormCaptcha } from "@scholarsome/shared";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
+import { ApiResponseOptions } from "@scholarsome/shared";
 
 @Component({
   selector: "scholarsome-header",
@@ -27,11 +26,17 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   verificationResult: boolean | null;
 
-  loginReq: HttpResponse<LoginFormCaptcha> | number | null;
-  registrationReq: HttpResponse<RegisterFormCaptcha> | number | null;
+  loginRes: string;
+  loginClicked = false;
+
+  registrationRes: string;
+  registrationConfirmationRequired: boolean;
+  registrationClicked = false;
 
   faGithub = faGithub;
   hidden = false;
+
+  ApiResponseOptions = ApiResponseOptions;
 
   /**
    * @ignore
@@ -61,15 +66,19 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async submitLogin(form: NgForm) {
-    this.loginReq = 0;
-    this.loginReq = await this.authService.login(form.value);
+    this.loginRes = "";
+    this.loginClicked = true;
+    this.loginRes = await this.authService.login(form.value);
 
-    if (this.loginReq === 200) window.location.assign("homepage");
+    if (this.loginRes === ApiResponseOptions.Success) window.location.assign("homepage");
   }
 
   async submitRegister(form: NgForm) {
-    this.registrationReq = 0;
-    this.registrationReq = await this.authService.register(form.value);
+    this.registrationRes = "";
+    this.registrationClicked = true;
+    this.registrationRes = await this.authService.register(form.value);
+
+    this.registrationClicked = false;
   }
 
   async submitLogout() {
@@ -94,8 +103,13 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;
 
     this.bsModalService.onHide.subscribe(() => {
-      this.loginReq = null;
-      this.registrationReq = null;
+      this.loginRes = "";
+      this.loginClicked = false;
+
+      this.registrationRes = "";
+      this.registrationClicked = false;
+      this.registrationConfirmationRequired = false;
+
       this.verificationResult = null;
     });
   }

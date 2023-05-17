@@ -9,7 +9,6 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
@@ -55,6 +54,8 @@ export class AuthController {
     const decoded = jwt.verify(req.cookies["resetToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
 
     if (!decoded || !decoded.reset) {
+      res.status(401);
+
       return {
         status: "fail",
         message: "Invalid reset token"
@@ -155,12 +156,17 @@ export class AuthController {
    */
   @Throttle(1, 900)
   @Post("register")
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<void> {
+  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<{ confirmEmail: boolean }>> {
     if (
       await this.usersService.user({ email: registerDto.email }) ||
       await this.usersService.user({ username: registerDto.username })
     ) {
-      throw new HttpException("Conflict", HttpStatus.CONFLICT);
+      res.status(409);
+
+      return {
+        status: "fail",
+        message: "Email already exists"
+      };
     } else {
       await this.usersService.createUser({
         username: registerDto.username,
@@ -170,9 +176,15 @@ export class AuthController {
       });
 
       if (await this.mailService.sendEmailConfirmation(registerDto.email)) {
-        res.status(201);
+        return {
+          status: "success",
+          data: { confirmEmail: true }
+        };
       } else {
-        res.status(200);
+        return {
+          status: "success",
+          data: { confirmEmail: false }
+        };
       }
     }
   }
@@ -188,12 +200,17 @@ export class AuthController {
    */
   @HttpCode(200)
   @Post("login")
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<null>> {
     if (!(await this.authService.validateUser(loginDto.email, loginDto.password))) {
-      throw new UnauthorizedException();
+      res.status(401);
+
+      return {
+        status: "fail",
+        message: "Incorrect email or password"
+      };
     }
 
-    if (this.configService.get<string>("RECAPTCHA_SECRET")) {
+    if (this.configService.get<string>("SCHOLARSOME_RECAPTCHA_SECRET")) {
       const captchaCheck = await this.authService.validateRecaptcha(loginDto.recaptchaToken);
       if (!captchaCheck) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
     }
@@ -205,7 +222,12 @@ export class AuthController {
     });
 
     if (!user) {
-      throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+      res.status(500);
+
+      return {
+        status: "error",
+        message: "Error finding user"
+      };
     }
 
     const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
@@ -216,7 +238,10 @@ export class AuthController {
     res.cookie("access_token", this.jwtService.sign({ id: user.id, email: user.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
     res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
 
-    return;
+    return {
+      status: "success",
+      data: null
+    };
   }
 
   /**

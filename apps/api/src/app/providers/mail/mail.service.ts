@@ -22,7 +22,10 @@ export class MailService {
    * @returns Whether the email successfully sent
    */
   async sendEmailConfirmation(email: string): Promise<boolean> {
-    if (!this.configService.get<boolean>("SMTP_HOST")) return false;
+    if (
+      !this.configService.get<boolean>("SMTP_USERNAME") ||
+      !this.configService.get<boolean>("SMTP_PASSWORD")
+    ) return false;
 
     const token = this.jwtService.sign({ email });
 

@@ -48,9 +48,9 @@
         <label for="login-email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="login-email" name="email" required ngModel>
         <div *ngIf="verificationResult" class="form-text text-success">Your email has been successfully verified. You may now login.</div>
-        <div *ngIf="loginReq === 500" class="form-text text-danger">There was an issue with login.</div>
-        <div *ngIf="loginReq === 401" class="form-text text-danger">The email or password is incorrect.</div>
-        <div *ngIf="loginReq === 429" class="form-text text-danger">You are being rate limited.</div>
+        <div *ngIf="loginRes === ApiResponseOptions.Error" class="form-text text-danger">There was an issue with login.</div>
+        <div *ngIf="loginRes === ApiResponseOptions.Incorrect" class="form-text text-danger">The email or password is incorrect.</div>
+        <div *ngIf="loginRes === ApiResponseOptions.Ratelimit" class="form-text text-danger">You are being rate limited.</div>
       </div>
       <div class="mb-3">
         <div class="d-flex justify-content-between">
@@ -64,8 +64,8 @@
       </div>
       <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(register)" class="text-primary">Sign up.</a></div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" [disabled]="loginReq === 0 || loginReq === 200">
-          <span *ngIf="loginReq === 0 || loginReq === 200" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <button type="submit" class="btn btn-primary" [disabled]="loginClicked">
+          <span *ngIf="loginClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Log in</button>
       </div>
     </form>
@@ -84,11 +84,11 @@
       <div class="mb-3">
         <label for="register-username" class="form-label">Username</label>
         <input type="text" class="form-control" id="register-username" name="username" ngModel required>
-        <div *ngIf="registrationReq === 200" class="form-text text-success">Thanks! You can now sign in.</div>
-        <div *ngIf="registrationReq === 201" class="form-text text-success">Thanks! Check your email for a message from us and click on the link to verify your account.</div>
-        <div *ngIf="registrationReq === 500" class="form-text text-danger">There was an issue with registration.</div>
-        <div *ngIf="registrationReq === 409" class="form-text text-danger">That username or email already has an account.</div>
-        <div *ngIf="registrationReq === 429" class="form-text text-danger">You are being rate limited.</div>
+        <div *ngIf="registrationRes === ApiResponseOptions.Success" class="form-text text-success">Thanks! You can now sign in.</div>
+        <div *ngIf="registrationRes === ApiResponseOptions.Verify" class="form-text text-success">Thanks! Check your email for a message from us and click on the link to verify your account.</div>
+        <div *ngIf="registrationRes === ApiResponseOptions.Error" class="form-text text-danger">There was an issue with registration.</div>
+        <div *ngIf="registrationRes === ApiResponseOptions.Exists" class="form-text text-danger">That username or email already has an account.</div>
+        <div *ngIf="registrationRes === ApiResponseOptions.Ratelimit" class="form-text text-danger">You are being rate limited.</div>
       </div>
       <div class="mb-3">
         <label for="register-email" class="form-label">Email address</label>
@@ -107,8 +107,8 @@
       </div>
       <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); openModal(login)" class="text-primary">Log in.</a></div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" [disabled]="registrationReq === 0 || registrationReq === 201">
-          <span *ngIf="registrationReq === 0" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <button type="submit" class="btn btn-primary" [disabled]="registrationClicked">
+          <span *ngIf="registrationClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Sign up</button>
       </div>
     </form>

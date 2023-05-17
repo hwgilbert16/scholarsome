@@ -1,14 +1,13 @@
 import { Injectable } from "@angular/core";
 import {
   ApiResponse,
+  ApiResponseOptions,
   LoginForm,
-  LoginFormCaptcha,
   RegisterForm,
-  RegisterFormCaptcha,
   ResetForm,
   SubmitResetForm
 } from "@scholarsome/shared";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
 import { User } from "@prisma/client";
@@ -64,25 +63,39 @@ export class AuthService {
    *
    * @returns HTTP status of request
    */
-  async login(loginForm: LoginForm): Promise<number> {
-    const body: LoginFormCaptcha = {
-      ...loginForm,
-      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute("login"))
+  async login(loginForm: LoginForm): Promise<ApiResponseOptions> {
+    const body: LoginForm = {
+      ...loginForm
     };
 
-    let req;
-
-    try {
-      req = await lastValueFrom(this.http.post<LoginFormCaptcha>("/api/auth/login", body, { observe: "response" }));
-    } catch (e) {
-      if (e instanceof HttpErrorResponse) {
-        return e.status;
-      } else {
-        return 500;
-      }
+    if (process.env["SCHOLARSOME_RECAPTCHA_SECRET"]) {
+      body.recaptchaToken = await lastValueFrom(this.recaptchaV3Service.execute("login"));
     }
 
-    return req.status;
+    let login: HttpResponse<ApiResponse<null>>;
+
+    try {
+      login = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/login", body, { observe: "response" }));
+
+      if (login.status === 429) {
+        return ApiResponseOptions.Ratelimit;
+      } else if (login.status === 401) {
+        return ApiResponseOptions.Incorrect;
+      } else if (login.body && login.body.status === "success") {
+        return ApiResponseOptions.Success;
+      } else return ApiResponseOptions.Error;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        switch (e.status) {
+          case 401:
+            return ApiResponseOptions.Incorrect;
+          case 500:
+            return ApiResponseOptions.Error;
+        }
+      }
+
+      return ApiResponseOptions.Error;
+    }
   }
 
   /**
@@ -92,25 +105,44 @@ export class AuthService {
    *
    * @returns HTTP status of request
    */
-  async register(registerForm: RegisterForm): Promise<number> {
-    const body: RegisterFormCaptcha = {
-      ...registerForm,
-      recaptchaToken: await lastValueFrom(this.recaptchaV3Service.execute("register"))
+  async register(registerForm: RegisterForm): Promise<ApiResponseOptions> {
+    const body: RegisterForm = {
+      ...registerForm
     };
 
-    let req;
+    if (process.env["SCHOLARSOME_RECAPTCHA_SECRET"]) {
+      body.recaptchaToken = await lastValueFrom(this.recaptchaV3Service.execute("register"));
+    }
+
+    let register: HttpResponse<ApiResponse<{ confirmEmail: boolean }>>;
 
     try {
-      req = await lastValueFrom(this.http.post<RegisterFormCaptcha>("/api/auth/register", body, { observe: "response" }));
+      register = await lastValueFrom(this.http.post<ApiResponse<{ confirmEmail: boolean }>>("/api/auth/register", body, { observe: "response" }));
+
+      if (
+        register.body &&
+        register.body.status === "success" &&
+        register.body.data.confirmEmail
+      ) {
+        return ApiResponseOptions.Verify;
+      } else if (
+        register.body &&
+        register.body.status === "success"
+      ) {
+        return ApiResponseOptions.Success;
+      } else return ApiResponseOptions.Error;
     } catch (e) {
       if (e instanceof HttpErrorResponse) {
-        return e.status;
-      } else {
-        return 500;
+        switch (e.status) {
+          case 429:
+            return ApiResponseOptions.Ratelimit;
+          case 409:
+            return ApiResponseOptions.Exists;
+        }
       }
     }
 
-    return req.status;
+    return ApiResponseOptions.Error;
   }
 
   /**
