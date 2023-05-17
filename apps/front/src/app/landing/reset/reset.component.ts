@@ -1,7 +1,5 @@
 import { Component, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { HttpResponse } from "@angular/common/http";
-import { ResetForm } from "@scholarsome/shared";
 import { AuthService } from "../../auth/auth.service";
 import { CookieService } from "ngx-cookie";
 
@@ -18,15 +16,16 @@ export class ResetComponent {
 
   @ViewChild("resetForm") resetForm: NgForm;
 
-  resetReq: HttpResponse<ResetForm> | number | null;
+  resetRes: string;
+  resetClicked = false;
 
   async submitReset(form: NgForm) {
-    this.resetReq = 0;
-    this.resetReq = await this.authService.submitResetPassword(form.value);
+    this.resetRes = "";
+    this.resetRes = await this.authService.submitResetPassword(form.value);
   }
 
   async setPassword(form: NgForm) {
-    this.resetReq = 0;
-    this.resetReq = await this.authService.setPassword(form.value);
+    this.resetRes = "";
+    this.resetRes = await this.authService.setPassword(form.value);
   }
 }

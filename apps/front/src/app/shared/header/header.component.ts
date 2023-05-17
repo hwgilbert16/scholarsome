@@ -80,7 +80,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
-        this.hidden = this.router.url === "/";
+        this.hidden = this.router.url === "/" || this.router.url === "/reset";
       }
     });
 

@@ -16,7 +16,7 @@ import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { Response, Request } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import { LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
+import { ApiResponse, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
@@ -24,6 +24,7 @@ import { MailService } from "../providers/mail/mail.service";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { JwtService } from "@nestjs/jwt";
+import { User } from "@prisma/client";
 
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
@@ -49,13 +50,18 @@ export class AuthController {
    *
    * @returns Whether the user's password was successfully updated
    */
-  @Post("reset/password")
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<boolean> {
+  @Get("reset/password")
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<ApiResponse<User>> {
     const decoded = jwt.verify(req.cookies["resetToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
 
-    if (!decoded || !decoded.reset) return false;
+    if (!decoded || !decoded.reset) {
+      return {
+        status: "fail",
+        message: "Invalid reset token"
+      };
+    }
 
-    await this.usersService.updateUser({
+    const query = await this.usersService.updateUser({
       where: {
         email: decoded.email
       },
@@ -64,7 +70,10 @@ export class AuthController {
       }
     });
 
-    return true;
+    return {
+      status: "success",
+      data: query
+    };
   }
 
   /**
@@ -90,14 +99,19 @@ export class AuthController {
    * @remarks Throttled to 1 request per 40 seconds
    * @returns Call to send a password reset email
    */
-  @Throttle(1, 600)
+  @Throttle(0, 600)
   @Get("reset/password/:email")
-  async sendReset(@Param() params: { email: string }) {
+  async sendReset(@Param() params: { email: string }): Promise<ApiResponse<null>> {
     const user = this.usersService.user({ email: params.email });
 
-    if (!user) return;
+    if (user) {
+      await this.mailService.sendPasswordReset(params.email);
+    }
 
-    return await this.mailService.sendPasswordReset(params.email);
+    return {
+      status: "success",
+      data: null
+    };
   }
 
   /*

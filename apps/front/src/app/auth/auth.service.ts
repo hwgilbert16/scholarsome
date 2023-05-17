@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import {
+  ApiResponse,
   LoginForm,
   LoginFormCaptcha,
   RegisterForm,
@@ -10,6 +11,7 @@ import {
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { lastValueFrom } from "rxjs";
 import { ReCaptchaV3Service } from "ng-recaptcha";
+import { User } from "@prisma/client";
 
 @Injectable({
   providedIn: "root"
@@ -28,20 +30,14 @@ export class AuthService {
    *
    * @returns HTTP response of request
    */
-  async submitResetPassword(submitResetForm: SubmitResetForm): Promise<number> {
-    let req;
+  async submitResetPassword(submitResetForm: SubmitResetForm): Promise<string> {
+    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/" + submitResetForm.email, { observe: "response" }));
 
-    try {
-      req = await lastValueFrom(this.http.get("/api/auth/reset/password/" + submitResetForm.email, { observe: "response" }));
-    } catch (e) {
-      if (e instanceof HttpErrorResponse) {
-        return e.status;
-      } else {
-        return 500;
-      }
-    }
-
-    return req.status;
+    if (req.status === 429) {
+      return "ratelimit";
+    } else if (req.body) {
+      return req.body.status;
+    } else return "error";
   }
 
   /**
@@ -51,20 +47,14 @@ export class AuthService {
    *
    * @returns HTTP status of request
    */
-  async setPassword(resetForm: ResetForm): Promise<number> {
-    let req;
+  async setPassword(resetForm: ResetForm): Promise<string> {
+    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/password", resetForm, { observe: "response" }));
 
-    try {
-      req = await lastValueFrom(this.http.post<ResetForm>("/api/auth/reset/password", resetForm, { observe: "response" }));
-    } catch (e) {
-      if (e instanceof HttpErrorResponse) {
-        return e.status;
-      } else {
-        return 500;
-      }
-    }
-
-    return req.status;
+    if (req.status === 429) {
+      return "ratelimit";
+    } else if (req.body) {
+      return req.body.status;
+    } else return "error";
   }
 
   /**
