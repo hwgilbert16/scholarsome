@@ -29,7 +29,7 @@
         "ngxEnv": {
           "prefix": "SCHOLARSOME_"
         },
-        "allowedCommonJsDependencies": ["@prisma/client", "class-validator"]
+        "allowedCommonJsDependencies": ["@prisma/client", "validator"]
       },
       "configurations": {
         "production": {

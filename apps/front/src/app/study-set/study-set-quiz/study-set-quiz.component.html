@@ -16,7 +16,7 @@
               </div>
               <div class="d-flex justify-content-between">
                 <p>Multiple Choice</p>
-                <input class="form-check-input options-selector" type="checkbox" role="switch" name="multipleChoice" [disabled]="!writtenSelected && !trueOrFalseSelected" [(ngModel)]="multipleChoiceSelected" checked>
+                <input class="form-check-input options-selector" type="checkbox" role="switch" name="multipleChoice" [disabled]="!writtenSelected && !trueOrFalseSelected || set.cards.length < 4" [(ngModel)]="multipleChoiceSelected" checked>
               </div>
               <hr class="mb-4">
               <div class="d-flex justify-content-between options-dropdown">

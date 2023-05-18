@@ -3,7 +3,6 @@ import {
   Get,
   NotFoundException,
   Param,
-  UnauthorizedException,
   Request,
   Post,
   UseGuards,
@@ -16,10 +15,11 @@ import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
-import { CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
+import { ApiResponse, CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
 import { CreateCardGuard } from "./guards/create-card.guard";
 import { DeleteCardGuard } from "./guards/delete-card.guard";
 import { UpdateCardGuard } from "./guards/update-card.guard";
+import { Card } from "@prisma/client";
 
 @Controller("cards")
 export class CardsController {
@@ -38,7 +38,7 @@ export class CardsController {
    * @returns `Card` object
    */
   @Get(":cardId")
-  async card(@Param() params: CardIdParam, @Request() req: ExpressRequest) {
+  async card(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
     const userCookie = this.usersService.getUserInfo(req);
 
     let userId = "";
@@ -58,10 +58,17 @@ export class CardsController {
       id: params.cardId
     });
 
-    if (!card) throw new NotFoundException();
-    if (card.set.private && (card.set.authorId !== userId)) throw new UnauthorizedException();
+    if (
+      !card ||
+      card.set.private && (card.set.authorId !== userId)
+    ) {
+      throw new NotFoundException();
+    }
 
-    return card;
+    return {
+      status: "success",
+      data: card
+    };
   }
 
   /**
@@ -71,17 +78,20 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, CreateCardGuard)
   @Post()
-  async createCard(@Body() body: CreateCardDto) {
-    return await this.cardsService.createCard({
-      index: body.index,
-      term: body.term,
-      definition: body.definition,
-      set: {
-        connect: {
-          id: body.setId
+  async createCard(@Body() body: CreateCardDto): Promise<ApiResponse<Card>> {
+    return {
+      status: "success",
+      data: await this.cardsService.createCard({
+        index: body.index,
+        term: body.term,
+        definition: body.definition,
+        set: {
+          connect: {
+            id: body.setId
+          }
         }
-      }
-    });
+      })
+    };
   }
 
   /**
@@ -91,17 +101,20 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, UpdateCardGuard)
   @Put(":cardId")
-  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto) {
-    return await this.cardsService.updateCard({
-      where: {
-        id: params.cardId
-      },
-      data: {
-        index: body.index,
-        term: body.term,
-        definition: body.definition
-      }
-    });
+  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto): Promise<ApiResponse<Card>> {
+    return {
+      status: "success",
+      data: await this.cardsService.updateCard({
+        where: {
+          id: params.cardId
+        },
+        data: {
+          index: body.index,
+          term: body.term,
+          definition: body.definition
+        }
+      })
+    };
   }
 
   /**
@@ -111,9 +124,12 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, DeleteCardGuard)
   @Delete(":cardId")
-  async deleteCard(@Param() params: CardIdParam) {
-    return await this.cardsService.deleteCard({
-      id: params.cardId
-    });
+  async deleteCard(@Param() params: CardIdParam): Promise<ApiResponse<Card>> {
+    return {
+      status: "success",
+      data: await this.cardsService.deleteCard({
+        id: params.cardId
+      })
+    };
   }
 }

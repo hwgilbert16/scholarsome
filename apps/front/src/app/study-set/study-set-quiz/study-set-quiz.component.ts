@@ -266,6 +266,10 @@ export class StudySetQuizComponent implements OnInit {
       return;
     }
 
+    if (set.cards.length < 4) {
+      this.multipleChoiceSelected = false;
+    }
+
     this.set = set;
   }
 }

@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { map, Observable } from "rxjs";
 import { Set } from "@scholarsome/shared";
+import { SetsService } from "../shared/http/sets.service";
 
 @Component({
   selector: "scholarsome-view",
@@ -12,21 +12,23 @@ export class HomepageComponent implements OnInit {
   /**
    * @ignore
    */
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private readonly setsService: SetsService
+  ) {}
 
   @ViewChild("cards", { static: true, read: ViewContainerRef }) cardContainer: ViewContainerRef;
   @ViewChild("container", { static: true }) container: ElementRef;
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
-  sets: Observable<Set[]>;
+  sets: Set[];
 
   async ngOnInit(): Promise<void> {
-    this.sets = this.http.get<Set[]>("/api/sets/user/self").pipe(
-        map((set) => set.sort((a, b) => {
-          return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
-        }))
-    );
+    const sets = await this.setsService.sets("self");
+    if (sets) {
+      this.sets = sets;
+    }
 
     this.spinner.nativeElement.remove();
     this.container.nativeElement.removeAttribute("hidden");

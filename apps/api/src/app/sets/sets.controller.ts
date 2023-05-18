@@ -15,7 +15,8 @@ import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest } from "express";
-import { AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
+import { ApiResponse, AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
+import { Set } from "@prisma/client";
 
 @Controller("sets")
 export class SetsController {
@@ -27,14 +28,13 @@ export class SetsController {
     private readonly usersService: UsersService
   ) {}
 
-
   /**
    * Gets a set given a set ID
    *
    * @returns `Set` object
    */
   @Get(":setId")
-  async set(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
+  async set(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
     });
@@ -47,7 +47,10 @@ export class SetsController {
       if (set.authorId !== userCookie.id) throw new UnauthorizedException();
     }
 
-    return set;
+    return {
+      status: "success",
+      data: set
+    };
   }
 
   /**
@@ -56,26 +59,32 @@ export class SetsController {
    * @returns Array of `Set` objects that belong to the user
    */
   @Get("/user/:authorId")
-  async sets(@Param() params: AuthorIdParam, @Request() req: ExpressRequest) {
+  async sets(@Param() params: AuthorIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) {
       throw new NotFoundException();
     }
 
     if (params.authorId === "self") {
-      return await this.setsService.sets({
-        where: {
-          authorId: user.id
-        }
-      });
+      return {
+        status: "success",
+        data: await this.setsService.sets({
+          where: {
+            authorId: user.id
+          }
+        })
+      };
     }
 
     if (params.authorId === user.id) {
-      return await this.setsService.sets({
-        where: {
-          authorId: params.authorId
-        }
-      });
+      return {
+        status: "success",
+        data: await this.setsService.sets({
+          where: {
+            authorId: params.authorId
+          }
+        })
+      };
     } else {
       let sets = await this.setsService.sets({
         where: {
@@ -89,7 +98,10 @@ export class SetsController {
         }
       }
 
-      return sets;
+      return {
+        status: "success",
+        data: sets
+      };
     }
   }
 
@@ -100,7 +112,7 @@ export class SetsController {
    */
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest) {
+  async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new NotFoundException();
 
@@ -109,27 +121,30 @@ export class SetsController {
     });
     if (!author) throw new NotFoundException();
 
-    return await this.setsService.createSet({
-      author: {
-        connect: {
-          email: author.email
+    return {
+      status: "success",
+      data: await this.setsService.createSet({
+        author: {
+          connect: {
+            email: author.email
+          }
+        },
+        title: body.title,
+        description: body.description,
+        private: body.private,
+        cards: {
+          createMany: {
+            data: body.cards.map((c) => {
+              return {
+                index: c.index,
+                term: c.term,
+                definition: c.definition
+              };
+            })
+          }
         }
-      },
-      title: body.title,
-      description: body.description,
-      private: body.private,
-      cards: {
-        createMany: {
-          data: body.cards.map((c) => {
-            return {
-              index: c.index,
-              term: c.term,
-              definition: c.definition
-            };
-          })
-        }
-      }
-    });
+      })
+    };
   }
 
 
@@ -140,7 +155,7 @@ export class SetsController {
    */
   @UseGuards(AuthenticatedGuard)
   @Put(":setId")
-  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest) {
+  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
     });
@@ -148,32 +163,35 @@ export class SetsController {
 
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
-    return await this.setsService.updateSet({
-      where: {
-        id: set.id
-      },
-      data: {
-        title: body.title,
-        description: body.description,
-        private: body.private,
-        cards: body.cards ? {
-          deleteMany: {
-            id: {
-              in: body.cards.map((c) => c.id)
+    return {
+      status: "success",
+      data: await this.setsService.updateSet({
+        where: {
+          id: set.id
+        },
+        data: {
+          title: body.title,
+          description: body.description,
+          private: body.private,
+          cards: body.cards ? {
+            deleteMany: {
+              id: {
+                in: body.cards.map((c) => c.id)
+              }
+            },
+            createMany: {
+              data: body.cards.map((c) => {
+                return {
+                  index: c.index,
+                  term: c.term,
+                  definition: c.definition
+                };
+              })
             }
-          },
-          createMany: {
-            data: body.cards.map((c) => {
-              return {
-                index: c.index,
-                term: c.term,
-                definition: c.definition
-              };
-            })
-          }
-        } : undefined
-      }
-    });
+          } : undefined
+        }
+      })
+    };
   }
 
   /**
@@ -183,11 +201,14 @@ export class SetsController {
    */
   @UseGuards(AuthenticatedGuard)
   @Delete(":setId")
-  async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest) {
+  async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
-    return await this.setsService.deleteSet({
-      id: params.setId
-    });
+    return {
+      status: "success",
+      data: await this.setsService.deleteSet({
+        id: params.setId
+      })
+    };
   }
 }

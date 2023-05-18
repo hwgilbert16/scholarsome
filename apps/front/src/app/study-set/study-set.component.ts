@@ -184,12 +184,12 @@ export class StudySetComponent implements OnInit {
       )
     ]).
         subscribe(([set, user]) => {
-          this.set = set;
-
-          if (!set) {
+          if (!set || set.status !== "success") {
             this.router.navigate(["404"]);
             return;
           }
+
+          this.set = set.data;
 
           if (user && user.id) this.userIsAuthor = true;
 

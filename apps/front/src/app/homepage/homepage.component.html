@@ -11,7 +11,7 @@
     <h2>Your sets</h2>
   </div>
   <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100">
-    <a *ngFor="let set of this.sets | async;" [routerLink]="['/study-set', set.id]" class="text-decoration-none">
+    <a *ngFor="let set of sets;" [routerLink]="['/study-set', set.id]" class="text-decoration-none">
       <div class="col">
         <div class="card shadow set-card" role="button">
           <div class="card-body">
