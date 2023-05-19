@@ -22,7 +22,15 @@
       </ul>
       <div class="d-flex align-items-baseline">
         <span class="navbar-text mx-3"><a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="github"><fa-icon [icon]="faGithub"></fa-icon></a></span>
-        <ul class="nav navbar-nav">
+        <div *ngIf="!this.cookieService.get('authenticated');">
+          <button type="button" class="btn btn-outline-primary pr-6" (click)="openModal(login)">
+            Log in
+          </button>
+          <button type="button" class="btn btn-primary ms-4 shadow" (click)="openModal(register)">
+            Sign up
+          </button>
+        </div>
+        <ul class="nav navbar-nav" *ngIf="this.cookieService.get('authenticated');">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
             <div class="dropdown-menu dropdown-menu-end">
