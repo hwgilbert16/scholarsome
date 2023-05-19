@@ -9,6 +9,7 @@ import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { faQ } from "@fortawesome/free-solid-svg-icons";
+import { SetsService } from "../http/sets.service";
 
 @Component({
   selector: "scholarsome-header",
@@ -34,6 +35,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   registrationConfirmationRequired: boolean;
   registrationClicked = false;
 
+  importSetRes: string;
+  importSetClicked = false;
+
   faGithub = faGithub;
   hidden = false;
 
@@ -50,6 +54,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
+    private readonly setsService: SetsService,
     public readonly cookieService: CookieService
   ) {
     this.modalService.modal.subscribe((e) => {
@@ -87,6 +92,26 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   async submitLogout() {
     await this.authService.logout();
     window.location.replace("/");
+  }
+
+  async submitImportSet(form: NgForm) {
+    this.importSetRes = "";
+    this.importSetClicked = true;
+
+    const url = new URL(Object.values(form.value)[0] as string).pathname.split("/")[1];
+    if (!url || !(Object.values(form.value)[0] as string).includes("quizlet")) {
+      this.importSetRes = "parsing";
+      return;
+    }
+
+    const conversion = await this.setsService.convertQuizletSet(url);
+
+    if (conversion) {
+      window.location.replace("/study-set/" + conversion.id);
+    } else {
+      this.importSetRes = "fail";
+      this.importSetClicked = false;
+    }
   }
 
   ngOnInit(): void {

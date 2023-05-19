@@ -104,6 +104,27 @@ export class SetsService {
   }
 
   /**
+   * Makes a request to create a set
+   *
+   * @param quizletSetId ID of the Quizlet set
+   *
+   * @returns Created `Set` object
+   */
+  async convertQuizletSet(quizletSetId: string): Promise<Set | null> {
+    let set: ApiResponse<Set> | undefined;
+
+    try {
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/fromQuizlet/" + quizletSetId, {}));
+    } catch (e) {
+      return null;
+    }
+
+    if (set.status === "success") {
+      return set.data;
+    } else return null;
+  }
+
+  /**
    * Makes a request to update a set
    *
    * @param body.title Title of the set

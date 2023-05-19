@@ -9,6 +9,7 @@ $theme-colors: map-merge($theme-colors, (
 
 $form-check-input-checked-bg-color: $primary !important;
 $form-check-input-checked-border-color: $primary !important;
+$dropdown-link-active-bg: $primary !important;
 
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
