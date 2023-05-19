@@ -4,7 +4,6 @@ import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
-import { catchError, EMPTY, forkJoin } from "rxjs";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -175,30 +174,23 @@ export class StudySetComponent implements OnInit {
       return;
     }
 
-    forkJoin([
-      this.sets.set$(this.setId),
-      this.users.user$("self").pipe(
-          catchError(() => {
-            return EMPTY;
-          })
-      )
-    ]).
-        subscribe(([set, user]) => {
-          if (!set || set.status !== "success") {
-            this.router.navigate(["404"]);
-            return;
-          }
+    const set = await this.sets.set(this.setId);
+    if (!set) {
+      this.router.navigate(["404"]);
+      return;
+    }
 
-          this.set = set.data;
+    const user = await this.users.user("self");
 
-          if (user && user.id) this.userIsAuthor = true;
+    this.set = set;
 
-          this.spinner.nativeElement.remove();
+    if (user && user.id === set.authorId) this.userIsAuthor = true;
 
-          this.author = this.set.author.username;
-          this.container.nativeElement.removeAttribute("hidden");
+    this.spinner.nativeElement.remove();
 
-          this.viewCards();
-        });
+    this.author = this.set.author.username;
+    this.container.nativeElement.removeAttribute("hidden");
+
+    this.viewCards();
   }
 }

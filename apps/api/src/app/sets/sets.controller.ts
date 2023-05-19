@@ -17,6 +17,7 @@ import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest } from "express";
 import { ApiResponse, AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
 import { Set } from "@prisma/client";
+import * as puppeteer from "puppeteer";
 
 @Controller("sets")
 export class SetsController {
@@ -147,6 +148,68 @@ export class SetsController {
     };
   }
 
+  /**
+   * Creates a set from a given Quizlet ID
+   *
+   * @returns Created `Set` object
+   */
+  @UseGuards(AuthenticatedGuard)
+  @Post("fromQuizlet/:setId")
+  async convertQuizletSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new NotFoundException();
+
+    const author = await this.usersService.user({
+      email: user.email
+    });
+    if (!author) throw new NotFoundException();
+
+    const cards: { index: number; term: string; definition: string; }[] = [];
+
+    const browser = await puppeteer.launch({ headless: "new" });
+    const page = await browser.newPage();
+    await page.setUserAgent(req.headers["user-agent"]);
+    await page.goto("https://quizlet.com/" + params.setId);
+
+    const title = await (await page.$("h1")).evaluate((el) => el.textContent);
+    const description = await page.$(".SetPageHeader-description");
+
+    const selection = await page.$$(".SetPageTerms-term");
+    for (const [index, card] of selection.entries()) {
+      const content = await card.$$(".TermText");
+
+      cards.push({
+        index,
+        term: await content[0].evaluate((el) => el.textContent),
+        definition: await content[1].evaluate((el) => el.textContent)
+      });
+    }
+
+    return {
+      status: "success",
+      data: await this.setsService.createSet({
+        author: {
+          connect: {
+            email: author.email
+          }
+        },
+        title: title,
+        description: description ? await description.evaluate((el) => el.textContent) : "",
+        private: false,
+        cards: {
+          createMany: {
+            data: cards.map((c) => {
+              return {
+                index: c.index,
+                term: c.term,
+                definition: c.definition
+              };
+            })
+          }
+        }
+      })
+    };
+  }
 
   /**
    * Updates a set

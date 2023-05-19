@@ -33,7 +33,7 @@ export class UsersService {
     } else return null;
   }
 
-  user$(userId: string | null): Observable<User> {
-    return this.http.get<User>("/api/users/" + userId);
+  user$(userId: string | null): Observable<ApiResponse<User>> {
+    return this.http.get<ApiResponse<User>>("/api/users/" + userId);
   }
 }
