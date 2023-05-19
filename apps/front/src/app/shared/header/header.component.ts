@@ -8,6 +8,7 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
+import { faQ } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-header",
@@ -37,6 +38,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   hidden = false;
 
   ApiResponseOptions = ApiResponseOptions;
+
+  faQ = faQ;
 
   /**
    * @ignore

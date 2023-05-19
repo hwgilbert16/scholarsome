@@ -17,6 +17,7 @@
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
               role="menu" aria-labelledby="button-basic">
             <li role="menuitem"><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="'create/set'"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
+            <li role="menuitem"><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="openModal(import)"><fa-icon [icon]="faQ"></fa-icon> &nbsp;Import set</a></li>
           </ul>
         </li>
       </ul>
@@ -120,5 +121,11 @@
           Sign up</button>
       </div>
     </form>
+  </div>
+</ng-template>
+
+<ng-template #import>
+  <div class="modal-body">
+    Import a study set from Quizlet
   </div>
 </ng-template>
