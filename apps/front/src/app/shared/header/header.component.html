@@ -15,8 +15,8 @@
             Create <span class="caret"></span>
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="'create/set'"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="openModal(importSet)"><fa-icon [icon]="faQ"></fa-icon> &nbsp;Import set</a></li>
+            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="!this.cookieService.get('authenticated') ? openModal(login) : ''" [routerLink]="this.cookieService.get('authenticated') ? 'create/set' : undefined"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
+            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated') ? openModal(importSet) : openModal(login)"><fa-icon [icon]="faQ"></fa-icon> &nbsp;Import set</a></li>
           </ul>
         </li>
       </ul>
@@ -134,7 +134,7 @@
       <div class="row text-center">
         <fa-icon [icon]="faQ" class="import-logo"></fa-icon>
         <div class="fs-3 mb-2">Import a study set from Quizlet</div>
-        <div class="fs-6 text-secondary">Input a link to a Quizlet set, and we'll convert it to a Scholarsome one for you. Make sure it's public.</div>
+        <div class="fs-6 text-secondary">Type in a link to a Quizlet set, and we'll convert it to a Scholarsome study set. Make sure it's public.</div>
       </div>
     </div>
     <form class="mt-3" (ngSubmit)="submitImportSet(importSetForm)" #importSetForm="ngForm" ngNativeValidate>

@@ -27,7 +27,9 @@ export class HomepageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const sets = await this.setsService.sets("self");
     if (sets) {
-      this.sets = sets;
+      this.sets = sets.sort((a, b) => {
+        return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+      });
     }
 
     this.spinner.nativeElement.remove();
