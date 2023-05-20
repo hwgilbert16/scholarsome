@@ -16,7 +16,6 @@
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
             <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="!this.cookieService.get('authenticated') ? openModal(login) : ''" [routerLink]="this.cookieService.get('authenticated') ? 'create/set' : undefined"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated') ? openModal(importSet) : openModal(login)"><fa-icon [icon]="faQ"></fa-icon> &nbsp;Import set</a></li>
           </ul>
         </li>
       </ul>
@@ -118,34 +117,6 @@
         <button type="submit" class="btn btn-primary" [disabled]="registrationClicked">
           <span *ngIf="registrationClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Sign up</button>
-      </div>
-    </form>
-  </div>
-</ng-template>
-
-<ng-template #importSet>
-  <div class="modal-body">
-    <div class="d-flex justify-content-end">
-      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
-        <span aria-hidden="true" class="visually-hidden">&times;</span>
-      </button>
-    </div>
-    <div class="col">
-      <div class="row text-center">
-        <fa-icon [icon]="faQ" class="import-logo"></fa-icon>
-        <div class="fs-3 mb-2">Import a study set from Quizlet</div>
-        <div class="fs-6 text-secondary">Type in a link to a Quizlet set, and we'll convert it to a Scholarsome study set. Make sure it's public.</div>
-      </div>
-    </div>
-    <form class="mt-3" (ngSubmit)="submitImportSet(importSetForm)" #importSetForm="ngForm" ngNativeValidate>
-      <div class="mb-3">
-        <input type="url" class="form-control" id="importSet-link" name="link" placeholder="https://quizlet.com/..." ngModel required>
-        <div *ngIf="importSetRes === 'fail'" class="form-text text-danger">Hmm, looks like something went wrong. Are you sure that the set is public?</div>
-        <div *ngIf="importSetRes === 'parsing'" class="form-text text-danger">Make sure that you input a valid Quizlet link.</div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" [disabled]="importSetClicked">
-          <span *ngIf="importSetClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Import</button>
       </div>
     </form>
   </div>
