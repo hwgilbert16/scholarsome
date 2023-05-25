@@ -10,6 +10,7 @@ export class CreateCardComponent {
   @Input() cardIndex: number;
   @Input() upArrow = true;
   @Input() downArrow = true;
+  @Input() trashCan = true;
   @Input() termValue?: string;
   @Input() definitionValue?: string;
 

@@ -14,6 +14,7 @@ export class CardComponent {
 
   @Input() upArrow = true;
   @Input() downArrow = true;
+  @Input() trashCan = true;
 
   @Input() termValue?: string;
   @Input() definitionValue?: string;

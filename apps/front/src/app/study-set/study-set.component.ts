@@ -55,6 +55,7 @@ export class StudySetComponent implements OnInit {
 
       this.cards[i].instance.upArrow = i !== 0;
       this.cards[i].instance.downArrow = this.cards.length - 1 !== i;
+      this.cards[i].instance.trashCan = this.cards.length > 1;
     }
   }
 
@@ -64,6 +65,7 @@ export class StudySetComponent implements OnInit {
     editingEnabled: boolean;
     upArrow?: boolean;
     downArrow?: boolean;
+    trashCan?: boolean;
     term?: string;
     definition?: string;
   }) {
@@ -74,6 +76,7 @@ export class StudySetComponent implements OnInit {
     card.instance.editingEnabled = opts.editingEnabled;
     card.instance.upArrow = opts.upArrow ? opts.upArrow : false;
     card.instance.downArrow = opts.downArrow ? opts.downArrow : false;
+    card.instance.trashCan = opts.trashCan ? opts.trashCan : false;
     card.instance.termValue = opts.term ? opts.term : "";
     card.instance.definitionValue = opts.definition ? opts.definition : "";
 
@@ -111,6 +114,7 @@ export class StudySetComponent implements OnInit {
 
       card.instance.upArrow = i !== 0;
       card.instance.downArrow = this.cards.length - 1 !== i;
+      card.instance.trashCan = this.cards.length > 1;
     }
   }
 

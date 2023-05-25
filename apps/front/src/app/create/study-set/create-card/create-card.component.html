@@ -6,7 +6,7 @@
         <div>
           <fa-icon *ngIf="upArrow" [icon]="['far', 'arrow-alt-circle-up']" class="mx-3 card-button" (click)="moveCard(-1)"></fa-icon>
           <fa-icon *ngIf="downArrow" [icon]="['far', 'arrow-alt-circle-down']" class="mx-3 card-button" (click)="moveCard(1)"></fa-icon>
-          <fa-icon [icon]="['far', 'trash-can']" class="ms-3 card-button" (click)="deleteCard()"></fa-icon>
+          <fa-icon *ngIf="trashCan" [icon]="['far', 'trash-can']" class="ms-3 card-button" (click)="deleteCard()"></fa-icon>
         </div>
       </div>
     </div>

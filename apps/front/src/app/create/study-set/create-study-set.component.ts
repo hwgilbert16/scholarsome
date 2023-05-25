@@ -77,6 +77,7 @@ export class CreateStudySetComponent implements OnInit {
 
       this.cards[i].component.instance.upArrow = i !== 0;
       this.cards[i].component.instance.downArrow = this.cards.length - 1 !== i;
+      this.cards[i].component.instance.trashCan = this.cards.length > 1;
     }
   }
 
