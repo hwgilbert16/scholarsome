@@ -146,8 +146,22 @@ export class AuthController {
    */
   @Get("verify/email/:token")
   async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
-    const email = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string };
-    if (!email) return false;
+    let email: { email: string };
+
+    try {
+      email = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string };
+    } catch (e) {
+      return {
+        status: "fail",
+        message: "Invalid token"
+      };
+    }
+    if (!email) {
+      return {
+        status: "fail",
+        message: "Invalid token"
+      };
+    }
 
     const verification = await this.usersService.updateUser({
       where: {
