@@ -20,7 +20,7 @@ import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 import { MailService } from "../providers/mail/mail.service";
-import { InjectRedis } from "@liaoliaots/nestjs-redis";
+import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
@@ -28,6 +28,8 @@ import { User } from "@prisma/client";
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
+  private readonly redis: Redis;
+
   /**
    * @ignore
    */
@@ -37,8 +39,10 @@ export class AuthController {
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-    @InjectRedis() private readonly redis: Redis
-  ) {}
+    private readonly redisService: RedisService
+  ) {
+    this.redis = this.redisService.getClient();
+  }
 
   /*
   * Password reset routes
@@ -51,7 +55,18 @@ export class AuthController {
    */
   @Get("reset/password")
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<ApiResponse<User>> {
-    const decoded = jwt.verify(req.cookies["resetToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+    let decoded: { email: string, reset: boolean };
+
+    try {
+      decoded = jwt.verify(req.cookies["resetToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+    } catch (e) {
+      res.status(401);
+
+      return {
+        status: "fail",
+        message: "Invalid reset token"
+      };
+    }
 
     if (!decoded || !decoded.reset) {
       res.status(401);
