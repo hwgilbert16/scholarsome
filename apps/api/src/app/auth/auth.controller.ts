@@ -100,7 +100,11 @@ export class AuthController {
    */
   @Get("reset/password/setCookie/:token")
   async setResetCookie(@Param() params: { token: string }, @Res() res: Response): Promise<void> {
-    const decoded = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+    let decoded: { email: string, reset: boolean };
+    try {
+      decoded = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+    // eslint-disable-next-line no-empty
+    } catch (e) {}
 
     if (decoded && decoded.reset) {
       res.cookie("resetToken", params.token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });

@@ -15,6 +15,19 @@ describe("AuthController", () => {
   let authController: AuthController;
   let usersService: UsersService;
 
+  const resetTokenReq = {
+    cookies: {
+      resetToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJyZXNldCI6InRydWUiLCJlbWFpbCI6ImFAYS5jb20ifQ.4xRSOpUWnOUmX24W_cQn3ss4H-qNPB5D84eHLXIg1gQ"
+    }
+  } as Request;
+
+  const res = {
+    status: jest.fn(),
+    cookie: jest.fn(),
+    redirect: jest.fn()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any as Response;
+
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
@@ -67,11 +80,6 @@ describe("AuthController", () => {
   });
 
   describe("when the GET /reset/password route is called", () => {
-    const res = {
-      status: jest.fn()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any as Response;
-
     const dto = {
       password: "a"
     };
@@ -93,20 +101,21 @@ describe("AuthController", () => {
     });
 
     it("should successfully reset the user's password", async () => {
-      const req = {
-        cookies: {
-          resetToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJyZXNldCI6InRydWUiLCJlbWFpbCI6ImFAYS5jb20ifQ.4xRSOpUWnOUmX24W_cQn3ss4H-qNPB5D84eHLXIg1gQ"
-        }
-      } as Request;
-
-      const result = await authController.resetPassword(dto, res, req);
+      const result = await authController.resetPassword(dto, res, resetTokenReq);
 
       expect(usersService.updateUser).toHaveBeenCalled();
-
       expect(result).toEqual({
         status: "success",
         data: {}
       });
+    });
+  });
+
+  describe("when the GET /reset/password/setCookie/:token route is called", () => {
+    it("should redirect to /reset", async () => {
+      await authController.setResetCookie({ token: "" }, res);
+
+      expect(res.redirect).toHaveBeenCalled();
     });
   });
 });
