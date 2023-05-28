@@ -7,19 +7,18 @@
 </div>
 
 <div hidden #container>
-  <div class="container-fluid flashcard-container" style="max-width: 100%; min-width: 100%;">
-    <div class="row justify-content-center align-items-center">
-      <div class="flashcard card text-center shadow-sm w-75" #flashcard>
-        <!-- style="height: 60vh;" -->
-        <div class="card-body fs-1" onmousedown="return false" (click)="flipCard()"></div>
+  <div class="container">
+    <div class="row">
+      <div class="flashcard card text-center shadow-sm" #flashcard>
+        <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()"></div>
         <hr>
-        <div class="mt-2 d-flex justify-content-around align-items-center" *ngIf="cards">
+        <div class="mt-2 d-flex justify-content-around" *ngIf="cards">
           <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
           <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
         </div>
-        <div class="mx-2 d-flex justify-content-between align-items-center">
+        <div class="mx-2 d-flex justify-content-between">
           <p class="text-secondary">{{side}}</p>
-          <fa-icon class="fs-4 mb-2 text-secondary shuffle" tooltip="Enable shuffle" (click)="this.shuffleCards()" [delay]="500" [style.color]="shufflingEnabled ? '#8438ff !important' : '#6c757d !important'" [icon]="['far', 'rectangle-list']"></fa-icon>
+          <fa-icon class="fs-4 mb-2 text-secondary shuffle" tooltip="Enable shuffle" (click)="this.shuffleCards()" [delay]="500" [style.color]="shufflingEnabled ? '#8438ff !important' : '#6c757d !important'" [icon]="faShuffle"></fa-icon>
         </div>
       </div>
     </div>

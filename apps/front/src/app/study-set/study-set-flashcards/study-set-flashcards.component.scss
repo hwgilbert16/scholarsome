@@ -13,11 +13,9 @@
   cursor: pointer;
 }
 
-.flashcard-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.flashcard {
+  min-height: 70vh;
+  margin-top: 8vh;
 }
 
 .back-arrow:hover {

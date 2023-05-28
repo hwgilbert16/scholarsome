@@ -3,6 +3,7 @@ import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { faShuffle } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set-flashcards",
@@ -37,6 +38,8 @@ export class StudySetFlashcardsComponent implements OnInit {
   answer = "Definition";
   side = "Term";
   index = 0;
+
+  faShuffle = faShuffle;
 
   updateIndex() {
     this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
