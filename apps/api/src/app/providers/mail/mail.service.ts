@@ -33,7 +33,7 @@ export class MailService {
       to: email,
       from: "noreply@scholarsome.com",
       subject: "Confirm your email address",
-      text: `Hey there,\n\nWelcome to Scholarsome! We're glad to have you here. Before getting started, we need to confirm your email address.\n\nTo confirm your email, please click this link:\n\nhttp${this.configService.get<string>("SSL_KEY_PATH") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/verify/email/${token}`
+      text: `Hey there,\n\nWelcome to Scholarsome! We're glad to have you here. Before getting started, we need to confirm your email address.\n\nTo confirm your email, please click this link:\n\nhttp${this.configService.get<string>("SSL_KEY_PATH") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/verify/email/${token}"`
     });
 
     return true;

@@ -18,11 +18,11 @@ describe("AuthController", () => {
   let mailService: MailService;
   let authService: AuthService;
 
-  const resetToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJyZXNldCI6InRydWUiLCJlbWFpbCI6ImFAYS5jb20ifQ.4xRSOpUWnOUmX24W_cQn3ss4H-qNPB5D84eHLXIg1gQ";
+  const resetPasswordToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJyZXNldCI6InRydWUiLCJlbWFpbCI6ImFAYS5jb20ifQ.4xRSOpUWnOUmX24W_cQn3ss4H-qNPB5D84eHLXIg1gQ";
 
   const resetTokenReq = {
     cookies: {
-      resetToken
+      resetPasswordToken
     }
   } as Request;
 
@@ -145,7 +145,7 @@ describe("AuthController", () => {
     expect(authController).toBeDefined();
   });
 
-  describe("when the GET /reset/password route is called", () => {
+  describe("when the POST /reset/password route is called", () => {
     const dto = {
       password: "a"
     };
@@ -212,9 +212,9 @@ describe("AuthController", () => {
     });
 
     it("should set a cookie if the param is valid", async () => {
-      await authController.setResetCookie({ token: resetToken }, res);
+      await authController.setResetCookie({ token: resetPasswordToken }, res);
 
-      expect(res.cookie).toHaveBeenCalledWith("resetToken", resetToken, {
+      expect(res.cookie).toHaveBeenCalledWith("resetPasswordToken", resetPasswordToken, {
         httpOnly: false,
         expires: expect.any(Date)
       });
@@ -253,7 +253,7 @@ describe("AuthController", () => {
     } as any as Response;
 
     it("should update the user if the jwt is verified", async () => {
-      await authController.verifyEmail({ token: resetToken }, res);
+      await authController.verifyEmail({ token: resetPasswordToken }, res);
 
       expect(usersService.updateUser).toHaveBeenCalledWith({
         where: {
@@ -266,7 +266,7 @@ describe("AuthController", () => {
     });
 
     it("should set the correct cookie if the jwt is verified", async () => {
-      await authController.verifyEmail({ token: resetToken }, res);
+      await authController.verifyEmail({ token: resetPasswordToken }, res);
 
       expect(res.cookie).toHaveBeenCalledWith("verified", true, {
         expires: expect.any(Date)

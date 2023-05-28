@@ -14,10 +14,6 @@ export class RegisterDto {
     password: string;
 
   @IsString()
-  @IsNotEmpty()
-    confirmPassword: string;
-
-  @IsString()
   @IsOptional()
     recaptchaToken: string;
 }
