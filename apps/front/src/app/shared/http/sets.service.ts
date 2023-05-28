@@ -146,4 +146,18 @@ export class SetsService {
       return set.data;
     } else return null;
   }
+
+  async deleteSet(setId: string): Promise<Set | null> {
+    let set: ApiResponse<Set> | undefined;
+
+    try {
+      set = await lastValueFrom(this.http.delete<ApiResponse<Set>>("/api/sets/" + setId));
+    } catch (e) {
+      return null;
+    }
+
+    if (set.status === "success") {
+      return set.data;
+    } else return null;
+  }
 }

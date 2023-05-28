@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
@@ -17,9 +17,7 @@ export class HomepageComponent implements OnInit {
     private readonly setsService: SetsService
   ) {}
 
-  @ViewChild("cards", { static: true, read: ViewContainerRef }) cardContainer: ViewContainerRef;
   @ViewChild("container", { static: true }) container: ElementRef;
-
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
   sets: Set[];

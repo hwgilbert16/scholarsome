@@ -21,8 +21,9 @@
       <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="['far', 'flag']"></fa-icon> Game</button>
     </div>
   </div>
-  <div class="mt-4">
+  <div class="mt-4 d-flex justify-content-between">
     <button type="button" class="btn btn-light bg-white shadow"><fa-icon [icon]="['far', 'user']"></fa-icon> Created by <span class="fw-bold">{{author}}</span></button>
+    <p *ngIf="set" class="text-secondary">{{set.description}}</p>
   </div>
   <hr>
   <div class="container-fluid">
@@ -33,7 +34,7 @@
         <div class="d-flex align-items-center">
           <div class="mb-2 form-check me-3" [hidden]="!isEditing" #privateCheck>
             <input type="checkbox" class="form-check-input" id="privateCheck" *ngIf="set" [checked]="set.private">
-            <label class="form-check-label" for="privateCheck">Viewable only to me</label>
+            <label class="form-check-label" for="privateCheck">Private set</label>
           </div>
           <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" (click)="saveCards()">Save</button>
           <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards()">Cancel</button>
@@ -49,6 +50,14 @@
               <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>
             </div>
           </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-danger" [hidden]="!isEditing || deleteClicked" (click)="deleteClicked = true">Delete this set</button>
+      <div [hidden]="!deleteClicked">
+        <div class="d-flex">
+          <p class="text-secondary">Are you sure?</p>
+          <button type="button" class="btn btn-danger mx-2" (click)="deleteSet()">Yes</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="deleteClicked = false">No</button>
         </div>
       </div>
     </div>

@@ -38,6 +38,8 @@ export class StudySetComponent implements OnInit {
 
   test: Set;
 
+  deleteClicked = false;
+
   cookieExists(name: string): boolean {
     const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
@@ -169,6 +171,11 @@ export class StudySetComponent implements OnInit {
         });
       }
     }
+  }
+
+  async deleteSet() {
+    await this.sets.deleteSet(this.set.id);
+    await this.router.navigate(["homepage"]);
   }
 
   async ngOnInit(): Promise<void> {
