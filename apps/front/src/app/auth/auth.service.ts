@@ -29,8 +29,8 @@ export class AuthService {
    *
    * @returns HTTP response of request
    */
-  async submitResetPassword(submitResetForm: SubmitResetForm): Promise<string> {
-    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/" + submitResetForm.email, { observe: "response" }));
+  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<string> {
+    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/sendReset/" + submitResetForm.email, { observe: "response" }));
 
     if (req.status === 429) {
       return "ratelimit";
@@ -47,7 +47,7 @@ export class AuthService {
    * @returns HTTP status of request
    */
   async setPassword(resetForm: ResetForm): Promise<string> {
-    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/password", resetForm, { observe: "response" }));
+    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/setPassword", { password: resetForm.password }, { observe: "response" }));
 
     if (req.status === 429) {
       return "ratelimit";

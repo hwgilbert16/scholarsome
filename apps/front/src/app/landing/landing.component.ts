@@ -33,5 +33,9 @@ export class LandingComponent implements OnInit {
       this.location.go("homepage");
       await this.router.navigate(["homepage"]);
     }
+
+    if (this.cookieService.get("resetPasswordToken")) {
+      this.modalService.modal.next("set-password-open");
+    }
   }
 }

@@ -53,12 +53,12 @@ export class AuthController {
    *
    * @returns Whether the user's password was successfully updated
    */
-  @Get("reset/password")
+  @Post("reset/setPassword")
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<ApiResponse<User>> {
     let decoded: { email: string, reset: boolean };
 
     try {
-      decoded = jwt.verify(req.cookies["resetToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+      decoded = jwt.verify(req.cookies["resetPasswordToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
     } catch (e) {
       res.status(401);
 
@@ -76,6 +76,8 @@ export class AuthController {
         message: "Invalid reset token"
       };
     }
+
+    res.cookie("resetPasswordToken", "", { httpOnly: false, expires: new Date() });
 
     const query = await this.usersService.updateUser({
       where: {
@@ -103,14 +105,15 @@ export class AuthController {
     let decoded: { email: string, reset: boolean };
     try {
       decoded = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
-    // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    if (decoded && decoded.reset) {
-      res.cookie("resetToken", params.token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
+    } catch (e) {
+      return res.redirect("/");
     }
 
-    return res.redirect("/reset");
+    if (decoded && decoded.reset) {
+      res.cookie("resetPasswordToken", params.token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
+    }
+
+    return res.redirect("/");
   }
 
   /**
@@ -120,7 +123,7 @@ export class AuthController {
    * @returns Call to send a password reset email
    */
   @Throttle(0, 600)
-  @Get("reset/password/:email")
+  @Get("reset/sendReset/:email")
   async sendReset(@Param() params: { email: string }): Promise<ApiResponse<null>> {
     const user = this.usersService.user({ email: params.email });
 

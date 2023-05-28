@@ -62,7 +62,7 @@
       <div class="mb-3">
         <div class="d-flex justify-content-between">
           <label for="login-password" class="form-label">Password</label>
-          <a class="form-text" [routerLink]="['reset']" (click)="modalRef?.hide()">Forgot?</a>
+          <a class="form-text" (click)="modalRef?.hide(); openModal(forgotModal)">Forgot?</a>
         </div>
         <input type="password" class="form-control" id="login-password" name="password" required ngModel>
         <div class="form-text recaptcha-text">This site is protected by reCAPTCHA and the Google
@@ -117,6 +117,51 @@
         <button type="submit" class="btn btn-primary" [disabled]="registrationClicked">
           <span *ngIf="registrationClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Sign up</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #forgot>
+  <div class="modal-header bg-white">
+    <h4 class="modal-title pull-left">Forgot password</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="this.modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form class="mx-3" (ngSubmit)="submitForgot(forgotForm)" #forgotForm="ngForm" ngNativeValidate>
+      <div class="form-text mb-3">Enter your email address to send a password reset</div>
+      <div class="mb-3">
+        <label for="forgot-email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="forgot-email" name="email" ngModel required>
+        <div *ngIf="forgotClicked" class="form-text text-success">If that email exists, we've sent a reset message.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="forgotClicked">Send password reset</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #setPassword>
+  <div class="modal-header bg-white">
+    <h4 class="modal-title pull-left">Set a new password</h4>
+  </div>
+  <div class="modal-body">
+    <form class="mx-3" (ngSubmit)="submitSetPassword(setPasswordForm)" #setPasswordForm="ngForm" ngNativeValidate>
+      <div class="form-text mb-3">Enter a new password for your account</div>
+      <div class="mb-3">
+        <label for="set-password" class="form-label">New password</label>
+        <input type="password" class="form-control" id="set-password" name="password" ngModel required>
+        <div *ngIf="setPasswordNotMatching" class="form-text text-danger">Your passwords do not match.</div>
+      </div>
+      <div class="mb-3">
+        <label for="confirm-set-password" class="form-label">Confirm new password</label>
+        <input type="password" class="form-control" id="confirm-set-password" name="confirmPassword" ngModel required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="setPasswordClicked">Set new password</button>
       </div>
     </form>
   </div>

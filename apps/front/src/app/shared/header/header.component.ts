@@ -8,7 +8,6 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
-import { SetsService } from "../http/sets.service";
 
 @Component({
   selector: "scholarsome-header",
@@ -18,9 +17,13 @@ import { SetsService } from "../http/sets.service";
 export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild("register") registerModal: TemplateRef<HTMLElement>;
   @ViewChild("login") loginModal: TemplateRef<HTMLElement>;
+  @ViewChild("forgot") forgotModal: TemplateRef<HTMLElement>;
+  @ViewChild("setPassword") setPasswordModal: TemplateRef<HTMLElement>;
 
   @ViewChild("loginForm") loginForm: NgForm;
   @ViewChild("registerForm") registerForm: NgForm;
+  @ViewChild("forgotForm") forgotForm: NgForm;
+  @ViewChild("setPasswordForm") setPasswordForm: NgForm;
 
   modalRef?: BsModalRef;
   isMobile: boolean;
@@ -33,6 +36,11 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   registrationRes: string;
   registrationConfirmationRequired: boolean;
   registrationClicked = false;
+
+  forgotClicked = false;
+
+  setPasswordClicked = false;
+  setPasswordNotMatching = false;
 
   faGithub = faGithub;
   hidden = false;
@@ -48,7 +56,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
-    private readonly setsService: SetsService,
     public readonly cookieService: CookieService
   ) {
     this.modalService.modal.subscribe((e) => {
@@ -58,6 +65,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
           break;
         case "login-open":
           this.modalRef = this.bsModalService.show(this.loginModal);
+          break;
+        case "set-password-open":
+          this.modalRef = this.bsModalService.show(this.setPasswordModal, { keyboard: false, ignoreBackdropClick: true });
           break;
       }
     });
@@ -81,6 +91,26 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.registrationRes = await this.authService.register(form.value);
 
     this.registrationClicked = false;
+  }
+
+  async submitForgot(form: NgForm) {
+    this.forgotClicked = true;
+    await this.authService.sendPasswordReset(form.value);
+  }
+
+  async submitSetPassword(form: NgForm) {
+    this.setPasswordNotMatching = false;
+    this.setPasswordClicked = true;
+
+    if (form.value["password"] !== form.value["confirmPassword"]) {
+      this.setPasswordClicked = false;
+      this.setPasswordNotMatching = true;
+      return;
+    }
+
+    await this.authService.setPassword(form.value);
+    this.modalRef?.hide();
+    this.bsModalService.show(this.loginModal);
   }
 
   async submitLogout() {
@@ -113,6 +143,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       this.registrationConfirmationRequired = false;
 
       this.verificationResult = null;
+
+      this.forgotClicked = false;
     });
   }
 

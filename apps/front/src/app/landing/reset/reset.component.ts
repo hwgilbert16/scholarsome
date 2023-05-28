@@ -21,7 +21,7 @@ export class ResetComponent {
 
   async submitReset(form: NgForm) {
     this.resetRes = "";
-    this.resetRes = await this.authService.submitResetPassword(form.value);
+    this.resetRes = await this.authService.sendPasswordReset(form.value);
   }
 
   async setPassword(form: NgForm) {
