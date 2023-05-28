@@ -162,6 +162,22 @@ export class SetsController {
 
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
+    // we are overwriting the cards, entire new array is provided
+    if (body.cards) {
+      await this.setsService.updateSet({
+        where: {
+          id: set.id
+        },
+        data: {
+          cards: {
+            deleteMany: {
+              setId: params.setId
+            }
+          }
+        }
+      });
+    }
+
     return {
       status: "success",
       data: await this.setsService.updateSet({
@@ -173,11 +189,6 @@ export class SetsController {
           description: body.description,
           private: body.private,
           cards: body.cards ? {
-            deleteMany: {
-              id: {
-                in: body.cards.map((c) => c.id)
-              }
-            },
             createMany: {
               data: body.cards.map((c) => {
                 return {

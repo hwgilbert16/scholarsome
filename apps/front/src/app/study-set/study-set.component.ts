@@ -25,7 +25,8 @@ export class StudySetComponent implements OnInit {
   @ViewChild("container", { static: true }) container: ElementRef;
   @ViewChild("editButton", { static: true }) editButton: ElementRef;
   @ViewChild("cardsContainer", { static: true, read: ViewContainerRef }) cardsContainer: ViewContainerRef;
-  @ViewChild("privateCheck", { static: true }) privateCheck: ElementRef;
+  @ViewChild("privateCheck", { static: false }) privateCheck: ElementRef;
+  @ViewChild("editDescription", { static: false }) editDescription: ElementRef;
 
   userIsAuthor = false;
   isEditing = false;
@@ -128,15 +129,22 @@ export class StudySetComponent implements OnInit {
         }
       }
 
+      this.isEditing = false;
+
       for (const card of this.cards) {
         card.instance.editingEnabled = false;
         card.instance.termValue = card.instance.term;
         card.instance.definitionValue = card.instance.definition;
       }
 
+      console.log(this.cards);
+
+      this.set.description = this.editDescription.nativeElement.value;
+
       await this.sets.updateSet({
         id: this.set.id,
-        private: this.privateCheck.nativeElement.children[0].checked,
+        description: this.editDescription.nativeElement.value,
+        private: this.privateCheck.nativeElement.checked,
         cards: this.cards.map((c) => {
           return {
             id: c.instance.cardId,
@@ -147,7 +155,7 @@ export class StudySetComponent implements OnInit {
         })
       });
 
-      this.isEditing = false;
+      console.log(this.cards);
     }
   }
 

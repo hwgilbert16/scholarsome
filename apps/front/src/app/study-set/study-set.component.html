@@ -32,12 +32,27 @@
       <div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
         <div class="d-flex align-items-center">
-          <div class="mb-2 form-check me-3" [hidden]="!isEditing" #privateCheck>
-            <input type="checkbox" class="form-check-input" id="privateCheck" *ngIf="set" [checked]="set.private">
-            <label class="form-check-label" for="privateCheck">Private set</label>
-          </div>
           <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" (click)="saveCards()">Save</button>
           <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards(); deleteClicked = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="set" [hidden]="!isEditing">
+      <div class="w-50 mt-3 h-100">
+        <label for="edit-description" class="form-label">Description</label>
+        <textarea class="form-control" id="edit-description" [value]="set.description" #editDescription></textarea>
+      </div>
+      <div class="mb-2 form-check mt-3">
+        <input type="checkbox" class="form-check-input" id="privateCheck" [checked]="set.private" #privateCheck>
+        <label class="form-check-label" for="privateCheck">Private set</label>
+      </div>
+      <div class="mt-3 mb-5">
+        <button type="button" class="btn btn-danger" [hidden]="deleteClicked" (click)="deleteClicked = true">Delete this set</button>
+        <div [hidden]="!deleteClicked">
+          <div class="d-flex">
+            <button type="button" class="btn btn-danger me-2" (click)="deleteSet()">Confirm</button>
+            <button type="button" class="btn btn-outline-secondary" (click)="deleteClicked = false">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
@@ -52,15 +67,6 @@
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-danger" [hidden]="!isEditing || deleteClicked" (click)="deleteClicked = true">Delete this set</button>
-      <div [hidden]="!deleteClicked">
-        <div class="d-flex">
-          <p class="text-secondary">Are you sure?</p>
-          <button type="button" class="btn btn-danger mx-2" (click)="deleteSet()">Yes</button>
-          <button type="button" class="btn btn-outline-secondary" (click)="deleteClicked = false">No</button>
-        </div>
-      </div>
-      <div class="mb-4"></div>
     </div>
   </div>
 </div>
