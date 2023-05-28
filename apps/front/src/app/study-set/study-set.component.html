@@ -37,7 +37,7 @@
             <label class="form-check-label" for="privateCheck">Private set</label>
           </div>
           <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" (click)="saveCards()">Save</button>
-          <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards()">Cancel</button>
+          <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards(); deleteClicked = false">Cancel</button>
         </div>
       </div>
     </div>
@@ -60,6 +60,7 @@
           <button type="button" class="btn btn-outline-secondary" (click)="deleteClicked = false">No</button>
         </div>
       </div>
+      <div class="mb-4"></div>
     </div>
   </div>
 </div>
