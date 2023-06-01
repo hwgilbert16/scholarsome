@@ -26,14 +26,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return new UnauthorizedException();
       }]),
       ignoreExpiration: true,
-      secretOrKey: configService.get<string>("JWT_TOKEN"),
+      secretOrKey: configService.get<string>("JWT_SECRET"),
       passReqToCallback: true
     });
   }
 
   async validate(req, payload) {
     try {
-      jwt.verify(req.cookies.access_token, this.configService.get<string>("JWT_TOKEN"));
+      jwt.verify(req.cookies.access_token, this.configService.get<string>("JWT_SECRET"));
     } catch (e) {
       throw new UnauthorizedException("Token expired");
     }

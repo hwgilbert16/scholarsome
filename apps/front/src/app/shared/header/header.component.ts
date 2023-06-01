@@ -82,7 +82,11 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.loginClicked = true;
     this.loginRes = await this.authService.login(form.value);
 
-    if (this.loginRes === ApiResponseOptions.Success) window.location.assign("homepage");
+    if (this.loginRes === ApiResponseOptions.Success) {
+      window.location.assign("homepage");
+    } else {
+      this.loginClicked = false;
+    }
   }
 
   async submitRegister(form: NgForm) {

@@ -13,20 +13,23 @@ services:
     expose:
       - "3306:3306"
     environment:
-      - "MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}"
-      - "MYSQL_DATABASE=scholarsome"
+      - "MARIADB_RANDOM_ROOT_PASSWORD=yes"
+      - "MARIADB_ROOT_HOST=localhost"
+      - "MARIADB_DATABASE=scholarsome"
+      - "MARIADB_USER=scholarsome"
+      - "MARIADB_PASSWORD=${DATABASE_PASSWORD}"
     volumes:
       - mariadb:/var/lib/mysql
     restart: always
   scholarsome:
     image: hwgilbert16/scholarsome
     ports:
-      - "${HTTP_PORT}:3333"
+      - "${HTTP_PORT}:8080"
     environment:
       - "NODE_ENV=${NODE_ENV}"
-      - "DATABASE_URL=mysql://root:${DATABASE_PASSWORD}@mariadb:3306/scholarsome"
-      - "JWT_TOKEN=${JWT_TOKEN}"
-      - "REDIS_HOST=127.0.0.1"
+      - "DATABASE_URL=mysql://scholarsome:${DATABASE_PASSWORD}@mariadb:3306/scholarsome"
+      - "JWT_SECRET=${JWT_SECRET}"
+      - "REDIS_HOST=redis"
       - "REDIS_PORT=6379"
       - "REDIS_USERNAME="
       - "REDIS_PASSWORD=${DATABASE_PASSWORD}"

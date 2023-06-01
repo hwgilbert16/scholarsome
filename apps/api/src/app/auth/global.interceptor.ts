@@ -48,7 +48,7 @@ export class GlobalInterceptor implements NestInterceptor {
 
       // if your access token is expired
       try {
-        jwt.verify(req.cookies.access_token, this.configService.get<string>("JWT_TOKEN"));
+        jwt.verify(req.cookies.access_token, this.configService.get<string>("JWT_SECRET"));
       } catch (e) {
         // and you have a refresh token
         if ("refresh_token" in req.cookies) {
@@ -72,7 +72,7 @@ export class GlobalInterceptor implements NestInterceptor {
     }
 
     try {
-      refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_TOKEN")) as { id: string; email: string; type: "refresh" };
+      refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_SECRET")) as { id: string; email: string; type: "refresh" };
     } catch (e) {
       this.authService.logout(req, res);
       return true;

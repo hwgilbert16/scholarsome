@@ -58,7 +58,7 @@ export class AuthController {
     let decoded: { email: string, reset: boolean };
 
     try {
-      decoded = jwt.verify(req.cookies["resetPasswordToken"], this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+      decoded = jwt.verify(req.cookies["resetPasswordToken"], this.configService.get<string>("JWT_SECRET")) as { email: string, reset: boolean };
     } catch (e) {
       res.status(401);
 
@@ -104,7 +104,7 @@ export class AuthController {
   async setResetCookie(@Param() params: { token: string }, @Res() res: Response): Promise<void> {
     let decoded: { email: string, reset: boolean };
     try {
-      decoded = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string, reset: boolean };
+      decoded = jwt.verify(params.token, this.configService.get<string>("JWT_SECRET")) as { email: string, reset: boolean };
     } catch (e) {
       return res.redirect("/");
     }
@@ -152,7 +152,7 @@ export class AuthController {
     let email: { email: string };
 
     try {
-      email = jwt.verify(params.token, this.configService.get<string>("JWT_TOKEN")) as { email: string };
+      email = jwt.verify(params.token, this.configService.get<string>("JWT_SECRET")) as { email: string };
     } catch (e) {
       return {
         status: "fail",

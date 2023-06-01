@@ -47,7 +47,7 @@ import { GlobalInterceptor } from "./auth/global.interceptor";
     {
       ...JwtModule.registerAsync({
         useFactory: (configService: ConfigService) => ({
-          secret: configService.get("JWT_TOKEN"),
+          secret: configService.get("JWT_SECRET"),
           signOptions: { expiresIn: "14d" }
         }),
         inject: [ConfigService]
