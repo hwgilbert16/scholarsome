@@ -16,6 +16,7 @@
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
             <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="!this.cookieService.get('authenticated') ? openModal(login) : ''" [routerLink]="this.cookieService.get('authenticated') ? 'create/set' : undefined"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
+            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated')? openModal(importSet) : openModal(login)"><fa-icon [icon]="faQ"></fa-icon> &nbsp;Import set</a></li>
           </ul>
         </li>
       </ul>
@@ -158,6 +159,39 @@
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" [disabled]="setPasswordClicked">Set new password</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #importSet>
+  <div class="modal-body">
+    <div class="d-flex justify-content-end">
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="col">
+      <div class="row text-center">
+        <fa-icon [icon]="faQ" class="import-logo"></fa-icon>
+        <div class="fs-3 mb-2">Import a study set from Quizlet</div>
+        <div class="fs-6 text-secondary">If you've created a Quizlet set, you can import it to Scholarsome. Click the link to view how to export your sets.<br><br>Use the tab and semicolon options. Paste the set in the box below, and click import.<br><br><a href="https://help.quizlet.com/hc/en-us/articles/360034345672-Exporting-your-sets" target="_blank">https://help.quizlet.com/hc/en-us/articles/360034345672-Exporting-your-sets</a></div>
+      </div>
+    </div>
+    <hr>
+    <form class="mt-3" (ngSubmit)="submitImportSet(importSetForm)" #importSetForm="ngForm" ngNativeValidate>
+      <input type="input" class="form-control mb-3" placeholder="Enter a title for your study set..." maxlength="255" name="importTitle" [disabled]="importSetClicked" ngModel required>
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="importPrivateCheck" name="importPrivateCheck" [disabled]="importSetClicked" ngModel>
+        <label class="form-check-label" for="importPrivateCheck">Viewable only to me</label>
+      </div>
+      <div class="mb-3">
+        <textarea class="form-control" rows="6" name="importSet" placeholder="Paste in your exported set here..." [disabled]="importSetClicked" ngModel ngDefaultControl required></textarea>
+        <div *ngIf="importSetRes === 'pattern'" class="form-text text-danger">Your exported set is not correctly formatted.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="importSetClicked">
+          <span *ngIf="importSetClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Import</button>
       </div>
     </form>
   </div>

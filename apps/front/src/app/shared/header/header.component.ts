@@ -8,6 +8,8 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
+import { faQ } from "@fortawesome/free-solid-svg-icons";
+import { SetsService } from "../http/sets.service";
 
 @Component({
   selector: "scholarsome-header",
@@ -19,6 +21,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild("login") loginModal: TemplateRef<HTMLElement>;
   @ViewChild("forgot") forgotModal: TemplateRef<HTMLElement>;
   @ViewChild("setPassword") setPasswordModal: TemplateRef<HTMLElement>;
+  @ViewChild("importSet") importSetModal: TemplateRef<HTMLElement>;
 
   @ViewChild("loginForm") loginForm: NgForm;
   @ViewChild("registerForm") registerForm: NgForm;
@@ -42,10 +45,15 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   setPasswordClicked = false;
   setPasswordNotMatching = false;
 
+  importSetClicked = false;
+  importSetRes: string;
+
   faGithub = faGithub;
   hidden = false;
 
   ApiResponseOptions = ApiResponseOptions;
+
+  faQ = faQ;
 
   /**
    * @ignore
@@ -56,6 +64,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
+    private readonly setsService: SetsService,
     public readonly cookieService: CookieService
   ) {
     this.modalService.modal.subscribe((e) => {
@@ -115,6 +124,47 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     await this.authService.setPassword(form.value);
     this.modalRef?.hide();
     this.bsModalService.show(this.loginModal);
+  }
+
+  async submitImportSet(form: NgForm) {
+    this.importSetClicked = true;
+    this.importSetRes = "";
+
+    const exported = form.value["importSet"].substring(0, form.value["importSet"].length - 1).split(";");
+
+    // need to add a regex check here to ensure pattern is valid
+
+    if (exported.length < 1) {
+      this.importSetRes = "pattern";
+      this.importSetClicked = false;
+      return;
+    }
+
+    const cards: { index: number; term: string; definition: string; }[] = [];
+
+    for (let i = 0; i < exported.length; i++) {
+      const split = exported[i].split("\t");
+
+      cards.push({
+        index: i,
+        term: split[0],
+        definition: split[1]
+      });
+    }
+
+    const set = await this.setsService.createSet({
+      title: form.value["importTitle"],
+      private: form.value["importPrivateCheck"] === true,
+      cards: cards
+    });
+
+    if (set) {
+      window.location.replace("/study-set/" + set.id);
+    } else {
+      this.importSetRes = "pattern";
+      this.importSetClicked = false;
+      return;
+    }
   }
 
   async submitLogout() {
