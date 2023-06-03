@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import("./study-set/study-set.module").then((m) => m.StudySetModule)
   },
   {
+    path: "profile",
+    loadChildren: () => import("./profile/profile.module").then((m) => m.ProfileModule)
+  },
+  {
     path: "404",
     component: NotfoundComponent
   },

@@ -8,7 +8,7 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
-import { faQ } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { SetsService } from "../http/sets.service";
 
 @Component({
@@ -54,6 +54,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   ApiResponseOptions = ApiResponseOptions;
 
   faQ = faQ;
+  faArrowRightFromBracket = faArrowRightFromBracket;
 
   /**
    * @ignore
@@ -168,7 +169,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async submitLogout() {
-    await this.authService.logout();
+    this.authService.logout();
     window.location.replace("/");
   }
 

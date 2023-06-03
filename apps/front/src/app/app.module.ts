@@ -32,6 +32,7 @@ import { AppRoutingModule } from "./app-routing.module";
 import { LandingModule } from "./landing/landing.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
+import { ProfileModule } from "./profile/profile.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -46,7 +47,8 @@ import { CommonModule } from "@angular/common";
     CookieModule.withOptions(),
     AppRoutingModule,
     BrowserAnimationsModule,
-    CommonModule
+    CommonModule,
+    ProfileModule
   ],
   providers: [],
   bootstrap: [AppComponent]
