@@ -4,6 +4,7 @@ import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
+import { Meta, Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -18,7 +19,9 @@ export class StudySetComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly sets: SetsService,
     private readonly users: UsersService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -198,6 +201,18 @@ export class StudySetComponent implements OnInit {
       this.router.navigate(["404"]);
       return;
     }
+
+    this.titleService.setTitle(set.title + " — Scholarsome");
+
+    let description = "Studying done the correct way on Scholarsome — ";
+
+    const firstThree = set.cards.slice(0, 3);
+
+    for (const card of firstThree) {
+      description += card.term.replace(/(\r\n|\n|\r)/gm, "") + " " + card.definition.replace(/(\r\n|\n|\r)/gm, "") + ". ";
+    }
+
+    this.metaService.addTag({ name: "description", content: description });
 
     const user = await this.users.user("self");
 

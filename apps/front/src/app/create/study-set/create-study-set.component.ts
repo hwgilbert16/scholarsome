@@ -4,6 +4,7 @@ import { HttpClient } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
 import { Router } from "@angular/router";
 import { SetsService } from "../../shared/http/sets.service";
+import { Meta, Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-create",
@@ -17,8 +18,13 @@ export class CreateStudySetComponent implements OnInit {
   constructor(
     private readonly http: HttpClient,
     private readonly router: Router,
-    private readonly sets: SetsService
-  ) {}
+    private readonly sets: SetsService,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
+  ) {
+    this.titleService.setTitle("Create a new set — Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Create a free new Scholarsome study set. Scholarsome is the way studying was meant to be." });
+  }
 
   @ViewChild("cardList", { static: true, read: ViewContainerRef }) cardList: ViewContainerRef;
 

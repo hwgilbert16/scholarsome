@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Location } from "@angular/common";
+import { Meta, Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-landing",
@@ -20,8 +21,13 @@ export class LandingComponent implements OnInit {
     private readonly router: Router,
     private readonly location: Location,
     private readonly deviceService: DeviceDetectorService,
-    public readonly modalService: ModalService
-  ) {}
+    public readonly modalService: ModalService,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
+  ) {
+    this.titleService.setTitle("Studying done the correct way — Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Scholarsome is the way studying was meant to be. No monthly fees or upsells to get between you and your study tools. Just flashcards." });
+  }
 
   isDesktop: boolean;
   faGithub = faGithub;

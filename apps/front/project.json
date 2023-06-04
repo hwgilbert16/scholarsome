@@ -20,7 +20,8 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           "apps/front/src/favicon.ico",
-          "apps/front/src/assets"
+          "apps/front/src/assets",
+          "apps/front/src/robots.txt"
         ],
         "styles": [
           "apps/front/src/styles.scss"

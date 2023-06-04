@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-notfound",
@@ -6,5 +7,9 @@ import { Component } from "@angular/core";
   styleUrls: ["./notfound.component.scss"]
 })
 export class NotfoundComponent {
-  constructor() {}
+  constructor(
+    private readonly titleService: Title
+  ) {
+    this.titleService.setTitle("Not found — Scholarsome");
+  }
 }

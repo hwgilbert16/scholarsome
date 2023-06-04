@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
+import { Meta, Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-study-set-quiz",
@@ -14,7 +15,9 @@ export class StudySetQuizComponent implements OnInit {
     private readonly sets: SetsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
   ) {}
 
   @ViewChild("quiz", { static: false, read: ViewContainerRef }) quiz: ViewContainerRef;
@@ -265,6 +268,9 @@ export class StudySetQuizComponent implements OnInit {
       await this.router.navigate(["404"]);
       return;
     }
+
+    this.titleService.setTitle(set.title + " — Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Start a quiz for the " + set.title + " study set on Scholarsome. Improve your memorization skills by taking a quiz." });
 
     if (set.cards.length < 4) {
       this.multipleChoiceSelected = false;

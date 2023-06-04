@@ -22,7 +22,11 @@ import { GlobalInterceptor } from "./auth/global.interceptor";
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "front")
+      rootPath: join(__dirname, "..", "front"),
+      serveStaticOptions: {
+        cacheControl: true,
+        maxAge: 31536000
+      }
     }),
     ConfigModule.forRoot({
       isGlobal: true

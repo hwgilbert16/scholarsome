@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { faShuffle } from "@fortawesome/free-solid-svg-icons";
+import { Meta, Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-study-set-flashcards",
@@ -18,7 +19,9 @@ export class StudySetFlashcardsComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly sets: SetsService,
     private readonly router: Router,
-    public readonly modalService: BsModalService
+    public readonly modalService: BsModalService,
+    private readonly titleService: Title,
+    private readonly metaService: Meta
   ) {}
 
   modalRef?: BsModalRef;
@@ -97,6 +100,9 @@ export class StudySetFlashcardsComponent implements OnInit {
       await this.router.navigate(["404"]);
       return;
     }
+
+    this.titleService.setTitle(set.title + " — Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Begin studying flashcards " + set.title + " study set on Scholarsome. Improve your memorization skills by taking a quiz." });
 
     // sort the cards by index
     this.cards = set.cards.sort((a, b) => {

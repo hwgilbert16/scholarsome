@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /homepage
+Allow: /study-set/
+Disallow: /404
+Disallow: /api/
+Disallow: /assets/
