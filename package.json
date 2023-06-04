@@ -6,7 +6,7 @@
     "ng": "nx",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate deploy",
-    "build": "npx nx run-many --target=build --projects=front,api",
+    "build": "npx nx run-many --target=build --projects=front,api --skip-nx-cache",
     "test": "nx test",
     "documentation:serve": "npx @compodoc/compodoc -p tsconfig.base.json --serve",
     "lint": "nx run-many --all --target=lint --fix",

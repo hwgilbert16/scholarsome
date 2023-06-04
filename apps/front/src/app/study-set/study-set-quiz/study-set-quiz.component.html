@@ -1,10 +1,10 @@
 <div [hidden]="created">
   <div class="jumbotron align-items-center d-flex min-vh-100">
     <div class="container-fluid options-container rounded">
-      <div class="row justify-content-center align-items-center">
+      <div class="row">
         <div class="quiz-creator text-center shadow-lg rounded mb-3">
           <h1 class="mt-3 mb-5">Create a Quiz</h1>
-          <form #optionsForm="ngForm" (ngSubmit)="beginQuiz(optionsForm)" class="fs-5 options-form" ngNativeValidate>
+          <form #optionsForm="ngForm" (ngSubmit)="beginQuiz(optionsForm)" class="fs-5 me-4" ngNativeValidate>
             <div class="form-check form-switch options-buttons">
               <div class="d-flex justify-content-between">
                 <p>Written</p>

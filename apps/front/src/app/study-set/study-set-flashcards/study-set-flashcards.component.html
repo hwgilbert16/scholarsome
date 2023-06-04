@@ -1,25 +1,25 @@
-<div class="navbar-spacing"></div>
+<div #spinner>
+  <div class="navbar-spacing"></div>
 
-<div class="d-flex justify-content-center mt-5" #spinner>
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+  <div class="d-flex justify-content-center mt-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 </div>
 
-<div hidden #container>
-  <div class="container">
-    <div class="row">
-      <div class="flashcard card text-center shadow-sm" #flashcard>
-        <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()"></div>
-        <hr>
-        <div class="mt-2 d-flex justify-content-around" *ngIf="cards">
-          <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
-          <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
-        </div>
-        <div class="mx-2 d-flex justify-content-between">
-          <p class="text-secondary">{{side}}</p>
-          <fa-icon class="fs-4 mb-2 text-secondary shuffle" tooltip="Enable shuffle" (click)="this.shuffleCards()" [delay]="500" [style.color]="shufflingEnabled ? '#8438ff !important' : '#6c757d !important'" [icon]="faShuffle"></fa-icon>
-        </div>
+<div class="container" hidden #container>
+  <div class="row">
+    <div class="flashcard card text-center shadow-sm" #flashcard>
+      <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()"></div>
+      <hr>
+      <div class="mt-2 d-flex justify-content-around" *ngIf="cards">
+        <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
+        <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
+      </div>
+      <div class="mx-2 d-flex justify-content-between">
+        <p class="text-secondary">{{side}}</p>
+        <fa-icon class="fs-4 mb-2 text-secondary shuffle" (click)="this.shuffleCards()" [style.color]="shufflingEnabled ? '#8438ff !important' : '#6c757d !important'" [icon]="faShuffle"></fa-icon>
       </div>
     </div>
   </div>
