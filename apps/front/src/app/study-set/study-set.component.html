@@ -21,9 +21,12 @@
       <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="['far', 'flag']"></fa-icon> Game</button>
     </div>
   </div>
-  <div class="mt-4 d-flex justify-content-between">
-    <button type="button" class="btn btn-light bg-white shadow"><fa-icon [icon]="['far', 'user']"></fa-icon> Created by <span class="fw-bold">{{author}}</span></button>
-    <p *ngIf="set" class="text-secondary">{{set.description}}</p>
+  <div class="mt-4 d-flex justify-content-between" *ngIf="set">
+    <div class="d-flex align-items-center">
+      <a [routerLink]="['/profile', set.authorId]"><button type="button" class="btn btn-light bg-white shadow"><fa-icon [icon]="['far', 'user']"></fa-icon> Created by <span class="fw-bold">{{author}}</span></button></a>
+      <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']" class="fs-5 ms-3"></fa-icon>
+    </div>
+    <p class="text-secondary">{{set.description}}</p>
   </div>
   <hr>
   <div class="container-fluid">

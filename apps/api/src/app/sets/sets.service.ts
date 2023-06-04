@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
-import { Prisma, Set as PrismaSet } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
@@ -101,9 +101,13 @@ export class SetsService {
    *
    * @returns Created `Set` object
    */
-  async createSet(data: Prisma.SetCreateInput): Promise<PrismaSet> {
+  async createSet(data: Prisma.SetCreateInput): Promise<Set> {
     return this.prisma.set.create({
-      data
+      data,
+      include: {
+        cards: true,
+        author: true
+      }
     });
   }
 
@@ -118,11 +122,15 @@ export class SetsService {
   async updateSet(params: {
     where: Prisma.SetWhereUniqueInput;
     data: Prisma.SetUpdateInput;
-  }): Promise<PrismaSet> {
+  }): Promise<Set> {
     const { where, data } = params;
     return this.prisma.set.update({
       data,
-      where
+      where,
+      include: {
+        cards: true,
+        author: true
+      }
     });
   }
 
@@ -133,9 +141,13 @@ export class SetsService {
    *
    * @returns `Set` object that was deleted
    */
-  async deleteSet(where: Prisma.SetWhereUniqueInput): Promise<PrismaSet> {
+  async deleteSet(where: Prisma.SetWhereUniqueInput): Promise<Set> {
     return this.prisma.set.delete({
-      where
+      where,
+      include: {
+        cards: true,
+        author: true
+      }
     });
   }
 }

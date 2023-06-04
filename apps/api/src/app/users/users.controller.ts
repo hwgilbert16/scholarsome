@@ -15,8 +15,9 @@ export class UsersController {
    */
   @Get(":userId")
   async user(@Param() params: UserIdParam, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
+    const cookies = this.usersService.getUserInfo(req);
+
     if (params.userId === "self") {
-      const cookies = this.usersService.getUserInfo(req);
       if (!cookies) {
         throw new NotFoundException();
       }
@@ -33,6 +34,16 @@ export class UsersController {
       id: params.userId
     });
     if (!user) throw new NotFoundException();
+
+    for (let i = 0; i < user.sets.length; i++) {
+      if (cookies) {
+        if (user.sets[i].private && user.sets[i].authorId !== cookies.id) {
+          user.sets = user.sets.splice(i, i + 1);
+        }
+      } else {
+        user.sets = user.sets.filter((set) => set.private === false);
+      }
+    }
 
     return {
       status: "success",

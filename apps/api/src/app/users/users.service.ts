@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
-import { User, Prisma } from "@prisma/client";
+import { Prisma, User as PrismaUser } from "@prisma/client";
+import { User } from "@scholarsome/shared";
 import { Request } from "express";
 import jwt_decode from "jwt-decode";
 
@@ -32,7 +33,8 @@ export class UsersService {
       userWhereUniqueInput: Prisma.UserWhereUniqueInput
   ): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where: userWhereUniqueInput
+      where: userWhereUniqueInput,
+      include: { sets: true }
     });
   }
 
@@ -60,7 +62,10 @@ export class UsersService {
       take,
       cursor,
       where,
-      orderBy
+      orderBy,
+      include: {
+        sets: true
+      }
     });
   }
 
@@ -71,7 +76,7 @@ export class UsersService {
    *
    * @returns Created `User` object
    */
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+  async createUser(data: Prisma.UserCreateInput): Promise<PrismaUser> {
     return this.prisma.user.create({
       data
     });
@@ -88,7 +93,7 @@ export class UsersService {
   async updateUser(params: {
     where: Prisma.UserWhereUniqueInput;
     data: Prisma.UserUpdateInput;
-  }): Promise<User> {
+  }): Promise<PrismaUser> {
     const { where, data } = params;
     return this.prisma.user.update({
       data,
@@ -104,7 +109,7 @@ export class UsersService {
    *
    * @returns `User` object that was deleted
    */
-  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<PrismaUser> {
     return this.prisma.user.delete({
       where
     });

@@ -3,14 +3,14 @@
 <fieldset [disabled]="formDisabled">
   <div class="py-4">
     <div class="create-header d-flex justify-content-between text-nowrap">
-      <h2>Create new study set</h2>
+      <h2>Create a new study set</h2>
       <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
     </div>
     <div class="container-fluid mt-3">
       <div class="row mx-md-4">
         <div class="col">
           <div class="my-3">
-            <input type="input" class="form-control" placeholder="Enter a title for your study set..." maxlength="255" #title>
+            <input type="text" class="form-control" placeholder="Enter a title for your study set..." maxlength="255" #title>
           </div>
           <div class="mb-3">
             <textarea class="form-control" placeholder="Add a description..." #description></textarea>

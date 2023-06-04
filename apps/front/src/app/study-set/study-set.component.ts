@@ -40,8 +40,6 @@ export class StudySetComponent implements OnInit {
   cards: ComponentRef<CardComponent>[] = [];
   set: Set;
 
-  test: Set;
-
   deleteClicked = false;
 
   cookieExists(name: string): boolean {
@@ -140,8 +138,6 @@ export class StudySetComponent implements OnInit {
         card.instance.definitionValue = card.instance.definition;
       }
 
-      console.log(this.cards);
-
       this.set.description = this.editDescription.nativeElement.value;
 
       await this.sets.updateSet({
@@ -157,8 +153,6 @@ export class StudySetComponent implements OnInit {
           };
         })
       });
-
-      console.log(this.cards);
     }
   }
 
