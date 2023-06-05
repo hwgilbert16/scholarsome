@@ -77,9 +77,11 @@ export class AuthService {
     res.cookie("refresh_token", "", { httpOnly: true, expires: new Date() });
     res.cookie("authenticated", "", { httpOnly: false, expires: new Date() });
 
-    const user = jwt.decode(req.cookies.access_token);
-    if (user && "email" in (user as jwt.JwtPayload)) {
-      this.redis.del(user["email"]);
+    const decoded = jwt.decode(req.cookies.access_token);
+
+    const user = await this.usersService.user({ id: decoded["id"] });
+    if (user) {
+      this.redis.del(user.email);
     }
   }
 }
