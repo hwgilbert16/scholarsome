@@ -8,13 +8,27 @@
   cursor: pointer;
 }
 
-@media only screen and (min-device-width : 768px) {
+.quiz-creator {
+  margin-top: 20vh;
+}
+
+@media only screen and  (min-device-width : 320px) and (max-device-width : 480px) {
   .options-container {
     width: 50%;
   }
 
   .quiz {
     width: 50%;
+  }
+
+  .quiz-creator {
+    margin-top: 16vh;
+  }
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
+  .quiz-creator {
+    margin-top: 20vh;
   }
 }
 
@@ -26,4 +40,5 @@
   100% {
     color: #8438ff;
   }
+
 }
