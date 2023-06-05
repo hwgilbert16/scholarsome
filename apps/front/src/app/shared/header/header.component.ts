@@ -51,6 +51,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   faGithub = faGithub;
   hidden = false;
 
+  signedIn = false;
+
   ApiResponseOptions = ApiResponseOptions;
 
   faQ = faQ;
@@ -169,7 +171,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async submitLogout() {
-    this.authService.logout();
+    await this.authService.logout();
     window.location.replace("/");
   }
 
@@ -188,6 +190,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
 
     if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;
+
+    if (this.cookieService.get("authenticated")) this.signedIn = true;
 
     this.bsModalService.onHide.subscribe(() => {
       this.loginRes = "";
