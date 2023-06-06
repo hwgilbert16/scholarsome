@@ -19,7 +19,6 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
-  @ViewChild("container", { static: false }) container: ElementRef;
 
   user: User | null;
   registrationDate: string;
@@ -46,6 +45,5 @@ export class ProfileComponent implements OnInit {
     this.registrationDate = months[this.user.createdAt.getMonth()] + " " + this.user.createdAt.getDay() + ", " + this.user.createdAt.getFullYear();
 
     this.spinner.nativeElement.remove();
-    this.container.nativeElement.removeAttribute("hidden");
   }
 }
