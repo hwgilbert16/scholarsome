@@ -33,9 +33,10 @@ import { LandingModule } from "./landing/landing.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
 import { ProfileModule } from "./profile/profile.module";
+import { HeadScriptsComponent } from "./head-scripts/head-scripts.component";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, HeadScriptsComponent],
   imports: [
     CreateModule,
     LandingModule,
@@ -51,7 +52,7 @@ import { ProfileModule } from "./profile/profile.module";
     ProfileModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent, HeadScriptsComponent]
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {
