@@ -9,26 +9,22 @@
 }
 
 .quiz-creator {
-  margin-top: 20vh;
+  margin-top: 4vh;
 }
 
 @media only screen and  (min-device-width : 320px) and (max-device-width : 480px) {
-  .options-container {
-    width: 50%;
-  }
-
-  .quiz {
-    width: 50%;
-  }
-
-  .quiz-creator {
-    margin-top: 16vh;
-  }
+  //.options-container {
+  //  width: 50%;
+  //}
+  //
+  //.quiz {
+  //  width: 50%;
+  //}
 }
 
 @media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
-  .quiz-creator {
-    margin-top: 20vh;
+  .quiz {
+    width: 75%;
   }
 }
 
