@@ -8,7 +8,11 @@
 
 </div>
 
-<p align="center">Scholarsome is an open source system for self-led flashcard studying, through the use of quizzes and games.</p>
+|                Desktop view                 |                 Mobile view                 |
+|:-------------------------------------------:|:-------------------------------------------:|
+| <img src="https://i.imgur.com/MshTOaL.png"> | <img src="https://i.imgur.com/eYf4qRy.png"> |
+
+<p align="center">Scholarsome is an open source system for flashcard studying, through the use of quizzes and games.</p>
 
 <p align="center">Inspired by the larger sites that are now charging for core functionality, Scholarsome intends to be a drop-in replacement for any study workflow.</p>
 
@@ -16,7 +20,7 @@
 
 ## Getting started
 
-Scholarsome runs within a Docker container for production uses. For production uses, we use Docker Compose to orchestrate database connections.
+Scholarsome runs within a Docker container for production uses. We recommend the use of our implementation of Docker Compose to orchestrate database connections.
 
 Before starting installation, be sure that Docker is installed on the system that you will be running Scholarsome within. Downloads for Docker can be found below if you do not already have it installed.
 
@@ -50,7 +54,7 @@ wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.comp
 
 Open `.env` with your favorite text editor, and fill in the required fields, along with any optional ones that fit your use case.
 
-Start the service, and run it in the background.
+Start the service in a detached state.
 
 ```
 docker compose --env-file .env up -d
