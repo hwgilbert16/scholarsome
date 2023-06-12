@@ -12,15 +12,18 @@ jobs:
         with:
           node-version: 'lts/Hydrogen'
 
-      - name: npm install and prisma generate
+      - name: Install dependencies and run migrations
         run: |
           npm install --legacy-peer-deps
           npm run generate
 
-      - name: Nx build and lint
+      - name: Build website and lint
         run: |
           npm run build
           npm run lint
+
+      - name: Build docs
+        run: npm run build:docs
 
       - name: Run tests
         run: npx nx test api
