@@ -17,8 +17,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
       - name: Build
-        run: npm run build:docs
+        run: npx nx build docs --skip-nx-cache
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
