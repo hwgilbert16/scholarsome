@@ -23,7 +23,7 @@ jobs:
           npm run lint
 
       - name: Build docs
-        run: npx nx build docs --skip-nx-cache
+        run: npm run build:docs
 
       - name: Run tests
         run: npx nx test api
