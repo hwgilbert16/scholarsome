@@ -39,7 +39,7 @@ const config = {
         logo: {
           alt: 'Scholarsome',
           src: 'img/logo.svg',
-          href: '/intro'
+          href: '/'
         },
         items: [
           {
