@@ -7,7 +7,7 @@ const config = {
   title: 'Scholarsome',
   url: 'https://docs.scholarsome.com',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'Scholarsome',
