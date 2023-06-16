@@ -10,6 +10,8 @@ import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { faQ, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { SetsService } from "../http/sets.service";
+import { SharedService } from "../shared.service";
+import packageJson from "../../../../../../package.json";
 
 @Component({
   selector: "scholarsome-header",
@@ -27,6 +29,12 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild("registerForm") registerForm: NgForm;
   @ViewChild("forgotForm") forgotForm: NgForm;
   @ViewChild("setPasswordForm") setPasswordForm: NgForm;
+
+  protected readonly packageJson = packageJson;
+  protected readonly window = window;
+
+  updateAvailable: boolean;
+  releaseUrl: string;
 
   modalRef?: BsModalRef;
   isMobile: boolean;
@@ -68,7 +76,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
     private readonly setsService: SetsService,
-    public readonly cookieService: CookieService
+    public readonly cookieService: CookieService,
+    private readonly sharedService: SharedService
   ) {
     this.modalService.modal.subscribe((e) => {
       switch (e) {
@@ -175,7 +184,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     window.location.replace("/");
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    this.updateAvailable = await this.sharedService.isUpdateAvailable();
+    this.releaseUrl = await this.sharedService.getReleaseUrl();
+
     this.router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
         this.hidden = this.router.url === "/" || this.router.url === "/reset";

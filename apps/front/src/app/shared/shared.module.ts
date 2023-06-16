@@ -3,7 +3,7 @@ import { HeaderComponent } from "./header/header.component";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { RouterLinkWithHref } from "@angular/router";
+import { RouterLink, RouterLinkWithHref } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { CookieModule } from "ngx-cookie";
 import { AlertComponent } from "./alert/alert.component";
@@ -12,6 +12,7 @@ import { CommonModule } from "@angular/common";
 import { NotfoundComponent } from "./notfound/notfound.component";
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha";
 import { CardComponent } from "./card/card.component";
+import { SharedService } from "./shared.service";
 
 @NgModule({
   imports: [
@@ -23,13 +24,15 @@ import { CardComponent } from "./card/card.component";
     CookieModule,
     AlertModule,
     CommonModule,
-    RecaptchaV3Module
+    RecaptchaV3Module,
+    RouterLink
   ],
   providers: [
     {
       provide: RECAPTCHA_V3_SITE_KEY,
       useValue: process.env["SCHOLARSOME_RECAPTCHA_SITE"]
-    }
+    },
+    SharedService
   ],
   declarations: [
     HeaderComponent,
