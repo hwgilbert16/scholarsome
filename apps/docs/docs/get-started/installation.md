@@ -134,4 +134,4 @@ docker stop scholarsome
 
 ## Outside a container
 
-Reference the development guide for how to run Scholarsome outside the standard containerized method.
+Reference the [development guide](../development/development-guide.md) for steps on how to run Scholarsome outside a container.

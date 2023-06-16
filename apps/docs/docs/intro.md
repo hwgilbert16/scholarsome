@@ -5,44 +5,30 @@ sidebar_position: 1
 
 # Intro
 
-Let's discover **Docusaurus in less than 5 minutes**.
+[Installation Instructions](./get-started/prerequisites.md)
 
-## Getting Started
+Scholarsome is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
 
-Get started by **creating a new site**.
+While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+![Demo](https://i.imgur.com/MshTOaL.png)
 
-### What you'll need
+## Features
 
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+Implemented features include:
 
-## Generate a new site
+- Create your own study sets ✅
+- Study using flashcards ✅
+- Use quizzes to test yourself ✅
+- Import created sets from Quizlet ✅
+- Edit your sets on the fly ✅
+- Make sets private if studying with others ✅
 
-Generate a new Docusaurus site using the **classic template**.
+## Features coming soon...
 
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+- Interactive study games
+- Dynamic learn mode that adjusts to progress
+- Persistence of quiz results
+- Editing permission sharing with other users
+- Improved profile page
+- User-accessible API

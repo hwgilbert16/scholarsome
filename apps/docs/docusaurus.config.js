@@ -4,7 +4,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Scholarsome',
+  title: 'Scholarsome Docs',
   url: 'https://docs.scholarsome.com',
   baseUrl: '/',
   onBrokenLinks: 'log',
