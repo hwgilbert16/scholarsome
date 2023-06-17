@@ -1,6 +1,12 @@
-<p align="center"><img src="https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/apps/front/src/assets/scholarsome-logo-purple-lowercase.svg" height="50%" width="50%"></p>
+## <p align="center"><img src="https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/apps/front/src/assets/scholarsome-logo-purple-lowercase.svg" height="50%" width="50%"></p>
 
 <div align="center">
+
+*An open source system for flashcard studying.*
+
+*Inspired by the larger sites that are now charging for core functionality, Scholarsome intends to be a drop-in replacement for any study workflow.*
+
+https://scholarsome.com
 
 <a href="">![](https://img.shields.io/github/license/hwgilbert16/scholarsome?style=flat-square&color=blue)</a>
 <a href="">![](https://img.shields.io/badge/contributions-welcome-orange?style=flat-square)</a>
@@ -8,52 +14,49 @@
 
 </div>
 
-<p align="center">Scholarsome is an open source system for self-led flashcard studying, through the use of quizzes and games.</p>
+<p align="center">
+<img src="https://i.imgur.com/MshTOaL.png" width="80%">
+</p>
 
-<p align="center">Inspired by the larger sites that are now charging for core functionality, Scholarsome intends to be a drop-in replacement for any study workflow.</p>
+## Introduction
 
----
+Scholarsome is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
 
-## Getting started
+While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
 
-Scholarsome runs within a Docker container for production uses. For production uses, we use Docker Compose to orchestrate database connections.
+## Features
 
-Before starting installation, be sure that Docker is installed on the system that you will be running Scholarsome within. Downloads for Docker can be found below if you do not already have it installed.
+Implemented features include:
 
-- [Linux](https://docs.docker.com/linux/started/)
-- [Windows](https://docs.docker.com/windows/started)
-- [MacOS (OS X)](https://docs.docker.com/mac/started/)
+- Create your own study sets ✅
+- Study using flashcards ✅
+- Use quizzes to test yourself ✅
+- Import created sets from Quizlet ✅
+- Edit your sets on the fly ✅
+- Make sets private if studying with others ✅
 
-These instructions are written for Linux installations.
+## Features coming soon...
 
-### Installation - Docker Compose
+- Interactive study games
+- Dynamic learn mode that adjusts to progress
+- Persistence of quiz results
+- Editing permission sharing with other users
+- Improved profile page
+- User-accessible API
 
-This is the recommended method of installation, as it is does not require any external database connections.
+## Usage
 
-Make a directory for the necessary files.
+Scholarsome is accessible at https://scholarsome.com for individuals who are not interested in hosting it themselves. It is free and runs the same as the most recently released version.
 
-```
-mkdir scholarsome && cd scholarsome
-```
+However, the service can be hosted yourself on any system. For those wishing to self-host Scholarsome, documentation for installation can be found <a href="https://docs.scholarsome.com/get-started/prerequisites">here.</a>
 
-Download the compose file.
+## Development
 
-```
-wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/compose.yml
-```
+For development purposes, Scholarsome is required to be installed outside the standard container-based system that is used for production installs. Documentation for development can be found <a href="https://docs.scholarsome.com/development/development-guide">here.</a>
 
-Download the environment file and make a copy of it.
+## Contributing
 
-```
-wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.compose.example && cp .env.compose.example .env
-```
+Scholarsome is an open source project. We believe in a transparent development process and are appreciative of any contributions to the project. Whether it's proposing new features, helping us fix bugs, or improving the documentation - we would love to have your help. Please refer to our <a href="https://github.com/hwgilbert16/scholarsome/blob/develop/CODE_OF_CONDUCT.md">code of conduct</a> to ensure you follow the project's rules.
 
-Open `.env` with your favorite text editor, and fill in the required fields, along with any optional ones that fit your use case.
-
-Start the service, and run it in the background.
-
-```
-docker compose --env-file .env up -d
-```
-
-Scholarsome is now running.
+- **Bug reports.** If you run into an issue using Scholarsome, please <a href="https://github.com/hwgilbert16/scholarsome/issues/new">create a bug report</a>. Make sure you attach the `bug` label to your issue.
+- **Feature requests.** We'd love to hear your ideas for future features. Please <a href="https://github.com/hwgilbert16/scholarsome/issues/new">create an issue</a> and attach the `feature request` label to propose a new feature.

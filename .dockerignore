@@ -8,3 +8,5 @@ dist
 .git
 .env
 README.md
+.docusaurus
+.cache-loader

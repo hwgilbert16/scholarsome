@@ -119,10 +119,10 @@ export class AuthController {
   /**
    * Sends a password reset for a given user
    *
-   * @remarks Throttled to 1 request per 40 seconds
+   * @remarks Throttled to 5 requests per minute
    * @returns Call to send a password reset email
    */
-  @Throttle(0, 600)
+  @Throttle(5, 600)
   @Get("reset/sendReset/:email")
   async sendReset(@Param() params: { email: string }): Promise<ApiResponse<null>> {
     const user = this.usersService.user({ email: params.email });
@@ -190,7 +190,7 @@ export class AuthController {
    * @remarks Throttled to 1 request per 15 minutes
    * @returns Void, HTTP 201 if successful email confirmation, 200 if email disabled
    */
-  @Throttle(1, 900)
+  @Throttle(5, 900)
   @Post("register")
   async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<{ confirmEmail: boolean }>> {
     if (

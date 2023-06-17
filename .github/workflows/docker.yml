@@ -1,4 +1,4 @@
-name: Docker push
+name: Build and push image
 on:
   push:
     branches: [release]
@@ -14,12 +14,12 @@ jobs:
         with:
           node-version: 'lts/Hydrogen'
 
-      - name: npm install and prisma generate
+      - name: Install dependencies and run migrations
         run: |
           npm install --legacy-peer-deps
           npm run generate
 
-      - name: npm build
+      - name: Build
         run: npm run build
 
       - name: Login to Dockerhub
