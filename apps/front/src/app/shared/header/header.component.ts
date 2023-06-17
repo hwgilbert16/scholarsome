@@ -184,9 +184,9 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     window.location.replace("/");
   }
 
-  async ngOnInit(): Promise<void> {
-    this.updateAvailable = await this.sharedService.isUpdateAvailable();
-    this.releaseUrl = await this.sharedService.getReleaseUrl();
+  ngOnInit(): void {
+    this.sharedService.isUpdateAvailable().then((r) => this.updateAvailable = r);
+    this.sharedService.getReleaseUrl().then((r) => this.releaseUrl = r);
 
     this.router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
