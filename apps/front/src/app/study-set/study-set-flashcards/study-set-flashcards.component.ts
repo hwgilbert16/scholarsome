@@ -43,6 +43,7 @@ export class StudySetFlashcardsComponent implements OnInit {
   index = 0;
 
   faShuffle = faShuffle;
+  flip = false;
 
   updateIndex() {
     this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
@@ -65,6 +66,8 @@ export class StudySetFlashcardsComponent implements OnInit {
   }
 
   flipCard() {
+    this.flip = !this.flip;
+
     if (this.side === "Term") {
       this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
       this.side = "Definition";

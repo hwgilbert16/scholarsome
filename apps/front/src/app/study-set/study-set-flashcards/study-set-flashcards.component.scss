@@ -3,10 +3,6 @@
   height: 6rem;
 }
 
-.card-body:hover {
-  cursor: pointer;
-}
-
 .shuffle:hover {
   animation: button-color-change 0.25s;
   animation-fill-mode: forwards;
@@ -14,13 +10,46 @@
 }
 
 .flashcard {
-  min-height: 70vh;
+  min-height: 65vh;
+  cursor: pointer;
+}
+
+.flashcard.flip {
+  animation: flip_card_body 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.flashcard.flip > .card-body {
+  animation: flip-card_text 0s;
+  animation-fill-mode: forwards;
 }
 
 .back-arrow:hover {
   animation: button-color-change 0.25s;
   animation-fill-mode: forwards;
   cursor: pointer;
+}
+
+@keyframes flip-card_text {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  100% {
+    transform: rotateX(180deg);
+  }
+}
+
+@keyframes flip_card_body {
+  0% {
+    transform: rotateX(0deg);
+    background-color: white;
+  }
+
+  100% {
+    transform: rotateX(180deg);
+    background-color: #f6f7fb;
+  }
 }
 
 @keyframes button-color-change {
@@ -39,7 +68,6 @@
   }
 
   .flashcard {
-    min-height: 70vh;
-    margin-top: 5vh;
+    min-height: 65vh;
   }
 }
