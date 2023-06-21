@@ -11,12 +11,12 @@
   <div class="d-flex justify-content-evenly">
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
       <a [routerLink]="['/study-set', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'clone']"></fa-icon> Flashcards</button></a>
-      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="['far', 'comments']"></fa-icon> Study</button>
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faChartLine"></fa-icon> Study progress</button>
     </div>
     <div class="row mx-1"></div>
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
       <a [routerLink]="['/study-set', setId, 'quiz']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'pen-to-square']"></fa-icon> Quiz</button></a>
-      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="['far', 'flag']"></fa-icon> Game</button>
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faGamepad"></fa-icon> Game</button>
     </div>
   </div>
   <div class="mt-4 d-flex justify-content-between" *ngIf="set">

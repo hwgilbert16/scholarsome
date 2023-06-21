@@ -5,6 +5,7 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
+import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -41,6 +42,9 @@ export class StudySetComponent implements OnInit {
   set: Set;
 
   deleteClicked = false;
+
+  faChartLine = faChartLine;
+  faGamepad = faGamepad;
 
   cookieExists(name: string): boolean {
     const cookies = document.cookie.split(";");

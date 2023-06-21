@@ -34,6 +34,14 @@
   animation-fill-mode: forwards;
 }
 
+.controlbar {
+  z-index: 1060;
+}
+
+.side {
+  text-transform: capitalize !important;
+}
+
 .back-arrow:hover {
   animation: button-color-change 0.25s;
   animation-fill-mode: forwards;

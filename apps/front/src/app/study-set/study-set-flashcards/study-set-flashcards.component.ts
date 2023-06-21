@@ -1,17 +1,18 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { faShuffle } from "@fortawesome/free-solid-svg-icons";
 import { Meta, Title } from "@angular/platform-browser";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "scholarsome-study-set-flashcards",
   templateUrl: "./study-set-flashcards.component.html",
   styleUrls: ["./study-set-flashcards.component.scss"]
 })
-export class StudySetFlashcardsComponent implements OnInit {
+export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * @ignore
    */
@@ -24,14 +25,12 @@ export class StudySetFlashcardsComponent implements OnInit {
     private readonly metaService: Meta
   ) {}
 
-  modalRef?: BsModalRef;
-
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
   @ViewChild("container", { static: true }) container: ElementRef;
   @ViewChild("flashcard", { static: true }) flashcard: ElementRef;
   @ViewChild("controlbar", { static: true }) controlbar: ElementRef;
 
-  @ViewChild("settings") settings: TemplateRef<HTMLElement>;
+  @ViewChild("flashcardsConfig") configModal: TemplateRef<HTMLElement>;
 
   cards: Card[];
 
@@ -39,16 +38,25 @@ export class StudySetFlashcardsComponent implements OnInit {
 
   shufflingEnabled = false;
   answer = "Definition";
-  side = "Term";
+  side: string;
   index = 0;
 
   faShuffle = faShuffle;
 
+  sideText = "";
+  remainingCards = "";
+
   flipped = false;
   flipInteraction = false;
 
+  modalRef?: BsModalRef;
+
+  window = window;
+
+  flashcardsMode: "traditional" | "progressive";
+
   updateIndex() {
-    this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
+    this.remainingCards = `${this.index + 1}/${this.cards.length}`;
   }
 
   shuffleCards() {
@@ -60,10 +68,10 @@ export class StudySetFlashcardsComponent implements OnInit {
     this.index = 0;
     this.updateIndex();
 
-    if (this.side === "Term") {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].term;
+    if (this.side === "term") {
+      this.sideText = this.cards[this.index].term;
     } else {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
+      this.sideText = this.cards[this.index].definition;
     }
   }
 
@@ -73,12 +81,12 @@ export class StudySetFlashcardsComponent implements OnInit {
       this.flipped = !this.flipped;
     }
 
-    if (this.side === "Term") {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
-      this.side = "Definition";
+    if (this.side === "term") {
+      this.sideText = this.cards[this.index].definition;
+      this.side = "definition";
     } else {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].term;
-      this.side = "Term";
+      this.sideText = this.cards[this.index].term;
+      this.side = "term";
     }
   }
 
@@ -88,14 +96,24 @@ export class StudySetFlashcardsComponent implements OnInit {
     this.flipped = false;
     this.updateIndex();
 
-    if (this.answer === "Definition") {
-      this.side = "Term";
+    if (this.answer === "definition") {
+      this.side = "term";
     } else {
-      this.side = "Definition";
+      this.side = "definition";
     }
 
-    this.flashcard.nativeElement.children[0].textContent =
-      this.answer === "Definition" ? this.cards[this.index].term : this.cards[this.index].definition;
+    this.sideText =
+      this.answer === "definition" ? this.cards[this.index].term : this.cards[this.index].definition;
+  }
+
+  beginFlashcards(form: NgForm) {
+    this.flashcardsMode = form.value["flashcards-type"];
+    this.answer = form.value["answer-with"];
+    this.side = form.value["answer-with"];
+
+    this.sideText = this.cards[0][this.answer as keyof Card] as string;
+
+    this.modalRef?.hide();
   }
 
   async ngOnInit(): Promise<void> {
@@ -120,9 +138,15 @@ export class StudySetFlashcardsComponent implements OnInit {
     });
 
     this.spinner.nativeElement.remove();
-    this.container.nativeElement.removeAttribute("hidden");
 
     this.updateIndex();
-    this.flashcard.nativeElement.children[0].textContent = this.cards[0].term;
+  }
+
+  ngAfterViewInit(): void {
+    this.modalRef = this.modalService.show(this.configModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
+  }
+
+  ngOnDestroy(): void {
+    this.modalRef?.hide();
   }
 }
