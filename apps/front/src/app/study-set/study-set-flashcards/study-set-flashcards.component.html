@@ -6,7 +6,7 @@
 
 <div class="container" hidden #container>
   <div class="row">
-    <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip': flip}" #flashcard>
+    <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip-back': flipped && flipInteraction, 'flip-forwards': !flipped && flipInteraction}" #flashcard>
       <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()"></div>
     </div>
   </div>
@@ -47,7 +47,7 @@
     <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
       <input type="radio" class="btn-check" name="definitionRadio" id="definition" autocomplete="off" [checked]="answer === 'Definition'" (click)="answer = 'Definition'; (side === answer) && flipCard();">
       <label class="btn btn-outline-secondary fs-6" for="definition">Definition</label>
-      <input type="radio" class="btn-check" name="termRadio" id="term" autocomplete="off" [checked]="answer === 'Term'" (click)="answer = 'Term'; (side === answer) && flipCard();">
+      <input type="radio" class="btn-check" name="termRadio" id="term" autocomplete="off" [checked]="answer === 'Term'" (click)="answer = 'Term'; (side === answer) && flipCard('settings');">
       <label class="btn btn-outline-secondary" for="term">Term</label>
     </div>
   </div>

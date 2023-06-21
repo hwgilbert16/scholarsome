@@ -43,7 +43,9 @@ export class StudySetFlashcardsComponent implements OnInit {
   index = 0;
 
   faShuffle = faShuffle;
-  flip = false;
+
+  flipped = false;
+  flipInteraction = false;
 
   updateIndex() {
     this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
@@ -65,8 +67,11 @@ export class StudySetFlashcardsComponent implements OnInit {
     }
   }
 
-  flipCard() {
-    this.flip = !this.flip;
+  flipCard(type?: string) {
+    if (!type) {
+      this.flipInteraction = true;
+      this.flipped = !this.flipped;
+    }
 
     if (this.side === "Term") {
       this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
@@ -79,6 +84,8 @@ export class StudySetFlashcardsComponent implements OnInit {
 
   changeCard(direction: number) {
     this.index += direction;
+    this.flipInteraction = false;
+    this.flipped = false;
     this.updateIndex();
 
     if (this.answer === "Definition") {
