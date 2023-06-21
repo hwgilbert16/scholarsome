@@ -1,26 +1,29 @@
-import { Component, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
 import { FormBuilder, FormGroup, NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 
 @Component({
   selector: "scholarsome-study-set-quiz",
   templateUrl: "./study-set-quiz.component.html",
   styleUrls: ["./study-set-quiz.component.scss"]
 })
-export class StudySetQuizComponent implements OnInit {
+export class StudySetQuizComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private readonly sets: SetsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly fb: FormBuilder,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    private readonly modalService: BsModalService
   ) {}
 
   @ViewChild("quiz", { static: false, read: ViewContainerRef }) quiz: ViewContainerRef;
+  @ViewChild("createQuiz") createQuizModal: TemplateRef<HTMLElement>;
 
   writtenSelected = true;
   trueOrFalseSelected = true;
@@ -36,6 +39,8 @@ export class StudySetQuizComponent implements OnInit {
   questions: QuizQuestion[];
 
   percentCorrect: number;
+
+  modalRef?: BsModalRef;
 
   beginQuiz(form: NgForm) {
     this.quizForm = new FormGroup({});
@@ -68,6 +73,7 @@ export class StudySetQuizComponent implements OnInit {
     let generatedQuestions = 0;
 
     this.created = true;
+    this.modalRef?.hide();
 
     for (const questionType of questionTypes) {
       if (!questionType.enabled) continue;
@@ -277,5 +283,13 @@ export class StudySetQuizComponent implements OnInit {
     }
 
     this.set = set;
+  }
+
+  ngAfterViewInit(): void {
+    this.modalRef = this.modalService.show(this.createQuizModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
+  }
+
+  ngOnDestroy(): void {
+    this.modalRef?.hide();
   }
 }
