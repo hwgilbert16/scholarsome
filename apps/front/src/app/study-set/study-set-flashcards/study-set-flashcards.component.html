@@ -45,12 +45,18 @@
       <div class="container-fluid justify-content-around">
         <div class="row">
           <div class="col d-flex align-items-center justify-content-center">
-            <fa-icon [icon]="faThumbsUp" class="display-1"></fa-icon>
+            <fa-icon [icon]="cards.length > 0 ? faThumbsUp : faCake" class="display-1"></fa-icon>
           </div>
           <div class="col">
             <h1 class="me-4">Great job!</h1>
-            <p>You learned <span class="fw-bold">{{knownCardIndices.length}} card(s)</span> in that round. Keep it up until you learn them all!</p>
-            <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false">Continue</button>
+            <div *ngIf="cards.length > 0">
+              <p>You learned <span class="fw-bold">{{newLearnedCards}} card(s)</span> in that round. Keep it up until you learn them all!</p>
+              <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false; newLearnedCards = 0">Continue</button>
+            </div>
+            <div *ngIf="cards.length === 0">
+              <p>You learned all of the cards in this set. Now - do it again!</p>
+              <button *ngIf="cards.length === 0" class="btn btn-primary" (click)="window.location.reload()">Start over</button>
+            </div>
           </div>
         </div>
       </div>
@@ -74,7 +80,7 @@
         </div>
         <div class="mt-2 d-flex justify-content-around" *ngIf="cards && flashcardsMode !== 'traditional'">
           <button type="button" class="fs-4 w-25 btn btn-outline-warning mb-3 fw-bold" (click)="changeCard(1)">Don't know</button>
-          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="knownCardIndices.push(index); changeCard(1)">Know</button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="incrementLearntCount(); knownCardIndices.push(index); changeCard(1);">Know</button>
         </div>
         <div class="mx-2 d-flex justify-content-between">
           <p class="text-secondary side text-capitalize">{{side}}</p>

@@ -3,7 +3,7 @@ import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { faShuffle, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { faShuffle, faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
 import { Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
 
@@ -43,6 +43,8 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   protected knownCardIndices: number[] = [];
   // Whether the user is between rounds
   protected roundCompleted = false;
+  // Counter for number of cards learned in the current round
+  protected newLearnedCards = 0;
 
   // What the user answers with
   protected answer: "definition" | "term";
@@ -65,9 +67,14 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   protected window = window;
   protected faShuffle = faShuffle;
   protected faThumbsUp = faThumbsUp;
+  protected faCake = faCake;
 
   updateIndex() {
     this.remainingCards = `${this.index + 1}/${this.cards.length}`;
+  }
+
+  incrementLearntCount(): void {
+    this.newLearnedCards++;
   }
 
   shuffleCards() {
@@ -104,13 +111,17 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   changeCard(direction: number) {
     if (this.index === this.cards.length - 1 && this.flashcardsMode === "progressive") {
       this.roundCompleted = true;
+
+      this.cards = this.cards.filter((c) => !this.knownCardIndices.includes(c.index.valueOf()));
+
+      if (this.cards.length > 0) {
+        this.index = 0;
+        this.updateIndex();
+
+        this.sideText = this.cards[0][this.side as keyof Card] as string;
+      }
+
       this.modalRef = this.modalService.show(this.roundCompletedModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
-
-      this.cards.filter((c) => !this.knownCardIndices.includes(c.index.valueOf()));
-      this.index = 0;
-      this.updateIndex();
-
-      this.sideText = this.cards[0][this.side as keyof Card] as string;
 
       return;
     }
