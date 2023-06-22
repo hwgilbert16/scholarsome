@@ -3,7 +3,7 @@ import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { faShuffle } from "@fortawesome/free-solid-svg-icons";
+import { faShuffle, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
 
@@ -31,29 +31,40 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   @ViewChild("controlbar", { static: true }) controlbar: ElementRef;
 
   @ViewChild("flashcardsConfig") configModal: TemplateRef<HTMLElement>;
+  @ViewChild("completedRound") roundCompletedModal: TemplateRef<HTMLElement>;
 
-  cards: Card[];
+  protected cards: Card[];
+  protected setId: string | null;
 
-  setId: string | null;
+  protected shufflingEnabled = false;
+  protected flashcardsMode: "traditional" | "progressive";
 
-  shufflingEnabled = false;
-  answer = "Definition";
-  side: string;
-  index = 0;
+  // Array of the IDs of known cards for progressive mode
+  protected knownCardIndices: number[] = [];
+  // Whether the user is between rounds
+  protected roundCompleted = false;
 
-  faShuffle = faShuffle;
+  // What the user answers with
+  protected answer: "definition" | "term";
+  // The current index
+  protected index = 0;
 
-  sideText = "";
-  remainingCards = "";
+  // The current side being shown
+  protected side: string;
+  // The text being shown to the user
+  protected sideText = "";
+  // Displayed in bottom right showing the progress
+  protected remainingCards = "";
 
-  flipped = false;
-  flipInteraction = false;
+  // Whether the card has been flipped or not
+  protected flipped = false;
+  // Whether the first flip interaction has been made
+  protected flipInteraction = false;
 
-  modalRef?: BsModalRef;
-
-  window = window;
-
-  flashcardsMode: "traditional" | "progressive";
+  protected modalRef?: BsModalRef;
+  protected window = window;
+  protected faShuffle = faShuffle;
+  protected faThumbsUp = faThumbsUp;
 
   updateIndex() {
     this.remainingCards = `${this.index + 1}/${this.cards.length}`;
@@ -91,6 +102,18 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   }
 
   changeCard(direction: number) {
+    if (this.index === this.cards.length - 1 && this.flashcardsMode === "progressive") {
+      this.roundCompleted = true;
+      this.modalRef = this.modalService.show(this.roundCompletedModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
+
+      this.cards.filter((c) => !this.knownCardIndices.includes(c.index.valueOf()));
+      this.index = 0;
+      this.updateIndex();
+
+      this.sideText = this.cards[0][this.side as keyof Card] as string;
+
+      return;
+    }
     this.index += direction;
     this.flipInteraction = false;
     this.flipped = false;
@@ -109,9 +132,9 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   beginFlashcards(form: NgForm) {
     this.flashcardsMode = form.value["flashcards-type"];
     this.answer = form.value["answer-with"];
-    this.side = form.value["answer-with"];
+    this.side = form.value["answer-with"] === "definition" ? "term" : "definition";
 
-    this.sideText = this.cards[0][this.answer as keyof Card] as string;
+    this.sideText = this.cards[0][this.side as keyof Card] as string;
 
     this.modalRef?.hide();
   }

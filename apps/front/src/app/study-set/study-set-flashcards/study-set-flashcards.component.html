@@ -39,7 +39,26 @@
   </div>
 </ng-template>
 
-<div class="container" *ngIf="flashcardsMode" #container>
+<ng-template #completedRound>
+  <div class="shadow-sm">
+    <div class="modal-body">
+      <div class="container-fluid justify-content-around">
+        <div class="row">
+          <div class="col d-flex align-items-center justify-content-center">
+            <fa-icon [icon]="faThumbsUp" class="display-1"></fa-icon>
+          </div>
+          <div class="col">
+            <h1 class="me-4">Great job!</h1>
+            <p>You learned <span class="fw-bold">{{knownCardIndices.length}} card(s)</span> in that round. Keep it up until you learn them all!</p>
+            <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false">Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<div class="container" *ngIf="flashcardsMode && !roundCompleted" #container>
   <div class="row">
     <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip-back': flipped && flipInteraction, 'flip-forwards': !flipped && flipInteraction}" #flashcard>
       <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()">{{sideText}}</div>
@@ -54,23 +73,20 @@
           <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
         </div>
         <div class="mt-2 d-flex justify-content-around" *ngIf="cards && flashcardsMode !== 'traditional'">
-          <button type="button" class="fs-4 w-25 btn btn-outline-warning mb-3 fw-bold" (click)="changeCard(-1)" [disabled]="index === 0 ? true : null">Don't know</button>
-          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null">Know</button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-warning mb-3 fw-bold" (click)="changeCard(1)">Don't know</button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="knownCardIndices.push(index); changeCard(1)">Know</button>
         </div>
         <div class="mx-2 d-flex justify-content-between">
-          <p class="text-secondary side">{{side}}</p>
+          <p class="text-secondary side text-capitalize">{{side}}</p>
           <fa-icon class="fs-4 mb-2 text-secondary shuffle" (click)="this.shuffleCards()" [style.color]="shufflingEnabled ? '#8438ff !important' : '#6c757d !important'" [icon]="faShuffle"></fa-icon>
         </div>
       </div>
     </div>
   </div>
-
-  <div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center controlbar" #controlbar>
-    <fa-icon class="fs-2 back-arrow" (click)="window.location.reload()" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
-    <div class="fs-3">{{remainingCards}}</div>
-  </div>
 </div>
 
-<div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center controlbar" *ngIf="!flashcardsMode">
-  <fa-icon class="fs-2 back-arrow" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+<div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center controlbar" #controlbar>
+  <fa-icon class="fs-2 back-arrow" *ngIf="flashcardsMode" (click)="window.location.reload()" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+  <div class="fs-3" *ngIf="flashcardsMode && !roundCompleted">{{remainingCards}}</div>
+  <fa-icon class="fs-2 back-arrow" *ngIf="!flashcardsMode" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
 </div>
