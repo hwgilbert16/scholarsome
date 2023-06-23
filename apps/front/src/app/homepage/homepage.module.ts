@@ -3,7 +3,6 @@ import { CommonModule } from "@angular/common";
 import { HomepageComponent } from "./homepage.component";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
-import { RouterModule } from "@angular/router";
 import { HomepageRoutingModule } from "./homepage-routing.module";
 
 @NgModule({
@@ -12,8 +11,7 @@ import { HomepageRoutingModule } from "./homepage-routing.module";
     CommonModule,
     HomepageRoutingModule,
     FontAwesomeModule,
-    TooltipModule,
-    RouterModule
+    TooltipModule
   ]
 })
 export class HomepageModule { }

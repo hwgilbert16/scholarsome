@@ -10,7 +10,6 @@ import {
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
 import { StudySetRoutingModule } from "./study-set-routing.module";
 
 @NgModule({
@@ -28,8 +27,7 @@ import { StudySetRoutingModule } from "./study-set-routing.module";
     FontAwesomeModule,
     TooltipModule,
     FormsModule,
-    RouterModule,
     ReactiveFormsModule
   ]
 })
-export class StudySetModule { }
+export class StudySetModule {}
