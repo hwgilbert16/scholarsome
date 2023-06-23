@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { BsModalRef } from "ngx-bootstrap/modal";
 import { faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
 import { Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
@@ -20,7 +20,6 @@ export class StudySetFlashcardsComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly sets: SetsService,
     private readonly router: Router,
-    public readonly modalService: BsModalService,
     private readonly titleService: Title,
     private readonly metaService: Meta
   ) {}
@@ -31,7 +30,6 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected cards: Card[];
   protected setId: string | null;
 
-  protected shufflingEnabled = false;
   protected flashcardsMode: "traditional" | "progressive";
 
   // Array of the IDs of known cards for progressive mode

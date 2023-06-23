@@ -1,9 +1,7 @@
-<ng-template #createQuiz>
-  <div class="shadow-sm">
-    <div class="modal-header">
-      <h5 class="modal-title">Create a quiz</h5>
-    </div>
-    <div class="modal-body">
+<div class="d-flex flex-column justify-content-center align-items-center configuration" *ngIf="!created">
+  <div class="card">
+    <div class="card-body">
+      <h2>Quiz configuration</h2>
       <form #optionsForm="ngForm" (ngSubmit)="beginQuiz(optionsForm)" class="fs-5 ms-n5" ngNativeValidate>
         <div class="form-check form-switch options-buttons">
           <div class="d-flex justify-content-between">
@@ -40,7 +38,7 @@
       </form>
     </div>
   </div>
-</ng-template>
+</div>
 
 <div *ngIf="created">
   <div class="container-fluid quiz">

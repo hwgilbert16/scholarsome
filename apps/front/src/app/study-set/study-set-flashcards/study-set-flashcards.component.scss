@@ -3,6 +3,10 @@
   cursor: pointer;
 }
 
+.flashcard-container {
+  margin-top: 2vh;
+}
+
 .message {
   margin-top: 5vh;
 }
@@ -25,10 +29,6 @@
 .flashcard.flip-forwards > .card-body {
   animation: flip-card-text-forwards 0s 0.10s;
   animation-fill-mode: forwards;
-}
-
-.controlbar {
-  z-index: 1060;
 }
 
 .back-arrow:hover {

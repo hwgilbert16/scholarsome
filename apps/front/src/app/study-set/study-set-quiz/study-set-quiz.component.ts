@@ -1,25 +1,24 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
+import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
 import { FormBuilder, FormGroup, NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { BsModalRef } from "ngx-bootstrap/modal";
 
 @Component({
   selector: "scholarsome-study-set-quiz",
   templateUrl: "./study-set-quiz.component.html",
   styleUrls: ["./study-set-quiz.component.scss"]
 })
-export class StudySetQuizComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StudySetQuizComponent implements OnInit {
   constructor(
     private readonly sets: SetsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly fb: FormBuilder,
     private readonly titleService: Title,
-    private readonly metaService: Meta,
-    private readonly modalService: BsModalService
+    private readonly metaService: Meta
   ) {}
 
   @ViewChild("quiz", { static: false, read: ViewContainerRef }) quiz: ViewContainerRef;
@@ -283,13 +282,5 @@ export class StudySetQuizComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.set = set;
-  }
-
-  ngAfterViewInit(): void {
-    this.modalRef = this.modalService.show(this.createQuizModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
-  }
-
-  ngOnDestroy(): void {
-    this.modalRef?.hide();
   }
 }

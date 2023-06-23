@@ -1,7 +1,7 @@
 <div class="d-flex flex-column justify-content-center align-items-center message" *ngIf="!side">
   <div class="card">
     <div class="card-body">
-      <h1>Flashcards configuration</h1>
+      <h2>Flashcards configuration</h2>
       <form #configForm="ngForm" (ngSubmit)="beginFlashcards(configForm)" ngNativeValidate>
         <div class="mb-2">
           <label for="traditional-radio" class="form-label fs-5">Type</label>
@@ -67,7 +67,7 @@
   </div>
 </div>
 
-<div class="container" *ngIf="flashcardsMode && !roundCompleted">
+<div class="container flashcard-container" *ngIf="flashcardsMode && !roundCompleted">
   <div class="row">
     <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip-back': flipped && flipInteraction, 'flip-forwards': !flipped && flipInteraction}">
       <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()">{{sideText}}</div>
