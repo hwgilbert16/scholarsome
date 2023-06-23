@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { faShuffle, faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
+import { faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
 import { Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
 
@@ -12,7 +12,7 @@ import { NgForm } from "@angular/forms";
   templateUrl: "./study-set-flashcards.component.html",
   styleUrls: ["./study-set-flashcards.component.scss"]
 })
-export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StudySetFlashcardsComponent implements OnInit {
   /**
    * @ignore
    */
@@ -25,11 +25,6 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
     private readonly metaService: Meta
   ) {}
 
-  @ViewChild("spinner", { static: true }) spinner: ElementRef;
-  @ViewChild("container", { static: true }) container: ElementRef;
-  @ViewChild("flashcard", { static: true }) flashcard: ElementRef;
-  @ViewChild("controlbar", { static: true }) controlbar: ElementRef;
-
   @ViewChild("flashcardsConfig") configModal: TemplateRef<HTMLElement>;
   @ViewChild("completedRound") roundCompletedModal: TemplateRef<HTMLElement>;
 
@@ -40,7 +35,7 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   protected flashcardsMode: "traditional" | "progressive";
 
   // Array of the IDs of known cards for progressive mode
-  protected knownCardIndices: number[] = [];
+  protected knownCardIDs: string[] = [];
   // Whether the user is between rounds
   protected roundCompleted = false;
   // Counter for number of cards learned in the current round
@@ -50,6 +45,8 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
   protected answer: "definition" | "term";
   // The current index
   protected index = 0;
+  // The current card
+  protected currentCard: Card;
 
   // The current side being shown
   protected side: string;
@@ -65,7 +62,6 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
 
   protected modalRef?: BsModalRef;
   protected window = window;
-  protected faShuffle = faShuffle;
   protected faThumbsUp = faThumbsUp;
   protected faCake = faCake;
 
@@ -77,42 +73,32 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
     this.newLearnedCards++;
   }
 
-  shuffleCards() {
-    this.shufflingEnabled = !this.shufflingEnabled;
-    if (this.shufflingEnabled) {
-      this.cards = this.cards.sort(() => 0.5 - Math.random());
-    }
-
-    this.index = 0;
-    this.updateIndex();
-
-    if (this.side === "term") {
-      this.sideText = this.cards[this.index].term;
-    } else {
-      this.sideText = this.cards[this.index].definition;
-    }
-  }
-
   flipCard(type?: string) {
     if (!type) {
       this.flipInteraction = true;
       this.flipped = !this.flipped;
     }
 
-    if (this.side === "term") {
-      this.sideText = this.cards[this.index].definition;
-      this.side = "definition";
-    } else {
-      this.sideText = this.cards[this.index].term;
-      this.side = "term";
-    }
+    // delayed to occur when text is the least visible during animation
+    setTimeout(() => {
+      if (this.side === "term") {
+        this.sideText = this.cards[this.index].definition;
+        this.side = "definition";
+      } else {
+        this.sideText = this.cards[this.index].term;
+        this.side = "term";
+      }
+    }, 150);
   }
 
   changeCard(direction: number) {
-    if (this.index === this.cards.length - 1 && this.flashcardsMode === "progressive") {
-      this.roundCompleted = true;
+    if (this.flashcardsMode === "progressive" && this.index !== this.cards.length - 1) {
+      this.currentCard = this.cards[this.index + 1];
+    }
 
-      this.cards = this.cards.filter((c) => !this.knownCardIndices.includes(c.index.valueOf()));
+    if (this.index === this.cards.length - 1 && this.flashcardsMode === "progressive") {
+      this.cards = this.cards.filter((c) => !this.knownCardIDs.includes(c.id));
+      this.roundCompleted = true;
 
       if (this.cards.length > 0) {
         this.index = 0;
@@ -121,7 +107,7 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
         this.sideText = this.cards[0][this.side as keyof Card] as string;
       }
 
-      this.modalRef = this.modalService.show(this.roundCompletedModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
+      this.currentCard = this.cards[0];
 
       return;
     }
@@ -145,9 +131,12 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
     this.answer = form.value["answer-with"];
     this.side = form.value["answer-with"] === "definition" ? "term" : "definition";
 
-    this.sideText = this.cards[0][this.side as keyof Card] as string;
+    if (form.value["enable-shuffling"] === "yes") {
+      this.cards = this.cards.sort(() => 0.5 - Math.random());
+    }
 
-    this.modalRef?.hide();
+    this.sideText = this.cards[0][this.side as keyof Card] as string;
+    this.currentCard = this.cards[0];
   }
 
   async ngOnInit(): Promise<void> {
@@ -171,16 +160,6 @@ export class StudySetFlashcardsComponent implements OnInit, AfterViewInit, OnDes
       return a.index - b.index;
     });
 
-    this.spinner.nativeElement.remove();
-
     this.updateIndex();
-  }
-
-  ngAfterViewInit(): void {
-    this.modalRef = this.modalService.show(this.configModal, { backdrop: false, ignoreBackdropClick: true, animated: false, class: "modal-dialog-centered" });
-  }
-
-  ngOnDestroy(): void {
-    this.modalRef?.hide();
   }
 }

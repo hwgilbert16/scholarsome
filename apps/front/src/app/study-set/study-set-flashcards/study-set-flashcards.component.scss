@@ -1,17 +1,10 @@
-.spinner-border {
-  width: 6rem;
-  height: 6rem;
-}
-
-.shuffle:hover {
-  animation: button-color-change 0.25s;
-  animation-fill-mode: forwards;
-  cursor: pointer;
-}
-
 .flashcard {
   min-height: 65vh;
   cursor: pointer;
+}
+
+.message {
+  margin-top: 5vh;
 }
 
 .flashcard.flip-back {
@@ -85,16 +78,6 @@
   100% {
     transform: rotateX(-180deg);
     background-color: white;
-  }
-}
-
-@keyframes button-color-change {
-  0% {
-    color: #212529;
-  }
-
-  100% {
-    color: #8438ff;
   }
 }
 
