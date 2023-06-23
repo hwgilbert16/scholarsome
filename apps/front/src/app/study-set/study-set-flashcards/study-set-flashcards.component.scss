@@ -37,6 +37,17 @@
   cursor: pointer;
 }
 
+@keyframes button-color-change {
+  0% {
+    color: #212529;
+  }
+
+  100% {
+    color: #8438ff;
+  }
+
+}
+
 @keyframes flip-card-text-back {
   0% {
     transform: rotateX(0deg);
