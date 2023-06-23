@@ -260,7 +260,9 @@ export class StudySetQuizComponent implements OnInit {
   }
 
   reloadPage() {
-    window.location.reload();
+    this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+      this.router.navigate(["/study-set/" + this.setId + "/quiz"]);
+    });
   }
 
   async ngOnInit(): Promise<void> {

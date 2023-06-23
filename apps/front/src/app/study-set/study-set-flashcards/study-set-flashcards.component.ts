@@ -59,7 +59,6 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected flipInteraction = false;
 
   protected modalRef?: BsModalRef;
-  protected window = window;
   protected faThumbsUp = faThumbsUp;
   protected faCake = faCake;
 
@@ -135,6 +134,12 @@ export class StudySetFlashcardsComponent implements OnInit {
 
     this.sideText = this.cards[0][this.side as keyof Card] as string;
     this.currentCard = this.cards[0];
+  }
+
+  reloadPage() {
+    this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+      this.router.navigate(["/study-set/" + this.setId + "/flashcards"]);
+    });
   }
 
   async ngOnInit(): Promise<void> {
