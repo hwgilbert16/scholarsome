@@ -31,6 +31,7 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected setId: string | null;
 
   protected flashcardsMode: "traditional" | "progressive";
+  protected shufflingEnabled = false;
 
   // Array of the IDs of known cards for progressive mode
   protected knownCardIDs: string[] = [];
@@ -56,6 +57,7 @@ export class StudySetFlashcardsComponent implements OnInit {
   // Whether the card has been flipped or not
   protected flipped = false;
   // Whether the first flip interaction has been made
+  // needed to prevent animation classes from being applied until first click
   protected flipInteraction = false;
 
   protected modalRef?: BsModalRef;
@@ -89,17 +91,24 @@ export class StudySetFlashcardsComponent implements OnInit {
   }
 
   changeCard(direction: number) {
+    // increment the currentCard object to the next card in the array
     if (this.flashcardsMode === "progressive" && this.index !== this.cards.length - 1) {
       this.currentCard = this.cards[this.index + 1];
     }
 
+    // runs after a progressive mode round has completed
     if (this.index === this.cards.length - 1 && this.flashcardsMode === "progressive") {
+      // remove any cards that are known
       this.cards = this.cards.filter((c) => !this.knownCardIDs.includes(c.id));
+
       this.roundCompleted = true;
 
+      // if the entire mode is not completed
       if (this.cards.length > 0) {
         this.index = 0;
         this.updateIndex();
+
+        if (this.shufflingEnabled) this.cards = this.cards.sort(() => 0.5 - Math.random());
 
         this.sideText = this.cards[0][this.side as keyof Card] as string;
       }
@@ -108,10 +117,12 @@ export class StudySetFlashcardsComponent implements OnInit {
 
       return;
     }
+
     this.index += direction;
+    this.updateIndex();
+
     this.flipInteraction = false;
     this.flipped = false;
-    this.updateIndex();
 
     if (this.answer === "definition") {
       this.side = "term";
@@ -130,6 +141,7 @@ export class StudySetFlashcardsComponent implements OnInit {
 
     if (form.value["enable-shuffling"] === "yes") {
       this.cards = this.cards.sort(() => 0.5 - Math.random());
+      this.shufflingEnabled = true;
     }
 
     this.sideText = this.cards[0][this.side as keyof Card] as string;
