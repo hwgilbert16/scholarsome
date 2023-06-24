@@ -8,15 +8,26 @@ import {
   Post,
   Put,
   Request,
-  UnauthorizedException,
-  UseGuards
+  UnauthorizedException, UnsupportedMediaTypeException, UploadedFile,
+  UseGuards, UseInterceptors
 } from "@nestjs/common";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
-import { Request as ExpressRequest } from "express";
-import { ApiResponse, AuthorIdParam, CreateSetDto, SetIdParam, UpdateSetDto } from "@scholarsome/shared";
+import { Request as ExpressRequest, Express } from "express";
+import {
+  ApiResponse,
+  AuthorIdParam,
+  CreateSetDto,
+  CreateSetFromApkgDto,
+  SetIdParam,
+  UpdateSetDto
+} from "@scholarsome/shared";
 import { Set } from "@prisma/client";
+import { FileInterceptor } from "@nestjs/platform-express";
+// needed for multer file type declaration
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+import { Multer } from "multer";
 
 @Controller("sets")
 export class SetsController {
@@ -103,6 +114,47 @@ export class SetsController {
         data: sets
       };
     }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseInterceptors(FileInterceptor("file"))
+  @Post("apkg")
+  async createSetFromApkg(@Body() body: CreateSetFromApkgDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new NotFoundException();
+
+    const author = await this.usersService.user({
+      email: user.email
+    });
+    if (!author) throw new NotFoundException();
+
+    const cards = this.setsService.decodeAnkiApkg(file.buffer);
+    if (!cards || cards === true) throw new UnsupportedMediaTypeException();
+
+    return {
+      status: "success",
+      data: await this.setsService.createSet({
+        author: {
+          connect: {
+            email: author.email
+          }
+        },
+        title: body.title,
+        description: body.description,
+        private: body.private,
+        cards: {
+          createMany: {
+            data: cards.map((c) => {
+              return {
+                index: c.index,
+                term: c.term,
+                definition: c.definition
+              };
+            })
+          }
+        }
+      })
+    };
   }
 
   /**

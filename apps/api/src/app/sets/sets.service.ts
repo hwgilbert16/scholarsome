@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
-import { Set } from "@scholarsome/shared";
+import { AnkiNote, Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
+import * as AdmZip from "adm-zip";
+import * as Database from "better-sqlite3";
 
 @Injectable()
 export class SetsService {
@@ -44,6 +46,38 @@ export class SetsService {
     if (!set || !user) return false;
 
     return set.author.id === user.id;
+  }
+
+  public decodeAnkiApkg(file: Buffer): { term: string; definition: string; index: number }[] | boolean {
+    const zip = new AdmZip(file);
+    const dbFile = zip.readFile("collection.anki2");
+
+    const db = new Database(dbFile);
+    const notes: AnkiNote[] = db.prepare("SELECT * FROM Notes").all() as AnkiNote[];
+
+    const cards: {
+      term: string;
+      definition: string;
+      index: number;
+    }[] = [];
+
+    for (const [i, note] of notes.entries()) {
+      const split = note.flds.split(/\x1F/);
+
+      if (split.length > 2) {
+        return false;
+      }
+
+      cards.push({
+        term: split[0],
+        definition: split[1],
+        index: i
+      });
+    }
+
+    db.close();
+
+    return cards;
   }
 
   /**

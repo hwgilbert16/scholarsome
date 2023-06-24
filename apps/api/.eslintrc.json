@@ -8,7 +8,9 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "rules": {
+        "no-control-regex": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],

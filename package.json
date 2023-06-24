@@ -58,7 +58,11 @@
     "@popperjs/core": "^2.10.2",
     "@prisma/client": "^4.15.0",
     "@schematics/angular": "^14.2.3",
+    "@types/adm-zip": "^0.5.0",
+    "@types/better-sqlite3": "^7.6.4",
+    "adm-zip": "^0.5.10",
     "bcrypt": "^5.0.1",
+    "better-sqlite3": "^8.4.0",
     "bootstrap": "^5.2.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -67,6 +71,7 @@
     "express": "^4.18.2",
     "ioredis": "^5.3.1",
     "jwt-decode": "^3.1.2",
+    "multer": "^1.4.5-lts.1",
     "nest-puppeteer": "^1.1.1",
     "ng-recaptcha": "^10.0.0",
     "ngx-bootstrap": "^9.0.0",
@@ -84,8 +89,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.11.4",
-    "typescript": "4.8.4"
+    "typescript": "4.8.4",
+    "zone.js": "~0.11.4"
   },
   "devDependencies": {
     "@angular-eslint/eslint-plugin": "~14.0.0",
@@ -111,6 +116,7 @@
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^4.17.14",
     "@types/jest": "29.4.4",
+    "@types/multer": "^1.4.7",
     "@types/node": "~18.7.1",
     "@types/nodemailer": "^6.4.6",
     "@types/passport-jwt": "^3.0.6",
