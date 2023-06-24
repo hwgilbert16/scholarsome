@@ -1,20 +1,34 @@
-.spinner-border {
-  width: 6rem;
-  height: 6rem;
-}
-
-.card-body:hover {
-  cursor: pointer;
-}
-
-.shuffle:hover {
-  animation: button-color-change 0.25s;
-  animation-fill-mode: forwards;
-  cursor: pointer;
-}
-
 .flashcard {
-  min-height: 70vh;
+  min-height: 65vh;
+  cursor: pointer;
+}
+
+.flashcard-container {
+  margin-top: 2vh;
+}
+
+.message {
+  margin-top: 5vh;
+}
+
+.flashcard.flip-back {
+  animation: flip-card-body-back 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.flashcard.flip-back > .card-body {
+  animation: flip-card-text-back 0s 0.10s;
+  animation-fill-mode: forwards;
+}
+
+.flashcard.flip-forwards {
+  animation: flip-card-body-forwards 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.flashcard.flip-forwards > .card-body {
+  animation: flip-card-text-forwards 0s 0.10s;
+  animation-fill-mode: forwards;
 }
 
 .back-arrow:hover {
@@ -31,6 +45,57 @@
   100% {
     color: #8438ff;
   }
+
+}
+
+@keyframes flip-card-text-back {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  100% {
+    transform: rotateX(180deg);
+  }
+}
+
+@keyframes flip-card-body-back {
+  0% {
+    transform: rotateX(0deg);
+    background-color: white;
+  }
+
+  100% {
+    transform: rotateX(180deg);
+    background-color: #f6f7fb;
+  }
+}
+
+@keyframes flip-card-text-forwards {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  100% {
+    transform: rotateX(-180deg);
+  }
+}
+
+@keyframes flip-card-body-forwards {
+  0% {
+    transform: rotateX(0deg);
+    background-color: #f6f7fb;
+  }
+
+  100% {
+    transform: rotateX(-180deg);
+    background-color: white;
+  }
+}
+
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+  .flashcard {
+    min-height: 45vh;
+  }
 }
 
 @media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
@@ -39,7 +104,6 @@
   }
 
   .flashcard {
-    min-height: 70vh;
-    margin-top: 5vh;
+    min-height: 60vh;
   }
 }

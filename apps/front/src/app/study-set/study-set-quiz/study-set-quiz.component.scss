@@ -1,25 +1,11 @@
-.options-buttons {
-  //margin-right: 2.5vw;
-}
-
 .back-arrow:hover {
   animation: button-color-change 0.25s;
   animation-fill-mode: forwards;
   cursor: pointer;
 }
 
-.quiz-creator {
-  margin-top: 4vh;
-}
-
-@media only screen and  (min-device-width : 320px) and (max-device-width : 480px) {
-  //.options-container {
-  //  width: 50%;
-  //}
-  //
-  //.quiz {
-  //  width: 50%;
-  //}
+.configuration {
+  margin-top: 2vh;
 }
 
 @media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {

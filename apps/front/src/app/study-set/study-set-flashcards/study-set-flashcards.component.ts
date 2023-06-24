@@ -1,10 +1,11 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { faShuffle } from "@fortawesome/free-solid-svg-icons";
+import { BsModalRef } from "ngx-bootstrap/modal";
+import { faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
 import { Meta, Title } from "@angular/platform-browser";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "scholarsome-study-set-flashcards",
@@ -19,73 +20,138 @@ export class StudySetFlashcardsComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly sets: SetsService,
     private readonly router: Router,
-    public readonly modalService: BsModalService,
     private readonly titleService: Title,
     private readonly metaService: Meta
   ) {}
 
-  modalRef?: BsModalRef;
+  @ViewChild("flashcardsConfig") configModal: TemplateRef<HTMLElement>;
+  @ViewChild("completedRound") roundCompletedModal: TemplateRef<HTMLElement>;
 
-  @ViewChild("spinner", { static: true }) spinner: ElementRef;
-  @ViewChild("container", { static: true }) container: ElementRef;
-  @ViewChild("flashcard", { static: true }) flashcard: ElementRef;
-  @ViewChild("controlbar", { static: true }) controlbar: ElementRef;
+  protected cards: Card[];
+  protected setId: string | null;
 
-  @ViewChild("settings") settings: TemplateRef<HTMLElement>;
+  protected flashcardsMode: "traditional" | "progressive";
+  protected shufflingEnabled = false;
 
-  cards: Card[];
+  // Array of the IDs of known cards for progressive mode
+  protected knownCardIDs: string[] = [];
+  // Whether the user is between rounds
+  protected roundCompleted = false;
+  // Counter for number of cards learned in the current round
+  protected newLearnedCards = 0;
 
-  setId: string | null;
+  // What the user answers with
+  protected answer: "definition" | "term";
+  // The current index
+  protected index = 0;
+  // The current card
+  protected currentCard: Card;
 
-  shufflingEnabled = false;
-  answer = "Definition";
-  side = "Term";
-  index = 0;
+  // The current side being shown
+  protected side: string;
+  // The text being shown to the user
+  protected sideText = "";
+  // Displayed in bottom right showing the progress
+  protected remainingCards = "";
 
-  faShuffle = faShuffle;
+  // Whether the card has been flipped or not
+  protected flipped = false;
+  // Whether the first flip interaction has been made
+  // needed to prevent animation classes from being applied until first click
+  protected flipInteraction = false;
+
+  protected modalRef?: BsModalRef;
+  protected faThumbsUp = faThumbsUp;
+  protected faCake = faCake;
 
   updateIndex() {
-    this.controlbar.nativeElement.children[1].textContent = `${this.index + 1}/${this.cards.length}`;
+    this.remainingCards = `${this.index + 1}/${this.cards.length}`;
   }
 
-  shuffleCards() {
-    this.shufflingEnabled = !this.shufflingEnabled;
-    if (this.shufflingEnabled) {
-      this.cards = this.cards.sort(() => 0.5 - Math.random());
-    }
-
-    this.index = 0;
-    this.updateIndex();
-
-    if (this.side === "Term") {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].term;
-    } else {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
-    }
+  incrementLearntCount(): void {
+    this.newLearnedCards++;
   }
 
-  flipCard() {
-    if (this.side === "Term") {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].definition;
-      this.side = "Definition";
-    } else {
-      this.flashcard.nativeElement.children[0].textContent = this.cards[this.index].term;
-      this.side = "Term";
+  flipCard(type?: string) {
+    if (!type) {
+      this.flipInteraction = true;
+      this.flipped = !this.flipped;
     }
+
+    // delayed to occur when text is the least visible during animation
+    setTimeout(() => {
+      if (this.side === "term") {
+        this.sideText = this.cards[this.index].definition;
+        this.side = "definition";
+      } else {
+        this.sideText = this.cards[this.index].term;
+        this.side = "term";
+      }
+    }, 150);
   }
 
   changeCard(direction: number) {
+    // increment the currentCard object to the next card in the array
+    if (this.flashcardsMode === "progressive" && this.index !== this.cards.length - 1) {
+      this.currentCard = this.cards[this.index + 1];
+    }
+
+    // runs after a progressive mode round has completed
+    if (this.index === this.cards.length - 1 && this.flashcardsMode === "progressive") {
+      // remove any cards that are known
+      this.cards = this.cards.filter((c) => !this.knownCardIDs.includes(c.id));
+
+      this.roundCompleted = true;
+
+      // if the entire mode is not completed
+      if (this.cards.length > 0) {
+        this.index = 0;
+        this.updateIndex();
+
+        if (this.shufflingEnabled) this.cards = this.cards.sort(() => 0.5 - Math.random());
+
+        this.sideText = this.cards[0][this.side as keyof Card] as string;
+      }
+
+      this.currentCard = this.cards[0];
+
+      return;
+    }
+
     this.index += direction;
     this.updateIndex();
 
-    if (this.answer === "Definition") {
-      this.side = "Term";
+    this.flipInteraction = false;
+    this.flipped = false;
+
+    if (this.answer === "definition") {
+      this.side = "term";
     } else {
-      this.side = "Definition";
+      this.side = "definition";
     }
 
-    this.flashcard.nativeElement.children[0].textContent =
-      this.answer === "Definition" ? this.cards[this.index].term : this.cards[this.index].definition;
+    this.sideText =
+      this.answer === "definition" ? this.cards[this.index].term : this.cards[this.index].definition;
+  }
+
+  beginFlashcards(form: NgForm) {
+    this.flashcardsMode = form.value["flashcards-type"];
+    this.answer = form.value["answer-with"];
+    this.side = form.value["answer-with"] === "definition" ? "term" : "definition";
+
+    if (form.value["enable-shuffling"] === "yes") {
+      this.cards = this.cards.sort(() => 0.5 - Math.random());
+      this.shufflingEnabled = true;
+    }
+
+    this.sideText = this.cards[0][this.side as keyof Card] as string;
+    this.currentCard = this.cards[0];
+  }
+
+  reloadPage() {
+    this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+      this.router.navigate(["/study-set/" + this.setId + "/flashcards"]);
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -109,10 +175,6 @@ export class StudySetFlashcardsComponent implements OnInit {
       return a.index - b.index;
     });
 
-    this.spinner.nativeElement.remove();
-    this.container.nativeElement.removeAttribute("hidden");
-
     this.updateIndex();
-    this.flashcard.nativeElement.children[0].textContent = this.cards[0].term;
   }
 }

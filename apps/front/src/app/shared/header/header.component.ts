@@ -62,7 +62,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   signedIn = false;
 
   ApiResponseOptions = ApiResponseOptions;
-
   faQ = faQ;
   faArrowRightFromBracket = faArrowRightFromBracket;
 

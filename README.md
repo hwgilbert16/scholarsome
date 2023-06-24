@@ -15,7 +15,7 @@ https://scholarsome.com
 </div>
 
 <p align="center">
-<img src="https://i.imgur.com/MshTOaL.png" width="80%">
+<img src="https://i.imgur.com/MshTOaL.png" width="90%">
 </p>
 
 ## Introduction
@@ -29,16 +29,18 @@ While other services have begun to paywall core functionalities, Scholarsome int
 Implemented features include:
 
 - Create your own study sets ✅
-- Study using flashcards ✅
+- Study flashcards in either traditional or progressive mode ✅
 - Use quizzes to test yourself ✅
 - Import created sets from Quizlet ✅
 - Edit your sets on the fly ✅
 - Make sets private if studying with others ✅
 
+<img src="https://i.imgur.com/Xey0pzK.gif" width="50%">
+
 ## Features coming soon...
 
 - Interactive study games
-- Dynamic learn mode that adjusts to progress
+- Spaced repetition system implementation
 - Persistence of quiz results
 - Editing permission sharing with other users
 - Improved profile page

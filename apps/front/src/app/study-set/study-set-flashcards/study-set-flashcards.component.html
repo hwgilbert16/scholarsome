@@ -1,48 +1,100 @@
-<div class="d-flex justify-content-center mt-5" #spinner>
-  <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+<div class="d-flex flex-column justify-content-center align-items-center message" *ngIf="!side">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2>Flashcards configuration</h2>
+      <form #configForm="ngForm" (ngSubmit)="beginFlashcards(configForm)" ngNativeValidate>
+        <div class="mb-2">
+          <label for="traditional-radio" class="form-label fs-5">Type</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flashcards-type" id="traditional-radio" value="traditional" ngModel required>
+            <label class="form-check-label" for="traditional-radio">Traditional</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flashcards-type" id="progressive-radio" value="progressive" ngModel required>
+            <label class="form-check-label" for="progressive-radio">Progressive</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="term-radio" class="form-label fs-5">Answer with</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer-with" id="term-radio" value="term" ngModel required>
+            <label class="form-check-label" for="term-radio">Term</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer-with" id="definition-radio" value="definition" ngModel required>
+            <label class="form-check-label" for="definition-radio">Definition</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="term-radio" class="form-label fs-5">Enable shuffling</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="enable-shuffling" id="yes-radio" value="yes" ngModel required>
+            <label class="form-check-label" for="yes-radio">Yes</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="enable-shuffling" id="no-radio" value="no" ngModel required>
+            <label class="form-check-label" for="no-radio">No</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Start</button>
+      </form>
+    </div>
   </div>
 </div>
 
-<div class="container" hidden #container>
+<div class="d-flex flex-column justify-content-center align-items-center mx-4 message" *ngIf="roundCompleted">
+  <div class="card">
+    <div class="card-body">
+      <div class="container-fluid justify-content-around">
+        <div class="row">
+          <div class="col d-flex align-items-center justify-content-center">
+            <fa-icon [icon]="cards.length > 0 ? faThumbsUp : faCake" class="display-1"></fa-icon>
+          </div>
+          <div class="col">
+            <h1 class="me-4">Great job!</h1>
+            <div *ngIf="cards.length > 0">
+              <p>You learned <span class="fw-bold">{{newLearnedCards}} card(s)</span> in that round. Keep it up until you learn them all!</p>
+              <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false; newLearnedCards = 0">Continue</button>
+            </div>
+            <div *ngIf="cards.length === 0">
+              <p>You learned all of the cards in this set. Now - do it again!</p>
+              <button *ngIf="cards.length === 0" class="btn btn-primary" (click)="reloadPage()">Start over</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container flashcard-container" *ngIf="flashcardsMode && !roundCompleted">
   <div class="row">
-    <div class="flashcard card text-center shadow-sm" #flashcard>
-      <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()"></div>
-      <hr>
-      <div class="mt-2 d-flex justify-content-around" *ngIf="cards">
-        <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
-        <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
-      </div>
-      <div class="mx-2 d-flex justify-content-between">
-        <p class="text-secondary">{{side}}</p>
-        <fa-icon class="fs-4 mb-2 text-secondary shuffle" (click)="this.shuffleCards()" [style.color]="shufflingEnabled ? '#8438ff !important' : '#6c757d !important'" [icon]="faShuffle"></fa-icon>
-      </div>
+    <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip-back': flipped && flipInteraction, 'flip-forwards': !flipped && flipInteraction}">
+      <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()">{{sideText}}</div>
     </div>
   </div>
 
-  <div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center" #controlbar>
-    <fa-icon class="fs-2 back-arrow" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
-    <div class="fs-2"></div>
-    <div class="ms-2 my-2">
-      <button type="button" class="btn btn-outline-primary" (click)="this.modalRef = this.modalService.show(this.settings);">Settings</button>
+  <div class="row mt-3">
+    <div class="card text-center shadow-sm">
+      <div class="card-body">
+        <div class="mt-2 d-flex justify-content-around" *ngIf="cards && flashcardsMode === 'traditional'">
+          <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(-1)" [disabled]="index === 0 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-left']"></fa-icon></button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
+        </div>
+        <div class="mt-2 d-flex justify-content-around" *ngIf="cards && flashcardsMode !== 'traditional'">
+          <button type="button" class="fs-4 w-25 btn btn-outline-warning mb-3 fw-bold" (click)="changeCard(1)">Don't know</button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="incrementLearntCount(); knownCardIDs.push(currentCard.id); changeCard(1);">Know</button>
+        </div>
+        <div class="mx-2 d-flex justify-content-between">
+          <p class="text-secondary text-capitalize fs-6">{{side}}</p>
+          <p class="text-secondary fs-5">{{remainingCards}}</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<ng-template #settings>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left fs-1">Settings</h4>
-    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
-      <span aria-hidden="true" class="visually-hidden">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div class="mb-1 fs-5">Answer with</div>
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <input type="radio" class="btn-check" name="definitionRadio" id="definition" autocomplete="off" [checked]="answer === 'Definition'" (click)="answer = 'Definition'; (side === answer) && flipCard();">
-      <label class="btn btn-outline-secondary fs-6" for="definition">Definition</label>
-      <input type="radio" class="btn-check" name="termRadio" id="term" autocomplete="off" [checked]="answer === 'Term'" (click)="answer = 'Term'; (side === answer) && flipCard();">
-      <label class="btn btn-outline-secondary" for="term">Term</label>
-    </div>
-  </div>
-</ng-template>
+<div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center controlbar">
+  <fa-icon class="fs-2 back-arrow" *ngIf="flashcardsMode" (click)="reloadPage()" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+  <fa-icon class="fs-2 back-arrow" *ngIf="!flashcardsMode" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+</div>
