@@ -1,12 +1,27 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import { AlertComponent } from "../alert/alert.component";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { AngularEditorConfig } from "@kolkov/angular-editor";
 
 @Component({
   selector: "scholarsome-card",
   templateUrl: "./card.component.html",
   styleUrls: ["./card.component.scss"]
 })
-export class CardComponent {
+export class CardComponent implements AfterViewInit {
+  constructor(private readonly bsModalService: BsModalService) {}
+
   @Input() editingEnabled = false;
 
   @Input() cardId: string;
@@ -25,13 +40,87 @@ export class CardComponent {
   @ViewChild("term", { static: false }) termElement: ElementRef;
   @ViewChild("definition", { static: false }) definitionElement: ElementRef;
   @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
+  // @ViewChild("editModal", { static: false, read: TemplateRef }) editModal: TemplateRef<any>;
+
+  // these two vars exist so that we can prevent the main card
+  // from updating while a card is being edited
+  protected mainTerm?: string;
+  protected mainDefinition?: string;
+
+  protected readonly editorConfig: AngularEditorConfig = {
+    editable: true,
+    height: "20vh",
+    sanitize: true,
+    fonts: [
+      { class: "sans-serif", name: "Sans Serif" }
+    ],
+    toolbarHiddenButtons: [
+      [
+        "strikeThrough",
+        "justifyLeft",
+        "justifyCenter",
+        "justifyRight",
+        "justifyFull",
+        "indent",
+        "outdent",
+        "heading",
+        "fontName"
+      ],
+      [
+        "fontSize",
+        "backgroundColor",
+        "insertVideo",
+        "link",
+        "unlink",
+        "toggleEditorMode"
+      ]
+    ]
+  };
+
+  protected modalRef?: BsModalRef;
+  protected readonly faPenToSquare = faPenToSquare;
+
+  ngAfterViewInit() {
+    this.mainTerm = this.termValue;
+    this.mainDefinition = this.definitionValue;
+
+    /*
+    these two subscriptions here are to prevent the main card from updating
+    while the card is being edited
+
+    otherwise it's distracting to see changes in the background while typing
+     */
+
+    this.bsModalService.onShow.subscribe(() => {
+      this.mainTerm = String(this.mainTerm) as string;
+      this.mainDefinition = String(this.mainDefinition) as string;
+    });
+
+    this.bsModalService.onHide.subscribe(() => {
+      this.mainTerm = this.termValue;
+      this.mainDefinition = this.definitionValue;
+    });
+
+    // this.bsModalService.onShow.subscribe(() => {
+    //   const test = this.editModal.createEmbeddedView({});
+    //   test.detectChanges();
+    //   console.log(test.rootNodes[1]);
+    // })
+    // const test = this.editModal.createEmbeddedView({});
+    // test.detectChanges();
+    // console.log(test.rootNodes[1].querySelectorAll(`[title="Undo"]`)[0] as HTMLElement);
+  }
 
   get term(): string {
-    return this.termElement.nativeElement.value;
+    return this.termElement.nativeElement.innerHTML;
   }
 
   get definition(): string {
-    return this.definitionElement.nativeElement.value;
+    return this.definitionElement.nativeElement.innerHTML;
+  }
+
+  openModal(template: TemplateRef<HTMLElement>) {
+    this.modalRef = this.bsModalService.show(template, { class: "modal-xl" });
   }
 
   deleteCard() {

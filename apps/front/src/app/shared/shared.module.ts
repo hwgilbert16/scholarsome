@@ -13,6 +13,7 @@ import { NotfoundComponent } from "./notfound/notfound.component";
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha";
 import { CardComponent } from "./card/card.component";
 import { SharedService } from "./shared.service";
+import { AngularEditorModule } from "@kolkov/angular-editor";
 
 @NgModule({
   imports: [
@@ -25,7 +26,8 @@ import { SharedService } from "./shared.service";
     AlertModule,
     CommonModule,
     RecaptchaV3Module,
-    RouterLink
+    RouterLink,
+    AngularEditorModule
   ],
   providers: [
     {

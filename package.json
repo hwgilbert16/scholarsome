@@ -40,6 +40,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.2.0",
     "@fortawesome/free-regular-svg-icons": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@kolkov/angular-editor": "^3.0.0-beta.0",
     "@liaoliaots/nestjs-redis": "^9.0.5",
     "@mdx-js/react": "^1.6.22",
     "@nestjs-modules/mailer": "^1.8.1",

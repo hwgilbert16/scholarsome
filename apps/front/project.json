@@ -21,7 +21,12 @@
         "assets": [
           "apps/front/src/favicon.ico",
           "apps/front/src/assets",
-          "apps/front/src/robots.txt"
+          "apps/front/src/robots.txt",
+          {
+            "glob": "**/*",
+            "input": "./node_modules/@kolkov/angular-editor/assets/",
+            "output": "./assets/fonts/"
+          }
         ],
         "styles": [
           "apps/front/src/styles.scss"
