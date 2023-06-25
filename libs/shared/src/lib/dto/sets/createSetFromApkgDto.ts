@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString
@@ -14,7 +13,9 @@ export class CreateSetFromApkgDto {
   @IsOptional()
     description: string;
 
-  @IsBoolean()
+  // this is needed to be submitted as string because form-data is used for this endpoint
+  // for the file upload, and there is no boolean option for it
+  @IsString()
   @IsNotEmpty()
-    private: boolean;
+    private: string;
 }

@@ -8,7 +8,7 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { ApiResponseOptions } from "@scholarsome/shared";
-import { faQ, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar } from "@fortawesome/free-solid-svg-icons";
 import { SetsService } from "../http/sets.service";
 import { SharedService } from "../shared.service";
 import packageJson from "../../../../../../package.json";
@@ -21,49 +21,83 @@ import packageJson from "../../../../../../package.json";
 export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild("register") registerModal: TemplateRef<HTMLElement>;
   @ViewChild("login") loginModal: TemplateRef<HTMLElement>;
-  @ViewChild("forgot") forgotModal: TemplateRef<HTMLElement>;
   @ViewChild("setPassword") setPasswordModal: TemplateRef<HTMLElement>;
-  @ViewChild("importSet") importSetModal: TemplateRef<HTMLElement>;
 
-  @ViewChild("loginForm") loginForm: NgForm;
-  @ViewChild("registerForm") registerForm: NgForm;
-  @ViewChild("forgotForm") forgotForm: NgForm;
-  @ViewChild("setPasswordForm") setPasswordForm: NgForm;
+  // Whether an update is available compared to the current running version
+  protected updateAvailable: boolean;
+  // URL of the new version
+  protected releaseUrl: string;
+
+  // Used to open the login modal after users verify their email
+  protected verificationResult: boolean | null;
+
+  /* Login form */
+
+  // Status from API response body
+  protected loginRes: string;
+  // Whether the login submit button has been clicked
+  protected loginClicked = false;
+
+  /* */
+
+  /* Register form */
+
+  protected registrationRes: string;
+  // Whether email confirmation is required
+  // Needed as selfhosted installs do not use email confirmation
+  protected registrationConfirmationRequired: boolean;
+  protected registrationClicked = false;
+
+  /* */
+
+  /* Forgot form */
+
+  protected forgotClicked = false;
+
+  /* */
+
+  /* Set password form */
+  // This is the form that is shown to users to reset their password
+  // after clicking the link in their email
+
+  protected setPasswordClicked = false;
+  // Whether the two passwords do not match
+  protected setPasswordNotMatching = false;
+
+  /* */
+
+  /* Quizlet import form */
+
+  protected quizletImportClicked = false;
+  protected quizletImportRes: string;
+
+  /* */
+
+  /* Anki import form */
+
+  protected ankiImportClicked = false;
+  protected ankiImportRes: string;
+  protected ankiApkgFile: File | null = null;
+
+  /* */
+
+  // Whether the header is hidden - hidden on the landing page
+  protected hidden = false;
+
+  // If the user is signed in
+  protected signedIn = false;
+
+  protected isMobile = false;
+
+  protected modalRef?: BsModalRef;
 
   protected readonly packageJson = packageJson;
   protected readonly window = window;
-
-  updateAvailable: boolean;
-  releaseUrl: string;
-
-  modalRef?: BsModalRef;
-  isMobile: boolean;
-
-  verificationResult: boolean | null;
-
-  loginRes: string;
-  loginClicked = false;
-
-  registrationRes: string;
-  registrationConfirmationRequired: boolean;
-  registrationClicked = false;
-
-  forgotClicked = false;
-
-  setPasswordClicked = false;
-  setPasswordNotMatching = false;
-
-  importSetClicked = false;
-  importSetRes: string;
-
-  faGithub = faGithub;
-  hidden = false;
-
-  signedIn = false;
-
-  ApiResponseOptions = ApiResponseOptions;
-  faQ = faQ;
-  faArrowRightFromBracket = faArrowRightFromBracket;
+  protected readonly ApiResponseOptions = ApiResponseOptions;
+  protected readonly faQ = faQ;
+  protected readonly faGithub = faGithub;
+  protected readonly faStar = faStar;
+  protected readonly faArrowRightFromBracket = faArrowRightFromBracket;
 
   /**
    * @ignore
@@ -75,8 +109,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
     private readonly setsService: SetsService,
-    public readonly cookieService: CookieService,
-    private readonly sharedService: SharedService
+    private readonly sharedService: SharedService,
+    public readonly cookieService: CookieService
   ) {
     this.modalService.modal.subscribe((e) => {
       switch (e) {
@@ -103,7 +137,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.loginRes = await this.authService.login(form.value);
 
     if (this.loginRes === ApiResponseOptions.Success) {
-      window.location.assign("homepage");
+      await this.router.navigate(["/homepage"]);
     } else {
       this.loginClicked = false;
     }
@@ -137,17 +171,48 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.bsModalService.show(this.loginModal);
   }
 
-  async submitImportSet(form: NgForm) {
-    this.importSetClicked = true;
-    this.importSetRes = "";
+  onAnkiFileUpload(event: Event): void {
+    const files = (event.target as HTMLInputElement).files;
+
+    if (files) {
+      this.ankiApkgFile = files[0];
+    }
+  }
+
+  async submitAnkiImport(form: NgForm) {
+    this.ankiImportClicked = true;
+    this.ankiImportRes = "";
+
+    if (!this.ankiApkgFile) return;
+
+    const set = await this.setsService.createSetFromApkg({
+      title: form.value["title"],
+      description: form.value["description"],
+      private: form.value["privateCheck"] === true,
+      file: this.ankiApkgFile
+    });
+
+    if (set) {
+      await this.router.navigate(["/study-set/" + set.id]);
+    } else {
+      this.ankiImportRes = "incompatible";
+      this.ankiImportClicked = false;
+      return;
+    }
+  }
+
+  async submitQuizletImport(form: NgForm) {
+    this.quizletImportClicked = true;
+    this.quizletImportRes = "";
 
     const exported = form.value["importSet"].substring(0, form.value["importSet"].length - 1).split(";");
 
     // need to add a regex check here to ensure pattern is valid
 
     if (exported.length < 1) {
-      this.importSetRes = "pattern";
-      this.importSetClicked = false;
+      // quizletImportRes set to pattern indicates that the pattern is invalid
+      this.quizletImportRes = "pattern";
+      this.quizletImportClicked = false;
       return;
     }
 
@@ -164,23 +229,24 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     }
 
     const set = await this.setsService.createSet({
-      title: form.value["importTitle"],
-      private: form.value["importPrivateCheck"] === true,
+      title: form.value["title"],
+      description: form.value["description"],
+      private: form.value["privateCheck"] === true,
       cards: cards
     });
 
     if (set) {
-      window.location.replace("/study-set/" + set.id);
+      await this.router.navigate(["/study-set/" + set.id]);
     } else {
-      this.importSetRes = "pattern";
-      this.importSetClicked = false;
+      this.quizletImportRes = "pattern";
+      this.quizletImportClicked = false;
       return;
     }
   }
 
   async submitLogout() {
     await this.authService.logout();
-    window.location.replace("/");
+    await this.router.navigate(["/"]);
   }
 
   ngOnInit(): void {
@@ -204,6 +270,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
     if (this.cookieService.get("authenticated")) this.signedIn = true;
 
+    // Remove form data when modals are closed
     this.bsModalService.onHide.subscribe(() => {
       this.loginRes = "";
       this.loginClicked = false;
@@ -212,10 +279,18 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       this.registrationClicked = false;
       this.registrationConfirmationRequired = false;
 
+      this.quizletImportRes = "";
+
+      this.ankiApkgFile = null;
+      this.ankiImportRes = "";
+
       this.verificationResult = null;
 
       this.forgotClicked = false;
     });
+
+    // Hide modals when the route changes
+    this.router.events.subscribe(() => this.modalRef?.hide());
   }
 
   ngAfterViewInit(): void {

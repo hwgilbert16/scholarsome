@@ -1,5 +1,5 @@
 .background {
-  background-image: url('img/desktop.svg');
+  background-image: url('../../assets/landing/desktop.svg');
   background-color: #FFFFFF;
   background-repeat: no-repeat;
   background-size: cover;
@@ -29,7 +29,7 @@
 
 @media only screen and (min-device-width : 1px) and (max-device-width : 480px) {
   .background {
-    background-image: url('img/mobile.svg');
+    background-image: url('../../assets/landing/mobile.svg');
   }
 
   .login-desktop {
@@ -54,7 +54,7 @@
 
 @media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
   .background {
-    background-image: url('img/desktop.svg');
+    background-image: url('../../assets/landing/desktop.svg');
   }
 
   .login-mobile {

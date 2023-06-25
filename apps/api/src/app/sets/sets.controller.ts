@@ -116,6 +116,11 @@ export class SetsController {
     }
   }
 
+  /**
+   * Creates a set from an Anki .apkg file
+   *
+   * @returns Created `Set` object
+   */
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("apkg")
@@ -141,7 +146,7 @@ export class SetsController {
         },
         title: body.title,
         description: body.description,
-        private: body.private,
+        private: body.private === "true",
         cards: {
           createMany: {
             data: cards.map((c) => {

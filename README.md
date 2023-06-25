@@ -1,4 +1,4 @@
-## <p align="center"><img src="https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/apps/front/src/assets/scholarsome-logo-purple-lowercase.svg" height="50%" width="50%"></p>
+## <p align="center"><img src="https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/apps/front/src/assets/header/scholarsome-logo-purple-lowercase.svg" height="50%" width="50%"></p>
 
 <div align="center">
 

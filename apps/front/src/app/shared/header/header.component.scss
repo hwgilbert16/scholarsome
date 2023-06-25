@@ -31,9 +31,21 @@ a:hover {
   width: 9vw;
 }
 
-.import-logo {
-  font-size: 10em;
+.quizlet-color {
   color: #5162ff;
+}
+
+.anki-color {
+  color: #051e59;
+}
+
+.quizlet-import-logo {
+  font-size: 10em;
+}
+
+.anki-import-logo {
+  max-width: 50%;
+  max-height: 50%;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {

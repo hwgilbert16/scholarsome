@@ -48,6 +48,14 @@ export class SetsService {
     return set.author.id === user.id;
   }
 
+  /**
+   * Converts the Buffer of a .apkg file to a JSON of the cards contained within
+   * Only supports Basic note types in Anki
+   *
+   * @param file Buffer of the .apkg file
+   *
+   * @returns Array of cards generated from the file
+   */
   public decodeAnkiApkg(file: Buffer): { term: string; definition: string; index: number }[] | boolean {
     const zip = new AdmZip(file);
     const dbFile = zip.readFile("collection.anki2");
