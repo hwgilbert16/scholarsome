@@ -12,12 +12,8 @@
     </div>
     <div class="container-fluid" #inputsContainer>
       <div class="row">
-        <div class="col border-end fs-5 w-50" [hidden]="editingEnabled">
-          {{termValue}}
-        </div>
-        <div class="col fs-5 w-50" [hidden]="editingEnabled">
-          {{definitionValue}}
-        </div>
+        <div class="col border-end fs-5 w-50" [hidden]="editingEnabled" [innerHTML]="termValue"></div>
+        <div class="col fs-5 w-50" [hidden]="editingEnabled" [innerHTML]="definitionValue"></div>
         <div class="col-lg" [hidden]="!editingEnabled">
           <label for="term" class="form-label">Term</label>
           <input type="text" class="form-control" id="term" [value]="termValue ? termValue : ''" #term>

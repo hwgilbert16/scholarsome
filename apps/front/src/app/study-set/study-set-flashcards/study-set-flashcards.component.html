@@ -67,10 +67,12 @@
   </div>
 </div>
 
-<div class="container flashcard-container" *ngIf="flashcardsMode && !roundCompleted">
+<div class="container flashcard-container mb-4" *ngIf="flashcardsMode && !roundCompleted">
   <div class="row">
     <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip-back': flipped && flipInteraction, 'flip-forwards': !flipped && flipInteraction}">
-      <div class="card-body fs-1 d-flex align-items-center justify-content-center" onmousedown="return false" (click)="flipCard()">{{sideText}}</div>
+      <div class="card-body fs-1 d-flex align-items-center justify-content-center text-wrap" onmousedown="return false" (click)="flipCard()">
+        <div [innerHTML]="sideText"></div>
+      </div>
     </div>
   </div>
 
@@ -94,7 +96,7 @@
   </div>
 </div>
 
-<div class="d-flex container-fluid justify-content-between w-100 bg-white fixed-bottom shadow align-items-center controlbar">
+<div class="d-flex container-fluid justify-content-between bg-white fixed-bottom shadow controlbar">
   <fa-icon class="fs-2 back-arrow" *ngIf="flashcardsMode" (click)="reloadPage()" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
   <fa-icon class="fs-2 back-arrow" *ngIf="!flashcardsMode" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
 </div>
