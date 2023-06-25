@@ -3,7 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input,
+  Input, OnInit,
   Output,
   TemplateRef,
   ViewChild,
@@ -19,7 +19,7 @@ import { AngularEditorConfig } from "@kolkov/angular-editor";
   templateUrl: "./card.component.html",
   styleUrls: ["./card.component.scss"]
 })
-export class CardComponent implements AfterViewInit {
+export class CardComponent implements OnInit, AfterViewInit {
   constructor(private readonly bsModalService: BsModalService) {}
 
   @Input() editingEnabled = false;
@@ -44,8 +44,8 @@ export class CardComponent implements AfterViewInit {
 
   // these two vars exist so that we can prevent the main card
   // from updating while a card is being edited
-  protected mainTerm?: string;
-  protected mainDefinition?: string;
+  protected mainTerm: string;
+  protected mainDefinition: string;
 
   protected readonly editorConfig: AngularEditorConfig = {
     editable: true,
@@ -80,25 +80,26 @@ export class CardComponent implements AfterViewInit {
   protected modalRef?: BsModalRef;
   protected readonly faPenToSquare = faPenToSquare;
 
-  ngAfterViewInit() {
-    this.mainTerm = this.termValue;
-    this.mainDefinition = this.definitionValue;
+  ngOnInit() {
+    this.mainTerm = this.termValue ? this.termValue : "";
+    this.mainDefinition = this.definitionValue ? this.definitionValue : "";
+  }
 
+  ngAfterViewInit() {
     /*
     these two subscriptions here are to prevent the main card from updating
     while the card is being edited
 
     otherwise it's distracting to see changes in the background while typing
      */
-
     this.bsModalService.onShow.subscribe(() => {
       this.mainTerm = String(this.mainTerm) as string;
       this.mainDefinition = String(this.mainDefinition) as string;
     });
 
     this.bsModalService.onHide.subscribe(() => {
-      this.mainTerm = this.termValue;
-      this.mainDefinition = this.definitionValue;
+      this.mainTerm = this.termValue ? this.termValue : "";
+      this.mainDefinition = this.definitionValue ? this.definitionValue : "";
     });
 
     // this.bsModalService.onShow.subscribe(() => {
@@ -112,11 +113,11 @@ export class CardComponent implements AfterViewInit {
   }
 
   get term(): string {
-    return this.termElement.nativeElement.innerHTML;
+    return this.mainTerm;
   }
 
   get definition(): string {
-    return this.definitionElement.nativeElement.innerHTML;
+    return this.mainDefinition;
   }
 
   openModal(template: TemplateRef<HTMLElement>) {

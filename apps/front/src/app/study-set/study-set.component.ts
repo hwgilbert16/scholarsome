@@ -1,4 +1,11 @@
-import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
+import {
+  Component,
+  ComponentRef,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";

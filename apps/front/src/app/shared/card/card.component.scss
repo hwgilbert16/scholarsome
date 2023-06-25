@@ -3,6 +3,10 @@
   font-size: 18px;
 }
 
+.edit-text {
+  cursor: pointer;
+}
+
 .card-button:hover {
   animation: button-color-change 0.25s;
   animation-fill-mode: forwards;
