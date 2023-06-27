@@ -162,8 +162,8 @@ export class SetsService {
               await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
 
               // replace src with new fileName
-              cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/" + fileName);
-              cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/" + fileName);
+              cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/media/" + fileName);
+              cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/media/" + fileName);
 
               break;
             }

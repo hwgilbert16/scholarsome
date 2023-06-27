@@ -19,6 +19,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GlobalInterceptor } from "./auth/global.interceptor";
 import { S3Module } from "nestjs-s3";
+import { MediaModule } from "./media/media.module";
 
 const imports = [
   ServeStaticModule.forRoot({
@@ -50,6 +51,7 @@ const imports = [
   MailModule,
   CardsModule,
   UsersModule,
+  MediaModule,
   {
     ...JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
