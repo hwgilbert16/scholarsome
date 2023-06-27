@@ -193,7 +193,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     });
 
     if (set) {
-      await this.router.navigate(["/study-set/" + set.id]);
+      this.router.navigate(["/study-set/" + set.id]);
     } else {
       this.ankiImportRes = "incompatible";
       this.ankiImportClicked = false;

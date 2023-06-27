@@ -16,7 +16,6 @@ import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest, Express } from "express";
 import {
-  AnkiCard,
   ApiResponse,
   AuthorIdParam,
   CreateSetDto,
@@ -138,13 +137,10 @@ export class SetsController {
     });
     if (!author) throw new NotFoundException();
 
-    const decoded = this.setsService.decodeAnkiApkg(file.buffer);
-    if (!decoded) throw new UnsupportedMediaTypeException();
-
-    let cards: AnkiCard[] = decoded.cards;
     const uuid = crypto.randomUUID();
 
-    if (decoded.mediaLegend.length > 0) cards = await this.setsService.uploadApkgMedia(decoded.mediaLegend, cards, file.buffer, uuid);
+    const cards = await this.setsService.decodeAnkiApkg(file.buffer, uuid);
+    if (!cards) throw new UnsupportedMediaTypeException();
 
     return {
       status: "success",

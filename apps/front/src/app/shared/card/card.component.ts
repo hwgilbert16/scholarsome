@@ -69,7 +69,6 @@ export class CardComponent implements OnInit, AfterViewInit {
       [
         "fontSize",
         "backgroundColor",
-        "insertVideo",
         "link",
         "unlink",
         "toggleEditorMode"

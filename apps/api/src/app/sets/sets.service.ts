@@ -11,6 +11,8 @@ import { InjectS3, S3 } from "nestjs-s3";
 import { ConfigService } from "@nestjs/config";
 import * as crypto from "crypto";
 import * as sharp from "sharp";
+import * as fs from "fs";
+import * as path from "path";
 
 @Injectable()
 export class SetsService {
@@ -56,13 +58,16 @@ export class SetsService {
 
   /**
    * Converts the Buffer of a .apkg file to a JSON of the cards contained within
+   * and uploads media to storage destination (local or S3)
+   *
    * Only supports Basic note types in Anki
    *
    * @param file Buffer of the .apkg file
+   * @param setId UUID to be used for the set ID
    *
    * @returns Array of cards generated from the file
    */
-  public decodeAnkiApkg(file: Buffer): DecodeAnkiApkgReturn | false {
+  public async decodeAnkiApkg(file: Buffer, setId: string): Promise<AnkiCard[] | false> {
     const returnValue: DecodeAnkiApkgReturn = { cards: [], mediaLegend: [] };
 
     const zip = new AdmZip(file);
@@ -84,6 +89,13 @@ export class SetsService {
         return false;
       }
 
+      // audio polyfill
+      const termAudio = split[0].match(/\[sound:(.*?)\]/);
+      if (termAudio) split[0] = split[0].replace(termAudio[0], `<audio controls><source src="${termAudio[1]}"></audio>`);
+
+      const definitionAudio = split[1].match(/\[sound:(.*?)\]/);
+      if (definitionAudio) split[1] = split[1].replace(definitionAudio[0], `<audio controls><source src="${definitionAudio[1]}"></audio>`);
+
       cards.push({
         term: split[0],
         definition: split[1],
@@ -96,76 +108,68 @@ export class SetsService {
 
     // by this point we already know all cards are compatible
     if (zip.readFile("media").toString() !== "{}") {
-      returnValue.mediaLegend = Object.entries(JSON.parse(zip.readFile("media").toString()));
-    }
+      const mediaLegend: string[][] = Object.entries(JSON.parse(zip.readFile("media").toString()));
 
-    return returnValue;
-  }
+      for (const [i, card] of cards.entries()) {
+        const cardMatches = card.term.match(/<[^>]+src="([^">]+)"/g);
+        const definitionMatches = card.definition.match(/<[^>]+src="([^">]+)"/g);
 
-  /**
-   * Uploads the media from a .apkg to either S3 or to local storage
-   *
-   * @param mediaLegend Array of source names and zip names, returned from decodeAnkiApkg
-   * @param cards Array of cards from the .apkg, returned from decodeAnkiApkg
-   * @param file Buffer of the .apkg file
-   * @param setId UUID to be used for the set ID
-   *
-   * @returns Array of cards generated from the file
-   */
-  public async uploadApkgMedia(mediaLegend: string[][], cards: AnkiCard[], file: Buffer, setId: string) {
-    const zip = new AdmZip(file);
+        console.log(card.definition);
 
-    for (const [i, card] of cards.entries()) {
-      const cardMatches = card.term.match(/<img([\w\W]+?)>/g);
-      const definitionMatches = card.definition.match(/<img([\w\W]+?)>/g);
+        let sources = [];
 
-      let sources = [];
+        if (cardMatches) sources = Object.values(cardMatches);
+        if (definitionMatches) sources = [...sources, ...Object.values(definitionMatches)];
 
-      if (cardMatches) sources = Object.values(cardMatches);
-      if (definitionMatches) sources = [...sources, ...Object.values(definitionMatches)];
+        // if there are any sources
+        if (sources) {
+          // extract src attribute from img tag
+          sources = sources.map((x) => x.replace(/.*src="([^"]*)".*/, "$1"));
 
-      // if there are any sources
-      if (sources) {
-        // extract src attribute from img tag
-        sources = sources.map((x) => x.replace(/.*src="([^"]*)".*/, "$1"));
+          for (const source of sources) {
+            // find index in mediaLegend
+            for (let x = 0; x < mediaLegend.length; x++) {
+              if (mediaLegend[x][1] === source) {
+                // convert to jpeg and compress
+                let file = zip.readFile(mediaLegend[x][0]);
+                let extension = mediaLegend[x][1].split(".").pop();
 
-        for (const source of sources) {
-          // find index in mediaLegend
-          for (let x = 0; x < mediaLegend.length; x++) {
-            if (mediaLegend[x][1] === source) {
-              // convert to jpeg and compress
-              let file = zip.readFile(mediaLegend[x][0]);
-              let extension = mediaLegend[x][1].split(".").pop();
+                if (
+                  extension === "jpeg" ||
+                  extension === "jpg" ||
+                  extension === "png" ||
+                  extension === "tiff" ||
+                  extension === "webp"
+                ) {
+                  file = await sharp(zip.readFile(mediaLegend[x][0])).jpeg({ progressive: true, force: true, quality: 80 }).toBuffer();
+                  extension = ".jpeg";
+                } else {
+                  extension = mediaLegend[x][1].split(".").pop();
+                }
 
-              if (
-                extension === "jpeg" ||
-                extension === "jpg" ||
-                extension === "png" ||
-                extension === "tiff" ||
-                extension === "webp"
-              ) {
-                file = await sharp(zip.readFile(mediaLegend[x][0])).jpeg({ progressive: true, force: true }).toBuffer();
-                extension = ".jpeg";
-              } else {
-                extension = mediaLegend[x][1].split(".").pop();
+                // in the format of setId/fileName.jpeg
+                const fileName = setId + "/" + crypto.randomUUID() + extension;
+
+                // upload to s3
+                if (this.configService.get<string>("STORAGE_TYPE") === "S3") {
+                  await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
+                }
+
+                if (this.configService.get<string>("STORAGE_TYPE") === "local") {
+                  const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "images");
+
+                  if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+                  if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId));
+
+                  fs.writeFileSync(path.join(filePath, fileName), file);
+                }
+
+                // replace src with new fileName
+                cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/media/" + fileName);
+                cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/media/" + fileName);
+
+                break;
               }
-
-              // get md5 hash
-              const hash = crypto.createHash("md5").setEncoding("hex");
-              hash.write(file);
-              hash.end();
-
-              // in the format of setId/fileName.jpeg
-              const fileName = setId + "/" + hash.read() + extension;
-
-              // upload to s3
-              await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
-
-              // replace src with new fileName
-              cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/media/" + fileName);
-              cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/media/" + fileName);
-
-              break;
             }
           }
         }
