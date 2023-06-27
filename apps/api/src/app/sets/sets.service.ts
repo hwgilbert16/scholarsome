@@ -1,12 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
-import { AnkiNote, Set } from "@scholarsome/shared";
+import { AnkiCard, AnkiNote, DecodeAnkiApkgReturn, Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
 import * as AdmZip from "adm-zip";
 import * as Database from "better-sqlite3";
+import { InjectS3, S3 } from "nestjs-s3";
+import { ConfigService } from "@nestjs/config";
+import * as crypto from "crypto";
+import * as sharp from "sharp";
 
 @Injectable()
 export class SetsService {
@@ -14,8 +18,10 @@ export class SetsService {
    * @ignore
    */
   constructor(
+    @InjectS3() private readonly s3: S3,
     private readonly prisma: PrismaService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService
   ) {}
 
   /**
@@ -56,7 +62,9 @@ export class SetsService {
    *
    * @returns Array of cards generated from the file
    */
-  public decodeAnkiApkg(file: Buffer): { term: string; definition: string; index: number }[] | boolean {
+  public decodeAnkiApkg(file: Buffer): DecodeAnkiApkgReturn | false {
+    const returnValue: DecodeAnkiApkgReturn = { cards: [], mediaLegend: [] };
+
     const zip = new AdmZip(file);
     const dbFile = zip.readFile("collection.anki2");
 
@@ -83,7 +91,86 @@ export class SetsService {
       });
     }
 
+    returnValue.cards = cards;
     db.close();
+
+    // by this point we already know all cards are compatible
+    if (zip.readFile("media").toString() !== "{}") {
+      returnValue.mediaLegend = Object.entries(JSON.parse(zip.readFile("media").toString()));
+    }
+
+    return returnValue;
+  }
+
+  /**
+   * Uploads the media from a .apkg to either S3 or to local storage
+   *
+   * @param mediaLegend Array of source names and zip names, returned from decodeAnkiApkg
+   * @param cards Array of cards from the .apkg, returned from decodeAnkiApkg
+   * @param file Buffer of the .apkg file
+   * @param setId UUID to be used for the set ID
+   *
+   * @returns Array of cards generated from the file
+   */
+  public async uploadApkgMedia(mediaLegend: string[][], cards: AnkiCard[], file: Buffer, setId: string) {
+    const zip = new AdmZip(file);
+
+    for (const [i, card] of cards.entries()) {
+      const cardMatches = card.term.match(/<img([\w\W]+?)>/g);
+      const definitionMatches = card.definition.match(/<img([\w\W]+?)>/g);
+
+      let sources = [];
+
+      if (cardMatches) sources = Object.values(cardMatches);
+      if (definitionMatches) sources = [...sources, ...Object.values(definitionMatches)];
+
+      // if there are any sources
+      if (sources) {
+        // extract src attribute from img tag
+        sources = sources.map((x) => x.replace(/.*src="([^"]*)".*/, "$1"));
+
+        for (const source of sources) {
+          // find index in mediaLegend
+          for (let x = 0; x < mediaLegend.length; x++) {
+            if (mediaLegend[x][1] === source) {
+              // convert to jpeg and compress
+              let file = zip.readFile(mediaLegend[x][0]);
+              let extension = mediaLegend[x][1].split(".").pop();
+
+              if (
+                extension === "jpeg" ||
+                extension === "jpg" ||
+                extension === "png" ||
+                extension === "tiff" ||
+                extension === "webp"
+              ) {
+                file = await sharp(zip.readFile(mediaLegend[x][0])).jpeg({ progressive: true, force: true }).toBuffer();
+                extension = ".jpeg";
+              } else {
+                extension = mediaLegend[x][1].split(".").pop();
+              }
+
+              // get md5 hash
+              const hash = crypto.createHash("md5").setEncoding("hex");
+              hash.write(file);
+              hash.end();
+
+              // in the format of setId/fileName.jpeg
+              const fileName = setId + "/" + hash.read() + extension;
+
+              // upload to s3
+              await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
+
+              // replace src with new fileName
+              cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/" + fileName);
+              cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/" + fileName);
+
+              break;
+            }
+          }
+        }
+      }
+    }
 
     return cards;
   }

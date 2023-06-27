@@ -279,10 +279,12 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       this.registrationClicked = false;
       this.registrationConfirmationRequired = false;
 
+      this.quizletImportClicked = false;
       this.quizletImportRes = "";
 
       this.ankiApkgFile = null;
       this.ankiImportRes = "";
+      this.ankiImportClicked = false;
 
       this.verificationResult = null;
 

@@ -16,6 +16,7 @@ import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest, Express } from "express";
 import {
+  AnkiCard,
   ApiResponse,
   AuthorIdParam,
   CreateSetDto,
@@ -28,6 +29,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 // needed for multer file type declaration
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 import { Multer } from "multer";
+import * as crypto from "crypto";
 
 @Controller("sets")
 export class SetsController {
@@ -46,6 +48,9 @@ export class SetsController {
    */
   @Get(":setId")
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    // const file = await this.s3.getObject({ Key: "test/media.json", Bucket: this.configService.get<string>("S3_STORAGE_BUCKET") });
+    // console.log(await file.Body.transformToString());
+
     const set = await this.setsService.set({
       id: params.setId
     });
@@ -133,12 +138,18 @@ export class SetsController {
     });
     if (!author) throw new NotFoundException();
 
-    const cards = this.setsService.decodeAnkiApkg(file.buffer);
-    if (!cards || cards === true) throw new UnsupportedMediaTypeException();
+    const decoded = this.setsService.decodeAnkiApkg(file.buffer);
+    if (!decoded) throw new UnsupportedMediaTypeException();
+
+    let cards: AnkiCard[] = decoded.cards;
+    const uuid = crypto.randomUUID();
+
+    if (decoded.mediaLegend.length > 0) cards = await this.setsService.uploadApkgMedia(decoded.mediaLegend, cards, file.buffer, uuid);
 
     return {
       status: "success",
       data: await this.setsService.createSet({
+        id: uuid,
         author: {
           connect: {
             email: author.email
