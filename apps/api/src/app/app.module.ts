@@ -28,7 +28,6 @@ const imports = [
       cacheControl: true,
       maxAge: 31536000
     },
-    renderPath: "/",
     exclude: ["/api/(.*)"]
   }),
   ConfigModule.forRoot({
