@@ -29,6 +29,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 import { Multer } from "multer";
 import * as crypto from "crypto";
+import { CardsService } from "../cards/cards.service";
 
 @Controller("sets")
 export class SetsController {
@@ -37,7 +38,8 @@ export class SetsController {
    */
   constructor(
     private readonly setsService: SetsService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly cardsService: CardsService
   ) {}
 
   /**
@@ -47,9 +49,6 @@ export class SetsController {
    */
   @Get(":setId")
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
-    // const file = await this.s3.getObject({ Key: "test/media.json", Bucket: this.configService.get<string>("S3_STORAGE_BUCKET") });
-    // console.log(await file.Body.transformToString());
-
     const set = await this.setsService.set({
       id: params.setId
     });
@@ -185,9 +184,20 @@ export class SetsController {
     });
     if (!author) throw new NotFoundException();
 
+    const uuid = crypto.randomUUID();
+
+    for (const card of body.cards) {
+      const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, uuid);
+      if (scannedTerm) card.term = scannedTerm;
+
+      const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, uuid);
+      if (scannedDefinition) card.definition = scannedDefinition;
+    }
+
     return {
       status: "success",
       data: await this.setsService.createSet({
+        id: uuid,
         author: {
           connect: {
             email: author.email
@@ -228,6 +238,14 @@ export class SetsController {
 
     // we are overwriting the cards, entire new array is provided
     if (body.cards) {
+      for (const card of body.cards) {
+        const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, set.id);
+        if (scannedTerm) card.term = scannedTerm;
+
+        const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, set.id);
+        if (scannedDefinition) card.term = scannedDefinition;
+      }
+
       await this.setsService.updateSet({
         where: {
           id: set.id

@@ -154,6 +154,7 @@ export class SetsService {
                   await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
                 }
 
+                // upload locally
                 if (this.configService.get<string>("STORAGE_TYPE") === "local") {
                   const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "images");
 
