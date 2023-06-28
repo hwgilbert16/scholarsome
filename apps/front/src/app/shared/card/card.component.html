@@ -14,8 +14,8 @@
     <div class="container-fluid" #inputsContainer>
       <span class="text-secondary" *ngIf="mainTerm.length === 0 && mainDefinition.length === 0">Click <span class="text-decoration-underline edit-text" (click)="openModal(editModal)">here</span> to edit this card.</span>
       <div class="row" *ngIf="termValue || definitionValue">
-        <div class="col border-end fs-5 w-50 overflow-hidden" [innerHTML]="mainTerm" #term></div>
-        <div class="col fs-5 w-50 overflow-hidden" [innerHTML]="mainDefinition" #definition></div>
+        <div class="col border-end fs-5 w-50 h-100 overflow-hidden" [innerHTML]="sanitizer.bypassSecurityTrustHtml(mainTerm)" #term></div>
+        <div class="col fs-5 w-50 h-100 overflow-hidden" [innerHTML]="sanitizer.bypassSecurityTrustHtml(mainDefinition)" #definition></div>
       </div>
     </div>
   </div>
@@ -33,11 +33,11 @@
       <div class="row row-cols-1 row-cols-md-2">
         <div class="col border-end">
           <p class="fs-2">Term</p>
-          <angular-editor [config]="editorConfig" [(ngModel)]="termValue" id="termEditor"></angular-editor>
+          <quill-editor [(ngModel)]="termValue" id="termEditor" class="w-100"></quill-editor>
         </div>
         <div class="col mt-4 mt-lg-0">
           <p class="fs-2 pull-right">Definition</p>
-          <angular-editor [config]="editorConfig" [(ngModel)]="definitionValue" id="definitionEditor"></angular-editor>
+          <quill-editor [(ngModel)]="definitionValue" id="definitionEditor" class="w-100"></quill-editor>
         </div>
       </div>
     </div>

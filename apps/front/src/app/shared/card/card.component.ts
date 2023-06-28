@@ -13,6 +13,7 @@ import { AlertComponent } from "../alert/alert.component";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { AngularEditorConfig } from "@kolkov/angular-editor";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-card",
@@ -20,7 +21,10 @@ import { AngularEditorConfig } from "@kolkov/angular-editor";
   styleUrls: ["./card.component.scss"]
 })
 export class CardComponent implements OnInit, AfterViewInit {
-  constructor(private readonly bsModalService: BsModalService) {}
+  constructor(
+    private readonly bsModalService: BsModalService,
+    public readonly sanitizer: DomSanitizer
+  ) {}
 
   @Input() editingEnabled = false;
 
@@ -40,7 +44,6 @@ export class CardComponent implements OnInit, AfterViewInit {
   @ViewChild("term", { static: false }) termElement: ElementRef;
   @ViewChild("definition", { static: false }) definitionElement: ElementRef;
   @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
-  // @ViewChild("editModal", { static: false, read: TemplateRef }) editModal: TemplateRef<any>;
 
   // these two vars exist so that we can prevent the main card
   // from updating while a card is being edited
@@ -100,15 +103,6 @@ export class CardComponent implements OnInit, AfterViewInit {
       this.mainTerm = this.termValue ? this.termValue : "";
       this.mainDefinition = this.definitionValue ? this.definitionValue : "";
     });
-
-    // this.bsModalService.onShow.subscribe(() => {
-    //   const test = this.editModal.createEmbeddedView({});
-    //   test.detectChanges();
-    //   console.log(test.rootNodes[1]);
-    // })
-    // const test = this.editModal.createEmbeddedView({});
-    // test.detectChanges();
-    // console.log(test.rootNodes[1].querySelectorAll(`[title="Undo"]`)[0] as HTMLElement);
   }
 
   get term(): string {

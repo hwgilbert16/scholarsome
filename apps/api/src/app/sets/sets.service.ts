@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
-import { AnkiCard, AnkiNote, DecodeAnkiApkgReturn, Set } from "@scholarsome/shared";
+import { AnkiCard, AnkiNote, Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
@@ -68,8 +68,6 @@ export class SetsService {
    * @returns Array of cards generated from the file
    */
   public async decodeAnkiApkg(file: Buffer, setId: string): Promise<AnkiCard[] | false> {
-    const returnValue: DecodeAnkiApkgReturn = { cards: [], mediaLegend: [] };
-
     const zip = new AdmZip(file);
     const dbFile = zip.readFile("collection.anki2");
 
@@ -96,6 +94,10 @@ export class SetsService {
       const definitionAudio = split[1].match(/\[sound:(.*?)\]/);
       if (definitionAudio) split[1] = split[1].replace(definitionAudio[0], `<audio controls><source src="${definitionAudio[1]}"></audio>`);
 
+      // font -> p tag polyfill
+      split[0] = split[0].replace("<font", "<p").replace("</font>", "</p>");
+      split[1] = split[0].replace("<font", "<p").replace("</font>", "</p>");
+
       cards.push({
         term: split[0],
         definition: split[1],
@@ -103,7 +105,6 @@ export class SetsService {
       });
     }
 
-    returnValue.cards = cards;
     db.close();
 
     // by this point we already know all cards are compatible
@@ -113,8 +114,6 @@ export class SetsService {
       for (const [i, card] of cards.entries()) {
         const cardMatches = card.term.match(/<[^>]+src="([^">]+)"/g);
         const definitionMatches = card.definition.match(/<[^>]+src="([^">]+)"/g);
-
-        console.log(card.definition);
 
         let sources = [];
 

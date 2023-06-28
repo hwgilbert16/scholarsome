@@ -14,6 +14,9 @@ $dropdown-link-active-bg: $primary !important;
 $enable-negative-margins: true;
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
+ @import '~quill/dist/quill.core.css';
+@import '~quill/dist/quill.snow.css';
+
 body {
   background-color: white;
 }

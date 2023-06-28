@@ -14,6 +14,7 @@ import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha";
 import { CardComponent } from "./card/card.component";
 import { SharedService } from "./shared.service";
 import { AngularEditorModule } from "@kolkov/angular-editor";
+import { QuillEditorComponent } from "ngx-quill";
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { AngularEditorModule } from "@kolkov/angular-editor";
     CommonModule,
     RecaptchaV3Module,
     RouterLink,
-    AngularEditorModule
+    AngularEditorModule,
+    QuillEditorComponent
   ],
   providers: [
     {
