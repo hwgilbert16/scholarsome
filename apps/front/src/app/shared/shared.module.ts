@@ -1,5 +1,4 @@
 import { NgModule } from "@angular/core";
-import { HeaderComponent } from "./header/header.component";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
@@ -39,11 +38,10 @@ import { QuillEditorComponent } from "ngx-quill";
     SharedService
   ],
   declarations: [
-    HeaderComponent,
     AlertComponent,
     NotfoundComponent,
     CardComponent
   ],
-  exports: [HeaderComponent, AlertComponent, CardComponent]
+  exports: [AlertComponent, CardComponent]
 })
 export class SharedModule {}

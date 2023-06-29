@@ -35,6 +35,7 @@ import { CommonModule } from "@angular/common";
 import { ProfileModule } from "./profile/profile.module";
 import { HeadScriptsComponent } from "./head-scripts/head-scripts.component";
 import { QuillConfigModule, QuillModule } from "ngx-quill";
+import { HeaderModule } from "./header/header.module";
 
 @NgModule({
   declarations: [AppComponent, HeadScriptsComponent],
@@ -51,6 +52,7 @@ import { QuillConfigModule, QuillModule } from "ngx-quill";
     BrowserAnimationsModule,
     CommonModule,
     ProfileModule,
+    HeaderModule,
     QuillModule.forRoot(),
     QuillConfigModule.forRoot({
       modules: {
