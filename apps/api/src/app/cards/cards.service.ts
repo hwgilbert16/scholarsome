@@ -40,7 +40,7 @@ export class CardsService {
 
       for (const source of sources) {
         const split: string[] = source.split(",");
-        if (split.length === 0) return false;
+        if (split.length === 0 || split.length !== 2) continue;
 
         let decoded = Buffer.from(split[1], "base64");
 
@@ -60,13 +60,16 @@ export class CardsService {
         const fileName = setId + "/" + crypto.randomUUID() + extension;
 
         // upload to s3
-        if (this.configService.get<string>("STORAGE_TYPE") === "S3") {
+        if (
+          this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+          this.configService.get<string>("STORAGE_TYPE") === "S3"
+        ) {
           await this.s3.putObject({ Body: decoded, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
         }
 
         // upload locally
         if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-          const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "images");
+          const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media");
 
           if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
           if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId));

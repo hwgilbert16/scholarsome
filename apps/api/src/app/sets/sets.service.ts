@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
-import { AnkiCard, AnkiNote, Set } from "@scholarsome/shared";
+import { AnkiCard, AnkiNote, Set, SetMedia } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
@@ -25,6 +25,37 @@ export class SetsService {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService
   ) {}
+
+  /**
+   * Removes set media files from S3 or local storage
+   *
+   * @param setId ID of the set to delete media from
+   */
+  async deleteSetMediaFiles(setId: string): Promise<void> {
+    if (
+      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+      this.configService.get<string>("STORAGE_TYPE") === "S3"
+    ) {
+      const listedObjects = await this.s3.listObjectsV2( { Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Prefix: "media/" + setId } );
+      if (!listedObjects.Contents || listedObjects.Contents.length === 0) return;
+
+      const objects: { Key: string }[] = [];
+
+      for (const object of listedObjects.Contents) {
+        objects.push({ Key: object.Key });
+      }
+
+      await this.s3.deleteObjects({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Delete: { Objects: objects } });
+      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + setId });
+    }
+
+    if (this.configService.get<string>("STORAGE_TYPE") === "local") {
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", setId);
+
+      if (!fs.existsSync(filePath)) return;
+      fs.rmSync(filePath, { recursive: true, force: true });
+    }
+  }
 
   /**
    * Verifies whether a set belongs to a user given their access token cookie
@@ -67,7 +98,7 @@ export class SetsService {
    *
    * @returns Array of cards generated from the file
    */
-  public async decodeAnkiApkg(file: Buffer, setId: string): Promise<AnkiCard[] | false> {
+  public async decodeAnkiApkg(file: Buffer, setId: string): Promise<{ cards: AnkiCard[], media: string[] } | false> {
     const zip = new AdmZip(file);
     const dbFile = zip.readFile("collection.anki2");
 
@@ -79,6 +110,8 @@ export class SetsService {
       definition: string;
       index: number;
     }[] = [];
+
+    const media: string[] = [];
 
     for (const [i, note] of notes.entries()) {
       const split = note.flds.split(/\x1F/);
@@ -147,16 +180,22 @@ export class SetsService {
                 }
 
                 // in the format of setId/fileName.jpeg
-                const fileName = setId + "/" + crypto.randomUUID() + extension;
+                const name = crypto.randomUUID();
+                media.push(name + extension);
+
+                const fileName = setId + "/" + name + "." + extension;
 
                 // upload to s3
-                if (this.configService.get<string>("STORAGE_TYPE") === "S3") {
+                if (
+                  this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+                  this.configService.get<string>("STORAGE_TYPE") === "S3"
+                ) {
                   await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
                 }
 
                 // upload locally
                 if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-                  const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "images");
+                  const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media");
 
                   if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
                   if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId));
@@ -176,7 +215,7 @@ export class SetsService {
       }
     }
 
-    return cards;
+    return { cards, media };
   }
 
   /**
@@ -280,6 +319,107 @@ export class SetsService {
       include: {
         cards: true,
         author: true
+      }
+    });
+  }
+
+  /**
+   * Queries the database for a unique set media instance
+   *
+   * @param setMediaWhereUniqueInput Prisma `SetWhereUniqueInput` selector
+   *
+   * @returns Queried `Set` object
+   */
+  async setMedia(
+      setMediaWhereUniqueInput: Prisma.SetMediaWhereUniqueInput
+  ): Promise<SetMedia | null> {
+    return this.prisma.setMedia.findUnique({
+      where: setMediaWhereUniqueInput,
+      include: { set: true }
+    });
+  }
+
+  /**
+   * Queries the database for multiple set media instances
+   *
+   * @param params.skip Optional, Prisma skip selector
+   * @param params.take Optional, Prisma take selector
+   * @param params.cursor Optional, Prisma cursor selector
+   * @param params.where Optional, Prisma where selector
+   * @param params.orderBy Optional, Prisma orderBy selector
+   *
+   * @returns Array of queried `SetMedia` objects
+   */
+  async setMedias(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.SetMediaWhereUniqueInput;
+    where?: Prisma.SetMediaWhereInput;
+    orderBy?: Prisma.SetMediaOrderByWithRelationInput;
+  }): Promise<SetMedia[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.setMedia.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include: {
+        set: true
+      }
+    });
+  }
+
+  /**
+   * Creates a set media instance in the database
+   *
+   * @param data Prisma `SetMediaCreateInput` selector
+   *
+   * @returns Created `SetMedia` object
+   */
+  async createSetMedia(data: Prisma.SetMediaCreateInput): Promise<SetMedia> {
+    return this.prisma.setMedia.create({
+      data,
+      include: {
+        set: true
+      }
+    });
+  }
+
+  /**
+   * Updates a set media instance in the database
+   *
+   * @param params.where Prisma where selector
+   * @param params.data Prisma data selector
+   *
+   * @returns Updated `SetMedia` object
+   */
+  async updateSetMedia(params: {
+    where: Prisma.SetMediaWhereUniqueInput;
+    data: Prisma.SetMediaUpdateInput;
+  }): Promise<SetMedia> {
+    const { where, data } = params;
+    return this.prisma.setMedia.update({
+      data,
+      where,
+      include: {
+        set: true
+      }
+    });
+  }
+
+  /**
+   * Deletes a set media instance from the database
+   *
+   * @param where Prisma `SetWhereUniqueInput` selector
+   *
+   * @returns `SetMedia` object that was deleted
+   */
+  async deleteSetMedia(where: Prisma.SetMediaWhereUniqueInput): Promise<SetMedia> {
+    return this.prisma.setMedia.delete({
+      where,
+      include: {
+        set: true
       }
     });
   }

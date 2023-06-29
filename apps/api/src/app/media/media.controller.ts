@@ -31,7 +31,10 @@ export class MediaController {
       if (set.authorId !== userCookie.id) throw new NotFoundException();
     }
 
-    if (this.configService.get<string>("STORAGE_TYPE") === "S3") {
+    if (
+      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+      this.configService.get<string>("STORAGE_TYPE") === "S3"
+    ) {
       let file: GetObjectCommandOutput;
 
       try {
@@ -51,7 +54,7 @@ export class MediaController {
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "images", params.setId, params.file);
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", params.setId, params.file);
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {

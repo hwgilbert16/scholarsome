@@ -12,7 +12,6 @@ import {
 import { AlertComponent } from "../alert/alert.component";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { AngularEditorConfig } from "@kolkov/angular-editor";
 import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
@@ -45,39 +44,12 @@ export class CardComponent implements OnInit, AfterViewInit {
   @ViewChild("definition", { static: false }) definitionElement: ElementRef;
   @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
 
+  @ViewChild("editModal") modal: TemplateRef<HTMLElement>;
+
   // these two vars exist so that we can prevent the main card
   // from updating while a card is being edited
   protected mainTerm: string;
   protected mainDefinition: string;
-
-  protected readonly editorConfig: AngularEditorConfig = {
-    editable: true,
-    height: "20vh",
-    sanitize: true,
-    fonts: [
-      { class: "sans-serif", name: "Sans Serif" }
-    ],
-    toolbarHiddenButtons: [
-      [
-        "strikeThrough",
-        "justifyLeft",
-        "justifyCenter",
-        "justifyRight",
-        "justifyFull",
-        "indent",
-        "outdent",
-        "heading",
-        "fontName"
-      ],
-      [
-        "fontSize",
-        "backgroundColor",
-        "link",
-        "unlink",
-        "toggleEditorMode"
-      ]
-    ]
-  };
 
   protected modalRef?: BsModalRef;
   protected readonly faPenToSquare = faPenToSquare;
@@ -113,8 +85,8 @@ export class CardComponent implements OnInit, AfterViewInit {
     return this.mainDefinition;
   }
 
-  openModal(template: TemplateRef<HTMLElement>) {
-    this.modalRef = this.bsModalService.show(template, { class: "modal-xl" });
+  openEditModal() {
+    this.modalRef = this.bsModalService.show(this.modal, { class: "modal-xl" });
   }
 
   deleteCard() {

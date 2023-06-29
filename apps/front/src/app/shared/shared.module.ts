@@ -12,7 +12,6 @@ import { NotfoundComponent } from "./notfound/notfound.component";
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha";
 import { CardComponent } from "./card/card.component";
 import { SharedService } from "./shared.service";
-import { AngularEditorModule } from "@kolkov/angular-editor";
 import { QuillEditorComponent } from "ngx-quill";
 
 @NgModule({
@@ -27,7 +26,6 @@ import { QuillEditorComponent } from "ngx-quill";
     CommonModule,
     RecaptchaV3Module,
     RouterLink,
-    AngularEditorModule,
     QuillEditorComponent
   ],
   providers: [

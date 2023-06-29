@@ -138,33 +138,46 @@ export class SetsController {
 
     const uuid = crypto.randomUUID();
 
-    const cards = await this.setsService.decodeAnkiApkg(file.buffer, uuid);
-    if (!cards) throw new UnsupportedMediaTypeException();
+    const decoded = await this.setsService.decodeAnkiApkg(file.buffer, uuid);
+    if (!decoded) throw new UnsupportedMediaTypeException();
+
+    const create = await this.setsService.createSet({
+      id: uuid,
+      author: {
+        connect: {
+          email: author.email
+        }
+      },
+      title: body.title,
+      description: body.description,
+      private: body.private === "true",
+      cards: {
+        createMany: {
+          data: decoded.cards.map((c) => {
+            return {
+              index: c.index,
+              term: c.term,
+              definition: c.definition
+            };
+          })
+        }
+      }
+    });
+
+    for (const media of decoded.media) {
+      await this.setsService.createSetMedia({
+        set: {
+          connect: {
+            id: create.id
+          }
+        },
+        name: media
+      });
+    }
 
     return {
       status: "success",
-      data: await this.setsService.createSet({
-        id: uuid,
-        author: {
-          connect: {
-            email: author.email
-          }
-        },
-        title: body.title,
-        description: body.description,
-        private: body.private === "true",
-        cards: {
-          createMany: {
-            data: cards.map((c) => {
-              return {
-                index: c.index,
-                term: c.term,
-                definition: c.definition
-              };
-            })
-          }
-        }
-      })
+      data: create
     };
   }
 
@@ -186,12 +199,12 @@ export class SetsController {
 
     const uuid = crypto.randomUUID();
 
-    for (const card of body.cards) {
+    for (const [i, card] of body.cards.entries()) {
       const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, uuid);
-      if (scannedTerm) card.term = scannedTerm;
+      if (scannedTerm) body.cards[i].term = scannedTerm;
 
       const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, uuid);
-      if (scannedDefinition) card.definition = scannedDefinition;
+      if (scannedDefinition) body.cards[i].definition = scannedDefinition;
     }
 
     return {
@@ -238,12 +251,12 @@ export class SetsController {
 
     // we are overwriting the cards, entire new array is provided
     if (body.cards) {
-      for (const card of body.cards) {
+      for (const [i, card] of body.cards.entries()) {
         const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, set.id);
-        if (scannedTerm) card.term = scannedTerm;
+        if (scannedTerm) body.cards[i].term = scannedTerm;
 
         const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, set.id);
-        if (scannedDefinition) card.term = scannedDefinition;
+        if (scannedDefinition) body.cards[i].definition = scannedDefinition;
       }
 
       await this.setsService.updateSet({
@@ -295,6 +308,8 @@ export class SetsController {
   @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
+
+    await this.setsService.deleteSetMediaFiles(params.setId);
 
     return {
       status: "success",
