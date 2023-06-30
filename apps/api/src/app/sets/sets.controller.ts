@@ -165,10 +165,13 @@ export class SetsController {
     });
 
     for (const media of decoded.media) {
-      await this.setsService.createSetMedia({
-        set: {
+      const card = create.cards.find((c) => c.term.includes(media) || c.definition.includes(media));
+      if (!card) continue;
+
+      await this.cardsService.createCardMedia({
+        card: {
           connect: {
-            id: create.id
+            id: card.id
           }
         },
         name: media
@@ -198,39 +201,62 @@ export class SetsController {
     if (!author) throw new NotFoundException();
 
     const uuid = crypto.randomUUID();
+    let media = [];
 
     for (const [i, card] of body.cards.entries()) {
       const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, uuid);
-      if (scannedTerm) body.cards[i].term = scannedTerm;
+      if (scannedTerm) {
+        body.cards[i].term = scannedTerm.scanned;
+        media = [...scannedTerm.media];
+      }
 
       const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, uuid);
-      if (scannedDefinition) body.cards[i].definition = scannedDefinition;
+      if (scannedDefinition) {
+        body.cards[i].definition = scannedDefinition.scanned;
+        media = [...media, ...scannedDefinition.media];
+      }
+    }
+
+    const create = await this.setsService.createSet({
+      id: uuid,
+      author: {
+        connect: {
+          email: author.email
+        }
+      },
+      title: body.title,
+      description: body.description,
+      private: body.private,
+      cards: {
+        createMany: {
+          data: body.cards.map((c) => {
+            return {
+              index: c.index,
+              term: c.term,
+              definition: c.definition
+            };
+          })
+        }
+      }
+    });
+
+    for (const file of media) {
+      const card = create.cards.find((c) => c.term.includes(file) || c.definition.includes(file));
+      if (!card) continue;
+
+      await this.cardsService.createCardMedia({
+        card: {
+          connect: {
+            id: card.id
+          }
+        },
+        name: file
+      });
     }
 
     return {
       status: "success",
-      data: await this.setsService.createSet({
-        id: uuid,
-        author: {
-          connect: {
-            email: author.email
-          }
-        },
-        title: body.title,
-        description: body.description,
-        private: body.private,
-        cards: {
-          createMany: {
-            data: body.cards.map((c) => {
-              return {
-                index: c.index,
-                term: c.term,
-                definition: c.definition
-              };
-            })
-          }
-        }
-      })
+      data: create
     };
   }
 
@@ -249,14 +275,32 @@ export class SetsController {
 
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
+    let media = [];
+
     // we are overwriting the cards, entire new array is provided
     if (body.cards) {
       for (const [i, card] of body.cards.entries()) {
+        const completeCard = await this.cardsService.card({ id: card.id });
+        if (!completeCard) continue;
+
+        // delete removed media files
+        for (const media of completeCard.media) {
+          if (!card.term.includes(media.name) && !card.definition.includes(media.name)) {
+            await this.cardsService.deleteMedia(set.id, media.name);
+          }
+        }
+
         const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, set.id);
-        if (scannedTerm) body.cards[i].term = scannedTerm;
+        if (scannedTerm) {
+          body.cards[i].term = scannedTerm.scanned;
+          media = [...scannedTerm.media];
+        }
 
         const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, set.id);
-        if (scannedDefinition) body.cards[i].definition = scannedDefinition;
+        if (scannedDefinition) {
+          body.cards[i].definition = scannedDefinition.scanned;
+          media = [...media, ...scannedDefinition.media];
+        }
       }
 
       await this.setsService.updateSet({
@@ -273,29 +317,45 @@ export class SetsController {
       });
     }
 
+    const update = await this.setsService.updateSet({
+      where: {
+        id: set.id
+      },
+      data: {
+        title: body.title,
+        description: body.description,
+        private: body.private,
+        cards: body.cards ? {
+          createMany: {
+            data: body.cards.map((c) => {
+              return {
+                index: c.index,
+                term: c.term,
+                definition: c.definition
+              };
+            })
+          }
+        } : undefined
+      }
+    });
+
+    for (const file of media) {
+      const cardId = update.cards.find((c) => c.term.includes(file) || c.definition.includes(file));
+      if (!cardId) continue;
+
+      await this.cardsService.createCardMedia({
+        card: {
+          connect: {
+            id: cardId.id
+          }
+        },
+        name: file
+      });
+    }
+
     return {
       status: "success",
-      data: await this.setsService.updateSet({
-        where: {
-          id: set.id
-        },
-        data: {
-          title: body.title,
-          description: body.description,
-          private: body.private,
-          cards: body.cards ? {
-            createMany: {
-              data: body.cards.map((c) => {
-                return {
-                  index: c.index,
-                  term: c.term,
-                  definition: c.definition
-                };
-              })
-            }
-          } : undefined
-        }
-      })
+      data: update
     };
   }
 

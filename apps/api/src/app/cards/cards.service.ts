@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
-import { Prisma, Card as PrismaCard } from "@prisma/client";
-import { Card } from "@scholarsome/shared";
+import { Prisma, Card as PrismaCard, CardMedia as PrismaCardMedia } from "@prisma/client";
+import { Card, CardMedia } from "@scholarsome/shared";
 import * as sharp from "sharp";
 import * as crypto from "crypto";
 import * as fs from "fs";
@@ -29,8 +29,10 @@ export class CardsService {
    *
    * @returns The string with updated src values
    */
-  async scanAndUploadMedia(side: string, setId: string): Promise<string | false> {
+  async scanAndUploadMedia(side: string, setId: string): Promise<{ scanned: string; media: string[] } | false> {
     const matches = side.match(/<[^>]+src="([^">]+)"/g);
+
+    const media = [];
 
     if (matches) {
       let sources = Object.values(matches);
@@ -57,7 +59,10 @@ export class CardsService {
           extension = ".jpeg";
         }
 
-        const fileName = setId + "/" + crypto.randomUUID() + extension;
+        const name = crypto.randomUUID() + extension;
+        media.push(name);
+
+        const fileName = setId + "/" + name;
 
         // upload to s3
         if (
@@ -81,7 +86,24 @@ export class CardsService {
       }
     } else return false;
 
-    return side;
+    return { scanned: side, media };
+  }
+
+  async deleteMedia(setId: string, fileName: string) {
+    if (
+      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+      this.configService.get<string>("STORAGE_TYPE") === "S3"
+    ) {
+      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + setId + "/" + fileName });
+    }
+
+    if (this.configService.get<string>("STORAGE_TYPE") === "local") {
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", setId, fileName);
+
+      if (fs.existsSync(filePath)) {
+        fs.rmSync(filePath);
+      }
+    }
   }
 
   /**
@@ -96,7 +118,7 @@ export class CardsService {
   ): Promise<Card | null> {
     return this.prisma.card.findUnique({
       where: cardWhereUniqueInput,
-      include: { set: true }
+      include: { set: true, media: true }
     });
   }
 
@@ -127,7 +149,8 @@ export class CardsService {
       where,
       orderBy,
       include: {
-        set: true
+        set: true,
+        media: true
       }
     });
   }
@@ -174,6 +197,100 @@ export class CardsService {
    */
   async deleteCard(where: Prisma.CardWhereUniqueInput): Promise<PrismaCard> {
     return this.prisma.card.delete({
+      where
+    });
+  }
+
+  /**
+   * Queries the database for a unique cardMedia instance
+   *
+   * @param cardMediaWhereUniqueInput Prisma `CardMediaWhereUniqueInput` selector object
+   *
+   * @returns Queried `CardMedia` object
+   */
+  async cardMedia(
+      cardMediaWhereUniqueInput: Prisma.CardMediaWhereUniqueInput
+  ): Promise<CardMedia | null> {
+    return this.prisma.cardMedia.findUnique({
+      where: cardMediaWhereUniqueInput,
+      include: { card: true }
+    });
+  }
+
+
+  /**
+   * Queries the database for multiple cardMedia instances
+   *
+   * @param params.skip Optional, Prisma skip selector
+   * @param params.take Optional, Prisma take selector
+   * @param params.cursor Optional, Prisma cursor selector
+   * @param params.where Optional, Prisma where selector
+   * @param params.orderBy Optional, Prisma orderBy selector
+   *
+   * @returns Array of queried `CardMedia` objects
+   */
+  async cardMedias(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.CardMediaWhereUniqueInput;
+    where?: Prisma.CardMediaWhereInput;
+    orderBy?: Prisma.CardMediaOrderByWithRelationInput;
+  }): Promise<CardMedia[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.cardMedia.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+      include: {
+        card: true
+      }
+    });
+  }
+
+  /**
+   * Creates a cardMedia instance in the database
+   *
+   * @param data Prisma `CardMediaCreateInput` selector
+   *
+   * @returns Created `CardMedia` object
+   */
+  async createCardMedia(data: Prisma.CardMediaCreateInput): Promise<PrismaCardMedia> {
+    return this.prisma.cardMedia.create({
+      data
+    });
+  }
+
+  /**
+   * Updates a cardMedia instance in the database
+   *
+   * @param params.where Prisma where selector
+   * @param params.data Prisma data selector
+   *
+   * @returns Updated `CardMedia` object
+   */
+  async updateCardMedia(params: {
+    where: Prisma.CardMediaWhereUniqueInput;
+    data: Prisma.CardMediaUpdateInput;
+  }): Promise<PrismaCardMedia> {
+    const { where, data } = params;
+    return this.prisma.cardMedia.update({
+      data,
+      where
+    });
+  }
+
+
+  /**
+   * Deletes a cardMedia instance from the database
+   *
+   * @param where Prisma CardMediaWhereUniqueInput selector
+   *
+   * @returns `CardMedia` object that was deleted
+   */
+  async deleteCardMedia(where: Prisma.CardMediaWhereUniqueInput): Promise<PrismaCardMedia> {
+    return this.prisma.cardMedia.delete({
       where
     });
   }

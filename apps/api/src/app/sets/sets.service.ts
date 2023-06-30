@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
-import { AnkiCard, AnkiNote, Set, SetMedia } from "@scholarsome/shared";
+import { AnkiCard, AnkiNote, Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
@@ -129,7 +129,7 @@ export class SetsService {
 
       // font -> p tag polyfill
       split[0] = split[0].replace("<font", "<p").replace("</font>", "</p>");
-      split[1] = split[0].replace("<font", "<p").replace("</font>", "</p>");
+      split[1] = split[1].replace("<font", "<p").replace("</font>", "</p>");
 
       cards.push({
         term: split[0],
@@ -138,6 +138,8 @@ export class SetsService {
       });
     }
 
+    console.log(cards);
+
     db.close();
 
     // by this point we already know all cards are compatible
@@ -145,12 +147,12 @@ export class SetsService {
       const mediaLegend: string[][] = Object.entries(JSON.parse(zip.readFile("media").toString()));
 
       for (const [i, card] of cards.entries()) {
-        const cardMatches = card.term.match(/<[^>]+src="([^">]+)"/g);
+        const termMatches = card.term.match(/<[^>]+src="([^">]+)"/g);
         const definitionMatches = card.definition.match(/<[^>]+src="([^">]+)"/g);
 
         let sources = [];
 
-        if (cardMatches) sources = Object.values(cardMatches);
+        if (termMatches) sources = Object.values(termMatches);
         if (definitionMatches) sources = [...sources, ...Object.values(definitionMatches)];
 
         // if there are any sources
@@ -183,7 +185,7 @@ export class SetsService {
                 const name = crypto.randomUUID();
                 media.push(name + extension);
 
-                const fileName = setId + "/" + name + "." + extension;
+                const fileName = setId + "/" + name + extension;
 
                 // upload to s3
                 if (
@@ -319,107 +321,6 @@ export class SetsService {
       include: {
         cards: true,
         author: true
-      }
-    });
-  }
-
-  /**
-   * Queries the database for a unique set media instance
-   *
-   * @param setMediaWhereUniqueInput Prisma `SetWhereUniqueInput` selector
-   *
-   * @returns Queried `Set` object
-   */
-  async setMedia(
-      setMediaWhereUniqueInput: Prisma.SetMediaWhereUniqueInput
-  ): Promise<SetMedia | null> {
-    return this.prisma.setMedia.findUnique({
-      where: setMediaWhereUniqueInput,
-      include: { set: true }
-    });
-  }
-
-  /**
-   * Queries the database for multiple set media instances
-   *
-   * @param params.skip Optional, Prisma skip selector
-   * @param params.take Optional, Prisma take selector
-   * @param params.cursor Optional, Prisma cursor selector
-   * @param params.where Optional, Prisma where selector
-   * @param params.orderBy Optional, Prisma orderBy selector
-   *
-   * @returns Array of queried `SetMedia` objects
-   */
-  async setMedias(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.SetMediaWhereUniqueInput;
-    where?: Prisma.SetMediaWhereInput;
-    orderBy?: Prisma.SetMediaOrderByWithRelationInput;
-  }): Promise<SetMedia[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.setMedia.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      include: {
-        set: true
-      }
-    });
-  }
-
-  /**
-   * Creates a set media instance in the database
-   *
-   * @param data Prisma `SetMediaCreateInput` selector
-   *
-   * @returns Created `SetMedia` object
-   */
-  async createSetMedia(data: Prisma.SetMediaCreateInput): Promise<SetMedia> {
-    return this.prisma.setMedia.create({
-      data,
-      include: {
-        set: true
-      }
-    });
-  }
-
-  /**
-   * Updates a set media instance in the database
-   *
-   * @param params.where Prisma where selector
-   * @param params.data Prisma data selector
-   *
-   * @returns Updated `SetMedia` object
-   */
-  async updateSetMedia(params: {
-    where: Prisma.SetMediaWhereUniqueInput;
-    data: Prisma.SetMediaUpdateInput;
-  }): Promise<SetMedia> {
-    const { where, data } = params;
-    return this.prisma.setMedia.update({
-      data,
-      where,
-      include: {
-        set: true
-      }
-    });
-  }
-
-  /**
-   * Deletes a set media instance from the database
-   *
-   * @param where Prisma `SetWhereUniqueInput` selector
-   *
-   * @returns `SetMedia` object that was deleted
-   */
-  async deleteSetMedia(where: Prisma.SetMediaWhereUniqueInput): Promise<SetMedia> {
-    return this.prisma.setMedia.delete({
-      where,
-      include: {
-        set: true
       }
     });
   }

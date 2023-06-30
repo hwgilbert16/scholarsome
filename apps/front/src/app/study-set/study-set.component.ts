@@ -151,7 +151,7 @@ export class StudySetComponent implements OnInit {
 
       this.set.description = this.editDescription.nativeElement.value;
 
-      await this.sets.updateSet({
+      const updated = await this.sets.updateSet({
         id: this.set.id,
         description: this.editDescription.nativeElement.value,
         private: this.privateCheck.nativeElement.checked,
@@ -164,6 +164,12 @@ export class StudySetComponent implements OnInit {
           };
         })
       });
+
+      if (!updated) return;
+
+      for (let i = 0; i < updated.cards.length; i++) {
+        this.cards[i].instance.cardId = updated.cards[i].id;
+      }
     }
   }
 
