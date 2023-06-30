@@ -73,7 +73,7 @@ Quill.register("modules/imageResize", ImageResize);
           [{ "header": 1 }, { "header": 2 }],
           [{ color: [] }, { background: [] }],
           [{ "script": "sub" }, { "script": "super" }],
-          ["link", "image", "video"],
+          ["link", "image"],
           ["clean"]
         ]
       }

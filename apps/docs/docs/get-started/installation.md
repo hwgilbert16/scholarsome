@@ -52,6 +52,7 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | DATABASE_PASSWORD               | **Required.** Internal password for databases. Select something strong, as you will not need to know this.                                                             |
 | JWT_SECRET                      | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
 | HTTP_PORT                       | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| STORAGE_TYPE                    | **Required.** The method that Scholarsome will store media files, either `local` or `s3`.                                                                              |
 | SMTP_HOST                       | Host to access the SMTP server.                                                                                                                                        |
 | SMTP_PORT                       | Port to access the SMTP server.                                                                                                                                        |
 | SMTP_USERNAME                   | Username to access the SMTP server.                                                                                                                                    |
@@ -62,6 +63,12 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | SCHOLARSOME_RECAPTCHA_SITE      | reCAPTCHA site key.                                                                                                                                                    |
 | SCHOLARSOME_RECAPTCHA_SECRET    | reCAPTCHA secret key.                                                                                                                                                  |
 | SCHOLARSOME_HEAD_SCRIPTS_BASE64 | Base64 encoded HTML of any scripts that should be included in the head tag for every page.                                                                             |
+| STORAGE_LOCAL_DIR               | Required if storing files locally. The absolute filepath pointing to the directory where Scholarsome should store media files.                                         |
+| S3_STORAGE_ENDPOINT             | Required if storing files in S3. The endpoint of the S3 service.                                                                                                       |
+| S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Access key for the S3 service.                                                                                                        |
+| S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
+| S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Region for the S3 service.                                                                                                            |
+| S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
 
 
 Start the service in a detached state.

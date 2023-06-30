@@ -128,8 +128,8 @@ export class SetsService {
       if (definitionAudio) split[1] = split[1].replace(definitionAudio[0], `<audio controls><source src="${definitionAudio[1]}"></audio>`);
 
       // font -> p tag polyfill
-      split[0] = split[0].replace("<font", "<p").replace("</font>", "</p>");
-      split[1] = split[1].replace("<font", "<p").replace("</font>", "</p>");
+      split[0] = split[0].replaceAll("<font", "<span").replaceAll("</font>", "</span>");
+      split[1] = split[1].replaceAll("<font", "<span").replaceAll("</font>", "</span>");
 
       cards.push({
         term: split[0],
@@ -137,8 +137,6 @@ export class SetsService {
         index: i
       });
     }
-
-    console.log(cards);
 
     db.close();
 

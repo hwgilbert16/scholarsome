@@ -1,6 +1,6 @@
 {
   "name": "scholarsome",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "ng": "nx",
@@ -13,6 +13,7 @@
     "start": "nx serve",
     "start:front": "npx nx serve --host=0.0.0.0",
     "start:api": "npx nx serve api",
+    "start:docs": "npx nx serve docs",
     "start:dev": "concurrently -p=\"{name}\" -n=\"Angular,NestJS\" -c=\"green,blue\" \"npm run start:front\" \"npm run start:api\"",
     "serve:node": "npm run migrate && node dist/apps/api/main.js",
     "serve:pm2": "npm run migrate && pm2 start dist/apps/api/main.js --name \"scholarsome\""
