@@ -20,7 +20,7 @@ https://scholarsome.com
 
 ## Introduction
 
-Scholarsome is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
+Scholarsome <a href="http://ipa-reader.xyz/?text=%CB%88sk%C3%A4l%C9%99rs(%C9%99)m%2F" target="_blank">(pronounced ˈskälərs(ə)m/)</a> is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
 
 While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
 
@@ -29,9 +29,9 @@ While other services have begun to paywall core functionalities, Scholarsome int
 Implemented features include:
 
 - Create your own study sets ✅
+- Import sets from Anki and Quizlet ✅
 - Study flashcards in either traditional or progressive mode ✅
 - Use quizzes to test yourself ✅
-- Import created sets from Quizlet ✅
 - Edit your sets on the fly ✅
 - Make sets private if studying with others ✅
 

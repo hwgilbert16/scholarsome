@@ -12,12 +12,12 @@
         <li class="btn-group" dropdown>
           <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle fs-5 h-100 w-25"
                   aria-controls="dropdown-basic">
-            Create <span class="caret"></span>
+            Create <span class="badge bg-white text-primary">New</span> <span class="caret"></span>
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
             <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="!this.cookieService.get('authenticated') ? this.modalRef = loginModal.open() : ''" [routerLink]="this.cookieService.get('authenticated') ? 'create/set' : undefined"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
             <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated')? this.modalRef = quizletImportModal.open() : this.modalRef = loginModal.open()"><fa-icon [icon]="faQ" class="quizlet-color"></fa-icon> &nbsp;From Quizlet</a></li>
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated')? this.modalRef = ankiImportModal.open() :this.modalRef = loginModal.open()"><fa-icon [icon]="faStar" class="anki-color"></fa-icon> &nbsp;From Anki</a></li>
+            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated')? this.modalRef = ankiImportModal.open() :this.modalRef = loginModal.open()"><fa-icon [icon]="faStar" class="anki-color"></fa-icon> &nbsp;From Anki <span class="badge bg-primary text-white">New</span></a></li>
           </ul>
         </li>
       </ul>
