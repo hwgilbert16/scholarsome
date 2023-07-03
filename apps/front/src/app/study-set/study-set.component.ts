@@ -166,10 +166,13 @@ export class StudySetComponent implements OnInit {
       });
 
       if (!updated) return;
+      this.set = updated;
 
       for (let i = 0; i < updated.cards.length; i++) {
         this.cards[i].instance.cardId = updated.cards[i].id;
       }
+
+      this.viewCards();
     }
   }
 

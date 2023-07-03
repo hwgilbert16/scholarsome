@@ -30,6 +30,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Multer } from "multer";
 import * as crypto from "crypto";
 import { CardsService } from "../cards/cards.service";
+import { CardMedia } from "@prisma/client";
 
 @Controller("sets")
 export class SetsController {
@@ -201,19 +202,19 @@ export class SetsController {
     if (!author) throw new NotFoundException();
 
     const uuid = crypto.randomUUID();
-    let media = [];
+    const media: string[] = [];
 
     for (const [i, card] of body.cards.entries()) {
       const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, uuid);
       if (scannedTerm) {
         body.cards[i].term = scannedTerm.scanned;
-        media = [...scannedTerm.media];
+        media.push(...scannedTerm.media);
       }
 
       const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, uuid);
       if (scannedDefinition) {
         body.cards[i].definition = scannedDefinition.scanned;
-        media = [...media, ...scannedDefinition.media];
+        media.push(...scannedDefinition.media);
       }
     }
 
@@ -275,34 +276,42 @@ export class SetsController {
 
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
 
-    let media = [];
+    const newMedia: string[] = [];
+    const existingMedias: CardMedia[] = [];
 
-    // we are overwriting the cards, entire new array is provided
     if (body.cards) {
+      // need to get the cards here before any are modified in the queries below
+      const existingCards = await this.cardsService.cards({ where: { setId: set.id } });
+
       for (const [i, card] of body.cards.entries()) {
         const completeCard = await this.cardsService.card({ id: card.id });
-        if (!completeCard) continue;
-
-        // delete removed media files
-        for (const media of completeCard.media) {
-          if (!card.term.includes(media.name) && !card.definition.includes(media.name)) {
-            await this.cardsService.deleteMedia(set.id, media.name);
+        if (completeCard) {
+          // for when media is deleted using the text editor
+          // remove the associated files
+          for (const mediaFile of completeCard.media) {
+            existingMedias.push(mediaFile);
+            if (!card.term.includes(mediaFile.name) && !card.definition.includes(mediaFile.name)) {
+              await this.cardsService.deleteCardMedia({ id: mediaFile.id });
+              await this.cardsService.deleteMedia(set.id, mediaFile.name);
+            }
           }
         }
 
         const scannedTerm = await this.cardsService.scanAndUploadMedia(card.term, set.id);
         if (scannedTerm) {
           body.cards[i].term = scannedTerm.scanned;
-          media = [...scannedTerm.media];
+          newMedia.push(...scannedTerm.media);
         }
 
         const scannedDefinition = await this.cardsService.scanAndUploadMedia(card.definition, set.id);
         if (scannedDefinition) {
           body.cards[i].definition = scannedDefinition.scanned;
-          media = [...media, ...scannedDefinition.media];
+          newMedia.push(...scannedDefinition.media);
         }
       }
 
+      // remove all the cards linked to the set
+      // as we will be recreating them all
       await this.setsService.updateSet({
         where: {
           id: set.id
@@ -315,6 +324,21 @@ export class SetsController {
           }
         }
       });
+
+      // for cards that have been entirely deleted
+      // remove any media files they have attached to them
+      for (const card of existingCards) {
+        if (card && card.media && card.media.length > 0) {
+          for (const mediaFile of card.media) {
+            if (
+              !body.cards.find((c) => c.term.includes(mediaFile.name) || c.definition.includes(mediaFile.name)
+              )
+            ) {
+              await this.cardsService.deleteMedia(set.id, mediaFile.name);
+            }
+          }
+        }
+      }
     }
 
     const update = await this.setsService.updateSet({
@@ -339,17 +363,33 @@ export class SetsController {
       }
     });
 
-    for (const file of media) {
-      const cardId = update.cards.find((c) => c.term.includes(file) || c.definition.includes(file));
-      if (!cardId) continue;
+    // create media entries for new media
+    for (const file of newMedia) {
+      const card = update.cards.find((c) => c.term.includes(file) || c.definition.includes(file));
+      if (!card) continue;
 
       await this.cardsService.createCardMedia({
         card: {
           connect: {
-            id: cardId.id
+            id: card.id
           }
         },
         name: file
+      });
+    }
+
+    // recreate media entries for existing media
+    for (const file of existingMedias) {
+      const card = update.cards.find((c) => c.term.includes(file.name) || c.definition.includes(file.name));
+      if (!card) continue;
+
+      await this.cardsService.createCardMedia({
+        card: {
+          connect: {
+            id: card.id
+          }
+        },
+        name: file.name
       });
     }
 

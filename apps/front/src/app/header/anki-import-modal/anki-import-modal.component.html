@@ -9,7 +9,7 @@
       <div class="row text-center justify-content-center">
         <img src="assets/header/anki.jpeg" class="mb-2 anki-import-logo">
         <div class="fs-3 mb-2">Import a study set from Anki</div>
-        <div class="fs-6 text-secondary">If you've created a set in Anki, you can import it to Scholarsome. Click <a href="https://docs.ankiweb.net/exporting.html#deck-apkg" target="_blank">here</a> to view how to export your sets as a .apkg file.<br><br>Note that, at the moment, only notes with a traditional front and back are supported.</div>
+        <div class="fs-6 text-secondary">If you've created a set in Anki, you can import it to Scholarsome. Click <a href="https://docs.ankiweb.net/exporting.html#deck-apkg" target="_blank">here</a> to view how to export your sets as a .apkg file.<br><br>Note that, at the moment, only notes with a traditional front and back are supported. Multiple fields will be supported in a future release.</div>
       </div>
     </div>
     <hr>
@@ -29,6 +29,7 @@
         <div *ngIf="response === 'incompatible'" class="form-text text-danger">The note types in this .apkg are not currently compatible with Scholarsome.</div>
       </div>
       <div class="modal-footer">
+        <span *ngIf="uploading" class="text-secondary">Uploading media, this may take a minute...</span>
         <button type="submit" class="btn btn-primary" [disabled]="clicked">
           <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Import</button>
       </div>

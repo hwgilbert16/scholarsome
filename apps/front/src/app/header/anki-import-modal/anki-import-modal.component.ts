@@ -24,6 +24,7 @@ export class AnkiImportModalComponent {
 
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
 
+  protected uploading = false;
   protected clicked = false;
   protected response: string;
   protected file: File | null = null;
@@ -41,6 +42,10 @@ export class AnkiImportModalComponent {
 
     if (!this.file) return;
 
+    setTimeout(() => {
+      if (this.response !== "incompatible") this.uploading = true;
+    }, 3000);
+
     const set = await this.setsService.createSetFromApkg({
       title: form.value["title"],
       description: form.value["description"],
@@ -53,6 +58,8 @@ export class AnkiImportModalComponent {
     } else {
       this.response = "incompatible";
       this.clicked = false;
+      this.file = null;
+      this.uploading = false;
       return;
     }
   }
