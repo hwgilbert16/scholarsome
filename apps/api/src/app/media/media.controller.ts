@@ -17,7 +17,7 @@ export class MediaController {
     private readonly configService: ConfigService
   ) {}
 
-  @Get("/:setId/:file")
+  @Get("/sets/:setId/:file")
   async getFile(@Param() params: { setId: string; file: string; }, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
     const set = await this.setsService.set({
       id: params.setId
@@ -39,7 +39,7 @@ export class MediaController {
 
       try {
         file = await this.s3.getObject({
-          Key: "media/" + params.setId + "/" + params.file,
+          Key: "media/sets/" + params.setId + "/" + params.file,
           Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
         });
       } catch (e) {
@@ -54,7 +54,7 @@ export class MediaController {
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", params.setId, params.file);
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", params.setId, params.file);
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {

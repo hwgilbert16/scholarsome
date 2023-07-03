@@ -33,8 +33,9 @@
       <div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
         <div class="d-flex align-items-center">
+          <div class="text-danger" *ngIf="uploadTooLarge">The upload size cannot exceed 30 megabytes.</div>
           <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" (click)="saveCards()">Save</button>
-          <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards(); deleteClicked = false">Cancel</button>
+          <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards(); deleteClicked = false; uploadTooLarge = false;">Cancel</button>
         </div>
       </div>
     </div>

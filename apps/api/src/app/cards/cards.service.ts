@@ -69,12 +69,12 @@ export class CardsService {
           this.configService.get<string>("STORAGE_TYPE") === "s3" ||
           this.configService.get<string>("STORAGE_TYPE") === "S3"
         ) {
-          await this.s3.putObject({ Body: decoded, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
+          await this.s3.putObject({ Body: decoded, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + fileName });
         }
 
         // upload locally
         if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-          const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media");
+          const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets");
 
           if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
           if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId));
@@ -82,7 +82,7 @@ export class CardsService {
           fs.writeFileSync(path.join(filePath, fileName), decoded);
         }
 
-        side = side.replace(source, "/api/media/" + fileName);
+        side = side.replace(source, "/api/media/sets/" + fileName);
       }
     } else return false;
 
@@ -94,11 +94,11 @@ export class CardsService {
       this.configService.get<string>("STORAGE_TYPE") === "s3" ||
       this.configService.get<string>("STORAGE_TYPE") === "S3"
     ) {
-      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + setId + "/" + fileName });
+      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId + "/" + fileName });
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", setId, fileName);
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId, fileName);
 
       if (fs.existsSync(filePath)) {
         fs.rmSync(filePath);

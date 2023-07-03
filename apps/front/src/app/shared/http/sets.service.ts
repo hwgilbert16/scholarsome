@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 import { lastValueFrom, Observable } from "rxjs";
 import { ApiResponse, Set } from "@scholarsome/shared";
 
@@ -163,8 +163,8 @@ export class SetsService {
       term: string;
       definition: string;
     }[];
-  }): Promise<Set | null> {
-    let set: ApiResponse<Set> | undefined;
+  }): Promise<Set | "tooLarge" | null> {
+    let set: HttpResponse<ApiResponse<Set>> | undefined;
 
     try {
       set = await lastValueFrom(this.http.put<ApiResponse<Set>>("/api/sets/" + body.id, {
@@ -172,13 +172,15 @@ export class SetsService {
         description: body.description,
         private: body.private,
         cards: body.cards
-      }));
+      }, { observe: "response" }));
     } catch (e) {
       return null;
     }
 
-    if (set.status === "success") {
-      return set.data;
+    if (set.status === 413) {
+      return "tooLarge";
+    } else if (set.body && set.body.status === "success") {
+      return set.body.data;
     } else return null;
   }
 

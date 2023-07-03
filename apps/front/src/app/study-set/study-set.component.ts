@@ -48,6 +48,8 @@ export class StudySetComponent implements OnInit {
   cards: ComponentRef<CardComponent>[] = [];
   set: Set;
 
+  uploadTooLarge = false;
+
   deleteClicked = false;
 
   faChartLine = faChartLine;
@@ -165,6 +167,10 @@ export class StudySetComponent implements OnInit {
         })
       });
 
+      if (updated === "tooLarge") {
+        this.uploadTooLarge = true;
+        return;
+      }
       if (!updated) return;
       this.set = updated;
 

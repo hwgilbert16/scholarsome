@@ -36,7 +36,7 @@ export class SetsService {
       this.configService.get<string>("STORAGE_TYPE") === "s3" ||
       this.configService.get<string>("STORAGE_TYPE") === "S3"
     ) {
-      const listedObjects = await this.s3.listObjectsV2( { Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Prefix: "media/" + setId } );
+      const listedObjects = await this.s3.listObjectsV2( { Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Prefix: "media/sets/" + setId } );
       if (!listedObjects.Contents || listedObjects.Contents.length === 0) return;
 
       const objects: { Key: string }[] = [];
@@ -46,11 +46,11 @@ export class SetsService {
       }
 
       await this.s3.deleteObjects({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Delete: { Objects: objects } });
-      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + setId });
+      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId });
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", setId);
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId);
 
       if (!fs.existsSync(filePath)) return;
       fs.rmSync(filePath, { recursive: true, force: true });
@@ -190,12 +190,12 @@ export class SetsService {
                   this.configService.get<string>("STORAGE_TYPE") === "s3" ||
                   this.configService.get<string>("STORAGE_TYPE") === "S3"
                 ) {
-                  await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/" + fileName });
+                  await this.s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + fileName });
                 }
 
                 // upload locally
                 if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-                  const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media");
+                  const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets");
 
                   if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
                   if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId));
@@ -204,8 +204,8 @@ export class SetsService {
                 }
 
                 // replace src with new fileName
-                cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/media/" + fileName);
-                cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/media/" + fileName);
+                cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/media/sets/" + fileName);
+                cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/media/sets/" + fileName);
 
                 break;
               }
