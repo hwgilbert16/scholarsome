@@ -21,13 +21,19 @@
         "assets": [
           "apps/front/src/favicon.ico",
           "apps/front/src/assets",
-          "apps/front/src/robots.txt"
+          "apps/front/src/robots.txt",
+          {
+            "glob": "**/*",
+            "input": "./node_modules/@kolkov/angular-editor/assets/",
+            "output": "./assets/fonts/"
+          }
         ],
         "styles": [
           "apps/front/src/styles.scss"
         ],
         "scripts": [
-          "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+          "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+          "node_modules/quill/dist/quill.min.js"
         ],
         "ngxEnv": {
           "prefix": "SCHOLARSOME_"
@@ -39,8 +45,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "1mb",
+              "maximumError": "1.5mb"
             },
             {
               "type": "anyComponentStyle",

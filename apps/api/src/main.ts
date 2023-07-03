@@ -6,6 +6,7 @@ import * as https from "https";
 import * as http from "http";
 import * as express from "express";
 import { ExpressAdapter } from "@nestjs/platform-express";
+import * as compression from "compression";
 
 async function bootstrap() {
   const server = express();
@@ -13,8 +14,12 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, disableErrorMessages: process.env.NODE_ENV === "production" }));
 
-  app.setGlobalPrefix("api");
+  app.setGlobalPrefix("api", { exclude: ["assets/images/(.*)"] });
+
   app.use(cookieParser());
+  app.use(compression());
+  app.use(express.json({ limit: "30mb" }));
+  app.use(express.urlencoded({ limit: "30mb" }));
 
   if (
     process.env.SSL_KEY_BASE64 && process.env.SSL_KEY_BASE64.length > 0 &&

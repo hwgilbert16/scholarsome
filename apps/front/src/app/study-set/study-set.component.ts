@@ -1,4 +1,11 @@
-import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
+import {
+  Component,
+  ComponentRef,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
@@ -40,6 +47,8 @@ export class StudySetComponent implements OnInit {
 
   cards: ComponentRef<CardComponent>[] = [];
   set: Set;
+
+  uploadTooLarge = false;
 
   deleteClicked = false;
 
@@ -144,7 +153,7 @@ export class StudySetComponent implements OnInit {
 
       this.set.description = this.editDescription.nativeElement.value;
 
-      await this.sets.updateSet({
+      const updated = await this.sets.updateSet({
         id: this.set.id,
         description: this.editDescription.nativeElement.value,
         private: this.privateCheck.nativeElement.checked,
@@ -157,6 +166,19 @@ export class StudySetComponent implements OnInit {
           };
         })
       });
+
+      if (updated === "tooLarge") {
+        this.uploadTooLarge = true;
+        return;
+      }
+      if (!updated) return;
+      this.set = updated;
+
+      for (let i = 0; i < updated.cards.length; i++) {
+        this.cards[i].instance.cardId = updated.cards[i].id;
+      }
+
+      this.viewCards();
     }
   }
 

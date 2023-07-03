@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponse } from "@angular/common/http";
 import { lastValueFrom, Observable } from "rxjs";
 import { ApiResponse, Set } from "@scholarsome/shared";
 
@@ -104,6 +104,41 @@ export class SetsService {
   }
 
   /**
+   * Makes a request to create a set from an Anki .apkg file
+   *
+   * @param body.title Title of the set
+   * @param body.description Optional, description of the set
+   * @param body.private Whether the set should be publicly visible
+   * @param body.file The .apkg file to be uploaded
+   *
+   * @returns Created `Set` object
+   */
+  async createSetFromApkg(body: {
+    title: string;
+    description?: string;
+    private: boolean;
+    file: File
+  }): Promise<Set | null> {
+    let set: ApiResponse<Set> | undefined;
+
+    const formData = new FormData();
+    formData.append("title", body.title);
+    if (body.description) formData.append("description", body.description);
+    formData.append("private", body.private.toString());
+    formData.append("file", body.file);
+
+    try {
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/apkg", formData));
+    } catch (e) {
+      return null;
+    }
+
+    if (set.status === "success") {
+      return set.data;
+    } else return null;
+  }
+
+  /**
    * Makes a request to update a set
    *
    * @param body.title Title of the set
@@ -128,8 +163,8 @@ export class SetsService {
       term: string;
       definition: string;
     }[];
-  }): Promise<Set | null> {
-    let set: ApiResponse<Set> | undefined;
+  }): Promise<Set | "tooLarge" | null> {
+    let set: HttpResponse<ApiResponse<Set>> | undefined;
 
     try {
       set = await lastValueFrom(this.http.put<ApiResponse<Set>>("/api/sets/" + body.id, {
@@ -137,13 +172,15 @@ export class SetsService {
         description: body.description,
         private: body.private,
         cards: body.cards
-      }));
+      }, { observe: "response" }));
     } catch (e) {
       return null;
     }
 
-    if (set.status === "success") {
-      return set.data;
+    if (set.status === 413) {
+      return "tooLarge";
+    } else if (set.body && set.body.status === "success") {
+      return set.body.data;
     } else return null;
   }
 

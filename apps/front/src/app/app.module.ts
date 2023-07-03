@@ -34,6 +34,21 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { CommonModule } from "@angular/common";
 import { ProfileModule } from "./profile/profile.module";
 import { HeadScriptsComponent } from "./head-scripts/head-scripts.component";
+import { QuillConfigModule, QuillModule } from "ngx-quill";
+import { HeaderModule } from "./header/header.module";
+
+// there's something weird that needs to be done with the webpack config
+// to get this to work the correct way
+// for now, a ts-ignore works fine
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as QuillNamespace from "quill";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Quill: any = QuillNamespace;
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import ImageResize from "quill-image-resize-module";
+Quill.register("modules/imageResize", ImageResize);
 
 @NgModule({
   declarations: [AppComponent, HeadScriptsComponent],
@@ -49,7 +64,24 @@ import { HeadScriptsComponent } from "./head-scripts/head-scripts.component";
     AppRoutingModule,
     BrowserAnimationsModule,
     CommonModule,
-    ProfileModule
+    ProfileModule,
+    HeaderModule,
+    QuillModule.forRoot(),
+    QuillConfigModule.forRoot({
+      modules: {
+        imageResize: true,
+        toolbar: [
+          ["bold", "italic", "underline", "strike"],
+          ["code-block"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ "header": 1 }, { "header": 2 }],
+          [{ color: [] }, { background: [] }],
+          [{ "script": "sub" }, { "script": "super" }],
+          ["link", "image"],
+          ["clean"]
+        ]
+      }
+    })
   ],
   providers: [],
   bootstrap: [AppComponent, HeadScriptsComponent]

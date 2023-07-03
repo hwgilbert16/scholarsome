@@ -79,12 +79,35 @@ export class CardsController {
   @UseGuards(AuthenticatedGuard, CreateCardGuard)
   @Post()
   async createCard(@Body() body: CreateCardDto): Promise<ApiResponse<Card>> {
+    let media = [];
+
+    const termScanned = await this.cardsService.scanAndUploadMedia(body.term, body.setId);
+    if (termScanned) {
+      body.term = termScanned.scanned;
+      media = [...termScanned.media];
+    }
+
+    const definitionScanned = await this.cardsService.scanAndUploadMedia(body.definition, body.setId);
+    if (definitionScanned) {
+      body.definition = definitionScanned.scanned;
+      media = [...media, ...definitionScanned.media];
+    }
+
     return {
       status: "success",
       data: await this.cardsService.createCard({
         index: body.index,
         term: body.term,
         definition: body.definition,
+        media: {
+          createMany: {
+            data: media.map((c) => {
+              return {
+                name: c
+              };
+            })
+          }
+        },
         set: {
           connect: {
             id: body.setId
@@ -102,6 +125,53 @@ export class CardsController {
   @UseGuards(AuthenticatedGuard, UpdateCardGuard)
   @Put(":cardId")
   async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto): Promise<ApiResponse<Card>> {
+    const card = await this.cardsService.card({ id: params.cardId });
+    if (!card) throw new NotFoundException();
+
+    let media = [];
+
+    // there's likely a better way to write the media deletion checking
+    // but for now the implementation here is sufficient
+    let mediaChecked = false;
+
+    if (body.term) {
+      const termScanned = await this.cardsService.scanAndUploadMedia(body.term, card.setId);
+      if (termScanned) {
+        body.term = termScanned.scanned;
+        media = [...termScanned.media];
+      }
+
+      for (const media of card.media) {
+        mediaChecked = true;
+
+        if (!body.definition && !body.term.includes(media.name)) {
+          await this.cardsService.deleteMedia(card.setId, media.name);
+        } else if (
+          body.definition &&
+          !body.definition.includes(media.name) &&
+          !body.term.includes(media.name)
+        ) {
+          await this.cardsService.deleteMedia(card.setId, media.name);
+        }
+      }
+    }
+
+    if (body.definition) {
+      const definitionScanned = await this.cardsService.scanAndUploadMedia(body.definition, card.setId);
+      if (definitionScanned) {
+        body.definition = definitionScanned.scanned;
+        media = [...media, ...definitionScanned.media];
+      }
+
+      if (!mediaChecked) {
+        for (const media of card.media) {
+          if (!body.definition.includes(media.name)) {
+            await this.cardsService.deleteMedia(card.setId, media.name);
+          }
+        }
+      }
+    }
+
     return {
       status: "success",
       data: await this.cardsService.updateCard({
@@ -111,7 +181,16 @@ export class CardsController {
         data: {
           index: body.index,
           term: body.term,
-          definition: body.definition
+          definition: body.definition,
+          media: {
+            createMany: {
+              data: media.map((c) => {
+                return {
+                  name: c
+                };
+              })
+            }
+          }
         }
       })
     };

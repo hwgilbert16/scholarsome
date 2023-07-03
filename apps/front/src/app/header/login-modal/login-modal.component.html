@@ -1,0 +1,36 @@
+<ng-template #modal>
+  <div class="modal-header bg-white">
+    <h4 class="modal-title pull-left">Log in</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form class="mx-3" (ngSubmit)="submit(loginForm)" #loginForm="ngForm" ngNativeValidate>
+      <div class="mb-3">
+        <label for="login-email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="login-email" name="email" required ngModel>
+        <div *ngIf="verificationResult" class="form-text text-success">Your email has been successfully verified. You may now login.</div>
+        <div *ngIf="response === ApiResponseOptions.Error" class="form-text text-danger">There was an issue with login.</div>
+        <div *ngIf="response === ApiResponseOptions.Incorrect" class="form-text text-danger">The email or password is incorrect.</div>
+        <div *ngIf="response === ApiResponseOptions.Ratelimit" class="form-text text-danger">You are being rate limited.</div>
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <label for="login-password" class="form-label">Password</label>
+          <a class="form-text" (click)="modalRef?.hide(); modalService.modal.next('forgot-password-open')">Forgot?</a>
+        </div>
+        <input type="password" class="form-control" id="login-password" name="password" required ngModel>
+        <div class="form-text recaptcha-text">This site is protected by reCAPTCHA and the Google
+          <a href="https://policies.google.com/privacy">Privacy Policy</a> and
+          <a href="https://policies.google.com/terms">Terms of Service</a> apply.</div>
+      </div>
+      <div class="form-text text-center mb-3">Don't have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); modalService.modal.next('register-open')" class="text-primary">Sign up.</a></div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" [disabled]="clicked">
+          <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Log in</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
