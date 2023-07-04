@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   redis:
-    image: redis
+    image: redis:latest
     expose:
       - "6379:6379"
     command: "redis-server --save 20 1 --requirepass ${DATABASE_PASSWORD}"
@@ -9,7 +9,7 @@ services:
       - redis:/data
     restart: always
   mariadb:
-    image: mariadb
+    image: mariadb:latest
     expose:
       - "3306:3306"
     environment:
@@ -22,7 +22,7 @@ services:
       - mariadb:/var/lib/mysql
     restart: always
   scholarsome:
-    image: hwgilbert16/scholarsome
+    image: hwgilbert16/scholarsome:latest
     ports:
       - "${HTTP_PORT}:8080"
     environment:
@@ -52,8 +52,8 @@ services:
     volumes:
       - scholarsome:/data
     depends_on:
-      - "mariadb"
-      - "redis"
+      - mariadb
+      - redis
     restart: always
 volumes:
   redis:

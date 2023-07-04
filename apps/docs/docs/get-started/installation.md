@@ -8,9 +8,7 @@ Scholarsome can be installed one of two ways for production uses: via Docker Com
 
 For individuals contributing to the development of Scholarsome, it is possible to directly run it outside a container. However, this method is only recommended for development uses.
 
-:::info
-These instructions are written assuming that the system Scholarsome is being installed on is **Linux-based.** Scholarsome is compatible with other platforms, but you will have to source your own installation instructions for non-Linux systems.
-:::
+This documentation is written assuming that the system Scholarsome is being installed on is **Linux-based.** Scholarsome is compatible with other platforms, but you will have to source your own installation instructions for non-Linux systems.
 
 :::caution Environment Files
 For each installation method, there is a separate environment file. Ensure that the one downloaded matches your method of installation.
