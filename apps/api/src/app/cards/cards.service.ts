@@ -6,8 +6,8 @@ import * as sharp from "sharp";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
-import { InjectS3, S3 } from "nestjs-s3";
 import { ConfigService } from "@nestjs/config";
+import { S3 } from "@aws-sdk/client-s3";
 
 @Injectable()
 export class CardsService {
@@ -15,7 +15,6 @@ export class CardsService {
    * @ignore
    */
   constructor(
-    @InjectS3() private readonly s3: S3,
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService
   ) {}
@@ -69,7 +68,16 @@ export class CardsService {
           this.configService.get<string>("STORAGE_TYPE") === "s3" ||
           this.configService.get<string>("STORAGE_TYPE") === "S3"
         ) {
-          await this.s3.putObject({ Body: decoded, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + fileName });
+          const s3 = await new S3({
+            credentials: {
+              accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+              secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+            },
+            endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+            region: this.configService.get<string>("S3_STORAGE_REGION")
+          });
+
+          await s3.putObject({ Body: decoded, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + fileName });
         }
 
         // upload locally
@@ -94,7 +102,16 @@ export class CardsService {
       this.configService.get<string>("STORAGE_TYPE") === "s3" ||
       this.configService.get<string>("STORAGE_TYPE") === "S3"
     ) {
-      await this.s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId + "/" + fileName });
+      const s3 = await new S3({
+        credentials: {
+          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+        },
+        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+        region: this.configService.get<string>("S3_STORAGE_REGION")
+      });
+
+      await s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId + "/" + fileName });
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {

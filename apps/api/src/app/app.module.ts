@@ -18,24 +18,10 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { JwtModule } from "@nestjs/jwt";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GlobalInterceptor } from "./auth/global.interceptor";
-import { S3Module } from "nestjs-s3";
 import { MediaModule } from "./media/media.module";
 
 @Module({
   imports: [
-    S3Module.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        config: {
-          credentials: {
-            accessKeyId: configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-            secretAccessKey: configService.get<string>("S3_STORAGE_SECRET_KEY")
-          },
-          region: configService.get<string>("S3_STORAGE_REGION") ? configService.get<string>("S3_STORAGE_REGION") : "US",
-          endpoint: configService.get<string>("S3_STORAGE_ENDPOINT")
-        }
-      })
-    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "front"),
       serveStaticOptions: {
@@ -55,19 +41,6 @@ import { MediaModule } from "./media/media.module";
           port: configService.get<number>("REDIS_PORT"),
           username: configService.get<string>("REDIS_USERNAME"),
           password: configService.get<string>("REDIS_PASSWORD")
-        }
-      })
-    }),
-    S3Module.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        config: {
-          credentials: {
-            accessKeyId: configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-            secretAccessKey: configService.get<string>("S3_STORAGE_SECRET_KEY")
-          },
-          region: configService.get<string>("S3_STORAGE_REGION"),
-          endpoint: configService.get<string>("S3_STORAGE_ENDPOINT")
         }
       })
     }),

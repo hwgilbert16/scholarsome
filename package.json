@@ -77,7 +77,6 @@
     "jwt-decode": "^3.1.2",
     "multer": "^1.4.5-lts.1",
     "nest-puppeteer": "^1.1.1",
-    "nestjs-s3": "^2.0.1",
     "ng-recaptcha": "^10.0.0",
     "ngx-bootstrap": "^9.0.0",
     "ngx-cookie": "^6.0.1",
