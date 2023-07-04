@@ -7,6 +7,7 @@ import { SetsService } from "../sets/sets.service";
 import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import * as fs from "fs";
 import * as path from "path";
+import { SetIdAndFileParam } from "@scholarsome/shared";
 
 @Controller("media")
 export class MediaController {
@@ -18,7 +19,7 @@ export class MediaController {
   ) {}
 
   @Get("/sets/:setId/:file")
-  async getFile(@Param() params: { setId: string; file: string; }, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+  async getFile(@Param() params: SetIdAndFileParam, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
     const set = await this.setsService.set({
       id: params.setId
     });

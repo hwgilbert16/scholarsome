@@ -76,8 +76,8 @@ export class CardsService {
         if (this.configService.get<string>("STORAGE_TYPE") === "local") {
           const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets");
 
-          if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-          if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId));
+          if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
+          if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId), { recursive: true });
 
           fs.writeFileSync(path.join(filePath, fileName), decoded);
         }
