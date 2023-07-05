@@ -408,6 +408,7 @@ export class SetsController {
   @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
+    if (!params.setId) throw new NotFoundException();
 
     await this.setsService.deleteSetMediaFiles(params.setId);
 

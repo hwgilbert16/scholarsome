@@ -24,6 +24,7 @@ export class AnkiImportModalComponent {
 
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
 
+  protected submitted = false;
   protected uploading = false;
   protected clicked = false;
   protected response: string;
@@ -39,11 +40,12 @@ export class AnkiImportModalComponent {
   protected async submit(form: NgForm) {
     this.clicked = true;
     this.response = "";
+    this.submitted = false;
 
     if (!this.file) return;
 
     setTimeout(() => {
-      if (this.response !== "incompatible") this.uploading = true;
+      if (this.response !== "incompatible" && !this.submitted) this.uploading = true;
     }, 3000);
 
     const set = await this.setsService.createSetFromApkg({
@@ -55,6 +57,10 @@ export class AnkiImportModalComponent {
 
     if (set) {
       this.router.navigate(["/study-set/" + set.id]);
+      this.uploading = false;
+      this.clicked = false;
+      this.file = null;
+      this.submitted = true;
     } else {
       this.response = "incompatible";
       this.clicked = false;
