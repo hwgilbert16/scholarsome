@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3-labs
 FROM node:18
 
 ARG NODE_ENV
