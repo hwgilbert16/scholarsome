@@ -67,6 +67,7 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Region for the S3 service.                                                                                                            |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
 
+> **Caution:** on mac silicon (M1 | M2) : Make sure to add "platform: linux/amd64" in "scholarsome" service
 
 Start the service in a detached state.
 
