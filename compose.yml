@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   redis:
-    image: redis
+    image: redis:latest
     expose:
       - "6379:6379"
     command: "redis-server --save 20 1 --requirepass ${DATABASE_PASSWORD}"
@@ -9,7 +9,7 @@ services:
       - redis:/data
     restart: always
   mariadb:
-    image: mariadb
+    image: mariadb:latest
     expose:
       - "3306:3306"
     environment:
@@ -22,17 +22,25 @@ services:
       - mariadb:/var/lib/mysql
     restart: always
   scholarsome:
-    image: hwgilbert16/scholarsome
+    image: hwgilbert16/scholarsome:latest
+    platform: "linux/amd64"
     ports:
       - "${HTTP_PORT}:8080"
     environment:
       - "NODE_ENV=${NODE_ENV}"
       - "DATABASE_URL=mysql://scholarsome:${DATABASE_PASSWORD}@mariadb:3306/scholarsome"
       - "JWT_SECRET=${JWT_SECRET}"
+      - "STORAGE_TYPE=${STORAGE_TYPE}"
       - "REDIS_HOST=redis"
       - "REDIS_PORT=6379"
       - "REDIS_USERNAME="
       - "REDIS_PASSWORD=${DATABASE_PASSWORD}"
+      - "STORAGE_LOCAL_DIR=/data"
+      - "S3_STORAGE_ENDPOINT=${S3_STORAGE_ENDPOINT}"
+      - "S3_STORAGE_ACCESS_KEY=${S3_STORAGE_ACCESS_KEY}"
+      - "S3_STORAGE_SECRET_KEY=${S3_STORAGE_SECRET_KEY}"
+      - "S3_STORAGE_REGION=${S3_STORAGE_REGION}"
+      - "S3_STORAGE_BUCKET=${S3_STORAGE_BUCKET}"
       - "SMTP_HOST=${SMTP_HOST}"
       - "SMTP_PORT=${SMTP_PORT}"
       - "SMTP_USERNAME=${SMTP_USERNAME}"
@@ -42,11 +50,14 @@ services:
       - "SSL_CERT_BASE64=${SSL_CERT_BASE64}"
       - "SCHOLARSOME_RECAPTCHA_SITE=${RECAPTCHA_SITE}"
       - "SCHOLARSOME_RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
+    volumes:
+      - scholarsome:/data
     depends_on:
-      - "mariadb"
-      - "redis"
+      - mariadb
+      - redis
     restart: always
 volumes:
   redis:
     driver: local
   mariadb:
+  scholarsome:

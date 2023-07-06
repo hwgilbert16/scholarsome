@@ -9,5 +9,10 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "lib": [
+      "ES2021.String"
+    ]
+  }
 }

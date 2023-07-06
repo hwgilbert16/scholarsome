@@ -1,4 +1,4 @@
-## <p align="center"><img src="https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/apps/front/src/assets/scholarsome-logo-purple-lowercase.svg" height="50%" width="50%"></p>
+## <p align="center"><img src="https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/apps/front/src/assets/header/scholarsome-logo-purple-lowercase.svg" height="50%" width="50%"></p>
 
 <div align="center">
 
@@ -7,6 +7,8 @@
 *Inspired by the larger sites that are now charging for core functionality, Scholarsome intends to be a drop-in replacement for any study workflow.*
 
 https://scholarsome.com
+
+<a href="https://discord.gg/hRgVvc5MKf">![](https://img.shields.io/badge/-Join%20our%20Discord-white?style=flat&logo=Discord&logoColor=blue)</a>
 
 <a href="">![](https://img.shields.io/github/license/hwgilbert16/scholarsome?style=flat-square&color=blue)</a>
 <a href="">![](https://img.shields.io/badge/contributions-welcome-orange?style=flat-square)</a>
@@ -20,7 +22,7 @@ https://scholarsome.com
 
 ## Introduction
 
-Scholarsome is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
+Scholarsome <a href="http://ipa-reader.xyz/?text=%CB%88sk%C3%A4l%C9%99rs(%C9%99)m%2F">(pronounced ˈskälərs(ə)m/)</a> is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
 
 While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
 
@@ -29,9 +31,9 @@ While other services have begun to paywall core functionalities, Scholarsome int
 Implemented features include:
 
 - Create your own study sets ✅
+- Import sets from Anki and Quizlet ✅
 - Study flashcards in either traditional or progressive mode ✅
 - Use quizzes to test yourself ✅
-- Import created sets from Quizlet ✅
 - Edit your sets on the fly ✅
 - Make sets private if studying with others ✅
 

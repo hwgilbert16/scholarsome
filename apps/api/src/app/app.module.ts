@@ -18,6 +18,7 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { JwtModule } from "@nestjs/jwt";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GlobalInterceptor } from "./auth/global.interceptor";
+import { MediaModule } from "./media/media.module";
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { GlobalInterceptor } from "./auth/global.interceptor";
       serveStaticOptions: {
         cacheControl: true,
         maxAge: 31536000
-      }
+      },
+      exclude: ["/api/(.*)"]
     }),
     ConfigModule.forRoot({
       isGlobal: true
@@ -48,6 +50,7 @@ import { GlobalInterceptor } from "./auth/global.interceptor";
     MailModule,
     CardsModule,
     UsersModule,
+    MediaModule,
     {
       ...JwtModule.registerAsync({
         useFactory: (configService: ConfigService) => ({

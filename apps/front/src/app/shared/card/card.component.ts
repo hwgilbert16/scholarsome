@@ -1,12 +1,30 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input, OnInit,
+  Output,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import { AlertComponent } from "../alert/alert.component";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-card",
   templateUrl: "./card.component.html",
   styleUrls: ["./card.component.scss"]
 })
-export class CardComponent {
+export class CardComponent implements OnInit, AfterViewInit {
+  constructor(
+    private readonly bsModalService: BsModalService,
+    public readonly sanitizer: DomSanitizer
+  ) {}
+
   @Input() editingEnabled = false;
 
   @Input() cardId: string;
@@ -26,12 +44,49 @@ export class CardComponent {
   @ViewChild("definition", { static: false }) definitionElement: ElementRef;
   @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
 
+  @ViewChild("editModal") modal: TemplateRef<HTMLElement>;
+
+  // these two vars exist so that we can prevent the main card
+  // from updating while a card is being edited
+  protected mainTerm: string;
+  protected mainDefinition: string;
+
+  protected modalRef?: BsModalRef;
+  protected readonly faPenToSquare = faPenToSquare;
+
+  ngOnInit() {
+    this.mainTerm = this.termValue ? this.termValue : "";
+    this.mainDefinition = this.definitionValue ? this.definitionValue : "";
+  }
+
+  ngAfterViewInit() {
+    /*
+    these two subscriptions here are to prevent the main card from updating
+    while the card is being edited
+
+    otherwise it's distracting to see changes in the background while typing
+     */
+    this.bsModalService.onShow.subscribe(() => {
+      this.mainTerm = String(this.mainTerm) as string;
+      this.mainDefinition = String(this.mainDefinition) as string;
+    });
+
+    this.bsModalService.onHide.subscribe(() => {
+      this.mainTerm = this.termValue ? this.termValue : "";
+      this.mainDefinition = this.definitionValue ? this.definitionValue : "";
+    });
+  }
+
   get term(): string {
-    return this.termElement.nativeElement.value;
+    return this.mainTerm;
   }
 
   get definition(): string {
-    return this.definitionElement.nativeElement.value;
+    return this.mainDefinition;
+  }
+
+  openEditModal() {
+    this.modalRef = this.bsModalService.show(this.modal, { class: "modal-xl" });
   }
 
   deleteCard() {

@@ -4,6 +4,7 @@
       <div class="d-flex justify-content-between">
         <span>{{cardIndex + 1}}.</span>
         <div>
+          <fa-icon [icon]="faPenToSquare" class="mx-3 card-button" (click)="openEditModal()"></fa-icon>
           <fa-icon *ngIf="upArrow" [icon]="['far', 'arrow-alt-circle-up']" class="mx-3 card-button" (click)="moveCard(-1)"></fa-icon>
           <fa-icon *ngIf="downArrow" [icon]="['far', 'arrow-alt-circle-down']" class="mx-3 card-button" (click)="moveCard(1)"></fa-icon>
           <fa-icon *ngIf="trashCan" [icon]="['far', 'trash-can']" class="ms-3 card-button" (click)="deleteCard()"></fa-icon>
@@ -11,22 +12,34 @@
       </div>
     </div>
     <div class="container-fluid" #inputsContainer>
-      <div class="row">
-        <div class="col border-end fs-5 w-50" [hidden]="editingEnabled">
-          {{termValue}}
-        </div>
-        <div class="col fs-5 w-50" [hidden]="editingEnabled">
-          {{definitionValue}}
-        </div>
-        <div class="col-lg" [hidden]="!editingEnabled">
-          <label for="term" class="form-label">Term</label>
-          <input type="text" class="form-control" id="term" [value]="termValue ? termValue : ''" #term>
-        </div>
-        <div class="col-lg" [hidden]="!editingEnabled">
-          <label for="definition" class="form-label">Definition</label>
-          <input type="text" class="form-control" id="definition" [value]="definitionValue ? definitionValue : ''" #definition>
-        </div>
+      <span class="text-secondary" *ngIf="mainTerm.length === 0 && mainDefinition.length === 0">Click <span class="text-decoration-underline edit-text" (click)="openEditModal()">here</span> to edit this card.</span>
+      <div class="row" *ngIf="termValue || definitionValue">
+        <div class="col border-end fs-5 w-50 h-100 overflow-hidden" [innerHTML]="sanitizer.bypassSecurityTrustHtml(mainTerm)" #term></div>
+        <div class="col fs-5 w-50 h-100 overflow-hidden" [innerHTML]="sanitizer.bypassSecurityTrustHtml(mainDefinition)" #definition></div>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #editModal>
+  <div class="modal-header">
+    <span class="pull-left text-secondary">* Both term and definition must be filled</span>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid">
+      <div class="row row-cols-1 row-cols-md-2">
+        <div class="col border-end">
+          <p class="fs-2">Term</p>
+          <quill-editor [(ngModel)]="termValue" id="termEditor" class="w-100"></quill-editor>
+        </div>
+        <div class="col mt-4 mt-lg-0">
+          <p class="fs-2 pull-right">Definition</p>
+          <quill-editor [(ngModel)]="definitionValue" id="definitionEditor" class="w-100"></quill-editor>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -33,15 +33,27 @@ model Set {
   @@index([authorId])
 }
 
+model CardMedia {
+  id        String   @id @default(uuid())
+  cardId    String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([cardId])
+}
+
 model Card {
-  id         String   @id @default(uuid())
+  id         String      @id @default(uuid())
   setId      String
   index      Int
-  term       String   @db.Text
-  definition String   @db.Text
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  set        Set      @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  term       String      @db.Text
+  definition String      @db.Text
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  set        Set         @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  media      CardMedia[]
 
   @@index([setId])
 }

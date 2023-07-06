@@ -1,10 +1,10 @@
 import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
-import { CreateCardComponent } from "./create-card/create-card.component";
 import { HttpClient } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
 import { Router } from "@angular/router";
 import { SetsService } from "../../shared/http/sets.service";
 import { Meta, Title } from "@angular/platform-browser";
+import { CardComponent } from "../../shared/card/card.component";
 
 @Component({
   selector: "scholarsome-create",
@@ -35,7 +35,7 @@ export class CreateStudySetComponent implements OnInit {
   formDisabled = false;
 
   // index starts at 0
-  cards: { component: ComponentRef<CreateCardComponent>, index: number }[] = [];
+  cards: { component: ComponentRef<CardComponent>, index: number }[] = [];
 
   async createSet() {
     const cards: { index: number; term: string; definition: string; }[] = [];
@@ -88,8 +88,9 @@ export class CreateStudySetComponent implements OnInit {
   }
 
   addCard() {
-    const card = this.cardList.createComponent<CreateCardComponent>(CreateCardComponent);
+    const card = this.cardList.createComponent<CardComponent>(CardComponent);
     card.instance.cardIndex = this.cardList.length - 1;
+    card.instance.editingEnabled = true;
 
     card.instance.deleteCardEvent.subscribe((e) => {
       if (this.cardList.length > 1) {

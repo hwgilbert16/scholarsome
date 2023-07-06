@@ -14,6 +14,9 @@ $dropdown-link-active-bg: $primary !important;
 $enable-negative-margins: true;
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
+ @import '~quill/dist/quill.core.css';
+@import '~quill/dist/quill.snow.css';
+
 body {
   background-color: white;
 }
@@ -28,4 +31,22 @@ body {
 
 textarea {
   resize: none;
+}
+
+.modal-open {
+  overflow: hidden !important;
+  overflow-y: inherit !important;
+  padding-right:0 !important;
+}
+
+.angular-editor-toolbar {
+  background-color: #FFFFFF !important;
+}
+
+.angular-editor-button.active {
+  background-color: lightgrey !important;
+}
+
+.angular-editor-textarea {
+  resize: none !important;
 }
