@@ -8,6 +8,8 @@
 
 https://scholarsome.com
 
+<a href="https://discord.gg/hRgVvc5MKf">![](https://img.shields.io/badge/-Join%20our%20Discord-white?style=flat&logo=Discord&logoColor=blue)</a>
+
 <a href="">![](https://img.shields.io/github/license/hwgilbert16/scholarsome?style=flat-square&color=blue)</a>
 <a href="">![](https://img.shields.io/badge/contributions-welcome-orange?style=flat-square)</a>
 <a href="">![](https://img.shields.io/github/issues/hwgilbert16/scholarsome?style=flat-square)</a>
@@ -20,7 +22,7 @@ https://scholarsome.com
 
 ## Introduction
 
-Scholarsome <a href="http://ipa-reader.xyz/?text=%CB%88sk%C3%A4l%C9%99rs(%C9%99)m%2F" target="_blank">(pronounced ˈskälərs(ə)m/)</a> is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
+Scholarsome <a href="http://ipa-reader.xyz/?text=%CB%88sk%C3%A4l%C9%99rs(%C9%99)m%2F">(pronounced ˈskälərs(ə)m/)</a> is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
 
 While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
 
