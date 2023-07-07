@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
 import { BsModalRef } from "ngx-bootstrap/modal";
-import { convert } from "html-to-text";
 import { compareTwoStrings } from "string-similarity";
 
 @Component({
@@ -139,7 +138,7 @@ export class StudySetQuizComponent implements OnInit {
         }
 
         if (questionType.type === "written") {
-          const answer = convert(this.set.cards[index][questionAnswerWith].replace(/<[^>]+src="([^">]+)">/g, ""));
+          const answer = this.set.cards[index][questionAnswerWith].replace(/<[^>]+src="([^">]+)">/g, "");
 
           questions.push({
             question: this.set.cards[index][questionAskWith],
