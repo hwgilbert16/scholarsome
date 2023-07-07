@@ -111,7 +111,7 @@ export class SetsService {
     const dbFile = zip.readFile("collection.anki2");
 
     const db = new Database(dbFile);
-    const notes: AnkiNote[] = db.prepare("SELECT * FROM Notes").all() as AnkiNote[];
+    let notes: AnkiNote[] = db.prepare("SELECT * FROM Notes").all() as AnkiNote[];
 
     const cards: {
       term: string;
@@ -120,6 +120,12 @@ export class SetsService {
     }[] = [];
 
     const media: string[] = [];
+
+    if (
+      notes[0].flds.split(/\x1F/)[0].includes("Please update to the latest Anki version")
+    ) {
+      notes = new Database(zip.readFile("collection.anki21")).prepare("SELECT * FROM Notes").all() as AnkiNote[];
+    }
 
     for (const [i, note] of notes.entries()) {
       const split = note.flds.split(/\x1F/);
