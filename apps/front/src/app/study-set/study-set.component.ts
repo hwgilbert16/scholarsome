@@ -12,7 +12,7 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { faChartLine, faGamepad, faRepeat } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -52,8 +52,9 @@ export class StudySetComponent implements OnInit {
 
   deleteClicked = false;
 
-  faChartLine = faChartLine;
-  faGamepad = faGamepad;
+  protected readonly faChartLine = faChartLine;
+  protected readonly faGamepad = faGamepad;
+  protected readonly faRepeat = faRepeat;
 
   cookieExists(name: string): boolean {
     const cookies = document.cookie.split(";");

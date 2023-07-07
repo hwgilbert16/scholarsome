@@ -62,8 +62,8 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected flipInteraction = false;
 
   protected modalRef?: BsModalRef;
-  protected faThumbsUp = faThumbsUp;
-  protected faCake = faCake;
+  protected readonly faThumbsUp = faThumbsUp;
+  protected readonly faCake = faCake;
 
   updateIndex() {
     this.remainingCards = `${this.index + 1}/${this.cards.length}`;
