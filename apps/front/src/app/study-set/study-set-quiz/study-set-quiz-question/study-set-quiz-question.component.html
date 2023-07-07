@@ -3,30 +3,30 @@
     <p class="text-secondary fs-5 ms-4 mt-3">#{{question.index + 1}}</p>
     <div class="mx-4 container-fluid mt-3 mb-4">
       <div class="fw-bold" [ngClass]="submitted ? correct ? 'text-success' : 'text-danger' : ''">
-        <p class="fs-1 text-center" *ngIf="question.type !== 'trueOrFalse'">{{question.question}}</p>
-        <p class="fs-1 text-center" *ngIf="question.type === 'trueOrFalse'">{{question.question}} <fa-icon [icon]="faArrowRight"></fa-icon> {{question.trueOrFalseOption ? question.trueOrFalseOption : ''}}</p>
+        <p class="fs-1 text-center" *ngIf="question.type !== 'trueOrFalse'" [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.question)"></p>
+        <p class="fs-1 text-center" *ngIf="question.type === 'trueOrFalse'"><span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.question)"></span> <fa-icon [icon]="faArrowRight"></fa-icon> <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.trueOrFalseOption ? question.trueOrFalseOption : '')"></span></p>
       </div>
       <div class="quiz-question-written" *ngIf="question.type === 'written'">
         <p class="text-secondary text-center">Answer with the corresponding {{question.answerWith}}</p>
         <input type="text" class="form-control text-center shadow-sm fs-4" formControlName="written" required>
-        <p class="text-success mt-2" *ngIf="submitted && !correct">Correct answer: <span class="fw-bold">{{question.answer}}</span></p>
+        <p class="text-success mt-2" *ngIf="submitted && !correct">Correct answer: <span class="fw-bold" [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.answer)"></span></p>
       </div>
       <div class="quiz-question-tf text-center" *ngIf="question.type === 'trueOrFalse'">
         <p class="text-secondary text-center">Answer with whether this is true or false</p>
         <div *ngFor="let option of question.options; index as i">
           <input type="radio" class="btn-check" formControlName="trueOrFalse" (click)="selectedIndex = i" [id]="'q' + question.index + '-tf-option' + i" [required]="question.type === 'trueOrFalse'" [value]="i" autocomplete="off">
-          <label class="btn btn-outline-success mx-1 my-1" *ngIf="submitted && i === correctIndex" [for]="'q' + question.index + '-tf-option' + i">{{option.option}}</label>
-          <label class="btn btn-outline-danger mx-1 my-1" *ngIf="submitted && !correct && selectedIndex === i" [for]="'q' + question.index + '-tf-option' + i">{{option.option}}</label>
-          <label class="btn btn-outline-primary mx-1 my-1" *ngIf="submitted ? selectedIndex!== i && i !== correctIndex : true" [for]="'q' + question.index + '-tf-option' + i">{{option.option}}</label>
+          <label class="btn btn-outline-success mx-1 my-1" *ngIf="submitted && i === correctIndex" [for]="'q' + question.index + '-tf-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
+          <label class="btn btn-outline-danger mx-1 my-1" *ngIf="submitted && !correct && selectedIndex === i" [for]="'q' + question.index + '-tf-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
+          <label class="btn btn-outline-primary mx-1 my-1" *ngIf="submitted ? selectedIndex!== i && i !== correctIndex : true" [for]="'q' + question.index + '-tf-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
         </div>
       </div>
       <div class="quiz-question-mc text-center" *ngIf="question.type === 'multipleChoice'">
         <p class="text-secondary text-center">Answer by selecting the correct option</p>
         <div *ngFor="let option of question.options; index as i">
           <input type="radio" class="btn-check" formControlName="multipleChoice" (click)="selectedIndex = i" [id]="'q' + question.index + '-mc-option' + i" [value]="i" [required]="question.type === 'multipleChoice'" autocomplete="off">
-          <label class="btn btn-outline-success mx-1 my-1" *ngIf="submitted && i === correctIndex" [for]="'q' + question.index + '-mc-option' + i">{{option.option}}</label>
-          <label class="btn btn-outline-danger mx-1 my-1" *ngIf="submitted && !correct && selectedIndex === i" [for]="'q' + question.index + '-mc-option' + i">{{option.option}}</label>
-          <label class="btn btn-outline-primary mx-1 my-1" *ngIf="submitted ? selectedIndex!== i && i !== correctIndex : true" [for]="'q' + question.index + '-mc-option' + i">{{option.option}}</label>
+          <label class="btn btn-outline-success mx-1 my-1" *ngIf="submitted && i === correctIndex" [for]="'q' + question.index + '-mc-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
+          <label class="btn btn-outline-danger mx-1 my-1" *ngIf="submitted && !correct && selectedIndex === i" [for]="'q' + question.index + '-mc-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
+          <label class="btn btn-outline-primary mx-1 my-1" *ngIf="submitted ? selectedIndex!== i && i !== correctIndex : true" [for]="'q' + question.index + '-mc-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
         </div>
       </div>
     </div>

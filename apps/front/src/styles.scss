@@ -14,7 +14,7 @@ $dropdown-link-active-bg: $primary !important;
 $enable-negative-margins: true;
 @import '../../../node_modules/bootstrap/scss/bootstrap.scss';
 
- @import '~quill/dist/quill.core.css';
+@import '~quill/dist/quill.core.css';
 @import '~quill/dist/quill.snow.css';
 
 body {
@@ -49,4 +49,9 @@ textarea {
 
 .angular-editor-textarea {
   resize: none !important;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }

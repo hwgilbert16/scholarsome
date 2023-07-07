@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
-import { Meta, Title } from "@angular/platform-browser";
+import { DomSanitizer, Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
 
 @Component({
@@ -21,7 +21,8 @@ export class StudySetFlashcardsComponent implements OnInit {
     private readonly sets: SetsService,
     private readonly router: Router,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    public readonly sanitizer: DomSanitizer
   ) {}
 
   @ViewChild("flashcardsConfig") configModal: TemplateRef<HTMLElement>;

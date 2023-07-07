@@ -71,7 +71,7 @@
   <div class="row">
     <div class="flashcard card text-center shadow-sm" [ngClass]="{'flip-back': flipped && flipInteraction, 'flip-forwards': !flipped && flipInteraction}">
       <div class="card-body fs-1 d-flex align-items-center justify-content-center text-wrap" onmousedown="return false" (click)="flipCard()">
-        <div [innerHTML]="sideText" class="overflow-hidden"></div>
+        <div [innerHTML]="sanitizer.bypassSecurityTrustHtml(sideText)" class="overflow-hidden"></div>
       </div>
     </div>
   </div>

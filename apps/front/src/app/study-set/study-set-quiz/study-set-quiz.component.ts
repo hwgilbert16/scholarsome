@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { QuizQuestion, Set } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
 import { BsModalRef } from "ngx-bootstrap/modal";
+import { compareTwoStrings } from "string-similarity";
 
 @Component({
   selector: "scholarsome-study-set-quiz",
@@ -57,7 +58,7 @@ export class StudySetQuizComponent implements OnInit {
 
     let unusedIndices = Array.from(Array(this.set.cards.length).keys());
 
-    const answerWith = form.controls["answerWith"].value;
+    const answerWith: "term" | "definition" | "both" = form.controls["answerWith"].value;
 
     let questionTypes: { type: string; enabled: boolean }[] = [
       { type: "written", enabled: form.controls["written"].value },
@@ -92,6 +93,22 @@ export class StudySetQuizComponent implements OnInit {
       // although this is not a perfectly random sort, we do not need perfect randomness here
       const indices = [...unusedIndices].sort(() => 0.5 - Math.random()).splice(0, numQuestions);
 
+      // ensure all written questions are cards that aren't only images
+      // if (questionType.type === "written") {
+      //   let removals = 0;
+      //   let filteredIndices = [...unusedIndices];
+      //
+      //   for (const index of indices) {
+      //     if (((this.set.cards[index] as any)[answerWith].replace(/<[^>]+src="([^">]+)">/g, "").length === 0)) {
+      //       indices = indices.filter((i) => i !== index);
+      //       filteredIndices = filteredIndices.filter((i) => i !== index && !indices.includes(i));
+      //       removals++;
+      //     }
+      //   }
+      //
+      //   indices.push(...[...unusedIndices].sort(() => 0.5 - Math.random()).splice(0, removals));
+      // }
+
       for (const index of indices) {
         unusedIndices = unusedIndices.filter((i) => i !== index);
 
@@ -121,12 +138,14 @@ export class StudySetQuizComponent implements OnInit {
         }
 
         if (questionType.type === "written") {
+          const answer = this.set.cards[index][questionAnswerWith].replace(/<[^>]+src="([^">]+)">/g, "");
+
           questions.push({
             question: this.set.cards[index][questionAskWith],
             index: 0,
             answerWith: questionAnswerWith,
             type: "written",
-            answer: this.set.cards[index][questionAnswerWith],
+            answer,
             correct: false
           });
         } else if (questionType.type === "trueOrFalse") {
@@ -164,17 +183,20 @@ export class StudySetQuizComponent implements OnInit {
         } else {
           let options = [
             {
-              option: this.set.cards[index][questionAnswerWith],
+              option: this.set.cards[index][questionAnswerWith].replace("<p>", "").replace("</p>", ""),
               correct: true
             }
           ];
 
-          for (let i = 0; i < 3; i++) {
+          let generatedQuestions = 3;
+          if (3 > this.set.cards.length) generatedQuestions = this.set.cards.length - 1;
+
+          for (let i = 0; i < generatedQuestions; i++) {
             let option: { option: string; correct: boolean; };
 
             do {
               option = {
-                option: this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith],
+                option: this.set.cards[Math.floor(Math.random() * this.set.cards.length)][questionAnswerWith].replace("<p>", "").replace("</p>", ""),
                 correct: false
               };
             } while (options.filter((o) => o.option === option.option).length > 0);
@@ -225,10 +247,13 @@ export class StudySetQuizComponent implements OnInit {
       switch (Object.keys(question.value)[0]) {
         case "written":
           if (
-            response.toLowerCase() ===
-            questions[question.value["index"]].answer.toLowerCase()
-          ) count++;
-          questions[question.value["index"]].correct = response.toLowerCase() === questions[question.value["index"]].answer.toLowerCase();
+            compareTwoStrings(response.toLowerCase(), questions[question.value["index"]].answer.toLowerCase()) > 0.85
+          ) {
+            count++;
+            questions[question.value["index"]].correct = true;
+          } else {
+            questions[question.value["index"]].correct = false;
+          }
 
           break;
         case "trueOrFalse":
