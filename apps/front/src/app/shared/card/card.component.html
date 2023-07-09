@@ -30,7 +30,10 @@
   </div>
   <div class="modal-body">
     <div class="container-fluid">
-      <button *ngIf="isMobile" type="button" class="btn btn-primary mb-2" (click)="modalRef?.hide()">Finish editing</button>
+      <div *ngIf="isMobile" class="mb-2">
+        <button type="button" class="btn btn-primary me-2" (click)="modalRef?.hide(); addCardEvent.emit()">Add another card</button>
+        <button type="button" class="btn btn-outline-primary" (click)="modalRef?.hide()">Finish editing</button>
+      </div>
       <div class="row row-cols-1 row-cols-md-2">
         <div class="col border-end">
           <p class="fs-2">Term</p>
@@ -41,7 +44,10 @@
           <quill-editor [(ngModel)]="definitionValue" id="definitionEditor" class="w-100"></quill-editor>
         </div>
       </div>
-      <button *ngIf="!isMobile" type="button" class="btn btn-primary mt-2" (click)="modalRef?.hide()">Finish editing</button>
+      <div *ngIf="!isMobile" class="mt-2">
+        <button type="button" class="btn btn-primary me-2" (click)="modalRef?.hide(); addCardEvent.emit()">Add another card</button>
+        <button type="button" class="btn btn-outline-primary" (click)="modalRef?.hide()">Finish editing</button>
+      </div>
     </div>
   </div>
 </ng-template>

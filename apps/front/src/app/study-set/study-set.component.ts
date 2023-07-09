@@ -107,6 +107,10 @@ export class StudySetComponent implements OnInit {
       }
     });
 
+    card.instance.addCardEvent.subscribe(() => {
+      this.addCard({ editingEnabled: true });
+    });
+
     this.cards.push(card);
     this.updateCardIndices();
   }

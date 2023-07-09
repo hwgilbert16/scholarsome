@@ -117,6 +117,10 @@ export class CreateStudySetComponent implements OnInit {
       }
     });
 
+    card.instance.addCardEvent.subscribe(() => {
+      this.addCard();
+    });
+
     this.cards.push({
       component: card,
       index: this.cardList.length - 1

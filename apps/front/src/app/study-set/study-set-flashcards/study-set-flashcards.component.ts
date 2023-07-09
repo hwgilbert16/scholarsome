@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { Component, HostListener, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
@@ -65,6 +65,33 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected readonly faThumbsUp = faThumbsUp;
   protected readonly faCake = faCake;
 
+  @HostListener("document:keypress", ["$event"])
+  keyboardSpaceEvent(event: KeyboardEvent) {
+    if (
+      this.flashcardsMode &&
+      !this.roundCompleted &&
+      event.key === " "
+    ) {
+      this.flipCard();
+    }
+  }
+
+  @HostListener("document:keyup", ["$event"])
+  keyboardArrowEvent(event: KeyboardEvent) {
+    if (
+      this.flashcardsMode &&
+      !this.roundCompleted
+    ) {
+      if (event.key === "ArrowLeft") {
+        this.changeCard(-1);
+      } else if (event.key === "ArrowRight") {
+        this.changeCard(1);
+      } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        this.flipCard();
+      }
+    }
+  }
+
   updateIndex() {
     this.remainingCards = `${this.index + 1}/${this.cards.length}`;
   }
@@ -92,6 +119,16 @@ export class StudySetFlashcardsComponent implements OnInit {
   }
 
   changeCard(direction: number) {
+    if (
+      this.index === 0 &&
+      direction === -1
+    ) return;
+
+    if (
+      this.index === this.cards.length - 1 &&
+      direction === 1
+    ) return;
+
     // increment the currentCard object to the next card in the array
     if (this.flashcardsMode === "progressive" && this.index !== this.cards.length - 1) {
       this.currentCard = this.cards[this.index + 1];
