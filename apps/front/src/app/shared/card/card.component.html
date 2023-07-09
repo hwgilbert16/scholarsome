@@ -1,4 +1,4 @@
-<div class="card my-3 bg-white">
+<div class="card my-3 bg-white" id="card" #card>
   <div class="card-body">
     <div class="card-header bg-white mb-2" [hidden]="!editingEnabled">
       <div class="d-flex justify-content-between">
@@ -30,6 +30,7 @@
   </div>
   <div class="modal-body">
     <div class="container-fluid">
+      <button *ngIf="isMobile" type="button" class="btn btn-primary mb-2" (click)="modalRef?.hide()">Finish editing</button>
       <div class="row row-cols-1 row-cols-md-2">
         <div class="col border-end">
           <p class="fs-2">Term</p>
@@ -40,6 +41,7 @@
           <quill-editor [(ngModel)]="definitionValue" id="definitionEditor" class="w-100"></quill-editor>
         </div>
       </div>
+      <button *ngIf="!isMobile" type="button" class="btn btn-primary mt-2" (click)="modalRef?.hide()">Finish editing</button>
     </div>
   </div>
 </ng-template>

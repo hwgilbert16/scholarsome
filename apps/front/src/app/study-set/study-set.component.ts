@@ -12,7 +12,7 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faChartLine, faGamepad, faRepeat } from "@fortawesome/free-solid-svg-icons";
+import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -39,33 +39,21 @@ export class StudySetComponent implements OnInit {
   @ViewChild("privateCheck", { static: false }) privateCheck: ElementRef;
   @ViewChild("editDescription", { static: false }) editDescription: ElementRef;
 
-  userIsAuthor = false;
-  isEditing = false;
-  setId: string | null;
+  protected userIsAuthor = false;
+  protected isEditing = false;
+  protected setId: string | null;
 
-  author: string;
+  protected author: string;
 
-  cards: ComponentRef<CardComponent>[] = [];
-  set: Set;
+  protected cards: ComponentRef<CardComponent>[] = [];
+  protected set: Set;
 
-  uploadTooLarge = false;
+  protected uploadTooLarge = false;
 
-  deleteClicked = false;
+  protected deleteClicked = false;
 
   protected readonly faChartLine = faChartLine;
   protected readonly faGamepad = faGamepad;
-  protected readonly faRepeat = faRepeat;
-
-  cookieExists(name: string): boolean {
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      if (cookie.includes(name)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
