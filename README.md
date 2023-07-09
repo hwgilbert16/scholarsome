@@ -13,7 +13,7 @@ https://scholarsome.com
 <a href="https://github.com/hwgilbert16/scholarsome/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">![](https://img.shields.io/badge/contributions-welcome-orange)</a>
 <img src="https://img.shields.io/badge/price-free-brightgreen" alt="Pricing">
 <a href="https://github.com/hwgilbert16/scholarsome/issues">![](https://img.shields.io/github/issues/hwgilbert16/scholarsome)</a>
-<a href="https://contributor-covenant.org/version/1/4/code-of-conduct/ "><img src="https://img.shields.io/badge/Contributor%20Covenant-1.4-purple" /></a>
+<a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct.html "><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-purple" /></a>
 <a href="https://github.com/hwgilbert16/scholarsome/stargazers">![](https://img.shields.io/github/stars/hwgilbert16/scholarsome)</a>
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Stop%20using%20clunky%2C%20proprietary%20flashcard%20software%20-%20instead%2C%20use%20the%20open%20source%20alternative%3A%20Scholarsome&url=https://github.com/hwgilbert16/scholarsome&hashtags=bootstrap,nestjs,angular,developers)
 
