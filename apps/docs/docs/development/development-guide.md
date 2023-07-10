@@ -50,7 +50,10 @@ docker run -p 3000:80 -p 25:25 rnwood/smtp4dev
 docker run -p 3306:3306 --name some-mariadb --env MARIADB_USER=test --env MARIADB_PASSWORD=test --env MARIADB_ROOT_PASSWORD=test --env MARIADB_DATABASE=scholarsome  mariadb:latest
 ```
 
-Below is a list of the required environment variables. Reference the [installation guide](../get-started/installation.md) for documentation with the optional ones.
+Below is a list of the required environment variables. Reference the [installation guide](../installation/installation.md) for documentation with the optional ones.
+
+<details>
+<summary>Development Environment Variables</summary>
 
 
 | Variable Name         | Description                                                                                                                                                            |
@@ -65,11 +68,7 @@ Below is a list of the required environment variables. Reference the [installati
 | REDIS_USERNAME        | **Required.** Username used to access the Redis database.                                                                                                              |
 | REDIS_PASSWORD        | **Required.** Password used to access the Redis database.                                                                                                              |
 | STORAGE_LOCAL_DIR     | Required if storing files locally. The absolute filepath pointing to the directory where Scholarsome should store media files.                                         |
-| S3_STORAGE_ENDPOINT   | Required if storing files in S3. The endpoint of the S3 service.                                                                                                       |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Access key for the S3 service.                                                                                                        |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Region for the S3 service.                                                                                                            |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+</details>
 
 Setup the database.
 

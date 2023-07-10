@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Installation
+# Installing
 
 Scholarsome can be installed one of two ways for production uses: via Docker Compose, or Docker.
 
@@ -38,11 +38,18 @@ Download the environment file and make a copy of it.
 wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.compose.example && cp .env.compose.example .env
 ```
 
-Open `.env` with your favorite text editor, and fill in the required fields, along with any optional ones that fit your use case.
+Open the `.env` file in any text editor.
+
+Expand the dropdown below, it lists Scholarsome's environment variables. These are used to configure the application to your liking. At a minimum, you must fill in the fields marked as "required."
+
+Additionally, if you are using S3 as your storage medium, you will need to fill the `S3_` fields as well.
 
 :::info
-If the SMTP fields are left blank, users will be verified by default. Most installations do not need email verification.
+If the SMTP fields are left blank, users will be verified by default. Most installations do not need to enforce email verification.
 :::
+
+<details>
+<summary>Docker Compose Environment Variables</summary>
 
 | Variable Name                   | Description                                                                                                                                                            |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -66,6 +73,8 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Region for the S3 service.                                                                                                            |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+
+</details>
 
 
 Start the service in a detached state.
@@ -101,7 +110,18 @@ Download the environment file and make a copy of it.
 wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.docker.example && cp .env.docker.example .env
 ```
 
-Open `.env` with your favorite text editor, and fill in the required fields, along with any optional ones that fit your use case.
+Open `.env` in any text editor.
+
+Expand the dropdown below, it lists Scholarsome's environment variables. These are used to configure the application to your liking. At a minimum, you must fill in the fields marked as "required."
+
+Ensure that you provide a filepath for the `STORAGE_LOCAL_DIR` variable if using local media storage, or provide S3 authentication details if using S3 as your storage medium.
+
+:::info
+If the SMTP fields are left blank, users will be verified by default. Most installations do not need to enforce email verification.
+:::
+
+<details>
+<summary>Docker Environment Variables</summary>
 
 | Variable Name                   | Description                                                                                                                                                            |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -130,6 +150,8 @@ Open `.env` with your favorite text editor, and fill in the required fields, alo
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Region for the S3 service.                                                                                                            |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+
+</details>
 
 Start the container in a detached state. Replace `(port)` with the value you selected for `HTTP_PORT` in the environment file.
 
