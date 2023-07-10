@@ -24,11 +24,20 @@ import { MediaModule } from "./media/media.module";
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "front"),
+      serveRoot: "/",
       serveStaticOptions: {
         cacheControl: true,
         maxAge: 31536000
       },
       exclude: ["/api/(.*)"]
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "docs"),
+      serveRoot: "/docs",
+      serveStaticOptions: {
+        cacheControl: true,
+        maxAge: 31536000
+      }
     }),
     ConfigModule.forRoot({
       isGlobal: true

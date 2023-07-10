@@ -6,7 +6,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const config = {
   title: 'Scholarsome Docs',
   url: 'https://docs.scholarsome.com',
-  baseUrl: '/',
+  baseUrl: '/docs/',
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
