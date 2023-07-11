@@ -50,7 +50,7 @@ docker run -p 3000:80 -p 25:25 rnwood/smtp4dev
 docker run -p 3306:3306 --name some-mariadb --env MARIADB_USER=test --env MARIADB_PASSWORD=test --env MARIADB_ROOT_PASSWORD=test --env MARIADB_DATABASE=scholarsome  mariadb:latest
 ```
 
-Below is a list of the required environment variables. Reference the [installation guide](../installation/installation.md) for documentation with the optional ones.
+Below is a list of the required environment variables. Reference the [installation guide](../installation/installing.md) for documentation with the optional ones.
 
 <details>
 <summary>Development Environment Variables</summary>
