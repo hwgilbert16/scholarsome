@@ -35,7 +35,7 @@ cp .env.example .env
 Below is a list of the required environment variables. Reference the [installation guide](../get-started/installation.md) for documentation with the optional ones.
 
 | Variable Name         | Description                                                                                                                                                            |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | NODE_ENV              | **Required.** Declares whether the application is running in development or production. Recommended to be set to `development` for development purposes.               |
 | DATABASE_URL          | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
 | JWT_SECRET            | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
@@ -51,6 +51,20 @@ Below is a list of the required environment variables. Reference the [installati
 | S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
 | S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Region for the S3 service.                                                                                                            |
 | S3_STORAGE_ACCESS_KEY | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+
+Run redis | smtp4dev | mariadb uses docker-images
+
+```
+docker run -p 6379:6379 --name some-redis redis
+```
+
+```
+docker run -p 3000:80 -p 25:25 rnwood/smtp4dev
+```
+
+```
+docker run -p 3306:3306 --name some-mariadb --env MARIADB_USER=test --env MARIADB_PASSWORD=test --env MARIADB_ROOT_PASSWORD=test --env MARIADB_DATABASE=scholarsome  mariadb:latest
+```
 
 Setup the database.
 
