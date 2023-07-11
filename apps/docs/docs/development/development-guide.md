@@ -32,7 +32,7 @@ Next, we'll need to setup the environment file. Make a copy of the development o
 cp .env.example .env
 ```
 
-Below is a list of the required environment variables. Reference the [installation guide](../installation/installation.md) for documentation with the optional ones.
+Below is a list of the required environment variables. Reference the [installation guide](../installation/installing.md) for documentation with the optional ones.
 
 <details>
 <summary>Development Environment Variables</summary>
