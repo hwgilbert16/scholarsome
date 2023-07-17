@@ -153,4 +153,11 @@ export class AuthService {
   async logout() {
     return await lastValueFrom(this.http.post("/api/auth/logout", {}));
   }
+
+  /**
+   * Makes a request to send verification email
+  */
+  async resendVerificationEmail() {
+    return await lastValueFrom(this.http.post("/api/auth/resendVerification", {}));
+  }
 }

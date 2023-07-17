@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { ModalService } from "../shared/modal.service";
 import { AuthService } from "../auth/auth.service";
@@ -6,7 +6,11 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faQ,
+  faArrowRightFromBracket,
+  faStar
+} from "@fortawesome/free-solid-svg-icons";
 import { SetsService } from "../shared/http/sets.service";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
@@ -22,7 +26,7 @@ import { RegisterModalComponent } from "./register-modal/register-modal.componen
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"]
 })
-export class HeaderComponent implements OnInit, AfterViewInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild("ankiImport") ankiImportModal: AnkiImportModalComponent;
   @ViewChild("quizletImport") quizletImportModal: QuizletImportModalComponent;
   @ViewChild("setPassword") setPasswordModal: SetPasswordModalComponent;
@@ -77,8 +81,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.sharedService.isUpdateAvailable().then((r) => this.updateAvailable = r);
-    this.sharedService.getReleaseUrl().then((r) => this.releaseUrl = r);
+    this.sharedService
+        .isUpdateAvailable()
+        .then((r) => (this.updateAvailable = r));
+    this.sharedService.getReleaseUrl().then((r) => (this.releaseUrl = r));
 
     this.router.events.subscribe((e) => {
       if (e instanceof NavigationEnd) {
@@ -103,22 +109,38 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       }
     });
 
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      if (!cookie.includes("verified")) continue;
+    this.checkIfVerifiedInCookie();
 
-      this.verificationResult = cookie.includes("true");
+    if (this.deviceService.isTablet() || this.deviceService.isMobile()) {
+      this.isMobile = true;
     }
 
-    if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;
-
-    if (this.cookieService.get("authenticated")) this.signedIn = true;
+    if (this.cookieService.get("authenticated")) {
+      this.signedIn = true;
+    }
 
     // Hide modals when the route changes
     this.router.events.subscribe(() => this.modalRef?.hide());
+
+    this.modalService.modal.subscribe((data)=>{
+      if (data === "authentication_successful") {
+        this.signedIn = true;
+        this.checkIfVerifiedInCookie();
+      }
+    });
   }
 
-  ngAfterViewInit(): void {
-    if (this.verificationResult) this.modalRef = this.loginModal.open();
+  checkIfVerifiedInCookie() {
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      if (!cookie.includes("verified")) {
+        continue;
+      }
+      this.verificationResult = cookie.includes("true");
+    }
+  }
+
+  ngOnDestroy() {
+    this.modalService.modal.unsubscribe();
   }
 }

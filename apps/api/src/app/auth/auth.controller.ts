@@ -8,12 +8,13 @@ import {
   Param,
   Post,
   Req,
+  Request,
   Res,
   UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { Response, Request } from "express";
+import { Response, Request as ExpressRequest } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { ApiResponse, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 import * as jwt from "jsonwebtoken";
@@ -54,7 +55,7 @@ export class AuthController {
    * @returns Whether the user's password was successfully updated
    */
   @Post("reset/setPassword")
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<ApiResponse<User>> {
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
     let decoded: { email: string, reset: boolean };
 
     try {
@@ -183,6 +184,32 @@ export class AuthController {
 
     return res.redirect("/");
   }
+  @Post("resendVerification")
+  async resendVerificationMail(@Request() req: ExpressRequest) {
+    const userCookie = this.usersService.getUserInfo(req);
+
+    if (userCookie && await this.usersService.user({ id: userCookie.id })
+    ) {
+      const user = await this.usersService.user({ id: userCookie.id });
+      if (await this.mailService.sendEmailConfirmation(user.email)) {
+        return {
+          status: "success",
+          message: "Verification email is sent to your email address."
+        };
+      } else {
+        return {
+          status: "failure",
+          message: "Could not send verification email. Please try again later."
+        };
+      }
+    } else {
+      return {
+        status: "failure",
+        message: "Something went wrong!"
+      };
+    }
+  }
+
 
   /**
    * Registers a new user
@@ -251,11 +278,11 @@ export class AuthController {
       if (!captchaCheck) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
     }
 
-    res.cookie("verified", "", { httpOnly: false, expires: new Date() });
 
     const user = await this.usersService.user({
       email: loginDto.email
     });
+    res.cookie("verified", user.verified, { httpOnly: false });
 
     if (!user) {
       res.status(500);
@@ -286,7 +313,7 @@ export class AuthController {
    * @returns Void
    */
   @Post("logout")
-  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  logout(@Req() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
     return this.authService.logout(req, res);
   }
 }

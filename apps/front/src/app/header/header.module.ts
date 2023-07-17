@@ -12,6 +12,7 @@ import { AuthModule } from "../auth/auth.module";
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
+import { ResendEmailComponent } from "./resend-email/resend-email.component";
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { RegisterModalComponent } from "./register-modal/register-modal.componen
     SetPasswordModalComponent,
     LoginModalComponent,
     ForgotPasswordModalComponent,
-    RegisterModalComponent
+    RegisterModalComponent,
+    ResendEmailComponent
   ],
   imports: [
     CommonModule,
