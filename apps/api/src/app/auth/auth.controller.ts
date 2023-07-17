@@ -184,6 +184,10 @@ export class AuthController {
 
     return res.redirect("/");
   }
+
+  /**
+   * Resends the verification email to the user
+   */
   @Post("resendVerification")
   async resendVerificationMail(@Request() req: ExpressRequest) {
     const userCookie = this.usersService.getUserInfo(req);
