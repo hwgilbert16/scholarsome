@@ -4,7 +4,7 @@
     <div class="mx-4 container-fluid mt-3 mb-4">
       <div class="fw-bold" [ngClass]="submitted ? correct ? 'text-success' : 'text-danger' : ''">
         <p class="fs-1 text-center" *ngIf="question.type !== 'trueOrFalse'" [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.question)"></p>
-        <p class="fs-1 text-center" *ngIf="question.type === 'trueOrFalse'"><span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.question)"></span> <fa-icon [icon]="faArrowRight"></fa-icon> <span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.trueOrFalseOption ? question.trueOrFalseOption : '')"></span></p>
+        <p class="fs-1 text-center" *ngIf="question.type === 'trueOrFalse'"><span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.question)"></span><br><fa-icon [icon]="faArrowRight"></fa-icon><br><span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.trueOrFalseOption ? question.trueOrFalseOption : '')"></span></p>
       </div>
       <div class="quiz-question-written" *ngIf="question.type === 'written'">
         <p class="text-secondary text-center">Answer with the corresponding {{question.answerWith}}</p>

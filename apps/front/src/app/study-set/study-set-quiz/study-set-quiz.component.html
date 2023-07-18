@@ -62,5 +62,6 @@
 </div>
 
 <div class="d-flex container-fluid bg-white fixed-bottom shadow navigation-bar">
-  <fa-icon class="fs-2 back-arrow" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+  <fa-icon class="fs-2 back-arrow" *ngIf="!created" [routerLink]="['/study-set', setId]" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
+  <fa-icon class="fs-2 back-arrow" *ngIf="created" (click)="reloadPage()" [icon]="['far', 'arrow-alt-circle-left']"></fa-icon>
 </div>

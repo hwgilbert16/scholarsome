@@ -8,7 +8,7 @@ Sets are the core foundation of Scholarsome. Flashcards, quizzes, and everything
 
 ## Creating manually
 
-The most common way to create a set is the manually, where each card is typed in by hand.
+The most common way to create a set is manually, where each card is typed in.
 
 To create a set manually, click the purple button in the navigation bar that says "Create", and then click "Study set." This will take you to the set creation page.
 
@@ -28,7 +28,7 @@ Click the purple "Create" button once you are ready to import the set.
 
 ## Importing from Quizlet
 
-Sets from Quizlet can only be imported if you are the one who created them, or know the person who did. Quizlet only provides the exporting tools for the creator of the set.
+Sets from Quizlet can only be imported if you are the one who created them. Quizlet only provides the exporting tools for the creator of the set.
 
 Go to your set within Quizlet, and click the three dots next to the edit pencil, near your profile picture. Click "Export." Select the "Tab" and "Semicolon" options. Then, click "Copy text."
 

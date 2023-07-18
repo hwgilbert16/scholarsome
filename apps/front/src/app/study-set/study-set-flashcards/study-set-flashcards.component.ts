@@ -83,9 +83,19 @@ export class StudySetFlashcardsComponent implements OnInit {
       !this.roundCompleted
     ) {
       if (event.key === "ArrowLeft") {
-        this.changeCard(-1);
+        if (this.flashcardsMode === "traditional") {
+          this.changeCard(-1);
+        } else {
+          this.changeCard(1);
+        }
       } else if (event.key === "ArrowRight") {
-        this.changeCard(1);
+        if (this.flashcardsMode === "traditional") {
+          this.changeCard(1);
+        } else {
+          this.incrementLearntCount();
+          this.knownCardIDs.push(this.currentCard.id);
+          this.changeCard(1);
+        }
       } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         this.flipCard();
       }
@@ -126,7 +136,8 @@ export class StudySetFlashcardsComponent implements OnInit {
 
     if (
       this.index === this.cards.length - 1 &&
-      direction === 1
+      direction === 1 &&
+      this.flashcardsMode === "traditional"
     ) return;
 
     // increment the currentCard object to the next card in the array
