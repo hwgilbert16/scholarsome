@@ -3,7 +3,7 @@
     "target": "http://localhost:3333",
     "secure": false
   },
-  "/docs": {
+  "/handbook": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true

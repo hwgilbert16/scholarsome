@@ -5,9 +5,9 @@ require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Scholarsome Docs',
+  title: 'Scholarsome Handbook',
   url: `http://${process.env.HOST}`,
-  baseUrl: '/docs/',
+  baseUrl: '/handbook/',
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
