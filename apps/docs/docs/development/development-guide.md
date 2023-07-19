@@ -29,7 +29,25 @@ npm install --legacy-peer-deps
 Next, we'll need to setup the environment file. Make a copy of the development one and open it in your favorite file editor.
 
 ```
-cp .env.example .env
+cp .env.dev.example .env
+```
+
+Scholarsome is dependent on a MariaDB instance, a Redis instance, and (optionally), an SMTP server. We recommend using Docker containers to setup these connections.
+
+`.env.dev.example` has a configuration prefilled to match the container configuration commands listed below, but you can connect to a different database if necessary.
+
+If you use the prefilled configuration, you will only need to fill in the `STORAGE_LOCAL_DIR` variable.
+
+```
+docker run -p 6379:6379 --name some-redis redis
+```
+
+```
+docker run -p 3000:80 -p 25:25 rnwood/smtp4dev
+```
+
+```
+docker run -p 3306:3306 --name some-mariadb --env MARIADB_USER=test --env MARIADB_PASSWORD=test --env MARIADB_ROOT_PASSWORD=test --env MARIADB_DATABASE=scholarsome  mariadb:latest
 ```
 
 Below is a list of the required environment variables. Reference the [installation guide](../installation/installing.md) for documentation with the optional ones.
