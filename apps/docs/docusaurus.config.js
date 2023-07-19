@@ -1,12 +1,13 @@
 // @ts-check
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
+require("dotenv").config();
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Scholarsome Docs',
-  url: 'https://docs.scholarsome.com',
-  baseUrl: '/docs/',
+  title: 'Scholarsome Handbook',
+  url: `http://${process.env.HOST}`,
+  baseUrl: '/handbook/',
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
@@ -43,15 +44,10 @@ const config = {
         },
         items: [
           {
-            href: 'https://github.com/hwgilbert16/scholarsome',
+            to: `http://${process.env.HOST}`,
             position: 'left',
-            label: 'Back to GitHub'
-          },
-          {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Documentation'
+            label: 'Back to Scholarsome',
+            target: "_self"
           }
         ],
       },

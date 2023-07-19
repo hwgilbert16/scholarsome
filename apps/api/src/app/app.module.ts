@@ -33,7 +33,7 @@ import { MediaModule } from "./media/media.module";
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "docs"),
-      serveRoot: "/docs",
+      serveRoot: "/handbook",
       serveStaticOptions: {
         cacheControl: true,
         maxAge: 31536000
