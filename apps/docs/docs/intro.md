@@ -5,30 +5,16 @@ sidebar_position: 1
 
 # Intro
 
-[Installation Instructions](./get-started/prerequisites.md)
+Welcome to Scholarsome's handbook. Various information can be found here regarding the application.
 
-Scholarsome is an open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
+## Usage
 
-While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
+If you are looking for information on how to use Scholarsome, refer to our [usage](usage/overview) pages.
 
-![Demo](https://i.imgur.com/MshTOaL.png)
+## Installation
 
-## Features
+Scholarsome is able to be installed yourself on any system - if you are looking for information regarding this, refer to our [installation](installation/prerequisites) pages.
 
-Implemented features include:
+## Development
 
-- Create your own study sets ✅
-- Study using flashcards ✅
-- Use quizzes to test yourself ✅
-- Import created sets from Quizlet ✅
-- Edit your sets on the fly ✅
-- Make sets private if studying with others ✅
-
-## Features coming soon...
-
-- Interactive study games
-- Dynamic learn mode that adjusts to progress
-- Persistence of quiz results
-- Editing permission sharing with other users
-- Improved profile page
-- User-accessible API
+We are an open source project, and welcome all contributors. If you are looking for a guide on how to setup a development environment, refer to our [development](development/development-guide) pages.
