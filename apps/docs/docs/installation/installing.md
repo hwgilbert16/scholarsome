@@ -61,12 +61,12 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | DATABASE_PASSWORD               | **Required.** Internal password for databases. Select something strong, as you will not need to know this.                                                             |
 | JWT_SECRET                      | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
 | HTTP_PORT                       | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| HOST                            | **Required.** The Domain that Scholarsome will be running on. **Do not include HTTP.**                                                                                 |
 | STORAGE_TYPE                    | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. If set to local, Scholarsome will store media files locally.                 |
 | SMTP_HOST                       | Host to access the SMTP server.                                                                                                                                        |
 | SMTP_PORT                       | Port to access the SMTP server.                                                                                                                                        |
 | SMTP_USERNAME                   | Username to access the SMTP server.                                                                                                                                    |
 | SMTP_PASSWORD                   | Password to access the SMTP server.                                                                                                                                    |
-| HOST                            | The domain to be used in emails. **Do not include HTTP.**                                                                                                              |
 | SSL_KEY_BASE64                  | Base64 encoded SSL public key.                                                                                                                                         |
 | SSL_CERT_BASE64                 | Base64 encoded SSL certificate.                                                                                                                                        |
 | SCHOLARSOME_RECAPTCHA_SITE      | reCAPTCHA site key.                                                                                                                                                    |
@@ -133,6 +133,7 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | DATABASE_URL                    | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
 | JWT_SECRET                      | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
 | HTTP_PORT                       | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| HOST                            | **Required.** The domain that Scholarsome will be running on. **Do not include HTTP.**                                                                                 |
 | STORAGE_TYPE                    | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. If set to local, Scholarsome will store media files locally.                 |
 | REDIS_HOST                      | **Required.** Host used to access the Redis database.                                                                                                                  |
 | REDIS_PORT                      | **Required.** Port used to access the Redis database.                                                                                                                  |
@@ -142,7 +143,6 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | SMTP_PORT                       | Port to access the SMTP server.                                                                                                                                        |
 | SMTP_USERNAME                   | Username to access the SMTP server.                                                                                                                                    |
 | SMTP_PASSWORD                   | Password to access the SMTP server.                                                                                                                                    |
-| HOST                            | The domain to be used in emails. **Do not include HTTP.**                                                                                                              |
 | SSL_KEY_BASE64                  | Base64 encoded SSL public key.                                                                                                                                         |
 | SSL_CERT_BASE64                 | Base64 encoded SSL certificate.                                                                                                                                        |
 | SCHOLARSOME_RECAPTCHA_SITE      | reCAPTCHA site key.                                                                                                                                                    |
