@@ -56,18 +56,19 @@ Below is a list of the required environment variables. Reference the [installati
 <summary>Development Environment Variables</summary>
 
 
-| Variable Name         | Description                                                                                                                                                            |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| NODE_ENV              | **Required.** Declares whether the application is running in development or production. Recommended to be set to `development` for development purposes.               |
-| DATABASE_URL          | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
-| JWT_SECRET            | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
-| HTTP_PORT             | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
-| STORAGE_TYPE          | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. Recommended to be set to `local` for development installations.              |
-| REDIS_HOST            | **Required.** Host used to access the Redis database.                                                                                                                  |
-| REDIS_PORT            | **Required.** Port used to access the Redis database.                                                                                                                  |
-| REDIS_USERNAME        | **Required.** Username used to access the Redis database.                                                                                                              |
-| REDIS_PASSWORD        | **Required.** Password used to access the Redis database.                                                                                                              |
-| STORAGE_LOCAL_DIR     | Required if storing files locally. The absolute filepath pointing to the directory where Scholarsome should store media files.                                         |
+| Variable Name     | Description                                                                                                                                                            |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| NODE_ENV          | **Required.** Declares whether the application is running in development or production. Recommended to be set to `development` for development purposes.               |
+| DATABASE_URL      | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
+| JWT_SECRET        | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
+| HTTP_PORT         | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| HOST              | **Required.** The domain that Scholarsome will be running on. Likely will be `localhost:4200` for development installs. **Do not include HTTP.**                       |
+| STORAGE_TYPE      | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. Recommended to be set to `local` for development installations.              |
+| REDIS_HOST        | **Required.** Host used to access the Redis database.                                                                                                                  |
+| REDIS_PORT        | **Required.** Port used to access the Redis database.                                                                                                                  |
+| REDIS_USERNAME    | **Required.** Username used to access the Redis database.                                                                                                              |
+| REDIS_PASSWORD    | **Required.** Password used to access the Redis database.                                                                                                              |
+| STORAGE_LOCAL_DIR | Required if storing files locally. The absolute filepath pointing to the directory where Scholarsome should store media files.                                         |
 </details>
 
 Setup the database.
