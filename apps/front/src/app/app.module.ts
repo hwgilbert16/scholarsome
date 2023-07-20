@@ -31,7 +31,6 @@ import { CreateModule } from "./create/create.module";
 import { AppRoutingModule } from "./app-routing.module";
 import { LandingModule } from "./landing/landing.module";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { CommonModule } from "@angular/common";
 import { ProfileModule } from "./profile/profile.module";
 import { HeadScriptsComponent } from "./head-scripts/head-scripts.component";
 import { QuillConfigModule, QuillModule } from "ngx-quill";
@@ -63,7 +62,6 @@ Quill.register("modules/imageResize", ImageResize);
     CookieModule.withOptions(),
     AppRoutingModule,
     BrowserAnimationsModule,
-    CommonModule,
     ProfileModule,
     HeaderModule,
     QuillModule.forRoot(),

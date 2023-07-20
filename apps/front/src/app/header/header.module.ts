@@ -15,6 +15,14 @@ import { RegisterModalComponent } from "./register-modal/register-modal.componen
 import { ResendEmailComponent } from "./resend-email/resend-email.component";
 
 @NgModule({
+  imports: [
+    CommonModule,
+    BsDropdownModule,
+    FontAwesomeModule,
+    FormsModule,
+    RouterLinkWithHref,
+    AuthModule
+  ],
   declarations: [
     HeaderComponent,
     AnkiImportModalComponent,
@@ -24,14 +32,6 @@ import { ResendEmailComponent } from "./resend-email/resend-email.component";
     ForgotPasswordModalComponent,
     RegisterModalComponent,
     ResendEmailComponent
-  ],
-  imports: [
-    CommonModule,
-    BsDropdownModule,
-    FontAwesomeModule,
-    FormsModule,
-    RouterLinkWithHref,
-    AuthModule
   ],
   exports: [HeaderComponent, AnkiImportModalComponent]
 })

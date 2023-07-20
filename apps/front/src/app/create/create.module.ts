@@ -14,7 +14,7 @@ import { FormsModule } from "@angular/forms";
     SharedModule,
     FormsModule
   ],
-  exports: [],
-  declarations: [CreateStudySetComponent]
+  declarations: [CreateStudySetComponent],
+  exports: []
 })
 export class CreateModule {}

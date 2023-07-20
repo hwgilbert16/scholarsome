@@ -5,7 +5,11 @@ import { ProfileRoutingModule } from "./profile-routing.module";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @NgModule({
-  declarations: [ProfileComponent],
-  imports: [CommonModule, ProfileRoutingModule, FontAwesomeModule]
+  imports: [
+    CommonModule,
+    ProfileRoutingModule,
+    FontAwesomeModule
+  ],
+  declarations: [ProfileComponent]
 })
 export class ProfileModule {}
