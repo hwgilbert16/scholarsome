@@ -29,7 +29,7 @@
   <hr>
   <div class="container-fluid">
     <div class="d-flex justify-content-between">
-      <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>
+      <h5 *ngIf="set">{{this.set.cards.length}} term{{this.set.cards.length > 1 ? 's' : ''}} in this set</h5>
       <div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
         <div class="d-flex align-items-center">

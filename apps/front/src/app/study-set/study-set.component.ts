@@ -13,6 +13,7 @@ import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
 import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { Card } from "@prisma/client";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -45,23 +46,28 @@ export class StudySetComponent implements OnInit {
 
   protected author: string;
 
-  protected cards: ComponentRef<CardComponent>[] = [];
+  protected scrollIndex = 1;
+
+  protected cards: Card[];
+  protected cardComponents: ComponentRef<CardComponent>[] = [];
   protected set: Set;
 
   protected uploadTooLarge = false;
 
   protected deleteClicked = false;
 
+  protected scrollObserver: IntersectionObserver;
+
   protected readonly faChartLine = faChartLine;
   protected readonly faGamepad = faGamepad;
 
   updateCardIndices() {
-    for (let i = 0; i < this.cards.length; i++) {
-      this.cards[i].instance.cardIndex = i;
+    for (let i = 0; i < this.cardComponents.length; i++) {
+      this.cardComponents[i].instance.cardIndex = i;
 
-      this.cards[i].instance.upArrow = i !== 0;
-      this.cards[i].instance.downArrow = this.cards.length - 1 !== i;
-      this.cards[i].instance.trashCan = this.cards.length > 1;
+      this.cardComponents[i].instance.upArrow = i !== 0;
+      this.cardComponents[i].instance.downArrow = this.cardComponents.length - 1 !== i;
+      this.cardComponents[i].instance.trashCan = this.cardComponents.length > 1;
     }
   }
 
@@ -78,7 +84,7 @@ export class StudySetComponent implements OnInit {
     const card = this.cardsContainer.createComponent<CardComponent>(CardComponent);
 
     card.instance.cardId = opts.id ? opts.id : "";
-    card.instance.cardIndex = opts.index ? opts.index : this.cards.length;
+    card.instance.cardIndex = opts.index ? opts.index : this.cardComponents.length;
     card.instance.editingEnabled = opts.editingEnabled;
     card.instance.upArrow = opts.upArrow ? opts.upArrow : false;
     card.instance.downArrow = opts.downArrow ? opts.downArrow : false;
@@ -90,7 +96,7 @@ export class StudySetComponent implements OnInit {
       if (this.cardsContainer.length > 1) {
         this.cardsContainer.get(e)?.destroy();
 
-        this.cards.splice(this.cards.map((c) => c.instance.cardIndex).indexOf(e), 1);
+        this.cardComponents.splice(this.cardComponents.map((c) => c.instance.cardIndex).indexOf(e), 1);
 
         this.updateCardIndices();
       }
@@ -98,7 +104,7 @@ export class StudySetComponent implements OnInit {
 
     card.instance.moveCardEvent.subscribe((e) => {
       if (this.cardsContainer.length > 1) {
-        this.cards.splice(card.instance.cardIndex + e.direction, 0, this.cards.splice(card.instance.cardIndex, 1)[0]);
+        this.cardComponents.splice(card.instance.cardIndex + e.direction, 0, this.cardComponents.splice(card.instance.cardIndex, 1)[0]);
 
         this.cardsContainer.move(card.hostView, e.index + e.direction);
         card.instance.cardIndex = e.index + e.direction;
@@ -111,26 +117,26 @@ export class StudySetComponent implements OnInit {
       this.addCard({ editingEnabled: true });
     });
 
-    this.cards.push(card);
+    this.cardComponents.push(card);
     this.updateCardIndices();
   }
 
   editCards() {
     this.isEditing = true;
 
-    for (const [i, card] of this.cards.entries()) {
+    for (const [i, card] of this.cardComponents.entries()) {
       card.instance.editingEnabled = true;
       card.instance.cardIndex = i;
 
       card.instance.upArrow = i !== 0;
-      card.instance.downArrow = this.cards.length - 1 !== i;
-      card.instance.trashCan = this.cards.length > 1;
+      card.instance.downArrow = this.cardComponents.length - 1 !== i;
+      card.instance.trashCan = this.cardComponents.length > 1;
     }
   }
 
   async saveCards() {
     if (this.set) {
-      for (const card of this.cards) {
+      for (const card of this.cardComponents) {
         if (card.instance.term.length < 1 || card.instance.definition.length < 1) {
           return card.instance.notifyEmptyInput();
         }
@@ -138,7 +144,7 @@ export class StudySetComponent implements OnInit {
 
       this.isEditing = false;
 
-      for (const card of this.cards) {
+      for (const card of this.cardComponents) {
         card.instance.editingEnabled = false;
         card.instance.termValue = card.instance.term;
         card.instance.definitionValue = card.instance.definition;
@@ -150,7 +156,7 @@ export class StudySetComponent implements OnInit {
         id: this.set.id,
         description: this.editDescription.nativeElement.value,
         private: this.privateCheck.nativeElement.checked,
-        cards: this.cards.map((c) => {
+        cards: this.cardComponents.map((c) => {
           return {
             id: c.instance.cardId,
             index: c.instance.cardIndex,
@@ -168,31 +174,46 @@ export class StudySetComponent implements OnInit {
       this.set = updated;
 
       for (let i = 0; i < updated.cards.length; i++) {
-        this.cards[i].instance.cardId = updated.cards[i].id;
+        this.cardComponents[i].instance.cardId = updated.cards[i].id;
       }
 
       this.viewCards();
     }
   }
 
+  scrollCards() {
+    this.scrollIndex++;
+    this.cards = this.set.cards.slice(0, this.scrollIndex * 20);
+    console.log(this.cards);
+    this.viewCards();
+  }
+
   viewCards() {
     this.isEditing = false;
 
-    this.cards = [];
+    this.cardComponents = [];
     this.cardsContainer.clear();
 
-    if (this.set) {
-      // sort the cards by index
-      for (const card of this.set.cards.sort((a, b) => {
-        return a.index - b.index;
-      })) {
-        this.addCard({
-          id: card.id,
-          index: card.index,
-          editingEnabled: false,
-          term: card.term,
-          definition: card.definition
+    for (const card of this.cards) {
+      this.addCard({
+        id: card.id,
+        index: card.index,
+        editingEnabled: false,
+        term: card.term,
+        definition: card.definition
+      });
+
+      if (this.cardComponents.length === 15 * this.scrollIndex) {
+        this.scrollObserver = new IntersectionObserver((entries)=>{
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              this.scrollObserver.disconnect();
+              this.scrollCards();
+            }
+          });
         });
+
+        this.scrollObserver.observe(this.cardComponents[14 * this.scrollIndex].location.nativeElement);
       }
     }
   }
@@ -230,6 +251,9 @@ export class StudySetComponent implements OnInit {
     const user = await this.users.user("self");
 
     this.set = set;
+    this.set.cards = this.set.cards.sort((a, b) => {
+      return a.index - b.index;
+    });
 
     if (user && user.id === set.authorId) this.userIsAuthor = true;
 
@@ -238,6 +262,7 @@ export class StudySetComponent implements OnInit {
     this.author = this.set.author.username;
     this.container.nativeElement.removeAttribute("hidden");
 
+    this.cards = this.set.cards.slice(0, 20);
     this.viewCards();
   }
 }
