@@ -28,7 +28,7 @@ import { MediaModule } from "./media/media.module";
         cacheControl: true,
         maxAge: 31536000
       },
-      exclude: ["/api/(.*)"]
+      exclude: ["/api/(.*)", "/handbook/(.*)"]
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "docs"),
