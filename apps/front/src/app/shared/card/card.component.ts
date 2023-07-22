@@ -13,6 +13,8 @@ import { AlertComponent } from "../alert/alert.component";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { DomSanitizer } from "@angular/platform-browser";
+import { ViewportScroller } from "@angular/common";
+import { DeviceDetectorService } from "ngx-device-detector";
 
 @Component({
   selector: "scholarsome-card",
@@ -22,6 +24,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 export class CardComponent implements OnInit, AfterViewInit {
   constructor(
     private readonly bsModalService: BsModalService,
+    private readonly vps: ViewportScroller,
+    private readonly deviceService: DeviceDetectorService,
     public readonly sanitizer: DomSanitizer
   ) {}
 
@@ -37,9 +41,11 @@ export class CardComponent implements OnInit, AfterViewInit {
   @Input() termValue?: string;
   @Input() definitionValue?: string;
 
+  @Output() addCardEvent = new EventEmitter();
   @Output() deleteCardEvent = new EventEmitter<number>();
   @Output() moveCardEvent = new EventEmitter<{ index: number, direction: number }>();
 
+  @ViewChild("card", { static: false }) cardElement: Element;
   @ViewChild("term", { static: false }) termElement: ElementRef;
   @ViewChild("definition", { static: false }) definitionElement: ElementRef;
   @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
@@ -51,12 +57,16 @@ export class CardComponent implements OnInit, AfterViewInit {
   protected mainTerm: string;
   protected mainDefinition: string;
 
+  protected isMobile = false;
+
   protected modalRef?: BsModalRef;
   protected readonly faPenToSquare = faPenToSquare;
 
   ngOnInit() {
     this.mainTerm = this.termValue ? this.termValue : "";
     this.mainDefinition = this.definitionValue ? this.definitionValue : "";
+
+    this.isMobile = this.deviceService.isMobile();
   }
 
   ngAfterViewInit() {
@@ -75,6 +85,21 @@ export class CardComponent implements OnInit, AfterViewInit {
       this.mainTerm = this.termValue ? this.termValue : "";
       this.mainDefinition = this.definitionValue ? this.definitionValue : "";
     });
+
+    // scroll to bottom of cards list
+    if (this.editingEnabled) {
+      this.vps.scrollToPosition([0, document.body.scrollHeight]);
+    }
+
+    // open the edit modal when new cards are added
+    if (
+      this.editingEnabled &&
+      !this.termValue &&
+      !this.definitionValue &&
+      (this.upArrow || this.downArrow)
+    ) {
+      this.openEditModal();
+    }
   }
 
   get term(): string {

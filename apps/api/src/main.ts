@@ -7,8 +7,16 @@ import * as http from "http";
 import * as express from "express";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import * as compression from "compression";
+import { envSchema } from "@scholarsome/shared";
 
 async function bootstrap() {
+  const validation = envSchema.prefs({ errors: { label: "key" } }).validate(process.env);
+
+  if (validation.error) {
+    console.error("\x1b[31m" + "Configuration validation error: " + validation.error.message);
+    process.exit(1);
+  }
+
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 

@@ -1,7 +1,10 @@
 <div class="d-flex flex-column justify-content-center align-items-center message" *ngIf="!side">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h2>Flashcards configuration</h2>
+      <h2>
+        Flashcards configuration
+        <a href="/handbook/usage/flashcards" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
+      </h2>
       <form #configForm="ngForm" (ngSubmit)="beginFlashcards(configForm)" ngNativeValidate>
         <div class="mb-2">
           <label for="traditional-radio" class="form-label fs-5">Type</label>
@@ -88,7 +91,6 @@
           <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="incrementLearntCount(); knownCardIDs.push(currentCard.id); changeCard(1);">Know</button>
         </div>
         <div class="mx-2 d-flex justify-content-between">
-          <p class="text-secondary text-capitalize fs-6">{{side}}</p>
           <p class="text-secondary fs-5">{{remainingCards}}</p>
         </div>
       </div>

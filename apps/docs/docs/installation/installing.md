@@ -2,7 +2,11 @@
 sidebar_position: 2
 ---
 
-# Installation
+# Installing
+
+:::info
+This section is about installing Scholarsome in a production environment. If you are looking for guidance on how to use the application, refer to the [usage section](../usage/creating-sets.md). If you are trying to run the application for development purposes, refer to the [development guide](../development/development-guide.md).
+:::
 
 Scholarsome can be installed one of two ways for production uses: via Docker Compose, or Docker.
 
@@ -38,11 +42,18 @@ Download the environment file and make a copy of it.
 wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.compose.example && cp .env.compose.example .env
 ```
 
-Open `.env` with your favorite text editor, and fill in the required fields, along with any optional ones that fit your use case.
+Open the `.env` file in any text editor.
+
+Expand the dropdown below, it lists Scholarsome's environment variables. These are used to configure the application to your liking. At a minimum, you must fill in the fields marked as "required."
+
+Additionally, if you are using S3 as your storage medium, you will need to fill the `S3_` fields as well.
 
 :::info
-If the SMTP fields are left blank, users will be verified by default. Most installations do not need email verification.
+If the SMTP fields are left blank, users will be verified by default. Most installations do not need to enforce email verification.
 :::
+
+<details>
+<summary>Docker Compose Environment Variables</summary>
 
 | Variable Name                   | Description                                                                                                                                                            |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -50,12 +61,12 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | DATABASE_PASSWORD               | **Required.** Internal password for databases. Select something strong, as you will not need to know this.                                                             |
 | JWT_SECRET                      | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
 | HTTP_PORT                       | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| HOST                            | **Required.** The Domain that Scholarsome will be running on. **Do not include HTTP.**                                                                                 |
 | STORAGE_TYPE                    | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. If set to local, Scholarsome will store media files locally.                 |
 | SMTP_HOST                       | Host to access the SMTP server.                                                                                                                                        |
 | SMTP_PORT                       | Port to access the SMTP server.                                                                                                                                        |
 | SMTP_USERNAME                   | Username to access the SMTP server.                                                                                                                                    |
 | SMTP_PASSWORD                   | Password to access the SMTP server.                                                                                                                                    |
-| HOST                            | The domain to be used in emails. **Do not include HTTP.**                                                                                                              |
 | SSL_KEY_BASE64                  | Base64 encoded SSL public key.                                                                                                                                         |
 | SSL_CERT_BASE64                 | Base64 encoded SSL certificate.                                                                                                                                        |
 | SCHOLARSOME_RECAPTCHA_SITE      | reCAPTCHA site key.                                                                                                                                                    |
@@ -66,6 +77,8 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Region for the S3 service.                                                                                                            |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+
+</details>
 
 
 Start the service in a detached state.
@@ -101,7 +114,18 @@ Download the environment file and make a copy of it.
 wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.docker.example && cp .env.docker.example .env
 ```
 
-Open `.env` with your favorite text editor, and fill in the required fields, along with any optional ones that fit your use case.
+Open `.env` in any text editor.
+
+Expand the dropdown below, it lists Scholarsome's environment variables. These are used to configure the application to your liking. At a minimum, you must fill in the fields marked as "required."
+
+Ensure that you provide a filepath for the `STORAGE_LOCAL_DIR` variable if using local media storage, or provide S3 authentication details if using S3 as your storage medium.
+
+:::info
+If the SMTP fields are left blank, users will be verified by default. Most installations do not need to enforce email verification.
+:::
+
+<details>
+<summary>Docker Environment Variables</summary>
 
 | Variable Name                   | Description                                                                                                                                                            |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -109,6 +133,7 @@ Open `.env` with your favorite text editor, and fill in the required fields, alo
 | DATABASE_URL                    | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
 | JWT_SECRET                      | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
 | HTTP_PORT                       | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| HOST                            | **Required.** The domain that Scholarsome will be running on. **Do not include HTTP.**                                                                                 |
 | STORAGE_TYPE                    | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. If set to local, Scholarsome will store media files locally.                 |
 | REDIS_HOST                      | **Required.** Host used to access the Redis database.                                                                                                                  |
 | REDIS_PORT                      | **Required.** Port used to access the Redis database.                                                                                                                  |
@@ -118,7 +143,6 @@ Open `.env` with your favorite text editor, and fill in the required fields, alo
 | SMTP_PORT                       | Port to access the SMTP server.                                                                                                                                        |
 | SMTP_USERNAME                   | Username to access the SMTP server.                                                                                                                                    |
 | SMTP_PASSWORD                   | Password to access the SMTP server.                                                                                                                                    |
-| HOST                            | The domain to be used in emails. **Do not include HTTP.**                                                                                                              |
 | SSL_KEY_BASE64                  | Base64 encoded SSL public key.                                                                                                                                         |
 | SSL_CERT_BASE64                 | Base64 encoded SSL certificate.                                                                                                                                        |
 | SCHOLARSOME_RECAPTCHA_SITE      | reCAPTCHA site key.                                                                                                                                                    |
@@ -130,6 +154,8 @@ Open `.env` with your favorite text editor, and fill in the required fields, alo
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. Region for the S3 service.                                                                                                            |
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+
+</details>
 
 Start the container in a detached state. Replace `(port)` with the value you selected for `HTTP_PORT` in the environment file.
 

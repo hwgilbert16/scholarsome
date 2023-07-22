@@ -39,32 +39,21 @@ export class StudySetComponent implements OnInit {
   @ViewChild("privateCheck", { static: false }) privateCheck: ElementRef;
   @ViewChild("editDescription", { static: false }) editDescription: ElementRef;
 
-  userIsAuthor = false;
-  isEditing = false;
-  setId: string | null;
+  protected userIsAuthor = false;
+  protected isEditing = false;
+  protected setId: string | null;
 
-  author: string;
+  protected author: string;
 
-  cards: ComponentRef<CardComponent>[] = [];
-  set: Set;
+  protected cards: ComponentRef<CardComponent>[] = [];
+  protected set: Set;
 
-  uploadTooLarge = false;
+  protected uploadTooLarge = false;
 
-  deleteClicked = false;
+  protected deleteClicked = false;
 
-  faChartLine = faChartLine;
-  faGamepad = faGamepad;
-
-  cookieExists(name: string): boolean {
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      if (cookie.includes(name)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
+  protected readonly faChartLine = faChartLine;
+  protected readonly faGamepad = faGamepad;
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -116,6 +105,10 @@ export class StudySetComponent implements OnInit {
 
         this.updateCardIndices();
       }
+    });
+
+    card.instance.addCardEvent.subscribe(() => {
+      this.addCard({ editingEnabled: true });
     });
 
     this.cards.push(card);

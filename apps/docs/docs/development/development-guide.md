@@ -29,28 +29,46 @@ npm install --legacy-peer-deps
 Next, we'll need to setup the environment file. Make a copy of the development one and open it in your favorite file editor.
 
 ```
-cp .env.example .env
+cp .env.dev.example .env
 ```
 
-Below is a list of the required environment variables. Reference the [installation guide](../get-started/installation.md) for documentation with the optional ones.
+Scholarsome is dependent on a MariaDB instance, a Redis instance, and (optionally), an SMTP server. We recommend using Docker containers to setup these connections.
 
-| Variable Name         | Description                                                                                                                                                            |
-|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| NODE_ENV              | **Required.** Declares whether the application is running in development or production. Recommended to be set to `development` for development purposes.               |
-| DATABASE_URL          | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
-| JWT_SECRET            | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
-| HTTP_PORT             | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
-| STORAGE_TYPE          | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. Recommended to be set to `local` for development installations.              |
-| REDIS_HOST            | **Required.** Host used to access the Redis database.                                                                                                                  |
-| REDIS_PORT            | **Required.** Port used to access the Redis database.                                                                                                                  |
-| REDIS_USERNAME        | **Required.** Username used to access the Redis database.                                                                                                              |
-| REDIS_PASSWORD        | **Required.** Password used to access the Redis database.                                                                                                              |
-| STORAGE_LOCAL_DIR     | Required if storing files locally. The absolute filepath pointing to the directory where Scholarsome should store media files.                                         |
-| S3_STORAGE_ENDPOINT   | Required if storing files in S3. The endpoint of the S3 service.                                                                                                       |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Access key for the S3 service.                                                                                                        |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Secret key for the S3 service.                                                                                                        |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. Region for the S3 service.                                                                                                            |
-| S3_STORAGE_ACCESS_KEY | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
+`.env.dev.example` has a configuration prefilled to match the container configuration commands listed below, but you can connect to a different database if necessary.
+
+If you use the prefilled configuration, you will only need to fill in the `STORAGE_LOCAL_DIR` variable.
+
+```
+docker run -p 6379:6379 --name some-redis redis
+```
+
+```
+docker run -p 3000:80 -p 25:25 rnwood/smtp4dev
+```
+
+```
+docker run -p 3306:3306 --name some-mariadb --env MARIADB_USER=test --env MARIADB_PASSWORD=test --env MARIADB_ROOT_PASSWORD=test --env MARIADB_DATABASE=scholarsome  mariadb:latest
+```
+
+Below is a list of the required environment variables. Reference the [installation guide](../installation/installing.md) for documentation with the optional ones.
+
+<details>
+<summary>Development Environment Variables</summary>
+
+| Variable Name     | Description                                                                                                                                                            |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| NODE_ENV          | **Required.** Declares whether the application is running in development or production. Recommended to be set to `development` for development purposes.               |
+| DATABASE_URL      | **Required.** Connection string to the MySQL database. The format should be as follows: `mysql://(username):(password)@(host):(port)/(database)`                       |
+| JWT_SECRET        | **Required.** String used to encrypt cookies and other sensitive items. Select something strong, as you will not need to know this.                                    |
+| HTTP_PORT         | **Required.** Port that Scholarsome with be accessible through. Recommended to be set to 80. If using SSL, set to 80, as another server will be spawned with port 443. |
+| HOST              | **Required.** The domain that Scholarsome will be running on. Likely will be `localhost:4200` for development installs. **Do not include HTTP.**                       |
+| STORAGE_TYPE      | **Required.** The method that Scholarsome will store media files, either `local` or `s3`. Recommended to be set to `local` for development installations.              |
+| REDIS_HOST        | **Required.** Host used to access the Redis database.                                                                                                                  |
+| REDIS_PORT        | **Required.** Port used to access the Redis database.                                                                                                                  |
+| REDIS_USERNAME    | **Required.** Username used to access the Redis database.                                                                                                              |
+| REDIS_PASSWORD    | **Required.** Password used to access the Redis database.                                                                                                              |
+| STORAGE_LOCAL_DIR | Required if storing files locally. The absolute filepath pointing to the directory where Scholarsome should store media files.                                         |
+</details>
 
 Setup the database.
 

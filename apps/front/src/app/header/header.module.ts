@@ -14,6 +14,14 @@ import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-pas
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
 
 @NgModule({
+  imports: [
+    CommonModule,
+    BsDropdownModule,
+    FontAwesomeModule,
+    FormsModule,
+    RouterLinkWithHref,
+    AuthModule
+  ],
   declarations: [
     HeaderComponent,
     AnkiImportModalComponent,
@@ -22,14 +30,6 @@ import { RegisterModalComponent } from "./register-modal/register-modal.componen
     LoginModalComponent,
     ForgotPasswordModalComponent,
     RegisterModalComponent
-  ],
-  imports: [
-    CommonModule,
-    BsDropdownModule,
-    FontAwesomeModule,
-    FormsModule,
-    RouterLinkWithHref,
-    AuthModule
   ],
   exports: [HeaderComponent, AnkiImportModalComponent]
 })

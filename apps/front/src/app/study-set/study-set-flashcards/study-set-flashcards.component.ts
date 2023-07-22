@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { Component, HostListener, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Card } from "@prisma/client";
@@ -6,6 +6,7 @@ import { BsModalRef } from "ngx-bootstrap/modal";
 import { faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
 import { DomSanitizer, Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set-flashcards",
@@ -62,8 +63,46 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected flipInteraction = false;
 
   protected modalRef?: BsModalRef;
-  protected faThumbsUp = faThumbsUp;
-  protected faCake = faCake;
+  protected readonly faThumbsUp = faThumbsUp;
+  protected readonly faCake = faCake;
+  protected readonly faQuestionCircle = faQuestionCircle;
+
+  @HostListener("document:keypress", ["$event"])
+  keyboardSpaceEvent(event: KeyboardEvent) {
+    if (
+      this.flashcardsMode &&
+      !this.roundCompleted &&
+      event.key === " "
+    ) {
+      this.flipCard();
+    }
+  }
+
+  @HostListener("document:keyup", ["$event"])
+  keyboardArrowEvent(event: KeyboardEvent) {
+    if (
+      this.flashcardsMode &&
+      !this.roundCompleted
+    ) {
+      if (event.key === "ArrowLeft") {
+        if (this.flashcardsMode === "traditional") {
+          this.changeCard(-1);
+        } else {
+          this.changeCard(1);
+        }
+      } else if (event.key === "ArrowRight") {
+        if (this.flashcardsMode === "traditional") {
+          this.changeCard(1);
+        } else {
+          this.incrementLearntCount();
+          this.knownCardIDs.push(this.currentCard.id);
+          this.changeCard(1);
+        }
+      } else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        this.flipCard();
+      }
+    }
+  }
 
   updateIndex() {
     this.remainingCards = `${this.index + 1}/${this.cards.length}`;
@@ -92,6 +131,17 @@ export class StudySetFlashcardsComponent implements OnInit {
   }
 
   changeCard(direction: number) {
+    if (
+      this.index === 0 &&
+      direction === -1
+    ) return;
+
+    if (
+      this.index === this.cards.length - 1 &&
+      direction === 1 &&
+      this.flashcardsMode === "traditional"
+    ) return;
+
     // increment the currentCard object to the next card in the array
     if (this.flashcardsMode === "progressive" && this.index !== this.cards.length - 1) {
       this.currentCard = this.cards[this.index + 1];

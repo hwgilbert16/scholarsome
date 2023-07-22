@@ -7,25 +7,24 @@ import {
   StudySetQuizQuestionComponent
 } from "./study-set-quiz/study-set-quiz-question/study-set-quiz-question.component";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { StudySetRoutingModule } from "./study-set-routing.module";
 
 @NgModule({
+  imports: [
+    CommonModule,
+    StudySetRoutingModule,
+    FontAwesomeModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  providers: [],
   declarations: [
     StudySetComponent,
     StudySetFlashcardsComponent,
     StudySetQuizComponent,
     StudySetQuizQuestionComponent
   ],
-  exports: [],
-  imports: [
-    CommonModule,
-    StudySetRoutingModule,
-    FontAwesomeModule,
-    TooltipModule,
-    FormsModule,
-    ReactiveFormsModule
-  ]
+  exports: []
 })
 export class StudySetModule {}

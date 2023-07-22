@@ -1,7 +1,10 @@
 <fieldset [disabled]="formDisabled">
   <div class="py-4">
     <div class="create-header d-flex justify-content-between text-nowrap">
-      <h2>Create a new study set</h2>
+      <h2>
+        Create a new study set
+        <a href="/handbook/usage/creating-sets#creating-manually" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
+      </h2>
       <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
     </div>
     <div class="container-fluid mt-3">
@@ -22,11 +25,16 @@
       <hr>
     </div>
     <div class="container-fluid">
+      <div class="row mx-4">
+        <div class="card my-3 bg-white">
+          <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard()">
+            <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>
+          </div>
+        </div>
+      </div>
       <div class="row mx-3">
         <ng-template #cardList></ng-template>
       </div>
-    </div>
-    <div class="container-fluid">
       <div class="row mx-4">
         <div class="card my-3 bg-white">
           <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard()">

@@ -22,9 +22,6 @@ jobs:
           npm run build
           npm run lint
 
-      - name: Build docs
-        run: npm run build:docs
-
       - name: Run tests
         run: npx nx test api
 
