@@ -55,7 +55,6 @@ Below is a list of the required environment variables. Reference the [installati
 <details>
 <summary>Development Environment Variables</summary>
 
-
 | Variable Name     | Description                                                                                                                                                            |
 |-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | NODE_ENV          | **Required.** Declares whether the application is running in development or production. Recommended to be set to `development` for development purposes.               |
