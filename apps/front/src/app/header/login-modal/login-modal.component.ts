@@ -1,11 +1,10 @@
-import { Component, Input, TemplateRef, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Output, TemplateRef, ViewChild } from "@angular/core";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { NgForm } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../auth/auth.service";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { ModalService } from "../../shared/modal.service";
-import { CookieService } from "ngx-cookie";
 
 @Component({
   selector: "scholarsome-login-modal",
@@ -17,19 +16,17 @@ export class LoginModalComponent {
     private readonly router: Router,
     private readonly bsModalService: BsModalService,
     private readonly authService: AuthService,
-    public readonly modalService: ModalService,
-    private readonly cookieService: CookieService
+    public readonly modalService: ModalService
   ) {
     this.bsModalService.onHide.subscribe(() => {
       this.response = "";
       this.clicked = false;
-      this.verificationResult = false;
     });
   }
 
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
 
-  @Input() verificationResult: boolean | null;
+  @Output() loginEvent = new EventEmitter();
 
   protected response: string;
   protected clicked = false;
@@ -48,9 +45,9 @@ export class LoginModalComponent {
     this.clicked = true;
     this.response = await this.authService.login(form.value);
 
-    if (this.response === ApiResponseOptions.Success) {
-      this.modalService.modal.next("authentication_successful");
+    if (this.response === "success") {
       await this.router.navigate(["/homepage"]);
+      this.loginEvent.emit();
     } else {
       this.clicked = false;
     }

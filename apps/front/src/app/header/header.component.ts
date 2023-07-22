@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { ModalService } from "../shared/modal.service";
 import { AuthService } from "../auth/auth.service";
@@ -26,7 +26,7 @@ import { RegisterModalComponent } from "./register-modal/register-modal.componen
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"]
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("ankiImport") ankiImportModal: AnkiImportModalComponent;
   @ViewChild("quizletImport") quizletImportModal: QuizletImportModalComponent;
   @ViewChild("setPassword") setPasswordModal: SetPasswordModalComponent;
@@ -121,12 +121,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     // Hide modals when the route changes
     this.router.events.subscribe(() => this.modalRef?.hide());
+  }
 
-    this.modalService.modal.subscribe((data)=>{
-      if (data === "authentication_successful") {
-        this.signedIn = true;
-        this.checkIfVerifiedInCookie();
-      }
+  ngAfterViewInit() {
+    this.loginModal.loginEvent.subscribe(() => {
+      this.signedIn = true;
+      this.checkIfVerifiedInCookie();
     });
   }
 

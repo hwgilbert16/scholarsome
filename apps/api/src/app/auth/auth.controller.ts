@@ -126,9 +126,9 @@ export class AuthController {
   @Throttle(5, 600)
   @Get("reset/sendReset/:email")
   async sendReset(@Param() params: { email: string }): Promise<ApiResponse<null>> {
-    const user = this.usersService.user({ email: params.email });
+    const user = await this.usersService.user({ email: params.email });
 
-    if (user) {
+    if (user && !user.verified) {
       await this.mailService.sendPasswordReset(params.email);
     }
 
@@ -179,37 +179,48 @@ export class AuthController {
     if (verification) {
       res.cookie("verified", true, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
     } else {
-      res.cookie("verified", false, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
+      res.cookie("verified", false, { expires: new Date() });
     }
 
-    return res.redirect("/");
+    const user = await this.usersService.user({ email: email.email });
+    if (!user) res.redirect("/");
+
+    this.authService.setLoginCookies(res, user);
+
+    return res.redirect("/homepage");
   }
 
   /**
    * Resends the verification email to the user
    */
   @Post("resendVerification")
-  async resendVerificationMail(@Request() req: ExpressRequest) {
+  async resendVerificationMail(@Request() req: ExpressRequest): Promise<ApiResponse<null>> {
     const userCookie = this.usersService.getUserInfo(req);
+    if (!userCookie) {
+      return {
+        status: "fail",
+        message: "Something went wrong!"
+      };
+    }
 
-    if (userCookie && await this.usersService.user({ id: userCookie.id })
-    ) {
-      const user = await this.usersService.user({ id: userCookie.id });
+    const user = await this.usersService.user({ id: userCookie.id });
+
+    if (user) {
       if (await this.mailService.sendEmailConfirmation(user.email)) {
         return {
           status: "success",
-          message: "Verification email is sent to your email address."
+          data: null
         };
       } else {
         return {
-          status: "failure",
-          message: "Could not send verification email. Please try again later."
+          status: "fail",
+          message: "Could not send verification email - is SMTP configured?"
         };
       }
     } else {
       return {
-        status: "failure",
-        message: "Something went wrong!"
+        status: "fail",
+        message: "Something went wrong."
       };
     }
   }
@@ -223,7 +234,7 @@ export class AuthController {
    */
   @Throttle(5, 900)
   @Post("register")
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<{ confirmEmail: boolean }>> {
+  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<null>> {
     if (
       await this.usersService.user({ email: registerDto.email }) ||
       await this.usersService.user({ username: registerDto.username })
@@ -235,24 +246,20 @@ export class AuthController {
         message: "Email already exists"
       };
     } else {
-      await this.usersService.createUser({
+      const user = await this.usersService.createUser({
         username: registerDto.username,
         email: registerDto.email,
         password: await bcrypt.hash(registerDto.password, 10),
         verified: !this.configService.get<boolean>("SMTP_HOST")
       });
 
-      if (await this.mailService.sendEmailConfirmation(registerDto.email)) {
-        return {
-          status: "success",
-          data: { confirmEmail: true }
-        };
-      } else {
-        return {
-          status: "success",
-          data: { confirmEmail: false }
-        };
-      }
+      await this.mailService.sendEmailConfirmation(registerDto.email);
+      this.authService.setLoginCookies(res, user);
+
+      return {
+        status: "success",
+        data: null
+      };
     }
   }
 
@@ -286,7 +293,6 @@ export class AuthController {
     const user = await this.usersService.user({
       email: loginDto.email
     });
-    res.cookie("verified", user.verified, { httpOnly: false, expires: new Date() });
 
     if (!user) {
       res.status(500);
@@ -297,13 +303,7 @@ export class AuthController {
       };
     }
 
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
-
-    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
-    this.redis.set(user.email, refreshToken);
-
-    res.cookie("access_token", this.jwtService.sign({ id: user.id, email: user.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-    res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    this.authService.setLoginCookies(res, user);
 
     return {
       status: "success",

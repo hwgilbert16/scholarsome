@@ -6,6 +6,5 @@ export enum ApiResponseOptions {
   Error = "ERROR",
   Fail = "FAIL",
   Incorrect = "INCORRECT",
-  Exists = "EXISTS",
-  Verify = "VERIFY"
+  Exists = "EXISTS"
 }

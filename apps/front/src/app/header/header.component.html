@@ -1,5 +1,6 @@
 <scholarsome-resend-email
-  *ngIf="!this.verificationResult && this.signedIn"
+  *ngIf="this.verificationResult === false && this.signedIn"
+  [hidden]="hidden"
 ></scholarsome-resend-email>
 <nav
   class="navbar navbar-expand-sm sticky-top bg-white fs-5 shadow-sm"
@@ -38,9 +39,6 @@
             "
             >Home</a
           >
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-black" aria-current="page" href="/handbook">Handbook</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-black" aria-current="page" href="/handbook">Handbook</a>
@@ -176,13 +174,8 @@
 </nav>
 
 <scholarsome-anki-import-modal #ankiImport></scholarsome-anki-import-modal>
-<scholarsome-quizlet-import-modal
-  #quizletImport
-></scholarsome-quizlet-import-modal>
+<scholarsome-quizlet-import-modal #quizletImport></scholarsome-quizlet-import-modal>
 <scholarsome-set-password-modal #setPassword></scholarsome-set-password-modal>
-<scholarsome-login-modal
-  [verificationResult]="verificationResult"
-  #login
-></scholarsome-login-modal>
+<scholarsome-login-modal #login></scholarsome-login-modal>
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
