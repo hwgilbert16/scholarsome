@@ -24,7 +24,6 @@ import { MediaModule } from "./media/media.module";
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "front"),
-      serveRoot: "/",
       serveStaticOptions: {
         cacheControl: true,
         maxAge: 31536000
