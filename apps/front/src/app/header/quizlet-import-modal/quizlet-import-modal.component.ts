@@ -4,6 +4,7 @@ import { NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { Router } from "@angular/router";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-quizlet-import-modal",
@@ -29,6 +30,7 @@ export class QuizletImportModalComponent {
 
   protected modalRef?: BsModalRef;
 
+  protected readonly faQuestionCircle = faQuestionCircle;
   protected readonly faQ = faQ;
 
   public open(): BsModalRef {

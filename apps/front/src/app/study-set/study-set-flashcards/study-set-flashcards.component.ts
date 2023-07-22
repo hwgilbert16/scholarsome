@@ -6,6 +6,7 @@ import { BsModalRef } from "ngx-bootstrap/modal";
 import { faThumbsUp, faCake } from "@fortawesome/free-solid-svg-icons";
 import { DomSanitizer, Meta, Title } from "@angular/platform-browser";
 import { NgForm } from "@angular/forms";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set-flashcards",
@@ -64,6 +65,7 @@ export class StudySetFlashcardsComponent implements OnInit {
   protected modalRef?: BsModalRef;
   protected readonly faThumbsUp = faThumbsUp;
   protected readonly faCake = faCake;
+  protected readonly faQuestionCircle = faQuestionCircle;
 
   @HostListener("document:keypress", ["$event"])
   keyboardSpaceEvent(event: KeyboardEvent) {

@@ -6,6 +6,7 @@ import { QuizQuestion, Set } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { compareTwoStrings } from "string-similarity";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set-quiz",
@@ -41,6 +42,8 @@ export class StudySetQuizComponent implements OnInit {
   percentCorrect: number;
 
   modalRef?: BsModalRef;
+
+  protected readonly faQuestionCircle = faQuestionCircle;
 
   beginQuiz(form: NgForm) {
     this.quizForm = new FormGroup({});
