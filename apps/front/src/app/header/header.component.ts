@@ -6,7 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar, faImage } from "@fortawesome/free-solid-svg-icons";
 import { SetsService } from "../shared/http/sets.service";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
@@ -16,6 +16,7 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
+import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
 
 @Component({
   selector: "scholarsome-header",
@@ -29,6 +30,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   @ViewChild("login") loginModal: LoginModalComponent;
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
+  @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
 
   // Whether an update is available compared to the current running version
   protected updateAvailable: boolean;
@@ -52,6 +54,8 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
   protected readonly packageJson = packageJson;
   protected readonly window = window;
+
+  protected readonly faImage = faImage;
   protected readonly faQ = faQ;
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;

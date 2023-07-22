@@ -40,6 +40,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
             <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.profilePictureModal.open()"><fa-icon [icon]="faImage"></fa-icon> Profile picture</a>
               <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout</a>
             </div>
           </li>
@@ -55,3 +56,4 @@
 <scholarsome-login-modal [verificationResult]="verificationResult" #login></scholarsome-login-modal>
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
+<scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>

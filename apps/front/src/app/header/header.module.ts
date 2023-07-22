@@ -12,6 +12,7 @@ import { AuthModule } from "../auth/auth.module";
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
+import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { RegisterModalComponent } from "./register-modal/register-modal.componen
     SetPasswordModalComponent,
     LoginModalComponent,
     ForgotPasswordModalComponent,
-    RegisterModalComponent
+    RegisterModalComponent,
+    ProfilePictureModalComponent
   ],
   exports: [HeaderComponent, AnkiImportModalComponent]
 })
