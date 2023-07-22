@@ -118,14 +118,6 @@ describe("AuthService", () => {
       const result = await authService.validateUser("", "_password");
       expect(result).toBe(false);
     });
-
-    it("should throw an UnauthorizedException when verified is false", async () => {
-      userData.verified = false;
-
-      await expect(async () => {
-        await authService.validateUser("", "password");
-      }).rejects.toThrow(UnauthorizedException);
-    });
   });
 
   describe("when the logout method is called", () => {

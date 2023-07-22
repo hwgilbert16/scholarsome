@@ -286,7 +286,7 @@ export class AuthController {
     const user = await this.usersService.user({
       email: loginDto.email
     });
-    res.cookie("verified", user.verified, { httpOnly: false });
+    res.cookie("verified", user.verified, { httpOnly: false, expires: new Date() });
 
     if (!user) {
       res.status(500);

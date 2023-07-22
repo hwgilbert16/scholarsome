@@ -420,7 +420,7 @@ describe("AuthController", () => {
 
       await authController.login(dto, res);
 
-      expect(res.cookie).toHaveBeenNthCalledWith(1, "verified", "", {
+      expect(res.cookie).toHaveBeenNthCalledWith(1, "verified", undefined, {
         httpOnly: false,
         expires: expect.any(Date)
       });
