@@ -18,7 +18,6 @@ export class ResendEmailComponent {
     this.clicked = true;
     const data = await this.authService.resendVerificationEmail();
     this.result = JSON.parse(JSON.stringify(data)) as {status: string, message: string};
-    console.log(this.result);
     this.clicked = false;
   }
 }
