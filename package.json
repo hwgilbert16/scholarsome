@@ -7,7 +7,6 @@
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate deploy",
     "build": "npx nx run-many --target=build --projects=front,api,docs --skip-nx-cache",
-    "build:docs": "npx nx build docs --skip-nx-cache",
     "test": "nx test",
     "lint": "nx run-many --all --target=lint --fix",
     "start": "nx serve",
