@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.3-labs
-FROM node:lts-alpine3.18
+FROM node:18
 
 ARG NODE_ENV
 ARG DATABASE_PASSWORD
