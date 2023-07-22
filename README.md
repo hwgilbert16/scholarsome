@@ -56,11 +56,11 @@ Implemented features include:
 
 Scholarsome is accessible at https://scholarsome.com for individuals who are not interested in hosting it themselves. It is free and runs the same as the most recently released version.
 
-However, the service can be hosted yourself on any system. For those wishing to self-host Scholarsome, documentation for installation can be found <a href="https://docs.scholarsome.com/get-started/prerequisites">here.</a>
+However, the service can be hosted yourself on any system. For those wishing to self-host Scholarsome, documentation for installation can be found <a href="https://scholarsome.com/handbook/installation/prerequisites">here.</a>
 
 ## Development
 
-For development purposes, Scholarsome is required to be installed outside the standard container-based system that is used for production installs. Documentation for development can be found <a href="https://docs.scholarsome.com/development/development-guide">here.</a>
+For development purposes, Scholarsome is required to be installed outside the standard container-based system that is used for production installs. Documentation for development can be found <a href="https://scholarsome.com/handbook/development/development-guide">here.</a>
 
 While we use many technologies, some of our most prominent are:
 
