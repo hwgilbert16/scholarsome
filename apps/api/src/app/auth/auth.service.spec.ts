@@ -7,7 +7,6 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { createMock } from "@golevelup/ts-jest";
 import { RedisService } from "@liaoliaots/nestjs-redis";
-import { UnauthorizedException } from "@nestjs/common";
 import { Request, Response } from "express";
 import { of } from "rxjs";
 
