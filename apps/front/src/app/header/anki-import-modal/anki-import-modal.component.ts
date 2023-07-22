@@ -3,6 +3,7 @@ import { NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { Router } from "@angular/router";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-anki-import-modal",
@@ -31,6 +32,7 @@ export class AnkiImportModalComponent {
   protected file: File | null = null;
 
   protected modalRef?: BsModalRef;
+  protected readonly faQuestionCircle = faQuestionCircle;
 
   public open(): BsModalRef {
     this.modalRef = this.bsModalService.show(this.modal);

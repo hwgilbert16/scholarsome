@@ -55,3 +55,22 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+.help-button {
+  color: black;
+}
+
+.help-button:hover {
+  animation: help-button-color-change 0.25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes help-button-color-change {
+  0% {
+    color: #212529;
+  }
+
+  100% {
+    color: #8438ff;
+  }
+}

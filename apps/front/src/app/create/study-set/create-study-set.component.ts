@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { SetsService } from "../../shared/http/sets.service";
 import { Meta, Title } from "@angular/platform-browser";
 import { CardComponent } from "../../shared/card/card.component";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-create",
@@ -32,10 +33,12 @@ export class CreateStudySetComponent implements OnInit {
   @ViewChild("description") descriptionInput: ElementRef;
   @ViewChild("privateCheck") privateCheckbox: ElementRef;
 
-  formDisabled = false;
+  protected formDisabled = false;
+
+  protected faQuestionCircle = faQuestionCircle;
 
   // index starts at 0
-  cards: { component: ComponentRef<CardComponent>, index: number }[] = [];
+  protected cards: { component: ComponentRef<CardComponent>, index: number }[] = [];
 
   async createSet() {
     const cards: { index: number; term: string; definition: string; }[] = [];

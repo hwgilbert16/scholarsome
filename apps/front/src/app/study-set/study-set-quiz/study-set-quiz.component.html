@@ -1,7 +1,10 @@
 <div class="d-flex flex-column justify-content-center align-items-center configuration" *ngIf="!created">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h2>Quiz configuration</h2>
+      <h2>
+        Quiz configuration
+        <a href="/handbook/usage/quizzes" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
+      </h2>
       <form #optionsForm="ngForm" (ngSubmit)="beginQuiz(optionsForm)" class="fs-5 ms-n5" ngNativeValidate>
         <div class="form-check form-switch options-buttons">
           <div class="d-flex justify-content-between">

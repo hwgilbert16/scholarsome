@@ -1,7 +1,10 @@
 <div class="d-flex flex-column justify-content-center align-items-center message" *ngIf="!side">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h2>Flashcards configuration</h2>
+      <h2>
+        Flashcards configuration
+        <a href="/handbook/usage/flashcards" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
+      </h2>
       <form #configForm="ngForm" (ngSubmit)="beginFlashcards(configForm)" ngNativeValidate>
         <div class="mb-2">
           <label for="traditional-radio" class="form-label fs-5">Type</label>
