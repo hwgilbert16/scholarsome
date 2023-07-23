@@ -4,6 +4,7 @@ import { NgForm } from "@angular/forms";
 import { AuthService } from "../../auth/auth.service";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { ModalService } from "../../shared/modal.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "scholarsome-register-modal",
@@ -12,6 +13,7 @@ import { ModalService } from "../../shared/modal.service";
 })
 export class RegisterModalComponent {
   constructor(
+    private readonly router: Router,
     private readonly authService: AuthService,
     private readonly bsModalService: BsModalService,
     public readonly modalService: ModalService
@@ -40,6 +42,10 @@ export class RegisterModalComponent {
     this.response = "";
     this.clicked = true;
     this.response = await this.authService.register(form.value);
+
+    if (this.response === ApiResponseOptions.Success) {
+      await this.router.navigate(["/homepage"]);
+    }
 
     this.clicked = false;
   }

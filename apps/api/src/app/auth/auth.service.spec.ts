@@ -7,12 +7,13 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { createMock } from "@golevelup/ts-jest";
 import { RedisService } from "@liaoliaots/nestjs-redis";
-import { UnauthorizedException } from "@nestjs/common";
 import { Request, Response } from "express";
 import { of } from "rxjs";
+import { User } from "@prisma/client";
 
 describe("AuthService", () => {
   let authService: AuthService;
+  let jwtService: JwtService;
   let redisService: RedisService;
 
   let userData = {
@@ -64,6 +65,7 @@ describe("AuthService", () => {
     }).compile();
 
     authService = await module.get(AuthService);
+    jwtService = await module.get(JwtService);
     redisService = await module.get(RedisService);
   });
 
@@ -108,6 +110,82 @@ describe("AuthService", () => {
     });
   });
 
+  describe("when the setLoginCookies method is called", () => {
+    it("should set the verified cookie", () => {
+      const res = {
+        cookie: jest.fn()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as Response;
+
+      const user = {
+        verified: true,
+        id: "a",
+        email: "b"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as User;
+
+      authService.setLoginCookies(res, user);
+
+      expect(res.cookie).toHaveBeenCalledWith("verified", user.verified, { httpOnly: false });
+    });
+
+    it("should set reset cookie and set within redis", () => {
+      const res = {
+        cookie: jest.fn()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as Response;
+
+      const user = {
+        verified: true,
+        id: "a",
+        email: "b"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as User;
+
+      authService.setLoginCookies(res, user);
+
+      expect(jwtService.sign).toHaveBeenCalledWith({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
+      expect(res.cookie).toHaveBeenCalledWith("refresh_token", {}, { httpOnly: true, expires: expect.any(Date) });
+      expect(redisService.getClient().set).toHaveBeenCalledWith(user.email, {});
+    });
+
+    it("should set the access token", () => {
+      const res = {
+        cookie: jest.fn()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as Response;
+
+      const user = {
+        verified: true,
+        id: "a",
+        email: "b"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as User;
+
+      authService.setLoginCookies(res, user);
+
+      expect(res.cookie).toHaveBeenCalledWith("access_token", {}, { httpOnly: true, expires: expect.any(Date) });
+    });
+
+    it("should set the authenticated cookie", () => {
+      const res = {
+        cookie: jest.fn()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as Response;
+
+      const user = {
+        verified: true,
+        id: "a",
+        email: "b"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any as User;
+
+      authService.setLoginCookies(res, user);
+
+      expect(res.cookie).toHaveBeenCalledWith("authenticated", true, { httpOnly: false, expires: expect.any(Date) });
+    });
+  });
+
   describe("when the validateUser method is called", () => {
     it("should verify a correct hashed password", async () => {
       const result = await authService.validateUser("", "password");
@@ -117,14 +195,6 @@ describe("AuthService", () => {
     it("should not verify an incorrect hashed password", async () => {
       const result = await authService.validateUser("", "_password");
       expect(result).toBe(false);
-    });
-
-    it("should throw an UnauthorizedException when verified is false", async () => {
-      userData.verified = false;
-
-      await expect(async () => {
-        await authService.validateUser("", "password");
-      }).rejects.toThrow(UnauthorizedException);
     });
   });
 

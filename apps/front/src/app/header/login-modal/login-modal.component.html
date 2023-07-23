@@ -10,7 +10,6 @@
       <div class="mb-3">
         <label for="login-email" class="form-label">Email address</label>
         <input type="email" class="form-control" id="login-email" name="email" required ngModel>
-        <div *ngIf="verificationResult" class="form-text text-success">Your email has been successfully verified. You may now login.</div>
         <div *ngIf="response === ApiResponseOptions.Error" class="form-text text-danger">There was an issue with login.</div>
         <div *ngIf="response === ApiResponseOptions.Incorrect" class="form-text text-danger">The email or password is incorrect.</div>
         <div *ngIf="response === ApiResponseOptions.Ratelimit" class="form-text text-danger">You are being rate limited.</div>
