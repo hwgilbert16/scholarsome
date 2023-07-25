@@ -7,9 +7,6 @@ import { ApiResponse, Set } from "@scholarsome/shared";
   providedIn: "root"
 })
 export class SetsService {
-  /**
-   * @ignore
-   */
   constructor(private readonly http: HttpClient) {}
 
   /**

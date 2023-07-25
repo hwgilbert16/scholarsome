@@ -40,7 +40,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
             <div class="dropdown-menu dropdown-menu-end">
-              <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.profilePictureModal.open()"><fa-icon [icon]="faImage"></fa-icon> Profile picture</a>
+              <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.profilePictureModal.open()"><fa-icon [icon]="faImage"></fa-icon> Avatar</a>
               <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout</a>
             </div>
           </li>
