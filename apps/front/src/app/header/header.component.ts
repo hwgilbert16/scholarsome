@@ -91,7 +91,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async viewAvatar() {
-    const avatar = await this.mediaService.getAvatar();
+    const avatar = await this.mediaService.getAvatar(64, 64);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));

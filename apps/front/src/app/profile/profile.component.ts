@@ -40,7 +40,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    const avatar = await this.mediaService.getAvatar();
+    const avatar = await this.mediaService.getAvatar(128, 128);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));

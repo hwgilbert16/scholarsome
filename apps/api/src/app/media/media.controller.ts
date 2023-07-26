@@ -4,6 +4,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
   Request,
   Res, UnauthorizedException,
   UploadedFile, UseGuards,
@@ -95,7 +96,13 @@ export class MediaController {
   }
 
   @Get("/avatars/:userId?")
-  async getAvatar(@Param() params: { userId: string }, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+  async getAvatar(
+    @Param() params: { userId: string },
+    @Request() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+    @Query("width") width: string,
+    @Query("height") height: string
+  ) {
     let userId = "";
 
     if (params.userId) {
@@ -134,7 +141,18 @@ export class MediaController {
         "Content-Type": "image/jpeg"
       });
 
-      res.write(await file.Body.transformToByteArray());
+      if (height || width) {
+        res.write(
+            await sharp(await file.Body.transformToByteArray())
+                .resize({
+                  width: width ? Number(width) : 128,
+                  height: height ? Number(height) : 128
+                })
+                .toBuffer()
+        );
+      } else {
+        res.write(await file.Body.transformToByteArray());
+      }
     } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
       const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", userId + ".jpeg");
 
@@ -143,7 +161,18 @@ export class MediaController {
           "Content-Type": "image/jpeg"
         });
 
-        res.write(fs.readFileSync(filePath));
+        if (height || width) {
+          res.write(
+              await sharp(fs.readFileSync(filePath))
+                  .resize({
+                    width: width ? Number(width) : 128,
+                    height: height ? Number(height) : 128
+                  })
+                  .toBuffer()
+          );
+        } else {
+          res.write(fs.readFileSync(filePath));
+        }
 
         res.end();
       } else {

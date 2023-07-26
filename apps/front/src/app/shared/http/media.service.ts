@@ -13,11 +13,17 @@ export class MediaService {
    *
    * @param userId Optional, ID of the user. Endpoint will use ID in cookies if no ID is provided.
    */
-  async getAvatar(userId?: string): Promise<Blob | false> {
+  async getAvatar(width?: number, height?: number, userId?: string): Promise<Blob | false> {
     let response;
 
     try {
-      response = await lastValueFrom(this.http.get("/api/media/avatars/" + (userId ? userId : ""), { responseType: "blob" }));
+      response = await lastValueFrom(
+          this.http.get("/api/media/avatars/" +
+            (userId ? userId : "") +
+            "?width=" + (width ? width : "") +
+            "&height=" + (height ? height : ""),
+          { responseType: "blob" })
+      );
     } catch (e) {
       return false;
     }
