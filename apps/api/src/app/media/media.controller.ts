@@ -161,7 +161,7 @@ export class MediaController {
 
     const avatar = await sharp(file.buffer)
         .jpeg({ progressive: true, force: true, quality: 80 })
-        .resize({ width: 64, height: 64, fit: "cover" })
+        .resize({ width: 128, height: 128, fit: "cover" })
         .flatten({ background: "#ffffff" })
         .toBuffer();
 

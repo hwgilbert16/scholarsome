@@ -102,12 +102,17 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     this.sharedService.isUpdateAvailable().then((r) => this.updateAvailable = r);
     this.sharedService.getReleaseUrl().then((r) => this.releaseUrl = r);
 
-    const user = await this.usersService.user();
-    if (user) this.user = user;
-
-    this.router.events.subscribe((e) => {
+    this.router.events.subscribe(async (e) => {
       if (e instanceof NavigationEnd) {
         this.hidden = this.router.url === "/" || this.router.url === "/reset";
+
+        if (!this.hidden) {
+          const user = await this.usersService.user();
+          if (user) this.user = user;
+
+          await this.viewAvatar();
+          this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
+        }
       }
     });
 
@@ -141,9 +146,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
 
     // Hide modals when the route changes
     this.router.events.subscribe(() => this.modalRef?.hide());
-
-    await this.viewAvatar();
-    this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
   }
 
   ngAfterViewInit(): void {

@@ -12,6 +12,10 @@ a {
   --bs-card-color: #8438ff;
 }
 
+.avatar {
+  border-radius: 50px;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
   .profile-container {
     width: 100%;
