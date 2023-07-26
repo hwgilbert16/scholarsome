@@ -6,11 +6,10 @@
     </button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="submit(form)" #form="ngForm" ngNativeValidate>
+    <form (ngSubmit)="submit()" ngNativeValidate>
       <div class="mb-3">
         <input type="file" accept="image/png,image/jpeg" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="clicked" ngModel required>
-        <div *ngIf="!existingAvatar" class="form-text">You currently do not have an avatar.</div>
-        <div *ngIf="existingAvatar" class="form-text">Changing your avatar will replace your existing one.</div>
+        <div  class="form-text">Changing your avatar will replace the existing one.</div>
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" [disabled]="clicked">

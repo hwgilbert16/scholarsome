@@ -38,8 +38,10 @@
         </div>
         <ul class="nav navbar-nav" *ngIf="signedIn">
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
+            <a *ngIf="!avatarUrl" class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="faUser"></fa-icon></a>
+            <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar" data-bs-toggle="dropdown">
             <div class="dropdown-menu dropdown-menu-end">
+              <a *ngIf="user" class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="'profile/' + user.id"><fa-icon [icon]="faUser"></fa-icon> Profile</a>
               <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.profilePictureModal.open()"><fa-icon [icon]="faImage"></fa-icon> Avatar</a>
               <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout</a>
             </div>

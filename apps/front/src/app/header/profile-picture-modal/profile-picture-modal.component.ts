@@ -1,28 +1,29 @@
-import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Output, TemplateRef, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { NgForm } from "@angular/forms";
 import { UsersService } from "../../shared/http/users.service";
-import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { DomSanitizer } from "@angular/platform-browser";
+import { MediaService } from "../../shared/http/media.service";
 
 @Component({
   selector: "scholarsome-profile-picture-modal",
   templateUrl: "./profile-picture-modal.component.html",
   styleUrls: ["./profile-picture-modal.component.scss"]
 })
-export class ProfilePictureModalComponent implements OnInit {
+export class ProfilePictureModalComponent {
   constructor(
     private readonly bsModalService: BsModalService,
     private readonly usersService: UsersService,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly mediaService: MediaService
   ) {}
 
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
+  @Output() updateAvatarEvent = new EventEmitter();
 
   protected clicked = false;
-
-  // base64 of avatar
-  protected existingAvatar: SafeResourceUrl;
   protected newAvatar: File;
+
+  protected error = false;
 
   protected modalRef?: BsModalRef;
 
@@ -31,8 +32,17 @@ export class ProfilePictureModalComponent implements OnInit {
     return this.modalRef;
   }
 
-  protected submit(form: NgForm) {
+  protected async submit() {
     this.clicked = true;
+    this.error = false;
+
+    this.error = await this.mediaService.setAvatar(this.newAvatar);
+    this.clicked = false;
+    this.updateAvatarEvent.emit();
+
+    if (this.error) {
+      this.modalRef?.hide();
+    }
   }
 
   protected onFileUpload(event: Event): void {
@@ -40,14 +50,6 @@ export class ProfilePictureModalComponent implements OnInit {
 
     if (files) {
       this.newAvatar = files[0];
-    }
-  }
-
-  async ngOnInit(): Promise<void> {
-    const file = await this.usersService.userProfilePicture("a");
-
-    if (file) {
-      this.existingAvatar = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file));
     }
   }
 }

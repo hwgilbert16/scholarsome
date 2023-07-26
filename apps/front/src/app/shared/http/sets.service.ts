@@ -1,4 +1,5 @@
-import { Injectable } from "@angular/core";
+import
+{ Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { lastValueFrom, Observable } from "rxjs";
 import { ApiResponse, Set } from "@scholarsome/shared";
@@ -10,7 +11,7 @@ export class SetsService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Makes a request to find a unique set
+   * Finds a unique set
    *
    * @param setId ID of the set to find
    *
@@ -35,7 +36,7 @@ export class SetsService {
   }
 
   /**
-   * Makes a request to find the sets of a user
+   * Finds the sets of a user
    *
    * @param userId ID of the user
    *
@@ -60,7 +61,7 @@ export class SetsService {
   }
 
   /**
-   * Makes a request to create a set
+   * Creates a set
    *
    * @param body.title Title of the set
    * @param body.description Optional, description of the set
@@ -101,7 +102,7 @@ export class SetsService {
   }
 
   /**
-   * Makes a request to create a set from an Anki .apkg file
+   * Creates a set from an Anki .apkg file
    *
    * @param body.title Title of the set
    * @param body.description Optional, description of the set
@@ -181,6 +182,14 @@ export class SetsService {
     } else return null;
   }
 
+
+  /**
+   * Deletes a set
+   *
+   * @param setId ID of the set
+   *
+   * @returns Deleted `Set` object
+   */
   async deleteSet(setId: string): Promise<Set | null> {
     let set: ApiResponse<Set> | undefined;
 

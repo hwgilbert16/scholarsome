@@ -94,8 +94,19 @@ export class MediaController {
     }
   }
 
-  @Get("/avatars/:userId")
+  @Get("/avatars/:userId?")
   async getAvatar(@Param() params: { userId: string }, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+    let userId = "";
+
+    if (params.userId) {
+      userId = params.userId;
+    } else {
+      const userCookie = this.usersService.getUserInfo(req);
+      if (!userCookie) throw new NotFoundException();
+
+      userId = userCookie.id;
+    }
+
     if (
       this.configService.get<string>("STORAGE_TYPE") === "s3"
     ) {
@@ -112,7 +123,7 @@ export class MediaController {
 
       try {
         file = await s3.getObject({
-          Key: "media/avatars/" + params.userId + ".jpeg",
+          Key: "media/avatars/" + userId + ".jpeg",
           Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
         });
       } catch (e) {
@@ -125,7 +136,7 @@ export class MediaController {
 
       res.write(await file.Body.transformToByteArray());
     } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", params.userId + ".jpeg");
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", userId + ".jpeg");
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {
@@ -141,18 +152,17 @@ export class MediaController {
     }
   }
 
-  @Post("/avatars/:userId")
+  @Post("/avatars")
   @UseInterceptors(FileInterceptor("file"))
   @UseGuards(AuthenticatedGuard)
-  async setAvatar(@Param() params: { userId: string }, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
+  async setAvatar(@Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
     const userCookie = this.usersService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException();
 
-    if (userCookie.id !== params.userId) throw new UnauthorizedException();
-
     const avatar = await sharp(file.buffer)
         .jpeg({ progressive: true, force: true, quality: 80 })
-        .resize({ width: 64, height: 64, fit: "fill" })
+        .resize({ width: 64, height: 64, fit: "cover" })
+        .flatten({ background: "#ffffff" })
         .toBuffer();
 
     if (
@@ -167,13 +177,13 @@ export class MediaController {
         region: this.configService.get<string>("S3_STORAGE_REGION")
       });
 
-      await s3.putObject({ Body: avatar, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/avatars/" + params.userId + ".jpeg" });
+      await s3.putObject({ Body: avatar, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/avatars/" + userCookie.id + ".jpeg" });
     } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
       const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars");
 
       if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
 
-      fs.writeFileSync(path.join(filePath, params.userId + ".jpeg"), avatar);
+      fs.writeFileSync(path.join(filePath, userCookie.id + ".jpeg"), avatar);
     }
   }
 }
