@@ -1,5 +1,5 @@
 import { Controller, Get, NotFoundException, Param, Req } from "@nestjs/common";
-import { ApiResponse, UserIdParam } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions, UserIdParam } from "@scholarsome/shared";
 import { UsersService } from "./users.service";
 import { Request as ExpressRequest } from "express";
 import { User } from "@prisma/client";
@@ -23,7 +23,7 @@ export class UsersController {
       }
 
       return {
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: await this.usersService.user({
           id: cookies.id
         })
@@ -46,7 +46,7 @@ export class UsersController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: user
     };
   }

@@ -11,6 +11,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { MailService } from "../providers/mail/mail.service";
 import { Request, Response } from "express";
 import { HttpException } from "@nestjs/common";
+import { ApiResponseOptions } from "@scholarsome/shared";
 
 describe("AuthController", () => {
   let authController: AuthController;
@@ -169,7 +170,7 @@ describe("AuthController", () => {
 
       expect(res.status).toHaveBeenCalledWith(401);
       expect(result).toEqual({
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid reset token"
       });
     });
@@ -186,7 +187,7 @@ describe("AuthController", () => {
         }
       });
       expect(result).toEqual({
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: {}
       });
     });
@@ -239,7 +240,7 @@ describe("AuthController", () => {
       const result = await authController.sendReset({ email: "true" });
 
       expect(result).toEqual({
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: null
       });
     });
@@ -278,7 +279,7 @@ describe("AuthController", () => {
       const result = await authController.verifyEmail({ token: "" }, res);
 
       expect(result).toEqual({
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid token"
       });
     });
@@ -304,7 +305,7 @@ describe("AuthController", () => {
       const result = await authController.register(dto, res);
 
       expect(result).toEqual({
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: null
       });
     });
@@ -322,7 +323,7 @@ describe("AuthController", () => {
 
       expect(res.status).toHaveBeenCalledWith(409);
       expect(result).toEqual({
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Email already exists"
       });
     });
@@ -380,7 +381,7 @@ describe("AuthController", () => {
 
       expect(res.status).toHaveBeenCalledWith(401);
       expect(result).toEqual({
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Incorrect email or password"
       });
     });

@@ -46,7 +46,8 @@
         "max-len": "off",
         "require-jsdoc": "off",
         "camelcase": ["error", { "allow": ["jwt_decode"] }],
-        "valid-jsdoc": "off"
+        "valid-jsdoc": "off",
+        "linebreak-style": ["error", "unix"]
       }
     },
     {

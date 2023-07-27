@@ -81,7 +81,7 @@ export class AuthService {
         return ApiResponseOptions.Ratelimit;
       } else if (login.status === 401) {
         return ApiResponseOptions.Incorrect;
-      } else if (login.body && login.body.status === "success") {
+      } else if (login.body && login.body.status === ApiResponseOptions.Success) {
         return ApiResponseOptions.Success;
       } else return ApiResponseOptions.Error;
     } catch (e) {
@@ -121,7 +121,7 @@ export class AuthService {
 
       if (
         register.body &&
-        register.body.status === "success"
+        register.body.status === ApiResponseOptions.Success
       ) {
         return ApiResponseOptions.Success;
       } else return ApiResponseOptions.Error;

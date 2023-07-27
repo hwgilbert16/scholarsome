@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Output, TemplateRef, ViewChild } from "@angular/core";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { NgForm } from "@angular/forms";
 import { AuthService } from "../../auth/auth.service";
@@ -25,6 +25,7 @@ export class RegisterModalComponent {
   }
 
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
+  @Output() registerEvent = new EventEmitter();
 
   protected response: string;
   protected clicked = false;
@@ -45,6 +46,7 @@ export class RegisterModalComponent {
 
     if (this.response === ApiResponseOptions.Success) {
       await this.router.navigate(["/homepage"]);
+      this.registerEvent.emit();
     }
 
     this.clicked = false;

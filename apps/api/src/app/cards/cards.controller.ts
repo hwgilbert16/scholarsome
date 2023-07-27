@@ -16,7 +16,7 @@ import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
-import { ApiResponse, CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions, CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
 import { CreateCardGuard } from "./guards/create-card.guard";
 import { DeleteCardGuard } from "./guards/delete-card.guard";
 import { UpdateCardGuard } from "./guards/update-card.guard";
@@ -67,7 +67,7 @@ export class CardsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: card
     };
   }
@@ -97,7 +97,7 @@ export class CardsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: await this.cardsService.createCard({
         index: body.index,
         term: body.term,
@@ -178,7 +178,7 @@ export class CardsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: await this.cardsService.updateCard({
         where: {
           id: params.cardId
@@ -218,7 +218,7 @@ export class CardsController {
     if (card.set.authorId !== userCookie.id) throw new NotFoundException();
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: await this.cardsService.deleteCard({
         id: params.cardId
       })

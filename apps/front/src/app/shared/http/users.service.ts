@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { ApiResponse, User } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions, User } from "@scholarsome/shared";
 import { lastValueFrom, Observable } from "rxjs";
 
 @Injectable({
@@ -34,7 +34,7 @@ export class UsersService {
       return null;
     }
 
-    if (user.status === "success") {
+    if (user.status === ApiResponseOptions.Success) {
       return user.data;
     } else return null;
   }

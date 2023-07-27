@@ -16,7 +16,7 @@ import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { Response, Request as ExpressRequest } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import { ApiResponse, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
@@ -64,7 +64,7 @@ export class AuthController {
       res.status(401);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid reset token"
       };
     }
@@ -73,7 +73,7 @@ export class AuthController {
       res.status(401);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid reset token"
       };
     }
@@ -90,7 +90,7 @@ export class AuthController {
     });
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: query
     };
   }
@@ -133,7 +133,7 @@ export class AuthController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: null
     };
   }
@@ -156,13 +156,13 @@ export class AuthController {
       email = jwt.verify(params.token, this.configService.get<string>("JWT_SECRET")) as { email: string };
     } catch (e) {
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid token"
       };
     }
     if (!email) {
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid token"
       };
     }
@@ -198,7 +198,7 @@ export class AuthController {
     const userCookie = this.usersService.getUserInfo(req);
     if (!userCookie) {
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Something went wrong!"
       };
     }
@@ -208,18 +208,18 @@ export class AuthController {
     if (user) {
       if (await this.mailService.sendEmailConfirmation(user.email)) {
         return {
-          status: "success",
+          status: ApiResponseOptions.Success,
           data: null
         };
       } else {
         return {
-          status: "fail",
+          status: ApiResponseOptions.Fail,
           message: "Could not send verification email - is SMTP configured?"
         };
       }
     } else {
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Something went wrong."
       };
     }
@@ -242,7 +242,7 @@ export class AuthController {
       res.status(409);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Email already exists"
       };
     } else {
@@ -257,7 +257,7 @@ export class AuthController {
       this.authService.setLoginCookies(res, user);
 
       return {
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: null
       };
     }
@@ -279,7 +279,7 @@ export class AuthController {
       res.status(401);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Incorrect email or password"
       };
     }
@@ -298,7 +298,7 @@ export class AuthController {
       res.status(500);
 
       return {
-        status: "error",
+        status: ApiResponseOptions.Error,
         message: "Error finding user"
       };
     }
@@ -306,7 +306,7 @@ export class AuthController {
     this.authService.setLoginCookies(res, user);
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: null
     };
   }

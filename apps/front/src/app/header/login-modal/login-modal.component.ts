@@ -45,7 +45,7 @@ export class LoginModalComponent {
     this.clicked = true;
     this.response = await this.authService.login(form.value);
 
-    if (this.response === "success") {
+    if (this.response === ApiResponseOptions.Success) {
       await this.router.navigate(["/homepage"]);
       this.loginEvent.emit();
     } else {

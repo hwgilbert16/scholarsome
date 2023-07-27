@@ -2,7 +2,7 @@ import
 { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { lastValueFrom, Observable } from "rxjs";
-import { ApiResponse, Set } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions, Set } from "@scholarsome/shared";
 
 @Injectable({
   providedIn: "root"
@@ -26,7 +26,7 @@ export class SetsService {
       return null;
     }
 
-    if (set.status === "success") {
+    if (set.status === ApiResponseOptions.Success) {
       return set.data;
     } else return null;
   }
@@ -51,7 +51,7 @@ export class SetsService {
       return null;
     }
 
-    if (sets.status === "success") {
+    if (sets.status === ApiResponseOptions.Success) {
       return sets.data;
     } else return null;
   }
@@ -96,7 +96,7 @@ export class SetsService {
       return null;
     }
 
-    if (set.status === "success") {
+    if (set.status === ApiResponseOptions.Success) {
       return set.data;
     } else return null;
   }
@@ -131,7 +131,7 @@ export class SetsService {
       return null;
     }
 
-    if (set.status === "success") {
+    if (set.status === ApiResponseOptions.Success) {
       return set.data;
     } else return null;
   }
@@ -177,7 +177,7 @@ export class SetsService {
 
     if (set.status === 413) {
       return "tooLarge";
-    } else if (set.body && set.body.status === "success") {
+    } else if (set.body && set.body.status === ApiResponseOptions.Success) {
       return set.body.data;
     } else return null;
   }
@@ -199,7 +199,7 @@ export class SetsService {
       return null;
     }
 
-    if (set.status === "success") {
+    if (set.status === ApiResponseOptions.Success) {
       return set.data;
     } else return null;
   }

@@ -6,7 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar, faImage, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar, faImage } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -50,7 +50,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected signedIn = false;
 
   // URL of avatar
-  protected avatarUrl?: SafeResourceUrl;
+  protected avatarUrl: SafeResourceUrl | null;
 
   // User object
   protected user: User;
@@ -66,7 +66,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly faQ = faQ;
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;
-  protected readonly faUser = faUser;
   protected readonly faArrowRightFromBracket = faArrowRightFromBracket;
 
   /**
@@ -89,12 +88,15 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.authService.logout();
     await this.router.navigate(["/"]);
   }
-  
+
   async viewAvatar() {
     const avatar = await this.mediaService.getAvatar(64, 64);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
+    } else {
+      // for when users sign out from an account with an avatar and switch to one without one
+      this.avatarUrl = null;
     }
   }
 
@@ -150,9 +152,16 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.loginModal.loginEvent.subscribe(() => {
+    this.loginModal.loginEvent.subscribe(async () => {
       this.signedIn = true;
       this.checkIfVerifiedInCookie();
+      await this.viewAvatar();
+    });
+
+    this.registerModal.registerEvent.subscribe(async () => {
+      this.signedIn = true;
+      this.checkIfVerifiedInCookie();
+      await this.viewAvatar();
     });
   }
 
