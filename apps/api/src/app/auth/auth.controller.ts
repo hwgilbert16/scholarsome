@@ -121,7 +121,7 @@ export class AuthController {
    * Sends a password reset for a given user
    *
    * @remarks Throttled to 5 requests per minute
-   * @returns Call to send a password reset email
+   * @returns Success response
    */
   @Throttle(5, 600)
   @Get("reset/sendReset/:email")
@@ -146,7 +146,7 @@ export class AuthController {
    * Verifies a users email given a successfully validated token
    *
    * @remarks This is the link that users click on to verify their email
-   * @returns Void, redirect to '/'
+   * @returns Void, redirect to '/homepage'
    */
   @Get("verify/email/:token")
   async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
@@ -192,6 +192,8 @@ export class AuthController {
 
   /**
    * Resends the verification email to the user
+   *
+   * @returns Success response
    */
   @Post("resendVerification")
   async resendVerificationMail(@Request() req: ExpressRequest): Promise<ApiResponse<null>> {
@@ -230,7 +232,7 @@ export class AuthController {
    * Registers a new user
    *
    * @remarks Throttled to 1 request per 15 minutes
-   * @returns Void, HTTP 201 if successful email confirmation, 200 if email disabled
+   * @returns Success response
    */
   @Throttle(5, 900)
   @Post("register")
@@ -270,7 +272,7 @@ export class AuthController {
   /**
    * Logs a user in and sets relevant cookies
    *
-   * @returns Void, HTTP 200 if successful
+   * @returns Success response
    */
   @HttpCode(200)
   @Post("login")
