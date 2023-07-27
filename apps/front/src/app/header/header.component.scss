@@ -35,6 +35,11 @@ a:hover {
   color: #051e59;
 }
 
+.avatar {
+  border-radius: 50px;
+  cursor: pointer;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
   .create-button {
     margin-bottom: 1rem;

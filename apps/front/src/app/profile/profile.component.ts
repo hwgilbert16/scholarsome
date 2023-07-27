@@ -1,8 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UsersService } from "../shared/http/users.service";
-import { Meta, Title } from "@angular/platform-browser";
+import { DomSanitizer, Meta, SafeResourceUrl, Title } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
+import { MediaService } from "../shared/http/media.service";
 
 @Component({
   selector: "scholarsome-profile",
@@ -15,12 +16,15 @@ export class ProfileComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    private readonly mediaService: MediaService,
+    private readonly sanitizer: DomSanitizer
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
   user: User | null;
+  avatarUrl?: SafeResourceUrl;
   registrationDate: string;
 
   async ngOnInit(): Promise<void> {
@@ -34,6 +38,12 @@ export class ProfileComponent implements OnInit {
     if (!this.user) {
       await this.router.navigate(["404"]);
       return;
+    }
+
+    const avatar = await this.mediaService.getAvatar(128, 128, userId);
+
+    if (avatar) {
+      this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
     }
 
     this.titleService.setTitle(this.user.username + " — Scholarsome");

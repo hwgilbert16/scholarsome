@@ -1,15 +1,17 @@
+import { ApiResponseOptions } from "../ui";
+
 type ErrorApiResponse = {
-  status: "error";
+  status: ApiResponseOptions.Error;
   message: string;
 }
 
 type FailApiResponse = {
-  status: "fail";
+  status: ApiResponseOptions.Fail;
   message: string;
 }
 
 type SuccessApiResponse<T> = {
-  status: "success";
+  status: ApiResponseOptions.Success;
   data: T;
 }
 

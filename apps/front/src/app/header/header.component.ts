@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { ModalService } from "../shared/modal.service";
 import { AuthService } from "../auth/auth.service";
@@ -6,8 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar } from "@fortawesome/free-solid-svg-icons";
-import { SetsService } from "../shared/http/sets.service";
+import { faQ, faArrowRightFromBracket, faStar, faImage } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -16,29 +15,33 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
+import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
+import { MediaService } from "../shared/http/media.service";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { User } from "@scholarsome/shared";
+import { UsersService } from "../shared/http/users.service";
 
 @Component({
   selector: "scholarsome-header",
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"]
 })
-export class HeaderComponent implements OnInit, AfterViewInit {
+export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("ankiImport") ankiImportModal: AnkiImportModalComponent;
   @ViewChild("quizletImport") quizletImportModal: QuizletImportModalComponent;
   @ViewChild("setPassword") setPasswordModal: SetPasswordModalComponent;
   @ViewChild("login") loginModal: LoginModalComponent;
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
+  @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
 
   // Whether an update is available compared to the current running version
   protected updateAvailable: boolean;
   // URL of the new version
   protected releaseUrl: string;
 
-  // Used to open the login modal after users verify their email
+  // Used to show the verify email banner
   protected verificationResult: boolean | null;
-
-  /* */
 
   // Whether the header is hidden - hidden on the landing page
   protected hidden = false;
@@ -46,12 +49,20 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   // If the user is signed in
   protected signedIn = false;
 
+  // URL of avatar
+  protected avatarUrl: SafeResourceUrl | null;
+
+  // User object
+  protected user: User;
+
   protected isMobile = false;
 
   protected modalRef?: BsModalRef;
 
   protected readonly packageJson = packageJson;
   protected readonly window = window;
+
+  protected readonly faImage = faImage;
   protected readonly faQ = faQ;
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;
@@ -66,8 +77,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
-    private readonly setsService: SetsService,
     private readonly sharedService: SharedService,
+    private readonly mediaService: MediaService,
+    private readonly sanitizer: DomSanitizer,
+    private readonly usersService: UsersService,
     public readonly cookieService: CookieService
   ) {}
 
@@ -76,13 +89,34 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     await this.router.navigate(["/"]);
   }
 
-  ngOnInit(): void {
-    this.sharedService.isUpdateAvailable().then((r) => this.updateAvailable = r);
-    this.sharedService.getReleaseUrl().then((r) => this.releaseUrl = r);
+  async viewAvatar() {
+    const avatar = await this.mediaService.getAvatar(64, 64);
 
-    this.router.events.subscribe((e) => {
+    if (avatar) {
+      this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
+    } else {
+      // for when users sign out from an account with an avatar and switch to one without one
+      this.avatarUrl = null;
+    }
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.sharedService
+        .isUpdateAvailable()
+        .then((r) => (this.updateAvailable = r));
+    this.sharedService.getReleaseUrl().then((r) => (this.releaseUrl = r));
+
+    this.router.events.subscribe(async (e) => {
       if (e instanceof NavigationEnd) {
         this.hidden = this.router.url === "/" || this.router.url === "/reset";
+
+        if (!this.hidden && this.signedIn) {
+          const user = await this.usersService.user();
+          if (user) this.user = user;
+
+          await this.viewAvatar();
+          this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
+        }
       }
     });
 
@@ -103,22 +137,45 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       }
     });
 
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      if (!cookie.includes("verified")) continue;
+    this.checkIfVerifiedInCookie();
 
-      this.verificationResult = cookie.includes("true");
+    if (this.deviceService.isTablet() || this.deviceService.isMobile()) {
+      this.isMobile = true;
     }
 
-    if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;
-
-    if (this.cookieService.get("authenticated")) this.signedIn = true;
+    if (this.cookieService.get("authenticated")) {
+      this.signedIn = true;
+    }
 
     // Hide modals when the route changes
     this.router.events.subscribe(() => this.modalRef?.hide());
   }
 
-  ngAfterViewInit(): void {
-    if (this.verificationResult) this.modalRef = this.loginModal.open();
+  ngAfterViewInit() {
+    this.loginModal.loginEvent.subscribe(async () => {
+      this.signedIn = true;
+      this.checkIfVerifiedInCookie();
+      await this.viewAvatar();
+    });
+
+    this.registerModal.registerEvent.subscribe(async () => {
+      this.signedIn = true;
+      this.checkIfVerifiedInCookie();
+      await this.viewAvatar();
+    });
+  }
+
+  checkIfVerifiedInCookie() {
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      if (!cookie.includes("verified")) {
+        continue;
+      }
+      this.verificationResult = cookie.includes("true");
+    }
+  }
+
+  ngOnDestroy() {
+    this.modalService.modal.unsubscribe();
   }
 }

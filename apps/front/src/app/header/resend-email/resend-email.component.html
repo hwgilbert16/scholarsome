@@ -1,0 +1,14 @@
+<div
+  class="p-2 alert alert-warning d-flex align-items-center justify-content-center"
+  role="alert"
+>
+  <div class="mx-2">
+    <div *ngIf="response === ApiResponseOptions.Success">The verification email has been resent.</div>
+    <div *ngIf="response === ApiResponseOptions.Fail">Something went wrong resending the email.</div>
+    <div *ngIf="!response">Please verify your account by clicking on the link in the verification email.</div>
+  </div>
+  <button class="btn btn-sm btn-warning mx-2" (click)="onClick()" [disabled]="clicked" *ngIf="!response">
+    <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    Resend email
+  </button>
+</div>

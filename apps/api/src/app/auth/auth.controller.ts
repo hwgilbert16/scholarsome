@@ -8,14 +8,15 @@ import {
   Param,
   Post,
   Req,
+  Request,
   Res,
   UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { Response, Request } from "express";
+import { Response, Request as ExpressRequest } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import { ApiResponse, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
 import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
@@ -54,7 +55,7 @@ export class AuthController {
    * @returns Whether the user's password was successfully updated
    */
   @Post("reset/setPassword")
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: Request): Promise<ApiResponse<User>> {
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
     let decoded: { email: string, reset: boolean };
 
     try {
@@ -63,7 +64,7 @@ export class AuthController {
       res.status(401);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid reset token"
       };
     }
@@ -72,7 +73,7 @@ export class AuthController {
       res.status(401);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid reset token"
       };
     }
@@ -89,7 +90,7 @@ export class AuthController {
     });
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: query
     };
   }
@@ -120,19 +121,19 @@ export class AuthController {
    * Sends a password reset for a given user
    *
    * @remarks Throttled to 5 requests per minute
-   * @returns Call to send a password reset email
+   * @returns Success response
    */
   @Throttle(5, 600)
   @Get("reset/sendReset/:email")
   async sendReset(@Param() params: { email: string }): Promise<ApiResponse<null>> {
-    const user = this.usersService.user({ email: params.email });
+    const user = await this.usersService.user({ email: params.email });
 
-    if (user) {
+    if (user && !user.verified) {
       await this.mailService.sendPasswordReset(params.email);
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: null
     };
   }
@@ -145,7 +146,7 @@ export class AuthController {
    * Verifies a users email given a successfully validated token
    *
    * @remarks This is the link that users click on to verify their email
-   * @returns Void, redirect to '/'
+   * @returns Void, redirect to '/homepage'
    */
   @Get("verify/email/:token")
   async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
@@ -155,13 +156,13 @@ export class AuthController {
       email = jwt.verify(params.token, this.configService.get<string>("JWT_SECRET")) as { email: string };
     } catch (e) {
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid token"
       };
     }
     if (!email) {
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Invalid token"
       };
     }
@@ -178,21 +179,64 @@ export class AuthController {
     if (verification) {
       res.cookie("verified", true, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
     } else {
-      res.cookie("verified", false, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
+      res.cookie("verified", false, { expires: new Date() });
     }
 
-    return res.redirect("/");
+    const user = await this.usersService.user({ email: email.email });
+    if (!user) res.redirect("/");
+
+    this.authService.setLoginCookies(res, user);
+
+    return res.redirect("/homepage");
   }
+
+  /**
+   * Resends the verification email to the user
+   *
+   * @returns Success response
+   */
+  @Post("resendVerification")
+  async resendVerificationMail(@Request() req: ExpressRequest): Promise<ApiResponse<null>> {
+    const userCookie = this.usersService.getUserInfo(req);
+    if (!userCookie) {
+      return {
+        status: ApiResponseOptions.Fail,
+        message: "Something went wrong!"
+      };
+    }
+
+    const user = await this.usersService.user({ id: userCookie.id });
+
+    if (user) {
+      if (await this.mailService.sendEmailConfirmation(user.email)) {
+        return {
+          status: ApiResponseOptions.Success,
+          data: null
+        };
+      } else {
+        return {
+          status: ApiResponseOptions.Fail,
+          message: "Could not send verification email - is SMTP configured?"
+        };
+      }
+    } else {
+      return {
+        status: ApiResponseOptions.Fail,
+        message: "Something went wrong."
+      };
+    }
+  }
+
 
   /**
    * Registers a new user
    *
    * @remarks Throttled to 1 request per 15 minutes
-   * @returns Void, HTTP 201 if successful email confirmation, 200 if email disabled
+   * @returns Success response
    */
   @Throttle(5, 900)
   @Post("register")
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<{ confirmEmail: boolean }>> {
+  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<null>> {
     if (
       await this.usersService.user({ email: registerDto.email }) ||
       await this.usersService.user({ username: registerDto.username })
@@ -200,28 +244,24 @@ export class AuthController {
       res.status(409);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Email already exists"
       };
     } else {
-      await this.usersService.createUser({
+      const user = await this.usersService.createUser({
         username: registerDto.username,
         email: registerDto.email,
         password: await bcrypt.hash(registerDto.password, 10),
         verified: !this.configService.get<boolean>("SMTP_HOST")
       });
 
-      if (await this.mailService.sendEmailConfirmation(registerDto.email)) {
-        return {
-          status: "success",
-          data: { confirmEmail: true }
-        };
-      } else {
-        return {
-          status: "success",
-          data: { confirmEmail: false }
-        };
-      }
+      await this.mailService.sendEmailConfirmation(registerDto.email);
+      this.authService.setLoginCookies(res, user);
+
+      return {
+        status: ApiResponseOptions.Success,
+        data: null
+      };
     }
   }
 
@@ -232,7 +272,7 @@ export class AuthController {
   /**
    * Logs a user in and sets relevant cookies
    *
-   * @returns Void, HTTP 200 if successful
+   * @returns Success response
    */
   @HttpCode(200)
   @Post("login")
@@ -241,7 +281,7 @@ export class AuthController {
       res.status(401);
 
       return {
-        status: "fail",
+        status: ApiResponseOptions.Fail,
         message: "Incorrect email or password"
       };
     }
@@ -251,7 +291,6 @@ export class AuthController {
       if (!captchaCheck) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
     }
 
-    res.cookie("verified", "", { httpOnly: false, expires: new Date() });
 
     const user = await this.usersService.user({
       email: loginDto.email
@@ -261,21 +300,15 @@ export class AuthController {
       res.status(500);
 
       return {
-        status: "error",
+        status: ApiResponseOptions.Error,
         message: "Error finding user"
       };
     }
 
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
-
-    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
-    this.redis.set(user.email, refreshToken);
-
-    res.cookie("access_token", this.jwtService.sign({ id: user.id, email: user.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-    res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    this.authService.setLoginCookies(res, user);
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: null
     };
   }
@@ -286,7 +319,7 @@ export class AuthController {
    * @returns Void
    */
   @Post("logout")
-  logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  logout(@Req() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
     return this.authService.logout(req, res);
   }
 }

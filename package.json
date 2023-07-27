@@ -1,13 +1,13 @@
 {
   "name": "scholarsome",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "ng": "nx",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate deploy",
     "build": "npx nx run-many --target=build --projects=front,api,docs --skip-nx-cache",
-    "test": "nx test",
+    "test": "npx nx test api",
     "lint": "nx run-many --all --target=lint --fix",
     "start": "nx serve",
     "start:front": "npx nx serve --host=0.0.0.0",

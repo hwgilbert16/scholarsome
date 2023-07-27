@@ -1,4 +1,4 @@
-import { Component, Input, TemplateRef, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Output, TemplateRef, ViewChild } from "@angular/core";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { NgForm } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -19,17 +19,16 @@ export class LoginModalComponent {
     public readonly modalService: ModalService
   ) {
     this.bsModalService.onHide.subscribe(() => {
-      this.response = "";
+      this.response = null;
       this.clicked = false;
-      this.verificationResult = false;
     });
   }
 
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
 
-  @Input() verificationResult: boolean | null;
+  @Output() loginEvent = new EventEmitter();
 
-  protected response: string;
+  protected response: ApiResponseOptions | null;
   protected clicked = false;
 
   protected modalRef?: BsModalRef;
@@ -42,12 +41,13 @@ export class LoginModalComponent {
   }
 
   protected async submit(form: NgForm) {
-    this.response = "";
+    this.response = null;
     this.clicked = true;
     this.response = await this.authService.login(form.value);
 
     if (this.response === ApiResponseOptions.Success) {
       await this.router.navigate(["/homepage"]);
+      this.loginEvent.emit();
     } else {
       this.clicked = false;
     }

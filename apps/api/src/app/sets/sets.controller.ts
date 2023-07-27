@@ -8,7 +8,9 @@ import {
   Post,
   Put,
   Request,
-  UnauthorizedException, UnsupportedMediaTypeException, UploadedFile,
+  UnauthorizedException,
+  UnsupportedMediaTypeException,
+  UploadedFile,
   UseGuards, UseInterceptors
 } from "@nestjs/common";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
@@ -17,6 +19,7 @@ import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest, Express } from "express";
 import {
   ApiResponse,
+  ApiResponseOptions,
   AuthorIdParam,
   CreateSetDto,
   CreateSetFromApkgDto,
@@ -63,7 +66,7 @@ export class SetsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: set
     };
   }
@@ -82,7 +85,7 @@ export class SetsController {
 
     if (params.authorId === "self") {
       return {
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: await this.setsService.sets({
           where: {
             authorId: user.id
@@ -93,7 +96,7 @@ export class SetsController {
 
     if (params.authorId === user.id) {
       return {
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: await this.setsService.sets({
           where: {
             authorId: params.authorId
@@ -114,7 +117,7 @@ export class SetsController {
       }
 
       return {
-        status: "success",
+        status: ApiResponseOptions.Success,
         data: sets
       };
     }
@@ -180,7 +183,7 @@ export class SetsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: create
     };
   }
@@ -256,7 +259,7 @@ export class SetsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: create
     };
   }
@@ -394,7 +397,7 @@ export class SetsController {
     }
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: update
     };
   }
@@ -413,7 +416,7 @@ export class SetsController {
     await this.setsService.deleteSetMediaFiles(params.setId);
 
     return {
-      status: "success",
+      status: ApiResponseOptions.Success,
       data: await this.setsService.deleteSet({
         id: params.setId
       })

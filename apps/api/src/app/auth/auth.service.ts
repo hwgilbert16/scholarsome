@@ -5,11 +5,12 @@ import { JwtService } from "@nestjs/jwt";
 import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
-import { RecaptchaResponse } from "@scholarsome/shared";
+import { RecaptchaResponse, User as UserWithSets } from "@scholarsome/shared";
 import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -64,9 +65,24 @@ export class AuthService {
       email
     });
 
-    if (!user || !user.verified) throw new UnauthorizedException();
+    if (!user) throw new UnauthorizedException();
 
     return (await bcrypt.compare(password, user.password));
+  }
+
+  /**
+   * Sets the response login cookies for the user
+   */
+  setLoginCookies(res: Response, user: UserWithSets | User): void {
+    res.cookie("verified", user.verified, { httpOnly: false });
+
+    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
+
+    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    this.redis.set(user.email, refreshToken);
+
+    res.cookie("access_token", this.jwtService.sign({ id: user.id, email: user.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
   }
 
   /**

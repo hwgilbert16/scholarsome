@@ -29,14 +29,14 @@ export class AuthService {
    *
    * @returns HTTP response of request
    */
-  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<string> {
+  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
     const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/sendReset/" + submitResetForm.email, { observe: "response" }));
 
     if (req.status === 429) {
-      return "ratelimit";
+      return ApiResponseOptions.Ratelimit;
     } else if (req.body) {
-      return req.body.status;
-    } else return "error";
+      return ApiResponseOptions.Success;
+    } else return ApiResponseOptions.Fail;
   }
 
   /**
@@ -81,7 +81,7 @@ export class AuthService {
         return ApiResponseOptions.Ratelimit;
       } else if (login.status === 401) {
         return ApiResponseOptions.Incorrect;
-      } else if (login.body && login.body.status === "success") {
+      } else if (login.body && login.body.status === ApiResponseOptions.Success) {
         return ApiResponseOptions.Success;
       } else return ApiResponseOptions.Error;
     } catch (e) {
@@ -114,20 +114,16 @@ export class AuthService {
       body.recaptchaToken = await lastValueFrom(this.recaptchaV3Service.execute("register"));
     }
 
-    let register: HttpResponse<ApiResponse<{ confirmEmail: boolean }>>;
+    let register: HttpResponse<ApiResponse<null>>;
 
     try {
-      register = await lastValueFrom(this.http.post<ApiResponse<{ confirmEmail: boolean }>>("/api/auth/register", body, { observe: "response" }));
+      register = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/register", body, { observe: "response" }));
+
+      console.log(register);
 
       if (
         register.body &&
-        register.body.status === "success" &&
-        register.body.data.confirmEmail
-      ) {
-        return ApiResponseOptions.Verify;
-      } else if (
-        register.body &&
-        register.body.status === "success"
+        register.body.status === ApiResponseOptions.Success
       ) {
         return ApiResponseOptions.Success;
       } else return ApiResponseOptions.Error;
@@ -152,5 +148,13 @@ export class AuthService {
    */
   async logout() {
     return await lastValueFrom(this.http.post("/api/auth/logout", {}));
+  }
+
+  /**
+   * Makes a request to send verification email
+  */
+  async resendVerificationEmail(): Promise<ApiResponseOptions> {
+    const response = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/resendVerification", {}));
+    return response.status;
   }
 }
