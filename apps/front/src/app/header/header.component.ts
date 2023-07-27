@@ -110,7 +110,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       if (e instanceof NavigationEnd) {
         this.hidden = this.router.url === "/" || this.router.url === "/reset";
 
-        if (!this.hidden) {
+        if (!this.hidden && this.signedIn) {
           const user = await this.usersService.user();
           if (user) this.user = user;
 

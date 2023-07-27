@@ -436,23 +436,6 @@ describe("AuthController", () => {
       await authController.login(dto, res);
 
       expect(authService.setLoginCookies).toHaveBeenCalled();
-
-      // expect(res.cookie).toHaveBeenNthCalledWith(1, "verified", undefined, {
-      //   httpOnly: false,
-      //   expires: expect.any(Date)
-      // });
-      // expect(res.cookie).toHaveBeenNthCalledWith(2, "refresh_token", {}, {
-      //   httpOnly: true,
-      //   expires: expect.any(Date)
-      // });
-      // expect(res.cookie).toHaveBeenNthCalledWith(3, "access_token", {}, {
-      //   httpOnly: true,
-      //   expires: expect.any(Date)
-      // });
-      // expect(res.cookie).toHaveBeenNthCalledWith(4, "authenticated", true, {
-      //   httpOnly: false,
-      //   expires: expect.any(Date)
-      // });
     });
   });
 
