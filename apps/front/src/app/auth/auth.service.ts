@@ -29,14 +29,14 @@ export class AuthService {
    *
    * @returns HTTP response of request
    */
-  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<string> {
+  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
     const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/sendReset/" + submitResetForm.email, { observe: "response" }));
 
     if (req.status === 429) {
-      return "ratelimit";
+      return ApiResponseOptions.Ratelimit;
     } else if (req.body) {
-      return req.body.status;
-    } else return "error";
+      return ApiResponseOptions.Success;
+    } else return ApiResponseOptions.Fail;
   }
 
   /**
@@ -119,6 +119,8 @@ export class AuthService {
     try {
       register = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/register", body, { observe: "response" }));
 
+      console.log(register);
+
       if (
         register.body &&
         register.body.status === ApiResponseOptions.Success
@@ -151,7 +153,8 @@ export class AuthService {
   /**
    * Makes a request to send verification email
   */
-  async resendVerificationEmail() {
-    return await lastValueFrom(this.http.post("/api/auth/resendVerification", {}));
+  async resendVerificationEmail(): Promise<ApiResponseOptions> {
+    const response = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/resendVerification", {}));
+    return response.status;
   }
 }

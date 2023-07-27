@@ -1,5 +1,6 @@
 import { Component } from "@angular/core";
 import { AuthService } from "../../auth/auth.service";
+import { ApiResponseOptions } from "@scholarsome/shared";
 
 @Component({
   selector: "scholarsome-resend-email",
@@ -7,17 +8,15 @@ import { AuthService } from "../../auth/auth.service";
   styleUrls: ["./resend-email.component.scss"]
 })
 export class ResendEmailComponent {
-  clicked: boolean;
-  result: {status: string, message: string};
+  constructor(private authService: AuthService) {}
 
-  constructor(private authService: AuthService) {
-    this.result = { status: "", message: "" };
-  }
+  protected clicked: boolean;
+  protected response: ApiResponseOptions;
+  protected readonly ApiResponseOptions = ApiResponseOptions;
 
   async onClick() {
     this.clicked = true;
-    const data = await this.authService.resendVerificationEmail();
-    this.result = JSON.parse(JSON.stringify(data)) as {status: string, message: string};
+    this.response = await this.authService.resendVerificationEmail();
     this.clicked = false;
   }
 }

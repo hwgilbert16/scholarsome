@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 'lts/Hydrogen'
 
-      - name: Install dependencies and run migrations
+      - name: Install dependencies and generate Prisma types
         run: |
           npm install --legacy-peer-deps
           npm run generate

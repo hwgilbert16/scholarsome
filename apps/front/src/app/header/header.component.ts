@@ -40,7 +40,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   // URL of the new version
   protected releaseUrl: string;
 
-  // Used to open the login modal after users verify their email
+  // Used to show the verify email banner
   protected verificationResult: boolean | null;
 
   // Whether the header is hidden - hidden on the landing page

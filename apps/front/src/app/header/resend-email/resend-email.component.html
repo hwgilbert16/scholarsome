@@ -3,10 +3,12 @@
   role="alert"
 >
   <div class="mx-2">
-    {{result.message==='' ? "Please verify your account by clicking on the link in the verification email." : "The verification email has been resent."}}
+    <div *ngIf="response === ApiResponseOptions.Success">The verification email has been resent.</div>
+    <div *ngIf="response === ApiResponseOptions.Fail">Something went wrong resending the email.</div>
+    <div *ngIf="!response">Please verify your account by clicking on the link in the verification email.</div>
   </div>
-  <button class="btn btn-sm btn-warning mx-2" (click)="onClick()" [disabled]="clicked" *ngIf="result.message===''">
+  <button class="btn btn-sm btn-warning mx-2" (click)="onClick()" [disabled]="clicked" *ngIf="!response">
     <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-    {{clicked ? 'sending' : 'resend email'}}
+    Resend email
   </button>
 </div>

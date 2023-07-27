@@ -19,7 +19,7 @@ export class RegisterModalComponent {
     public readonly modalService: ModalService
   ) {
     this.bsModalService.onHide.subscribe(() => {
-      this.response = "";
+      this.response = null;
       this.clicked = false;
     });
   }
@@ -27,7 +27,7 @@ export class RegisterModalComponent {
   @ViewChild("modal") modal: TemplateRef<HTMLElement>;
   @Output() registerEvent = new EventEmitter();
 
-  protected response: string;
+  protected response: ApiResponseOptions | null;
   protected clicked = false;
 
   protected modalRef?: BsModalRef;
@@ -40,7 +40,7 @@ export class RegisterModalComponent {
   }
 
   protected async submit(form: NgForm) {
-    this.response = "";
+    this.response = null;
     this.clicked = true;
     this.response = await this.authService.register(form.value);
 
