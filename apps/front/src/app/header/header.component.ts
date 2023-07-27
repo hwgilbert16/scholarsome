@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { ModalService } from "../shared/modal.service";
 import { AuthService } from "../auth/auth.service";
@@ -26,7 +26,7 @@ import { UsersService } from "../shared/http/users.service";
   templateUrl: "./header.component.html",
   styleUrls: ["./header.component.scss"]
 })
-export class HeaderComponent implements OnInit, AfterViewInit {
+export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("ankiImport") ankiImportModal: AnkiImportModalComponent;
   @ViewChild("quizletImport") quizletImportModal: QuizletImportModalComponent;
   @ViewChild("setPassword") setPasswordModal: SetPasswordModalComponent;
@@ -89,7 +89,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     await this.authService.logout();
     await this.router.navigate(["/"]);
   }
-
+  
   async viewAvatar() {
     const avatar = await this.mediaService.getAvatar(64, 64);
 
@@ -99,8 +99,10 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.sharedService.isUpdateAvailable().then((r) => this.updateAvailable = r);
-    this.sharedService.getReleaseUrl().then((r) => this.releaseUrl = r);
+    this.sharedService
+        .isUpdateAvailable()
+        .then((r) => (this.updateAvailable = r));
+    this.sharedService.getReleaseUrl().then((r) => (this.releaseUrl = r));
 
     this.router.events.subscribe(async (e) => {
       if (e instanceof NavigationEnd) {
@@ -133,22 +135,38 @@ export class HeaderComponent implements OnInit, AfterViewInit {
       }
     });
 
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      if (!cookie.includes("verified")) continue;
+    this.checkIfVerifiedInCookie();
 
-      this.verificationResult = cookie.includes("true");
+    if (this.deviceService.isTablet() || this.deviceService.isMobile()) {
+      this.isMobile = true;
     }
 
-    if (this.deviceService.isTablet() || this.deviceService.isMobile()) this.isMobile = true;
-
-    if (this.cookieService.get("authenticated")) this.signedIn = true;
+    if (this.cookieService.get("authenticated")) {
+      this.signedIn = true;
+    }
 
     // Hide modals when the route changes
     this.router.events.subscribe(() => this.modalRef?.hide());
   }
 
-  ngAfterViewInit(): void {
-    if (this.verificationResult) this.modalRef = this.loginModal.open();
+  ngAfterViewInit() {
+    this.loginModal.loginEvent.subscribe(() => {
+      this.signedIn = true;
+      this.checkIfVerifiedInCookie();
+    });
+  }
+
+  checkIfVerifiedInCookie() {
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      if (!cookie.includes("verified")) {
+        continue;
+      }
+      this.verificationResult = cookie.includes("true");
+    }
+  }
+
+  ngOnDestroy() {
+    this.modalService.modal.unsubscribe();
   }
 }

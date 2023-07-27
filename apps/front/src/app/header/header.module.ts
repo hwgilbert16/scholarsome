@@ -13,6 +13,7 @@ import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
 import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
+import { ResendEmailComponent } from "./resend-email/resend-email.component";
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-pi
     LoginModalComponent,
     ForgotPasswordModalComponent,
     RegisterModalComponent,
-    ProfilePictureModalComponent
+    ProfilePictureModalComponent,
+    ResendEmailComponent
   ],
   exports: [HeaderComponent, AnkiImportModalComponent]
 })

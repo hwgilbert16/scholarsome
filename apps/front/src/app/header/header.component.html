@@ -1,55 +1,194 @@
-<nav class="navbar navbar-expand-sm sticky-top bg-white fs-5 shadow-sm" [hidden]="hidden">
+<scholarsome-resend-email
+  *ngIf="this.verificationResult === false && this.signedIn"
+  [hidden]="hidden"
+></scholarsome-resend-email>
+<nav
+  class="navbar navbar-expand-sm sticky-top bg-white fs-5 shadow-sm"
+  [hidden]="hidden"
+>
   <div class="container-fluid">
-    <a [routerLink]="this.cookieService.get('authenticated') ? '/homepage' : ''"><img class="navbar-brand img-fluid mt-1" src="assets/header/scholarsome-logo-purple-lowercase.svg" alt="Scholarsome" width="10%" height="10%"></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <a [routerLink]="this.cookieService.get('authenticated') ? '/homepage' : ''"
+      ><img
+        class="navbar-brand img-fluid mt-1"
+        src="assets/header/scholarsome-logo-purple-lowercase.svg"
+        alt="Scholarsome"
+        width="10%"
+        height="10%"
+    /></a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link text-black" aria-current="page" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="this.cookieService.get('authenticated') ? '/homepage' : ''">Home</a>
+          <a
+            class="nav-link text-black"
+            aria-current="page"
+            [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+            [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+            [routerLink]="
+              this.cookieService.get('authenticated') ? '/homepage' : ''
+            "
+            >Home</a
+          >
         </li>
         <li class="nav-item">
           <a class="nav-link text-black" aria-current="page" href="/handbook">Handbook</a>
         </li>
         <li class="btn-group" dropdown>
-          <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle fs-5 h-100 w-25"
-                  aria-controls="dropdown-basic">
-            Create <span class="badge bg-white text-primary">New</span> <span class="caret"></span>
+          <button
+            id="button-basic"
+            dropdownToggle
+            type="button"
+            class="btn btn-primary dropdown-toggle fs-5 h-100 w-25"
+            aria-controls="dropdown-basic"
+          >
+            Create <span class="badge bg-white text-primary">New</span>
+            <span class="caret"></span>
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="!this.cookieService.get('authenticated') ? this.modalRef = loginModal.open() : ''" [routerLink]="this.cookieService.get('authenticated') ? 'create/set' : undefined"><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study set</a></li>
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated')? this.modalRef = quizletImportModal.open() : this.modalRef = loginModal.open()"><fa-icon [icon]="faQ" class="quizlet-color"></fa-icon> &nbsp;From Quizlet</a></li>
-            <li><a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.cookieService.get('authenticated')? this.modalRef = ankiImportModal.open() :this.modalRef = loginModal.open()"><fa-icon [icon]="faStar" class="anki-color"></fa-icon> &nbsp;From Anki <span class="badge bg-primary text-white">New</span></a></li>
+            <li>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  !this.cookieService.get('authenticated')
+                    ? (this.modalRef = loginModal.open())
+                    : ''
+                "
+                [routerLink]="
+                  this.cookieService.get('authenticated')
+                    ? 'create/set'
+                    : undefined
+                "
+                ><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study
+                set</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  this.cookieService.get('authenticated')
+                    ? (this.modalRef = quizletImportModal.open())
+                    : (this.modalRef = loginModal.open())
+                "
+                ><fa-icon [icon]="faQ" class="quizlet-color"></fa-icon>
+                &nbsp;From Quizlet</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  this.cookieService.get('authenticated')
+                    ? (this.modalRef = ankiImportModal.open())
+                    : (this.modalRef = loginModal.open())
+                "
+                ><fa-icon [icon]="faStar" class="anki-color"></fa-icon>
+                &nbsp;From Anki
+                <span class="badge bg-primary text-white">New</span></a
+              >
+            </li>
           </ul>
         </li>
       </ul>
       <div class="d-flex align-items-baseline">
-        <a *ngIf="window.location.hostname !== 'scholarsome.com' && updateAvailable" [href]="releaseUrl" target="_blank">
-          <small class="d-inline-flex px-2 py-1 fw-semibold bg-warning text-bg-warning border border-warning-s rounded-2 text-decoration-underline">
-            New version is available
-          </small>
-        </a>
-        <span class="navbar-text me-3 fs-6">v{{packageJson.version}}</span>
-        <span class="navbar-text me-2"><a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="github"><fa-icon [icon]="faGithub"></fa-icon></a></span>
+        <a
+          *ngIf="
+            window.location.hostname !== 'scholarsome.com' && updateAvailable
+          "
+          [href]="releaseUrl"
+          target="_blank"
+        ><small
+          class="d-inline-flex px-2 py-1 fw-semibold bg-warning text-bg-warning border border-warning-s rounded-2 text-decoration-underline me-2"
+        >New version is available</small
+        ></a
+        >
+        <span class="navbar-text me-3 fs-6">v{{ packageJson.version }}</span>
+        <span class="navbar-text me-2"
+        ><a
+          href="https://github.com/hwgilbert16/scholarsome"
+          target="_blank"
+          class="github"
+        ><fa-icon [icon]="faGithub"></fa-icon></a
+        ></span>
         <div *ngIf="!signedIn">
-          <button type="button" class="btn btn-outline-primary pr-6" (click)="this.modalRef = loginModal.open()">
+          <button
+            type="button"
+            class="btn btn-outline-primary pr-6"
+            (click)="this.modalRef = loginModal.open()"
+          >
             Log in
           </button>
-          <button type="button" class="btn btn-primary ms-4 shadow" (click)="this.modalRef = registerModal.open()">
+          <button
+            type="button"
+            class="btn btn-primary ms-4 shadow"
+            (click)="this.modalRef = registerModal.open()"
+          >
             Sign up
           </button>
         </div>
         <ul class="nav navbar-nav" *ngIf="signedIn">
           <li class="nav-item dropdown">
-            <a *ngIf="!avatarUrl" class="nav-link dropdown-toggle text-black text-left" data-bs-toggle="dropdown"><fa-icon [icon]="['far', 'user']"></fa-icon></a>
-            <a *ngIf="avatarUrl" class="navbar-brand dropdown-toggle" data-bs-toggle="dropdown">
+            <a
+              *ngIf="!avatarUrl"
+              class="nav-link dropdown-toggle text-black text-left"
+              data-bs-toggle="dropdown"
+            >
+              <fa-icon [icon]="['far', 'user']"></fa-icon>
+            </a>
+            <a
+              *ngIf="avatarUrl"
+              class="navbar-brand dropdown-toggle"
+              data-bs-toggle="dropdown"
+            >
               <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar">
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <a *ngIf="user" class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" [routerLink]="'profile/' + user.id"><fa-icon [icon]="['far', 'user']"></fa-icon> Profile</a>
-              <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="this.profilePictureModal.open()"><fa-icon [icon]="faImage"></fa-icon> Avatar</a>
-              <a class="dropdown-item" [attr.data-bs-toggle]="isMobile ? 'collapse' : ''" [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''" (click)="submitLogout()"><fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout</a>
+              <a
+                *ngIf="user"
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                [routerLink]="'profile/' + user.id">
+                <fa-icon [icon]="['far', 'user']"></fa-icon> Profile
+              </a>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                (click)="this.profilePictureModal.open()"
+              >
+                <fa-icon [icon]="faImage"></fa-icon> Avatar
+              </a>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                (click)="submitLogout()"
+              >
+                <fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout
+              </a>
             </ul>
           </li>
         </ul>
@@ -61,7 +200,7 @@
 <scholarsome-anki-import-modal #ankiImport></scholarsome-anki-import-modal>
 <scholarsome-quizlet-import-modal #quizletImport></scholarsome-quizlet-import-modal>
 <scholarsome-set-password-modal #setPassword></scholarsome-set-password-modal>
-<scholarsome-login-modal [verificationResult]="verificationResult" #login></scholarsome-login-modal>
+<scholarsome-login-modal #login></scholarsome-login-modal>
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
 <scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>

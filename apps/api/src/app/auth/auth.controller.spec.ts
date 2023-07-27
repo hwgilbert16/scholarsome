@@ -73,6 +73,7 @@ describe("AuthController", () => {
 
               return {};
             },
+            setLoginCookies: jest.fn(),
             validateRecaptcha: (s: string) => {
               switch (s) {
                 case "true":
@@ -291,6 +292,23 @@ describe("AuthController", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any as Response;
 
+    it("should return a normal response body", async () => {
+      const dto = {
+        username: "false",
+        email: "false",
+        password: "b",
+        confirmPassword: "b",
+        recaptchaToken: "a"
+      };
+
+      const result = await authController.register(dto, res);
+
+      expect(result).toEqual({
+        status: "success",
+        data: null
+      });
+    });
+
     it("should send HTTP 409 if user already exists", async () => {
       const dto = {
         username: "true",
@@ -328,7 +346,7 @@ describe("AuthController", () => {
       });
     });
 
-    it("should not send email if email not enabled", async () => {
+    it("should set login cookies", async () => {
       const dto = {
         username: "false",
         email: "false",
@@ -337,13 +355,9 @@ describe("AuthController", () => {
         recaptchaToken: "a"
       };
 
-      const result = await authController.register(dto, res);
+      await authController.register(dto, res);
 
-      expect(mailService.sendEmailConfirmation).toHaveBeenCalledWith(dto.email);
-      expect(result).toEqual({
-        status: "success",
-        data: { confirmEmail: false }
-      });
+      expect(authService.setLoginCookies).toHaveBeenCalled();
     });
   });
 
@@ -420,22 +434,24 @@ describe("AuthController", () => {
 
       await authController.login(dto, res);
 
-      expect(res.cookie).toHaveBeenNthCalledWith(1, "verified", "", {
-        httpOnly: false,
-        expires: expect.any(Date)
-      });
-      expect(res.cookie).toHaveBeenNthCalledWith(2, "refresh_token", {}, {
-        httpOnly: true,
-        expires: expect.any(Date)
-      });
-      expect(res.cookie).toHaveBeenNthCalledWith(3, "access_token", {}, {
-        httpOnly: true,
-        expires: expect.any(Date)
-      });
-      expect(res.cookie).toHaveBeenNthCalledWith(4, "authenticated", true, {
-        httpOnly: false,
-        expires: expect.any(Date)
-      });
+      expect(authService.setLoginCookies).toHaveBeenCalled();
+
+      // expect(res.cookie).toHaveBeenNthCalledWith(1, "verified", undefined, {
+      //   httpOnly: false,
+      //   expires: expect.any(Date)
+      // });
+      // expect(res.cookie).toHaveBeenNthCalledWith(2, "refresh_token", {}, {
+      //   httpOnly: true,
+      //   expires: expect.any(Date)
+      // });
+      // expect(res.cookie).toHaveBeenNthCalledWith(3, "access_token", {}, {
+      //   httpOnly: true,
+      //   expires: expect.any(Date)
+      // });
+      // expect(res.cookie).toHaveBeenNthCalledWith(4, "authenticated", true, {
+      //   httpOnly: false,
+      //   expires: expect.any(Date)
+      // });
     });
   });
 
