@@ -4,10 +4,11 @@
   </div>
 </div>
 
-<div class="h-100 container-fluid profile-container" *ngIf="user">
+<div class="h-100 container-fluid profile-container mt-4" *ngIf="user">
   <div class="d-flex justify-content-between align-items-center h-100">
     <div class="d-flex">
-      <fa-icon [icon]="['far', 'user']" class="display-2"></fa-icon>
+      <fa-icon *ngIf="!avatarUrl" [icon]="['far', 'user']" class="display-2"></fa-icon>
+      <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar">
       <div class="display-2 mb-2 ms-3">{{user.username}}</div>
     </div>
     <div class="mt-2">

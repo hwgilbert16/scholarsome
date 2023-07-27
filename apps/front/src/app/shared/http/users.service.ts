@@ -10,7 +10,9 @@ export class UsersService {
   /**
    * @ignore
    */
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient
+  ) {}
 
   /**
    * Makes a request to find a unique user
@@ -19,11 +21,15 @@ export class UsersService {
    *
    * @returns Queried `User` object
    */
-  async user(userId: string | null): Promise<User | null> {
+  async user(userId?: string): Promise<User | null> {
     let user: ApiResponse<User> | undefined;
 
     try {
-      user = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/users/" + userId));
+      if (userId) {
+        user = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/users/" + userId));
+      } else {
+        user = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/users/self"));
+      }
     } catch (e) {
       return null;
     }

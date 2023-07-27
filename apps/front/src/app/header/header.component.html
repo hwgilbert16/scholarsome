@@ -119,18 +119,18 @@
           "
           [href]="releaseUrl"
           target="_blank"
-          ><small
-            class="d-inline-flex px-2 py-1 fw-semibold bg-warning text-bg-warning border border-warning-s rounded-2 text-decoration-underline me-2"
-            >New version is available</small
-          ></a
+        ><small
+          class="d-inline-flex px-2 py-1 fw-semibold bg-warning text-bg-warning border border-warning-s rounded-2 text-decoration-underline me-2"
+        >New version is available</small
+        ></a
         >
         <span class="navbar-text me-3 fs-6">v{{ packageJson.version }}</span>
         <span class="navbar-text me-2"
-          ><a
-            href="https://github.com/hwgilbert16/scholarsome"
-            target="_blank"
-            class="github"
-            ><fa-icon [icon]="faGithub"></fa-icon></a
+        ><a
+          href="https://github.com/hwgilbert16/scholarsome"
+          target="_blank"
+          class="github"
+        ><fa-icon [icon]="faGithub"></fa-icon></a
         ></span>
         <div *ngIf="!signedIn">
           <button
@@ -151,21 +151,45 @@
         <ul class="nav navbar-nav" *ngIf="signedIn">
           <li class="nav-item dropdown">
             <a
+              *ngIf="!avatarUrl"
               class="nav-link dropdown-toggle text-black text-left"
               data-bs-toggle="dropdown"
-              ><fa-icon [icon]="['far', 'user']"></fa-icon
-            ></a>
-            <div class="dropdown-menu dropdown-menu-end">
+            >
+              <fa-icon [icon]="['far', 'user']"></fa-icon>
+            </a>
+            <a
+              *ngIf="avatarUrl"
+              class="navbar-brand dropdown-toggle"
+              data-bs-toggle="dropdown"
+            >
+              <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar">
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <a
+                *ngIf="user"
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                [routerLink]="'profile/' + user.id">
+                <fa-icon [icon]="['far', 'user']"></fa-icon> Profile
+              </a>
               <a
                 class="dropdown-item"
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
-                [attr.data-bs-target]="
-                  isMobile ? '#navbarSupportedContent' : ''
-                "
-                (click)="submitLogout()"
-                ><fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout</a
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                (click)="this.profilePictureModal.open()"
               >
-            </div>
+                <fa-icon [icon]="faImage"></fa-icon> Avatar
+              </a>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                (click)="submitLogout()"
+              >
+                <fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout
+              </a>
+            </ul>
           </li>
         </ul>
       </div>
@@ -179,3 +203,4 @@
 <scholarsome-login-modal #login></scholarsome-login-modal>
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
+<scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>

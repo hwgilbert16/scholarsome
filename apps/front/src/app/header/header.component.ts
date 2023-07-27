@@ -6,12 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import {
-  faQ,
-  faArrowRightFromBracket,
-  faStar
-} from "@fortawesome/free-solid-svg-icons";
-import { SetsService } from "../shared/http/sets.service";
+import { faQ, faArrowRightFromBracket, faStar, faImage, faUser } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -20,6 +15,11 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
+import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
+import { MediaService } from "../shared/http/media.service";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { User } from "@scholarsome/shared";
+import { UsersService } from "../shared/http/users.service";
 
 @Component({
   selector: "scholarsome-header",
@@ -33,6 +33,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("login") loginModal: LoginModalComponent;
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
+  @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
 
   // Whether an update is available compared to the current running version
   protected updateAvailable: boolean;
@@ -42,13 +43,17 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   // Used to open the login modal after users verify their email
   protected verificationResult: boolean | null;
 
-  /* */
-
   // Whether the header is hidden - hidden on the landing page
   protected hidden = false;
 
   // If the user is signed in
   protected signedIn = false;
+
+  // URL of avatar
+  protected avatarUrl?: SafeResourceUrl;
+
+  // User object
+  protected user: User;
 
   protected isMobile = false;
 
@@ -56,9 +61,12 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected readonly packageJson = packageJson;
   protected readonly window = window;
+
+  protected readonly faImage = faImage;
   protected readonly faQ = faQ;
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;
+  protected readonly faUser = faUser;
   protected readonly faArrowRightFromBracket = faArrowRightFromBracket;
 
   /**
@@ -70,8 +78,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
-    private readonly setsService: SetsService,
     private readonly sharedService: SharedService,
+    private readonly mediaService: MediaService,
+    private readonly sanitizer: DomSanitizer,
+    private readonly usersService: UsersService,
     public readonly cookieService: CookieService
   ) {}
 
@@ -79,16 +89,32 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.authService.logout();
     await this.router.navigate(["/"]);
   }
+  
+  async viewAvatar() {
+    const avatar = await this.mediaService.getAvatar(64, 64);
 
-  ngOnInit(): void {
+    if (avatar) {
+      this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
+    }
+  }
+
+  async ngOnInit(): Promise<void> {
     this.sharedService
         .isUpdateAvailable()
         .then((r) => (this.updateAvailable = r));
     this.sharedService.getReleaseUrl().then((r) => (this.releaseUrl = r));
 
-    this.router.events.subscribe((e) => {
+    this.router.events.subscribe(async (e) => {
       if (e instanceof NavigationEnd) {
         this.hidden = this.router.url === "/" || this.router.url === "/reset";
+
+        if (!this.hidden) {
+          const user = await this.usersService.user();
+          if (user) this.user = user;
+
+          await this.viewAvatar();
+          this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
+        }
       }
     });
 

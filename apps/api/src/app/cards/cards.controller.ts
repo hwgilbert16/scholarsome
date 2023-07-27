@@ -8,7 +8,7 @@ import {
   UseGuards,
   Body,
   Put,
-  Delete
+  Delete, UnauthorizedException
 } from "@nestjs/common";
 import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
@@ -78,7 +78,9 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, CreateCardGuard)
   @Post()
-  async createCard(@Body() body: CreateCardDto): Promise<ApiResponse<Card>> {
+  async createCard(@Body() body: CreateCardDto, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
+    if (!(await this.setsService.verifySetOwnership(req, body.setId))) throw new UnauthorizedException();
+
     let media = [];
 
     const termScanned = await this.cardsService.scanAndUploadMedia(body.term, body.setId);
@@ -124,9 +126,11 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, UpdateCardGuard)
   @Put(":cardId")
-  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto): Promise<ApiResponse<Card>> {
+  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
     const card = await this.cardsService.card({ id: params.cardId });
     if (!card) throw new NotFoundException();
+
+    if (!(await this.setsService.verifySetOwnership(req, card.setId))) throw new UnauthorizedException();
 
     let media = [];
 
@@ -203,7 +207,15 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, DeleteCardGuard)
   @Delete(":cardId")
-  async deleteCard(@Param() params: CardIdParam): Promise<ApiResponse<Card>> {
+  async deleteCard(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
+    const userCookie = this.usersService.getUserInfo(req);
+    if (!userCookie) throw new NotFoundException();
+
+    const card = await this.cardsService.card({ id: params.cardId });
+    if (!card) throw new NotFoundException();
+
+    if (card.set.authorId !== userCookie.id) throw new NotFoundException();
+
     return {
       status: "success",
       data: await this.cardsService.deleteCard({
