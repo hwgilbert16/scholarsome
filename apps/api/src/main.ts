@@ -8,6 +8,8 @@ import * as express from "express";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import * as compression from "compression";
 import { envSchema } from "@scholarsome/shared";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as fs from "fs";
 
 async function bootstrap() {
   const validation = envSchema.prefs({ errors: { label: "key" } }).validate(process.env);
@@ -38,6 +40,12 @@ async function bootstrap() {
       cert: Buffer.from(process.env.SSL_CERT_BASE64, "base64").toString()
     }, server).listen(8443);
   }
+
+  const config = new DocumentBuilder()
+      .setTitle("Scholarsome")
+      .build();
+
+  fs.writeFileSync("./dist/api-spec.json", JSON.stringify(SwaggerModule.createDocument(app, config)));
 
   const port = process.env.HTTP_PORT || 8080;
   await app.init();

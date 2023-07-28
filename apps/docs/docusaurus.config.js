@@ -2,6 +2,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 require("dotenv").config();
+const path = require("path");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -30,6 +31,22 @@ const config = {
         },
         blog: false
       }),
+    ],
+    [
+      'redocusaurus',
+      {
+        // Plugin Options for loading OpenAPI files
+        specs: [
+          {
+            spec: path.join(__dirname, "api-spec.json"),
+            route: '/api/',
+          },
+        ],
+        // Theme Options for modifying how redoc renders them
+        theme: {
+          primaryColor: '#8338ff',
+        },
+      },
     ],
   ],
 
