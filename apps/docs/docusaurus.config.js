@@ -38,7 +38,7 @@ const config = {
         specs: [
           {
             // spec: path.join(__dirname, "api-spec.json"),
-            spec:'http://localhost:4200/api/openapi',
+            spec:'http://127.0.0.1:4200/api/openapi',
             route: '/api/',
           },
         ],
