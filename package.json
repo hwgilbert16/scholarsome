@@ -12,7 +12,7 @@
     "start": "nx serve",
     "start:front": "npx nx serve --host=0.0.0.0",
     "start:api": "npx nx serve api",
-    "start:docs": "npx nx serve docs",
+    "start:docs": "npx nx serve docs --verbose",
     "start:dev": "concurrently -p=\"{name}\" -n=\"Angular,NestJS, Docusaurus\" -c=\"red,orange,green\" \"npm run start:front\" \"npm run start:api\" \"npm run start:docs\"",
     "serve:node": "npm run migrate && node dist/apps/api/main.js",
     "serve:pm2": "npm run migrate && pm2 start dist/apps/api/main.js --name \"scholarsome\""

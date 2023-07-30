@@ -25,6 +25,7 @@ import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
@@ -55,6 +56,8 @@ export class AuthController {
    * @returns Whether the user's password was successfully updated
    */
   @Post("reset/setPassword")
+  @ApiTags("AUTH")
+  @ApiOperation({ summary: "Reset Password", description: "Lets Scholarsome users reset their password" })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
     let decoded: { email: string, reset: boolean };
 

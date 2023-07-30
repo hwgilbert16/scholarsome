@@ -3,7 +3,6 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 require("dotenv").config();
 const path = require("path");
-
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Scholarsome Handbook',
@@ -38,7 +37,8 @@ const config = {
         // Plugin Options for loading OpenAPI files
         specs: [
           {
-            spec: path.join(__dirname, "api-spec.json"),
+            // spec: path.join(__dirname, "api-spec.json"),
+            spec:'http://localhost:4200/api/openapi',
             route: '/api/',
           },
         ],

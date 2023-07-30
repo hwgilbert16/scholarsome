@@ -19,6 +19,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GlobalInterceptor } from "./auth/global.interceptor";
 import { MediaModule } from "./media/media.module";
+import { OpenApiController } from "./open-api/OpenAPIController";
 
 @Module({
   imports: [
@@ -70,7 +71,7 @@ import { MediaModule } from "./media/media.module";
       global: true
     }
   ],
-  controllers: [],
+  controllers: [OpenApiController],
   providers: [
     {
       provide: APP_INTERCEPTOR,

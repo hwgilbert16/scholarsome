@@ -45,7 +45,10 @@ async function bootstrap() {
       .setTitle("Scholarsome")
       .build();
 
-  fs.writeFileSync("./dist/api-spec.json", JSON.stringify(SwaggerModule.createDocument(app, config)));
+  const document = SwaggerModule.createDocument(app, config);
+  fs.writeFileSync("./dist/apps/api/assets/api-spec.json", JSON.stringify(document));
+
+  SwaggerModule.setup("api", app, document);
 
   const port = process.env.HTTP_PORT || 8080;
   await app.init();
