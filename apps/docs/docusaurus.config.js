@@ -3,6 +3,18 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 require("dotenv").config();
 const path = require("path");
+
+const HOST = process.env.HOST === 'localhost:4200' ? '127.0.0.1:4200' : process.env.HOST;
+let PROTOCOL = 'http';
+
+if (
+  process.env.SSL_KEY_BASE64 && process.env.SSL_KEY_BASE64.length > 0 &&
+  process.env.SSL_CERT_BASE64 && process.env.SSL_CERT_BASE64.length > 0
+){
+  PROTOCOL = 'https';
+}
+
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Scholarsome Handbook',
@@ -38,7 +50,7 @@ const config = {
         specs: [
           {
             // spec: path.join(__dirname, "api-spec.json"),
-            spec:'http://127.0.0.1:4200/api/openapi',
+            spec:`${PROTOCOL}://${HOST}/api/openapi`,
             route: '/api/',
           },
         ],
