@@ -14,7 +14,7 @@ if (
 
 const HOST = process.env.HOST === 'localhost:4200' ? '127.0.0.1:4200' : process.env.HOST;
 const specs = [];
-if(!(HOST === 'undefined')){
+if(!(HOST === undefined)){
   specs.push({spec: `${PROTOCOL}://${HOST}/api/openapi`,route: '/api/'})
 }
 console.log(HOST);
