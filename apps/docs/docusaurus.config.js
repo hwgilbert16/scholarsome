@@ -17,9 +17,6 @@ const specs = [];
 if(!(HOST === undefined)){
   specs.push({spec: `${PROTOCOL}://${HOST}/api/openapi`,route: '/api/'})
 }
-console.log(HOST);
-console.log(typeof HOST);
-console.log(process.env.HOST);
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
