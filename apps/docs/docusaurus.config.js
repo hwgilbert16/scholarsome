@@ -4,9 +4,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 require("dotenv").config();
 const path = require("path");
 
-const HOST = process.env.HOST === 'localhost:4200' ? '127.0.0.1:4200' : process.env.HOST;
 let PROTOCOL = 'http';
-
 if (
   process.env.SSL_KEY_BASE64 && process.env.SSL_KEY_BASE64.length > 0 &&
   process.env.SSL_CERT_BASE64 && process.env.SSL_CERT_BASE64.length > 0
@@ -14,6 +12,11 @@ if (
   PROTOCOL = 'https';
 }
 
+const HOST = process.env.HOST === 'localhost:4200' ? '127.0.0.1:4200' : process.env.HOST;
+const specs = [];
+if(!(HOST === 'undefined')){
+  specs.push({spec: `${PROTOCOL}://${HOST}/api/openapi`,route: '/api/'})
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -47,13 +50,8 @@ const config = {
       'redocusaurus',
       {
         // Plugin Options for loading OpenAPI files
-        specs: [
-          {
-            // spec: path.join(__dirname, "api-spec.json"),
-            spec:`${PROTOCOL}://${HOST}/api/openapi`,
-            route: '/api/',
-          },
-        ],
+        specs: specs,
+
         // Theme Options for modifying how redoc renders them
         theme: {
           primaryColor: '#8338ff',
