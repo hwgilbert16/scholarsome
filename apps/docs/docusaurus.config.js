@@ -1,8 +1,8 @@
 // @ts-check
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
-require("dotenv").config();
-const path = require("path");
+require('dotenv').config();
+const path = require('path');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -23,13 +23,14 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/hwgilbert16/scholarsome/tree/develop/apps/docs',
-          routeBasePath: '/'
+          editUrl:
+            'https://github.com/hwgilbert16/scholarsome/tree/develop/apps/docs',
+          routeBasePath: '/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
-        blog: false
+        blog: false,
       }),
     ],
     [
@@ -38,7 +39,7 @@ const config = {
         // Plugin Options for loading OpenAPI files
         specs: [
           {
-            spec: path.join(__dirname, "api-spec.json"),
+            spec: path.join(__dirname, '..', '..', 'dist', 'api-spec.json'),
             route: '/api/',
           },
         ],
@@ -57,24 +58,24 @@ const config = {
         logo: {
           alt: 'Scholarsome',
           src: 'img/logo.svg',
-          href: '/'
+          href: '/',
         },
         items: [
           {
             to: `http://${process.env.HOST}`,
             position: 'left',
             label: 'Back to Scholarsome',
-            target: "_self"
-          }
+            target: '_self',
+          },
         ],
       },
       prism: {
-        theme: lightCodeTheme
+        theme: lightCodeTheme,
       },
       colorMode: {
         disableSwitch: true,
         respectPrefersColorScheme: false,
-      }
+      },
     }),
 };
 
