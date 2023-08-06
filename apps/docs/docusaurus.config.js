@@ -1,8 +1,49 @@
-// @ts-check
+
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 require('dotenv').config();
 const path = require('path');
+const fs = require("fs");
+
+const presets = [
+  [
+    '@docusaurus/preset-classic',
+    /** @type {import('@docusaurus/preset-classic').Options} */
+    ({
+      docs: {
+        sidebarPath: require.resolve('./sidebars.js'),
+        editUrl:
+          'https://github.com/hwgilbert16/scholarsome/tree/develop/apps/docs',
+        routeBasePath: '/',
+      },
+      theme: {
+        customCss: require.resolve('./src/css/custom.css'),
+      },
+      blog: false,
+    }),
+  ],
+];
+
+const specPath = path.join(__dirname, '..', '..', 'dist', 'api-spec.json');
+
+if (fs.existsSync(specPath)) {
+  presets.push([
+    'redocusaurus',
+    {
+      // Plugin Options for loading OpenAPI files
+      specs: [
+        {
+          spec: path.join(__dirname, '..', '..', 'dist', 'api-spec.json'),
+          route: '/api/',
+        },
+      ],
+      // Theme Options for modifying how redoc renders them
+      theme: {
+        primaryColor: '#8338ff',
+      },
+    },
+  ]);
+}
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -16,40 +57,7 @@ const config = {
   projectName: 'Scholarsome',
   trailingSlash: false,
 
-  presets: [
-    [
-      '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
-        docs: {
-          sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/hwgilbert16/scholarsome/tree/develop/apps/docs',
-          routeBasePath: '/',
-        },
-        theme: {
-          customCss: require.resolve('./src/css/custom.css'),
-        },
-        blog: false,
-      }),
-    ],
-    [
-      'redocusaurus',
-      {
-        // Plugin Options for loading OpenAPI files
-        specs: [
-          {
-            spec: path.join(__dirname, '..', '..', 'dist', 'api-spec.json'),
-            route: '/api/',
-          },
-        ],
-        // Theme Options for modifying how redoc renders them
-        theme: {
-          primaryColor: '#8338ff',
-        },
-      },
-    ],
-  ],
+  presets,
 
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
