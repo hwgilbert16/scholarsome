@@ -26,12 +26,13 @@ import { Multer } from "multer";
 import * as crypto from "crypto";
 import { CardsService } from "../cards/cards.service";
 import { CardMedia } from "@prisma/client";
-import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthorIdParam } from "./param/authorIdParam.param";
 import { CreateSetFromApkgDto } from "./dto/createSetFromApkg.dto";
 import { CreateSetDto } from "./dto/createSet.dto";
 import { UpdateSetDto } from "./dto/updateSet.dto";
 import { SetIdParam } from "./param/setIdParam.param";
+import { SetOkResponse } from "./response/set.ok.response";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -55,7 +56,10 @@ export class SetsController {
     description: "Gets a set given a set ID"
   })
   @Get(":setId")
-  @ApiCreatedResponse({ type: Set })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetOkResponse
+  })
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
