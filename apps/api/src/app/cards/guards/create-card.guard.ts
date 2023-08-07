@@ -9,9 +9,9 @@ import {
 } from "@nestjs/common";
 import { UsersService } from "../../users/users.service";
 import { SetsService } from "../../sets/sets.service";
-import { CreateCardDto } from "@scholarsome/shared";
 import { validate } from "class-validator";
 import { plainToClass } from "class-transformer";
+import { CreateCardDto } from "../dto/createCard.dto";
 
 @Injectable()
 export class CreateCardGuard implements CanActivate {

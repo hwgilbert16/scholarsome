@@ -16,12 +16,17 @@ import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
-import { ApiResponse, ApiResponseOptions, CardIdParam, CreateCardDto, UpdateCardDto } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { CreateCardGuard } from "./guards/create-card.guard";
 import { DeleteCardGuard } from "./guards/delete-card.guard";
 import { UpdateCardGuard } from "./guards/update-card.guard";
 import { Card } from "@prisma/client";
+import { ApiTags } from "@nestjs/swagger";
+import { CardIdParam } from "./param/cardId.param";
+import { CreateCardDto } from "./dto/createCard.dto";
+import { UpdateCardDto } from "./dto/updateCard.dto";
 
+@ApiTags("Cards")
 @Controller("cards")
 export class CardsController {
   /**

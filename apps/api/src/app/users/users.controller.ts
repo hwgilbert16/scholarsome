@@ -1,9 +1,12 @@
 import { Controller, Get, NotFoundException, Param, Req } from "@nestjs/common";
-import { ApiResponse, ApiResponseOptions, UserIdParam } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { UsersService } from "./users.service";
 import { Request as ExpressRequest } from "express";
 import { User } from "@prisma/client";
+import { ApiTags } from "@nestjs/swagger";
+import { UserIdParam } from "./param/userId.param";
 
+@ApiTags("Users")
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

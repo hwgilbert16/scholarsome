@@ -6,13 +6,14 @@ import {
   NotFoundException,
   UnauthorizedException
 } from "@nestjs/common";
-import { CardIdParam, UpdateCardDto } from "@scholarsome/shared";
 import { UsersService } from "../../users/users.service";
 import { SetsService } from "../../sets/sets.service";
 import { CardsService } from "../cards.service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { Request } from "express";
+import { UpdateCardDto } from "../dto/updateCard.dto";
+import { CardIdParam } from "../param/cardId.param";
 
 @Injectable()
 export class UpdateCardGuard implements CanActivate {

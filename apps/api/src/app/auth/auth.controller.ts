@@ -16,13 +16,10 @@ import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { Response, Request as ExpressRequest } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import {
-  ApiResponse,
-  ApiResponseOptions,
-  LoginDto,
-  RegisterDto,
-  ResetPasswordDto
-} from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
+import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
@@ -33,7 +30,7 @@ import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
 import { ApiTags } from "@nestjs/swagger";
 
-@ApiTags("A", "B")
+@ApiTags("Authentication")
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {

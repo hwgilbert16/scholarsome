@@ -1,6 +1,6 @@
 import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { CardValidator } from "../cards/cardValidator.validator";
+import { CardValidator } from "../../cards/validator/card.validator";
 
 export class UpdateSetDto {
   @IsString()

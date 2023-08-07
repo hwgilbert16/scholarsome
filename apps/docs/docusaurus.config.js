@@ -1,5 +1,3 @@
-
-
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 require('dotenv').config();
 const path = require('path');
@@ -33,7 +31,7 @@ if (fs.existsSync(specPath)) {
       // Plugin Options for loading OpenAPI files
       specs: [
         {
-          spec: path.join(__dirname, '..', '..', 'dist', 'api-spec.json'),
+          spec: specPath,
           route: '/api/',
         },
       ],
