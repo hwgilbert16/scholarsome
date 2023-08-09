@@ -12,6 +12,24 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   /**
+   * Gets the current authenticated user
+   *
+   * @returns `User` object
+   */
+  @Get("me")
+  async myUser(@Req() req: ExpressRequest): Promise<ApiResponse<User>> {
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new NotFoundException();
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: await this.usersService.user({
+        id: user.id
+      })
+    };
+  }
+
+  /**
    * Gets a user given a user ID
    *
    * @returns `User` object
@@ -19,19 +37,6 @@ export class UsersController {
   @Get(":userId")
   async user(@Param() params: UserIdParam, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
     const cookies = this.usersService.getUserInfo(req);
-
-    if (params.userId === "self") {
-      if (!cookies) {
-        throw new NotFoundException();
-      }
-
-      return {
-        status: ApiResponseOptions.Success,
-        data: await this.usersService.user({
-          id: cookies.id
-        })
-      };
-    }
 
     const user = await this.usersService.user({
       id: params.userId

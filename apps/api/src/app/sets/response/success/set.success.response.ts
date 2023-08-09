@@ -2,9 +2,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { SetEntity } from "../set.entity";
 
-export class SetOkResponse {
+export class SetSuccessResponse {
   @ApiProperty({
-    description: "Denotes whether the request was successful or not"
+    description: "Denotes whether the request was successful or not",
+    example: "success"
   })
     status: string;
 

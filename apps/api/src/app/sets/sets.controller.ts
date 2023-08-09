@@ -27,13 +27,22 @@ import { Multer } from "multer";
 import * as crypto from "crypto";
 import { CardsService } from "../cards/cards.service";
 import { CardMedia } from "@prisma/client";
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiConsumes,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse, ApiUnsupportedMediaTypeResponse
+} from "@nestjs/swagger";
 import { CreateSetFromApkgDto } from "./dto/createSetFromApkg.dto";
 import { CreateSetDto } from "./dto/createSet.dto";
 import { UpdateSetDto } from "./dto/updateSet.dto";
 import { SetIdParam } from "./param/setIdParam.param";
-import { SetOkResponse } from "./response/set/set.ok.response";
 import { UserIdParam } from "../users/param/userId.param";
+import { ErrorResponse } from "../shared/response/Error.response";
+import { SetsSuccessResponse } from "./response/success/sets.success.response";
+import { SetSuccessResponse } from "./response/success/set.success.response";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -54,13 +63,27 @@ export class SetsController {
    * @remarks This MUST be placed before the "user/:userId" route to ensure this is mapped
    */
   @ApiOperation({
-    summary: "Gets the sets of the authenticated user",
+    summary: "Get the sets of the authenticated user",
     description: "Gets all of the sets of the user that is currently authenticated"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetsSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @Get("user/me")
   async mySets(@Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
     const user = this.usersService.getUserInfo(req);
-    if (!user) throw new NotFoundException();
+    if (!user) {
+      throw new NotFoundException({ status: "fail", message: "Not authenticated" });
+    }
 
     return {
       status: ApiResponseOptions.Success,
@@ -78,13 +101,25 @@ export class SetsController {
    * @returns Array of `Set` objects that belong to the user
    */
   @ApiOperation({
-    summary: "Gets the sets of a user",
-    description: "Gets all of the sets of a user, given the user's ID"
+    summary: "Get the sets of a user"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetsSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @Get("user/:userId")
   async sets(@Request() req: ExpressRequest, @Param() params: UserIdParam): Promise<ApiResponse<Set[]>> {
     const user = this.usersService.getUserInfo(req);
 
+    // if a user is requesting their own sets -> don't filter private sets
     if (user && params.userId === user.id) {
       return {
         status: ApiResponseOptions.Success,
@@ -97,6 +132,13 @@ export class SetsController {
 
     // a user is requesting a different user's sets -> filter private sets
     } else {
+      const user = await this.usersService.user({
+        id: params.userId
+      });
+      if (!user) {
+        throw new NotFoundException({ status: "fail", message: "User not found" });
+      }
+
       let sets = await this.setsService.sets({
         where: {
           authorId: params.userId
@@ -122,25 +164,32 @@ export class SetsController {
    * @returns `Set` object
    */
   @ApiOperation( {
-    summary: "Get a set",
-    description: "Gets a set given a set ID"
+    summary: "Get a set"
   })
   @ApiOkResponse({
     description: "Expected response to a valid request",
-    type: SetOkResponse
+    type: SetSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @Get(":setId")
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
     });
-    if (!set) throw new NotFoundException();
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
       const userCookie = this.usersService.getUserInfo(req);
 
-      if (!userCookie) throw new NotFoundException();
-      if (set.authorId !== userCookie.id) throw new UnauthorizedException();
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
     return {
@@ -154,22 +203,39 @@ export class SetsController {
    *
    * @returns Created `Set` object
    */
+  @ApiOperation( {
+    summary: "Create a set from a .apkg file",
+    description: "Converts a .apkg file to a Scholarsome set. Compatible only with simple front-back Anki sets, multiple fields currently unsupported."
+  })
+  @ApiConsumes("multipart/form-data")
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetSuccessResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
+  @ApiUnsupportedMediaTypeResponse({
+    description: "Uploaded file contains unsupported cards",
+    type: ErrorResponse
+  })
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("apkg")
   async createSetFromApkg(@Body() body: CreateSetFromApkgDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
     const user = this.usersService.getUserInfo(req);
-    if (!user) throw new NotFoundException();
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({
       email: user.email
     });
-    if (!author) throw new NotFoundException();
+    if (!author) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const uuid = crypto.randomUUID();
 
     const decoded = await this.setsService.decodeAnkiApkg(file.buffer, uuid);
-    if (!decoded) throw new UnsupportedMediaTypeException();
+    if (!decoded) throw new UnsupportedMediaTypeException({ status: "fail", message: "Set is incompatible to import" });
 
     const create = await this.setsService.createSet({
       id: uuid,
@@ -219,16 +285,27 @@ export class SetsController {
    *
    * @returns Created `Set` object
    */
+  @ApiOperation( {
+    summary: "Create a set"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetSuccessResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const user = this.usersService.getUserInfo(req);
-    if (!user) throw new NotFoundException();
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({
       email: user.email
     });
-    if (!author) throw new NotFoundException();
+    if (!author) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const uuid = crypto.randomUUID();
     const media: string[] = [];
@@ -295,15 +372,30 @@ export class SetsController {
    *
    * @returns Updated `Set` object
    */
+  @ApiOperation( {
+    summary: "Update a set"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
   @UseGuards(AuthenticatedGuard)
   @Patch(":setId")
   async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
     });
-    if (!set) throw new NotFoundException();
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
-    if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
+    if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const newMedia: string[] = [];
     const existingMedias: CardMedia[] = [];
@@ -434,10 +526,20 @@ export class SetsController {
    * @returns Deleted `Set` Object
    */
   @UseGuards(AuthenticatedGuard)
+  @ApiOperation( {
+    summary: "Delete a set"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: SetSuccessResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
   @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
-    if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException();
-    if (!params.setId) throw new NotFoundException();
+    if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     await this.setsService.deleteSetMediaFiles(params.setId);
 
