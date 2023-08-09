@@ -11,6 +11,8 @@ export class MediaService {
   /**
    * Gets a user avatar file
    *
+   * @param width Optional, the returned width of the avatar
+   * @param height Optional, the returned height of the avatar
    * @param userId Optional, ID of the user. Endpoint will use ID in cookies if no ID is provided.
    */
   async getAvatar(width?: number, height?: number, userId?: string): Promise<Blob | false> {
@@ -35,7 +37,6 @@ export class MediaService {
    * Uploads a user avatar
    *
    * @param avatar Image file
-   * @param userId ID of the user
    *
    * @returns Boolean of whether the operation was successful
    */

@@ -7,9 +7,9 @@ import {
   Post,
   UseGuards,
   Body,
-  Put,
   Delete,
-  UnauthorizedException
+  UnauthorizedException,
+  Patch
 } from "@nestjs/common";
 import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
@@ -131,7 +131,7 @@ export class CardsController {
    * @returns Updated `Card` object
    */
   @UseGuards(AuthenticatedGuard, UpdateCardGuard)
-  @Put(":cardId")
+  @Patch(":cardId")
   async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
     const card = await this.cardsService.card({ id: params.cardId });
     if (!card) throw new NotFoundException();

@@ -1,5 +1,4 @@
-import
-{ Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { lastValueFrom, Observable } from "rxjs";
 import { ApiResponse, ApiResponseOptions, Set } from "@scholarsome/shared";
@@ -38,15 +37,34 @@ export class SetsService {
   /**
    * Finds the sets of a user
    *
-   * @param userId ID of the user
+   * @param userId ID of the set author
    *
    * @returns Array of `Set` objects
    */
-  async sets(userId: string | null): Promise<Set[] | null> {
+  async sets(userId: string): Promise<Set[] | null> {
     let sets: ApiResponse<Set[]> | undefined;
 
     try {
-      sets = await lastValueFrom(this.http.get<ApiResponse<Set[]>>("/api/sets/user/" + userId));
+      sets = await lastValueFrom(this.http.get<ApiResponse<Set[]>>("/api/sets/user" + userId));
+    } catch (e) {
+      return null;
+    }
+
+    if (sets.status === ApiResponseOptions.Success) {
+      return sets.data;
+    } else return null;
+  }
+
+  /**
+   * Finds the sets of the authenticated user
+   *
+   * @returns Array of `Set` objects
+   */
+  async mySets(): Promise<Set[] | null> {
+    let sets: ApiResponse<Set[]> | undefined;
+
+    try {
+      sets = await lastValueFrom(this.http.get<ApiResponse<Set[]>>("/api/sets/user/me"));
     } catch (e) {
       return null;
     }
@@ -165,7 +183,7 @@ export class SetsService {
     let set: HttpResponse<ApiResponse<Set>> | undefined;
 
     try {
-      set = await lastValueFrom(this.http.put<ApiResponse<Set>>("/api/sets/" + body.id, {
+      set = await lastValueFrom(this.http.patch<ApiResponse<Set>>("/api/sets/" + body.id, {
         title: body.title,
         description: body.description,
         private: body.private,

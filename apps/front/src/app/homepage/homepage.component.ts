@@ -29,7 +29,7 @@ export class HomepageComponent implements OnInit {
   sets: Set[];
 
   async ngOnInit(): Promise<void> {
-    const sets = await this.setsService.sets("self");
+    const sets = await this.setsService.mySets();
     if (sets) {
       this.sets = sets.sort((a, b) => {
         return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();

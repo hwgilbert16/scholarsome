@@ -5,13 +5,14 @@ import {
   Get,
   NotFoundException,
   Param,
+  Patch,
   Post,
-  Put,
   Request,
   UnauthorizedException,
   UnsupportedMediaTypeException,
   UploadedFile,
-  UseGuards, UseInterceptors
+  UseGuards,
+  UseInterceptors
 } from "@nestjs/common";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "./sets.service";
@@ -27,12 +28,12 @@ import * as crypto from "crypto";
 import { CardsService } from "../cards/cards.service";
 import { CardMedia } from "@prisma/client";
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { AuthorIdParam } from "./param/authorIdParam.param";
 import { CreateSetFromApkgDto } from "./dto/createSetFromApkg.dto";
 import { CreateSetDto } from "./dto/createSet.dto";
 import { UpdateSetDto } from "./dto/updateSet.dto";
 import { SetIdParam } from "./param/setIdParam.param";
-import { SetOkResponse } from "./response/set.ok.response";
+import { SetOkResponse } from "./response/set/set.ok.response";
+import { UserIdParam } from "../users/param/userId.param";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -47,6 +48,75 @@ export class SetsController {
   ) {}
 
   /**
+   * Gets the sets of the authenticated user
+   *
+   * @returns Array of `Set` objects that belong to the authenticated user
+   * @remarks This MUST be placed before the "user/:userId" route to ensure this is mapped
+   */
+  @ApiOperation({
+    summary: "Gets the sets of the authenticated user",
+    description: "Gets all of the sets of the user that is currently authenticated"
+  })
+  @Get("user/me")
+  async mySets(@Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new NotFoundException();
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: await this.setsService.sets({
+        where: {
+          authorId: user.id
+        }
+      })
+    };
+  }
+
+  /**
+   * Gets the sets of a user given an author ID
+   *
+   * @returns Array of `Set` objects that belong to the user
+   */
+  @ApiOperation({
+    summary: "Gets the sets of a user",
+    description: "Gets all of the sets of a user, given the user's ID"
+  })
+  @Get("user/:userId")
+  async sets(@Request() req: ExpressRequest, @Param() params: UserIdParam): Promise<ApiResponse<Set[]>> {
+    const user = this.usersService.getUserInfo(req);
+
+    if (user && params.userId === user.id) {
+      return {
+        status: ApiResponseOptions.Success,
+        data: await this.setsService.sets({
+          where: {
+            authorId: params.userId
+          }
+        })
+      };
+
+    // a user is requesting a different user's sets -> filter private sets
+    } else {
+      let sets = await this.setsService.sets({
+        where: {
+          authorId: params.userId
+        }
+      });
+
+      for (const set of sets) {
+        if (set.private) {
+          sets = sets.filter((s) => s.id !== set.id);
+        }
+      }
+
+      return {
+        status: ApiResponseOptions.Success,
+        data: sets
+      };
+    }
+  }
+
+  /**
    * Gets a set given a set ID
    *
    * @returns `Set` object
@@ -55,11 +125,11 @@ export class SetsController {
     summary: "Get a set",
     description: "Gets a set given a set ID"
   })
-  @Get(":setId")
   @ApiOkResponse({
     description: "Expected response to a valid request",
     type: SetOkResponse
   })
+  @Get(":setId")
   async set(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
@@ -77,58 +147,6 @@ export class SetsController {
       status: ApiResponseOptions.Success,
       data: set
     };
-  }
-
-  /**
-   * Gets the sets of a user given an author ID
-   *
-   * @returns Array of `Set` objects that belong to the user
-   */
-  @Get("/user/:authorId")
-  async sets(@Param() params: AuthorIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
-    const user = this.usersService.getUserInfo(req);
-    if (!user) {
-      throw new NotFoundException();
-    }
-
-    if (params.authorId === "self") {
-      return {
-        status: ApiResponseOptions.Success,
-        data: await this.setsService.sets({
-          where: {
-            authorId: user.id
-          }
-        })
-      };
-    }
-
-    if (params.authorId === user.id) {
-      return {
-        status: ApiResponseOptions.Success,
-        data: await this.setsService.sets({
-          where: {
-            authorId: params.authorId
-          }
-        })
-      };
-    } else {
-      let sets = await this.setsService.sets({
-        where: {
-          authorId: params.authorId
-        }
-      });
-
-      for (const set of sets) {
-        if (set.private) {
-          sets = sets.filter((s) => s.id !== set.id);
-        }
-      }
-
-      return {
-        status: ApiResponseOptions.Success,
-        data: sets
-      };
-    }
   }
 
   /**
@@ -278,7 +296,7 @@ export class SetsController {
    * @returns Updated `Set` object
    */
   @UseGuards(AuthenticatedGuard)
-  @Put(":setId")
+  @Patch(":setId")
   async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId

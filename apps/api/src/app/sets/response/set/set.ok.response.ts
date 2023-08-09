@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { SetEntity } from "./set.entity";
+import { SetEntity } from "../set.entity";
 
 export class SetOkResponse {
   @ApiProperty({

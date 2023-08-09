@@ -3,11 +3,16 @@ import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma, User as PrismaUser } from "@prisma/client";
 import { User } from "@scholarsome/shared";
 import { Request } from "express";
-import jwt_decode from "jwt-decode";
+import { JwtPayload } from "jwt-decode";
+import * as jwt from "jsonwebtoken";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService
+  ) {}
 
   /**
    * Decodes the access token JWT
@@ -18,7 +23,15 @@ export class UsersService {
    */
   getUserInfo(req: Request): false | { id: string; email: string; } {
     if (req.cookies["access_token"]) {
-      return jwt_decode(req.cookies["access_token"]);
+      let decoded: string | JwtPayload;
+
+      try {
+        decoded = jwt.verify(req.cookies["access_token"], this.configService.get<string>("JWT_SECRET"));
+      } catch (e) {
+        return false;
+      }
+
+      return decoded as { id: string; email: string; };
     } else return false;
   }
 
