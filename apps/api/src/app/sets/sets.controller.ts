@@ -28,7 +28,7 @@ import * as crypto from "crypto";
 import { CardsService } from "../cards/cards.service";
 import { CardMedia } from "@prisma/client";
 import {
-  ApiConsumes,
+  ApiConsumes, ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -40,9 +40,9 @@ import { CreateSetDto } from "./dto/createSet.dto";
 import { UpdateSetDto } from "./dto/updateSet.dto";
 import { SetIdParam } from "./param/setIdParam.param";
 import { UserIdParam } from "../users/param/userId.param";
-import { ErrorResponse } from "../shared/response/Error.response";
 import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
+import { ErrorResponse } from "../shared/response/error.response";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -208,7 +208,7 @@ export class SetsController {
     description: "Converts a .apkg file to a Scholarsome set. Compatible only with simple front-back Anki sets, multiple fields currently unsupported."
   })
   @ApiConsumes("multipart/form-data")
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: "Expected response to a valid request",
     type: SetSuccessResponse
   })
@@ -288,7 +288,7 @@ export class SetsController {
   @ApiOperation( {
     summary: "Create a set"
   })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: "Expected response to a valid request",
     type: SetSuccessResponse
   })

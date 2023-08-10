@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { CardEntity } from "./card.entity";
 
 export class SetEntity {
   @ApiProperty({
@@ -43,4 +44,10 @@ export class SetEntity {
     example: "1970-01-01T00:00:00.000Z"
   })
     updatedAt: string;
+
+  @ApiProperty({
+    description: "The cards contained within the set",
+    type: [CardEntity]
+  })
+    cards: CardEntity;
 }

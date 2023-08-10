@@ -68,10 +68,14 @@ const config = {
         },
         items: [
           {
-            to: `http://${process.env.HOST}`,
+            href: `/`,
             position: 'left',
-            label: 'Back to Scholarsome',
-            target: '_self',
+            label: 'Handbook'
+          },
+          {
+            href: `/api`,
+            position: 'left',
+            label: 'API'
           },
         ],
       },
