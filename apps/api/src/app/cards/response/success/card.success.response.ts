@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { SetSetsEntity } from "../set.sets.entity";
+import { CardCardsEntity } from "../card.cards.entity";
 
-export class SetSuccessResponse {
+export class CardSuccessResponse {
   @ApiProperty({
     description: "Denotes whether the request was successful or not",
     example: "success"
@@ -10,7 +10,7 @@ export class SetSuccessResponse {
 
   @ApiProperty({
     description: "Response data",
-    type: SetSetsEntity
+    type: CardCardsEntity
   })
-    data: SetSetsEntity;
+    data: CardCardsEntity;
 }

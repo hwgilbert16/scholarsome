@@ -70,10 +70,6 @@ export class SetsController {
     description: "Expected response to a valid request",
     type: SetsSuccessResponse
   })
-  @ApiNotFoundResponse({
-    description: "Resource not found or inaccessible",
-    type: ErrorResponse
-  })
   @ApiUnauthorizedResponse({
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
@@ -81,9 +77,7 @@ export class SetsController {
   @Get("user/me")
   async mySets(@Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
     const user = this.usersService.getUserInfo(req);
-    if (!user) {
-      throw new NotFoundException({ status: "fail", message: "Not authenticated" });
-    }
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     return {
       status: ApiResponseOptions.Success,
@@ -109,10 +103,6 @@ export class SetsController {
   })
   @ApiNotFoundResponse({
     description: "Resource not found or inaccessible",
-    type: ErrorResponse
-  })
-  @ApiUnauthorizedResponse({
-    description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
   @Get("user/:userId")

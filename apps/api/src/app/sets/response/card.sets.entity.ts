@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CardEntity {
+export class CardSetsEntity {
   @ApiProperty({
     description: "The ID of the card",
     example: "27758237-5f57-4f6c-b483-6161056dad76"

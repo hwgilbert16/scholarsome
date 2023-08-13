@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { SetEntity } from "../set.entity";
+import { SetSetsEntity } from "../set.sets.entity";
 
 export class SetsSuccessResponse {
   @ApiProperty({
@@ -10,7 +10,7 @@ export class SetsSuccessResponse {
 
   @ApiProperty({
     description: "Response data",
-    type: [SetEntity]
+    type: [SetSetsEntity]
   })
-    data: SetEntity;
+    data: SetSetsEntity;
 }

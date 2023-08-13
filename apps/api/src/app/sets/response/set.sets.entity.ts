@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { CardEntity } from "./card.entity";
+import { CardSetsEntity } from "./card.sets.entity";
 
-export class SetEntity {
+export class SetSetsEntity {
   @ApiProperty({
     description: "The ID of the set",
     example: "77a72340-0b91-499e-9a06-0eee498d5aec"
@@ -47,7 +47,7 @@ export class SetEntity {
 
   @ApiProperty({
     description: "The cards contained within the set",
-    type: [CardEntity]
+    type: [CardSetsEntity]
   })
-    cards: CardEntity;
+    cards: [CardSetsEntity];
 }
