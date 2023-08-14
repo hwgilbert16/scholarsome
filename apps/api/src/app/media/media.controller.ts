@@ -72,15 +72,7 @@ export class MediaController {
     ) {
       let result: GetObjectCommandOutput;
 
-      const s3 = new S3({
-        credentials: {
-          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-        },
-        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-        region: this.configService.get<string>("S3_STORAGE_REGION")
-      });
-
+      const s3 = this.getS3();
       try {
         result = await s3.getObject({
           Key: "media/sets/" + setId + "/" + file,
@@ -151,15 +143,7 @@ export class MediaController {
     ) {
       let file: GetObjectCommandOutput;
 
-      const s3 = new S3({
-        credentials: {
-          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-        },
-        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-        region: this.configService.get<string>("S3_STORAGE_REGION")
-      });
-
+      const s3 = this.getS3();
       try {
         file = await s3.getObject({
           Key: "media/avatars/" + userId + ".jpeg",
@@ -229,15 +213,7 @@ export class MediaController {
     if (
       this.configService.get<string>("STORAGE_TYPE") === "s3"
     ) {
-      const s3 = new S3({
-        credentials: {
-          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-        },
-        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-        region: this.configService.get<string>("S3_STORAGE_REGION")
-      });
-
+      const s3 = this.getS3();
       await s3.putObject({ Body: avatar, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/avatars/" + userCookie.id + ".jpeg" });
     } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
       const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars");
@@ -246,5 +222,16 @@ export class MediaController {
 
       fs.writeFileSync(path.join(filePath, userCookie.id + ".jpeg"), avatar);
     }
+  }
+
+  getS3() {
+    return new S3({
+      credentials: {
+        accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+        secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+      },
+      endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+      region: this.configService.get<string>("S3_STORAGE_REGION")
+    });
   }
 }
