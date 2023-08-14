@@ -34,7 +34,9 @@ export class CreateSetFromApkgDto {
     private: string;
 
   @ApiProperty({
-    description: "The .apkg file"
+    description: "The .apkg file",
+    type: "string",
+    format: "binary"
   })
     file: Express.Multer.File;
 }

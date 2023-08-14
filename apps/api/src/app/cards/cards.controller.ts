@@ -53,7 +53,7 @@ export class CardsController {
    * @returns `Card` object
    */
   @ApiOperation({
-    summary: "Gets a card"
+    summary: "Get a card"
   })
   @ApiOkResponse({
     description: "Expected response to a valid request",

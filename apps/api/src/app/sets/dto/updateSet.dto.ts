@@ -1,7 +1,7 @@
 import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { CardValidator } from "../../cards/validator/card.validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { CardWithIdValidator } from "../validator/cardWithId.validator";
 
 export class UpdateSetDto {
   @ApiProperty({
@@ -36,6 +36,6 @@ export class UpdateSetDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
-  @Type(() => CardValidator)
-    cards?: CardValidator[];
+  @Type(() => CardWithIdValidator)
+    cards?: CardWithIdValidator[];
 }

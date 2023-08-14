@@ -261,7 +261,17 @@ export class SetsService {
   ): Promise<Set | null> {
     return this.prisma.set.findUnique({
       where: setWhereUniqueInput,
-      include: { cards: true, author: true }
+      include: {
+        cards: true,
+        author: {
+          select: {
+            id: true,
+            username: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }
+      }
     });
   }
 
@@ -292,7 +302,14 @@ export class SetsService {
       orderBy,
       include: {
         cards: true,
-        author: true
+        author: {
+          select: {
+            id: true,
+            username: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }
       }
     });
   }
@@ -309,7 +326,14 @@ export class SetsService {
       data,
       include: {
         cards: true,
-        author: true
+        author: {
+          select: {
+            id: true,
+            username: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }
       }
     });
   }
@@ -332,7 +356,14 @@ export class SetsService {
       where,
       include: {
         cards: true,
-        author: true
+        author: {
+          select: {
+            id: true,
+            username: true,
+            createdAt: true,
+            updatedAt: true
+          }
+        }
       }
     });
   }

@@ -28,9 +28,10 @@ import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("Authentication")
+@ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {

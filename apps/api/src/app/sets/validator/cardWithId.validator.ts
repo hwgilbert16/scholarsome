@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
-export class CardValidator {
+export class CardWithIdValidator {
   @IsOptional()
   @IsString()
     id: string;

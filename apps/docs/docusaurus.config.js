@@ -53,7 +53,7 @@ const config = {
   favicon: 'img/favicon.ico',
   organizationName: 'Scholarsome',
   projectName: 'Scholarsome',
-  trailingSlash: false,
+  trailingSlash: true,
 
   presets,
 
@@ -68,15 +68,23 @@ const config = {
         },
         items: [
           {
-            href: `/`,
+            to: `/`,
             position: 'left',
-            label: 'Handbook'
+            label: 'Handbook',
+            activeBaseRegex: '^(?!.*\\bapi\\b).*$'
           },
           {
-            href: `/api`,
+            to: `/api`,
             position: 'left',
-            label: 'API'
+            label: 'API',
+            activeBasePath: 'api'
           },
+          {
+            to: `http://${process.env.HOST}`,
+            position: 'right',
+            label: 'Back to Scholarsome',
+            target: "_self"
+          }
         ],
       },
       prism: {
