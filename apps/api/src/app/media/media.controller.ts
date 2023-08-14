@@ -26,8 +26,9 @@ import { Multer } from "multer";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import * as sharp from "sharp";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { SetIdAndFileParam } from "./param/setIdAndFile.param";
+import { ErrorResponse } from "../shared/response/error.response";
 
 @ApiTags("Media")
 @Controller("media")
@@ -38,10 +39,24 @@ export class MediaController {
     private readonly configService: ConfigService
   ) {}
 
+
+  @ApiOperation({ summary: "Gets the media file for a Set" })
+  @ApiOkResponse({
+    description: "Expected response contain binary image data.",
+    type: String
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiParam({ name: "setId", type: "string", description: "Set ID for which file needs to be fetched." })
+  @ApiParam({ name: "file", type: "string", description: "File which needs to be fetched for a given set." })
+
   @Get("/sets/:setId/:file")
   async getSetFile(@Param() params: SetIdAndFileParam, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+    const { setId, file } = params;
     const set = await this.setsService.set({
-      id: params.setId
+      id: setId
     });
     if (!set) throw new NotFoundException();
 
@@ -55,9 +70,9 @@ export class MediaController {
     if (
       this.configService.get<string>("STORAGE_TYPE") === "s3"
     ) {
-      let file: GetObjectCommandOutput;
+      let result: GetObjectCommandOutput;
 
-      const s3 = await new S3({
+      const s3 = new S3({
         credentials: {
           accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
           secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
@@ -67,8 +82,8 @@ export class MediaController {
       });
 
       try {
-        file = await s3.getObject({
-          Key: "media/sets/" + params.setId + "/" + params.file,
+        result = await s3.getObject({
+          Key: "media/sets/" + setId + "/" + file,
           Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
         });
       } catch (e) {
@@ -76,18 +91,18 @@ export class MediaController {
       }
 
       res.writeHead(200, {
-        "Content-Type": "image/" + params.file.split(".").pop()
+        "Content-Type": "image/" + file.split(".").pop()
       });
 
-      res.write(await file.Body.transformToByteArray());
+      res.write(await result.Body.transformToByteArray());
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", params.setId, params.file);
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId, file);
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {
-          "Content-Type": "image/" + params.file.split(".").pop()
+          "Content-Type": "image/" + file.split(".").pop()
         });
 
         res.write(fs.readFileSync(filePath));
@@ -98,6 +113,19 @@ export class MediaController {
       }
     }
   }
+
+  @ApiOperation({ summary: "Gets the avatar of the User" })
+  @ApiOkResponse({
+    description: "Expected response contain binary image data.",
+    type: String
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiParam({ name: "userId", type: "string", description: "User ID for which avatar needs to be fetched." })
+  @ApiQuery({ name: "width", description: "required width of the image (defaults to 128)", type: "string" })
+  @ApiQuery({ name: "height", description: "required height of the image (defaults to 128)", type: "string" })
 
   @Get("/avatars/:userId?")
   async getAvatar(
@@ -123,7 +151,7 @@ export class MediaController {
     ) {
       let file: GetObjectCommandOutput;
 
-      const s3 = await new S3({
+      const s3 = new S3({
         credentials: {
           accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
           secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
@@ -201,7 +229,7 @@ export class MediaController {
     if (
       this.configService.get<string>("STORAGE_TYPE") === "s3"
     ) {
-      const s3 = await new S3({
+      const s3 = new S3({
         credentials: {
           accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
           secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
