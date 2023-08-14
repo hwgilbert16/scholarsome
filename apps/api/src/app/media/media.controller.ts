@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -243,6 +244,8 @@ export class MediaController {
   })
   @Post("/avatars")
   async setAvatar(@Body() setAvatarDto: SetAvatarDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException();
+
     const userCookie = this.usersService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
