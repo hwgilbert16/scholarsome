@@ -9,9 +9,9 @@ import {
 import { request } from "express";
 import { CardsService } from "../cards.service";
 import { SetsService } from "../../sets/sets.service";
-import { CardIdParam } from "@scholarsome/shared";
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
+import { CardIdParam } from "../param/cardId.param";
 
 @Injectable()
 export class DeleteCardGuard implements CanActivate {

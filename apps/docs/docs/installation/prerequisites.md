@@ -8,8 +8,4 @@ Scholarsome is open source software, and we support user installations.
 
 Docker is the only prerequisite for a standard installation.
 
-Before starting installation, be sure that it is installed on the system that you will be running Scholarsome within. Downloads for Docker can be found below if you do not already have it installed.
-
-- [Linux](https://docs.docker.com/linux/started/)
-- [Windows](https://docs.docker.com/windows/started)
-- [MacOS (OS X)](https://docs.docker.com/mac/started/)
+Before starting installation, be sure that it is installed on the system that you will be running Scholarsome within. Docker installation instructions can be found [here](https://docs.docker.com/get-started/).

@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   NotFoundException,
@@ -20,14 +22,26 @@ import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import * as fs from "fs";
 import * as path from "path";
 import { S3 } from "@aws-sdk/client-s3";
-import { SetIdAndFileParam } from "@scholarsome/shared";
 // needed for multer file type declaration
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 import { Multer } from "multer";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import * as sharp from "sharp";
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from "@nestjs/swagger";
+import { SetIdAndFileParam } from "./param/setIdAndFile.param";
+import { ApiResponseOptions } from "@scholarsome/shared";
+import { ErrorResponse } from "../shared/response/error.response";
+import { SetAvatarDto } from "./dto/setAvatar.dto";
 
+@ApiTags("Media")
 @Controller("media")
 export class MediaController {
   constructor(
@@ -36,18 +50,30 @@ export class MediaController {
     private readonly configService: ConfigService
   ) {}
 
+  @ApiOperation({
+    summary: "Get a set media file",
+    description: "Retrieves a media file that is attached to as et"
+  })
+  @ApiOkResponse({
+    description: "File content"
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
   @Get("/sets/:setId/:file")
   async getSetFile(@Param() params: SetIdAndFileParam, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
     const set = await this.setsService.set({
       id: params.setId
     });
-    if (!set) throw new NotFoundException();
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
       const userCookie = this.usersService.getUserInfo(req);
 
-      if (!userCookie) throw new NotFoundException();
-      if (set.authorId !== userCookie.id) throw new NotFoundException();
+      if (!userCookie || set.authorId !== userCookie.id) {
+        throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      }
     }
 
     if (
@@ -70,7 +96,7 @@ export class MediaController {
           Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
         });
       } catch (e) {
-        throw new NotFoundException();
+        throw new NotFoundException({ status: "fail", message: "Media not found" });
       }
 
       res.writeHead(200, {
@@ -92,11 +118,32 @@ export class MediaController {
 
         res.end();
       } else {
-        throw new NotFoundException();
+        throw new NotFoundException({ status: "fail", message: "Media not found" });
       }
     }
   }
 
+  @ApiOperation({
+    summary: "Get a avatar",
+    description: "Retrieves a user avatar based on their user ID"
+  })
+  @ApiOkResponse({
+    description: "Avatar content"
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiQuery({
+    name: "width",
+    description: "The width of the returned image",
+    required: false
+  })
+  @ApiQuery({
+    name: "height",
+    description: "The height of the returned image",
+    required: false
+  })
   @Get("/avatars/:userId?")
   async getAvatar(
     @Param() params: { userId: string },
@@ -111,7 +158,7 @@ export class MediaController {
       userId = params.userId;
     } else {
       const userCookie = this.usersService.getUserInfo(req);
-      if (!userCookie) throw new NotFoundException();
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
       userId = userCookie.id;
     }
@@ -136,7 +183,7 @@ export class MediaController {
           Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
         });
       } catch (e) {
-        throw new NotFoundException();
+        throw new NotFoundException({ status: "fail", message: "Media not found" });
       }
 
       res.writeHead(200, {
@@ -178,17 +225,29 @@ export class MediaController {
 
         res.end();
       } else {
-        throw new NotFoundException();
+        throw new NotFoundException({ status: "fail", message: "Media not found" });
       }
     }
   }
 
-  @Post("/avatars")
-  @UseInterceptors(FileInterceptor("file"))
   @UseGuards(AuthenticatedGuard)
-  async setAvatar(@Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
+  @UseInterceptors(FileInterceptor("file"))
+  @ApiOperation({
+    summary: "Set a user's avatar"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request"
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
+  @Post("/avatars")
+  async setAvatar(@Body() setAvatarDto: SetAvatarDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException();
+
     const userCookie = this.usersService.getUserInfo(req);
-    if (!userCookie) throw new UnauthorizedException();
+    if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const avatar = await sharp(file.buffer)
         .jpeg({ progressive: true, force: true, quality: 80 })
@@ -216,5 +275,10 @@ export class MediaController {
 
       fs.writeFileSync(path.join(filePath, userCookie.id + ".jpeg"), avatar);
     }
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: null
+    };
   }
 }
