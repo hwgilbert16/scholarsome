@@ -111,7 +111,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
         this.hidden = this.router.url === "/" || this.router.url === "/reset";
 
         if (!this.hidden && this.signedIn) {
-          const user = await this.usersService.user();
+          const user = await this.usersService.myUser();
           if (user) this.user = user;
 
           await this.viewAvatar();

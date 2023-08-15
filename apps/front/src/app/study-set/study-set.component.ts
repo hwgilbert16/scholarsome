@@ -227,7 +227,7 @@ export class StudySetComponent implements OnInit {
 
     this.metaService.addTag({ name: "description", content: description });
 
-    const user = await this.users.user("self");
+    const user = await this.users.myUser();
 
     this.set = set;
 

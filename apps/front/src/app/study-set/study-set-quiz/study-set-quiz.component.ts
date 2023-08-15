@@ -296,6 +296,10 @@ export class StudySetQuizComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.percentCorrect = -1;
     this.setId = this.route.snapshot.paramMap.get("setId");
+    if (!this.setId) {
+      await this.router.navigate(["/404"]);
+      return;
+    }
 
     const set = await this.sets.set(this.setId);
 

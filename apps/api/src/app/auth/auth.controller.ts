@@ -16,7 +16,10 @@ import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { Response, Request as ExpressRequest } from "express";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import { ApiResponse, ApiResponseOptions, LoginDto, RegisterDto, ResetPasswordDto } from "@scholarsome/shared";
+import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
+import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
@@ -25,7 +28,10 @@ import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
+import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Authentication")
+@ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
@@ -46,8 +52,8 @@ export class AuthController {
   }
 
   /*
-  * Password reset routes
-  */
+   * Password reset routes
+   */
 
   /**
    * Resets the password of a user after checking for a valid reset token in their cookies.
@@ -55,11 +61,18 @@ export class AuthController {
    * @returns Whether the user's password was successfully updated
    */
   @Post("reset/setPassword")
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto, @Res({ passthrough: true }) res: Response, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
-    let decoded: { email: string, reset: boolean };
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: ExpressRequest
+  ): Promise<ApiResponse<User>> {
+    let decoded: { email: string; reset: boolean };
 
     try {
-      decoded = jwt.verify(req.cookies["resetPasswordToken"], this.configService.get<string>("JWT_SECRET")) as { email: string, reset: boolean };
+      decoded = jwt.verify(
+          req.cookies["resetPasswordToken"],
+          this.configService.get<string>("JWT_SECRET")
+      ) as { email: string; reset: boolean };
     } catch (e) {
       res.status(401);
 
@@ -78,7 +91,10 @@ export class AuthController {
       };
     }
 
-    res.cookie("resetPasswordToken", "", { httpOnly: false, expires: new Date() });
+    res.cookie("resetPasswordToken", "", {
+      httpOnly: false,
+      expires: new Date()
+    });
 
     const query = await this.usersService.updateUser({
       where: {
@@ -102,16 +118,25 @@ export class AuthController {
    * @returns Void, redirect to /api/auth/redirect
    */
   @Get("reset/password/setCookie/:token")
-  async setResetCookie(@Param() params: { token: string }, @Res() res: Response): Promise<void> {
-    let decoded: { email: string, reset: boolean };
+  async setResetCookie(
+    @Param() params: { token: string },
+    @Res() res: Response
+  ): Promise<void> {
+    let decoded: { email: string; reset: boolean };
     try {
-      decoded = jwt.verify(params.token, this.configService.get<string>("JWT_SECRET")) as { email: string, reset: boolean };
+      decoded = jwt.verify(
+          params.token,
+          this.configService.get<string>("JWT_SECRET")
+      ) as { email: string; reset: boolean };
     } catch (e) {
       return res.redirect("/");
     }
 
     if (decoded && decoded.reset) {
-      res.cookie("resetPasswordToken", params.token, { httpOnly: false, expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10)) });
+      res.cookie("resetPasswordToken", params.token, {
+        httpOnly: false,
+        expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10))
+      });
     }
 
     return res.redirect("/");
@@ -125,7 +150,9 @@ export class AuthController {
    */
   @Throttle(5, 600)
   @Get("reset/sendReset/:email")
-  async sendReset(@Param() params: { email: string }): Promise<ApiResponse<null>> {
+  async sendReset(
+    @Param() params: { email: string }
+  ): Promise<ApiResponse<null>> {
     const user = await this.usersService.user({ email: params.email });
 
     if (user && !user.verified) {
@@ -139,8 +166,8 @@ export class AuthController {
   }
 
   /*
-  * Registration routes
-  */
+   * Registration routes
+   */
 
   /**
    * Verifies a users email given a successfully validated token
@@ -153,7 +180,10 @@ export class AuthController {
     let email: { email: string };
 
     try {
-      email = jwt.verify(params.token, this.configService.get<string>("JWT_SECRET")) as { email: string };
+      email = jwt.verify(
+          params.token,
+          this.configService.get<string>("JWT_SECRET")
+      ) as { email: string };
     } catch (e) {
       return {
         status: ApiResponseOptions.Fail,
@@ -177,7 +207,9 @@ export class AuthController {
     });
 
     if (verification) {
-      res.cookie("verified", true, { expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)) });
+      res.cookie("verified", true, {
+        expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30))
+      });
     } else {
       res.cookie("verified", false, { expires: new Date() });
     }
@@ -196,7 +228,9 @@ export class AuthController {
    * @returns Success response
    */
   @Post("resendVerification")
-  async resendVerificationMail(@Request() req: ExpressRequest): Promise<ApiResponse<null>> {
+  async resendVerificationMail(
+    @Request() req: ExpressRequest
+  ): Promise<ApiResponse<null>> {
     const userCookie = this.usersService.getUserInfo(req);
     if (!userCookie) {
       return {
@@ -227,7 +261,6 @@ export class AuthController {
     }
   }
 
-
   /**
    * Registers a new user
    *
@@ -236,10 +269,13 @@ export class AuthController {
    */
   @Throttle(5, 900)
   @Post("register")
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<null>> {
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ApiResponse<null>> {
     if (
-      await this.usersService.user({ email: registerDto.email }) ||
-      await this.usersService.user({ username: registerDto.username })
+      (await this.usersService.user({ email: registerDto.email })) ||
+      (await this.usersService.user({ username: registerDto.username }))
     ) {
       res.status(409);
 
@@ -266,8 +302,8 @@ export class AuthController {
   }
 
   /*
-  * Login routes
-  */
+   * Login routes
+   */
 
   /**
    * Logs a user in and sets relevant cookies
@@ -276,8 +312,13 @@ export class AuthController {
    */
   @HttpCode(200)
   @Post("login")
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<null>> {
-    if (!(await this.authService.validateUser(loginDto.email, loginDto.password))) {
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<ApiResponse<null>> {
+    if (
+      !(await this.authService.validateUser(loginDto.email, loginDto.password))
+    ) {
       res.status(401);
 
       return {
@@ -287,10 +328,16 @@ export class AuthController {
     }
 
     if (this.configService.get<string>("SCHOLARSOME_RECAPTCHA_SECRET")) {
-      const captchaCheck = await this.authService.validateRecaptcha(loginDto.recaptchaToken);
-      if (!captchaCheck) throw new HttpException("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
+      const captchaCheck = await this.authService.validateRecaptcha(
+          loginDto.recaptchaToken
+      );
+      if (!captchaCheck) {
+        throw new HttpException(
+            "Too many requests",
+            HttpStatus.TOO_MANY_REQUESTS
+        );
+      }
     }
-
 
     const user = await this.usersService.user({
       email: loginDto.email
@@ -319,7 +366,10 @@ export class AuthController {
    * @returns Void
    */
   @Post("logout")
-  logout(@Req() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+  logout(
+    @Req() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response
+  ) {
     return this.authService.logout(req, res);
   }
 }

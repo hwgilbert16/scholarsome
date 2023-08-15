@@ -1,18 +1,19 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
-export class UpdateCardDto {
+export class CardWithIdValidator {
+  @IsOptional()
+  @IsString()
+    id: string;
+
   @IsNumber()
-  @IsOptional()
   @IsNotEmpty()
-    index?: number;
+    index: number;
 
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
-    term?: string;
+    term: string;
 
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
-    definition?: string;
+    definition: string;
 }
