@@ -14,7 +14,6 @@ export class HomepageComponent implements OnInit {
    * @ignore
    */
   constructor(
-    private readonly http: HttpClient,
     private readonly setsService: SetsService,
     private readonly titleService: Title,
     private readonly metaService: Meta

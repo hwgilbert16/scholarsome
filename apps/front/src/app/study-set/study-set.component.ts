@@ -12,7 +12,8 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -52,8 +53,9 @@ export class StudySetComponent implements OnInit {
 
   protected deleteClicked = false;
 
-  protected readonly faChartLine = faChartLine;
   protected readonly faGamepad = faGamepad;
+  protected readonly faClone = faClone;
+  protected readonly faClock = faClock;
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -240,4 +242,6 @@ export class StudySetComponent implements OnInit {
 
     this.viewCards();
   }
+
+  protected readonly faPenToSquare = faPenToSquare;
 }

@@ -19,6 +19,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GlobalInterceptor } from "./auth/global.interceptor";
 import { MediaModule } from "./media/media.module";
+import { LongTermLearningModule } from "./long-term-learning/long-term-learning.module";
 
 @Module({
   imports: [
@@ -68,7 +69,8 @@ import { MediaModule } from "./media/media.module";
         inject: [ConfigService]
       }),
       global: true
-    }
+    },
+    LongTermLearningModule
   ],
   controllers: [],
   providers: [

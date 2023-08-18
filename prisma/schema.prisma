@@ -9,26 +9,28 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sets      Set[]
+  id               String             @id @default(uuid())
+  username         String             @unique
+  email            String             @unique
+  password         String
+  verified         Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  sets             Set[]
+  longTermLearning LongTermLearning[]
 }
 
 model Set {
-  id          String   @id @default(uuid())
-  authorId    String
-  title       String
-  description String?  @db.Text
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  private     Boolean
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  cards       Card[]
+  id               String             @id @default(uuid())
+  authorId         String
+  title            String
+  description      String?            @db.Text
+  author           User               @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  private          Boolean
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  cards            Card[]
+  longTermLearning LongTermLearning[]
 
   @@index([authorId])
 }
@@ -56,4 +58,34 @@ model Card {
   media      CardMedia[]
 
   @@index([setId])
+}
+
+model LongTermLearning {
+  id            String         @id @default(uuid())
+  setId         String
+  userId        String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  set           Set            @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  learningCards LearningCard[]
+
+  @@index([setId])
+  @@index([userId])
+}
+
+model LearningCard {
+  id                 String           @id @default(uuid())
+  longTermLearningId String
+  index              Int
+  box                Int              @default(1)
+  learnt             Boolean          @default(false)
+  due                DateTime         @default(now())
+  term               String           @db.Text
+  definition         String           @db.Text
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  longTermLearning   LongTermLearning @relation(fields: [longTermLearningId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([longTermLearningId])
 }
