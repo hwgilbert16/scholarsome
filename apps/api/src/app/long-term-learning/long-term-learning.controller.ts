@@ -1,4 +1,4 @@
-import { Controller, NotFoundException, Param, Post, Request, UnauthorizedException } from "@nestjs/common";
+import { Controller, Get, NotFoundException, Param, Post, Request, UnauthorizedException } from "@nestjs/common";
 import { LongTermLearningService } from "./long-term-learning.service";
 import { Request as ExpressRequest } from "express";
 import { UsersService } from "../users/users.service";
@@ -17,6 +17,27 @@ export class LongTermLearningController {
     private readonly usersService: UsersService,
     private readonly setsService: SetsService
   ) {}
+
+  @Get(":setId")
+  async getLongTermLearning(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLongTermLearning | []>> {
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const set = await this.setsService.set({ id: params.setId });
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+
+    const longTermLearnings = await this.longTermLearningService.longTermLearnings({
+      where: {
+        userId: user.id,
+        setId: set.id
+      }
+    });
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: longTermLearnings[0] ? longTermLearnings[0] : null
+    };
+  }
 
   @Post(":setId")
   async createLongTermLearning(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLongTermLearning>> {

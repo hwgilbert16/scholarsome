@@ -7,13 +7,14 @@ import {
   ViewContainerRef
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Set } from "@scholarsome/shared";
+import {LongTermLearning, Set} from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faGamepad } from "@fortawesome/free-solid-svg-icons";
-import { faClock, faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faGamepad, faChartLine } from "@fortawesome/free-solid-svg-icons";
+import { faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { LongTermLearningService } from "../shared/http/long-term-learning.service";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -30,7 +31,8 @@ export class StudySetComponent implements OnInit {
     private readonly users: UsersService,
     private readonly router: Router,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    private readonly longTermLearningService: LongTermLearningService
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -46,6 +48,9 @@ export class StudySetComponent implements OnInit {
 
   protected author: string;
 
+  protected startedLongTermLearning = false;
+  protected longTermLearning: LongTermLearning;
+
   protected cards: ComponentRef<CardComponent>[] = [];
   protected set: Set;
 
@@ -55,7 +60,8 @@ export class StudySetComponent implements OnInit {
 
   protected readonly faGamepad = faGamepad;
   protected readonly faClone = faClone;
-  protected readonly faClock = faClock;
+  protected readonly faPenToSquare = faPenToSquare;
+  protected readonly faChartLine = faChartLine;
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -204,6 +210,14 @@ export class StudySetComponent implements OnInit {
     await this.router.navigate(["homepage"]);
   }
 
+  async startLongTermLearning() {
+    const longTermLearning = await this.longTermLearningService.createLongTermLearning(this.setId ? this.setId : "");
+    if (longTermLearning) {
+      this.longTermLearning = longTermLearning;
+      this.startedLongTermLearning = true;
+    }
+  }
+
   async ngOnInit(): Promise<void> {
     this.setId = this.route.snapshot.paramMap.get("setId");
     if (!this.setId) {
@@ -216,11 +230,12 @@ export class StudySetComponent implements OnInit {
       this.router.navigate(["404"]);
       return;
     }
+    this.set = set;
+
+    this.startedLongTermLearning = (await this.longTermLearningService.longTermLearning(this.setId)) !== null;
 
     this.titleService.setTitle(set.title + " — Scholarsome");
-
     let description = "Studying done the correct way on Scholarsome — ";
-
     const firstThree = set.cards.slice(0, 3);
 
     for (const card of firstThree) {
@@ -230,9 +245,6 @@ export class StudySetComponent implements OnInit {
     this.metaService.addTag({ name: "description", content: description });
 
     const user = await this.users.myUser();
-
-    this.set = set;
-
     if (user && user.id === set.authorId) this.userIsAuthor = true;
 
     this.spinner.nativeElement.remove();
@@ -242,6 +254,4 @@ export class StudySetComponent implements OnInit {
 
     this.viewCards();
   }
-
-  protected readonly faPenToSquare = faPenToSquare;
 }

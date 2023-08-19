@@ -11,7 +11,7 @@
   <div class="d-flex justify-content-evenly">
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
       <a [routerLink]="['/study-set', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="faClone"></fa-icon> Flashcards</button></a>
-      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow"><fa-icon [icon]="faClock"></fa-icon> Learning</button>
+      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faChartLine"></fa-icon> Progress</button>
     </div>
     <div class="row mx-1"></div>
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
@@ -25,6 +25,16 @@
       <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']" class="fs-5 ms-3"></fa-icon>
     </div>
     <p class="text-secondary">{{set.description}}</p>
+  </div>
+  <hr>
+  <div class="mt-4 d-flex justify-content-between" *ngIf="set">
+    <div class="ms-2">
+      <h5>Long term learning</h5>
+      <div *ngIf="!startedLongTermLearning">
+        <p class="text-secondary">You have not yet started long term learning for this set.</p>
+        <button class="btn btn-primary" (click)="startLongTermLearning()">Start</button>
+      </div>
+    </div>
   </div>
   <hr>
   <div class="container-fluid">

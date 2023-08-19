@@ -119,8 +119,6 @@ export class AuthService {
     try {
       register = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/register", body, { observe: "response" }));
 
-      console.log(register);
-
       if (
         register.body &&
         register.body.status === ApiResponseOptions.Success
