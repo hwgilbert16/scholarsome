@@ -30,9 +30,12 @@
   <div class="mt-4 d-flex justify-content-between" *ngIf="set">
     <div class="ms-2">
       <h5>Long term learning</h5>
-      <div *ngIf="!startedLongTermLearning">
+      <div *ngIf="createdLeitnerSet">
+        <p>Test</p>
+      </div>
+      <div *ngIf="!createdLeitnerSet">
         <p class="text-secondary">You have not yet started long term learning for this set.</p>
-        <button class="btn btn-primary" (click)="startLongTermLearning()">Start</button>
+        <button class="btn btn-primary" (click)="createLeitnerSet()">Start</button>
       </div>
     </div>
   </div>

@@ -7,14 +7,14 @@ import {
   ViewContainerRef
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import {LongTermLearning, Set} from "@scholarsome/shared";
+import { LeitnerSet, Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
 import { faGamepad, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { LongTermLearningService } from "../shared/http/long-term-learning.service";
+import { LeitnerSetsService } from "../shared/http/leitner-sets.service";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -32,7 +32,7 @@ export class StudySetComponent implements OnInit {
     private readonly router: Router,
     private readonly titleService: Title,
     private readonly metaService: Meta,
-    private readonly longTermLearningService: LongTermLearningService
+    private readonly leitnerSetsService: LeitnerSetsService
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -48,8 +48,8 @@ export class StudySetComponent implements OnInit {
 
   protected author: string;
 
-  protected startedLongTermLearning = false;
-  protected longTermLearning: LongTermLearning;
+  protected createdLeitnerSet = false;
+  protected leitnerSet: LeitnerSet;
 
   protected cards: ComponentRef<CardComponent>[] = [];
   protected set: Set;
@@ -210,11 +210,11 @@ export class StudySetComponent implements OnInit {
     await this.router.navigate(["homepage"]);
   }
 
-  async startLongTermLearning() {
-    const longTermLearning = await this.longTermLearningService.createLongTermLearning(this.setId ? this.setId : "");
-    if (longTermLearning) {
-      this.longTermLearning = longTermLearning;
-      this.startedLongTermLearning = true;
+  async createLeitnerSet() {
+    const leitnerSet = await this.leitnerSetsService.createLeitnerSet(this.setId ? this.setId : "");
+    if (leitnerSet) {
+      this.leitnerSet = leitnerSet;
+      this.createdLeitnerSet = true;
     }
   }
 
@@ -232,7 +232,7 @@ export class StudySetComponent implements OnInit {
     }
     this.set = set;
 
-    this.startedLongTermLearning = (await this.longTermLearningService.longTermLearning(this.setId)) !== null;
+    this.createdLeitnerSet = (await this.leitnerSetsService.leitnerSet(this.setId)) !== null;
 
     this.titleService.setTitle(set.title + " — Scholarsome");
     let description = "Studying done the correct way on Scholarsome — ";

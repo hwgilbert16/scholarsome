@@ -1,32 +1,32 @@
 import { Controller, Get, NotFoundException, Param, Post, Request, UnauthorizedException } from "@nestjs/common";
-import { LongTermLearningService } from "./long-term-learning.service";
+import { LeitnerSetsService } from "./leitner-sets.service";
 import { Request as ExpressRequest } from "express";
 import { UsersService } from "../users/users.service";
 import { SetIdParam } from "./param/setIdParam.param";
 import { SetsService } from "../sets/sets.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
-import { LongTermLearning as PrismaLongTermLearning } from "@prisma/client";
+import { LeitnerSet as PrismaLeitnerSet } from "@prisma/client";
 
-@Controller("long-term-learning")
-export class LongTermLearningController {
+@Controller("leitner-sets")
+export class LeitnerSetsController {
   /**
    * @ignore
    */
   constructor(
-    private readonly longTermLearningService: LongTermLearningService,
+    private readonly leitnerSetsService: LeitnerSetsService,
     private readonly usersService: UsersService,
     private readonly setsService: SetsService
   ) {}
 
   @Get(":setId")
-  async getLongTermLearning(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLongTermLearning | []>> {
+  async getLeitnerSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLeitnerSet | []>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const set = await this.setsService.set({ id: params.setId });
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
-    const longTermLearnings = await this.longTermLearningService.longTermLearnings({
+    const leitnerSets = await this.leitnerSetsService.leitnerSets({
       where: {
         userId: user.id,
         setId: set.id
@@ -35,12 +35,12 @@ export class LongTermLearningController {
 
     return {
       status: ApiResponseOptions.Success,
-      data: longTermLearnings[0] ? longTermLearnings[0] : null
+      data: leitnerSets[0] ? leitnerSets[0] : null
     };
   }
 
   @Post(":setId")
-  async createLongTermLearning(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLongTermLearning>> {
+  async createLeitnerSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLeitnerSet>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
@@ -51,7 +51,7 @@ export class LongTermLearningController {
 
     return {
       status: ApiResponseOptions.Success,
-      data: await this.longTermLearningService.createLongTermLearning({
+      data: await this.leitnerSetsService.createLeitnerSet({
         set: {
           connect: {
             id: set.id
@@ -62,7 +62,7 @@ export class LongTermLearningController {
             id: user.id
           }
         },
-        learningCards: {
+        leitnerCards: {
           createMany: {
             data: set.cards.map((c) => {
               return {

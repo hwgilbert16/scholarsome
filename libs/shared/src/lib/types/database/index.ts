@@ -2,4 +2,4 @@ export * from "./user";
 export * from "./set";
 export * from "./card";
 export * from "./cardMedia";
-export * from "./longTermLearning";
+export * from "./leitnerSet";
