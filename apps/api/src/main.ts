@@ -10,6 +10,7 @@ import * as compression from "compression";
 import { envSchema } from "@scholarsome/shared";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as fs from "fs";
+import { LoggerFactory } from "./app/shared/logger.factory";
 
 async function bootstrap() {
   const validation = envSchema
@@ -24,7 +25,12 @@ async function bootstrap() {
   }
 
   const server = express();
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
+    bufferLogs: true
+  });
+  const logger = LoggerFactory("Scholarsome");
+  app.useLogger(logger);
+  logger.log("Application Started!");
 
   app.useGlobalPipes(
       new ValidationPipe({
