@@ -2,7 +2,7 @@ import {
   Component,
   ComponentRef,
   ElementRef,
-  OnInit,
+  OnInit, TemplateRef,
   ViewChild,
   ViewContainerRef
 } from "@angular/core";
@@ -15,6 +15,8 @@ import { Meta, Title } from "@angular/platform-browser";
 import { faGamepad, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { LeitnerSetsService } from "../shared/http/leitner-sets.service";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -32,7 +34,8 @@ export class StudySetComponent implements OnInit {
     private readonly router: Router,
     private readonly titleService: Title,
     private readonly metaService: Meta,
-    private readonly leitnerSetsService: LeitnerSetsService
+    private readonly leitnerSetsService: LeitnerSetsService,
+    protected readonly bsModalService: BsModalService
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -57,6 +60,8 @@ export class StudySetComponent implements OnInit {
   protected uploadTooLarge = false;
 
   protected deleteClicked = false;
+
+  protected leitnerModalRef?: BsModalRef;
 
   protected readonly faGamepad = faGamepad;
   protected readonly faClone = faClone;
@@ -218,6 +223,10 @@ export class StudySetComponent implements OnInit {
     }
   }
 
+  async updateLeitnerSettings(form: NgForm) {
+    console.log(form.control.value);
+  }
+
   async ngOnInit(): Promise<void> {
     this.setId = this.route.snapshot.paramMap.get("setId");
     if (!this.setId) {
@@ -232,7 +241,11 @@ export class StudySetComponent implements OnInit {
     }
     this.set = set;
 
-    this.createdLeitnerSet = (await this.leitnerSetsService.leitnerSet(this.setId)) !== null;
+    const leitnerSet = await this.leitnerSetsService.leitnerSet(this.setId);
+    if (leitnerSet) {
+      this.leitnerSet = leitnerSet;
+      this.createdLeitnerSet = true;
+    }
 
     this.titleService.setTitle(set.title + " — Scholarsome");
     let description = "Studying done the correct way on Scholarsome — ";

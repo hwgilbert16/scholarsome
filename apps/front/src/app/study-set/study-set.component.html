@@ -28,13 +28,37 @@
   </div>
   <hr>
   <div class="mt-4 d-flex justify-content-between" *ngIf="set">
-    <div class="ms-2">
-      <h5>Long term learning</h5>
+    <div class="ms-2 w-100">
+      <h5>Leitner Learning <span class="badge bg-primary text-white fw-normal">Beta</span></h5>
       <div *ngIf="createdLeitnerSet">
-        <p>Test</p>
+        <div class="container-fluid text-center mt-4">
+          <div class="d-flex justify-content-evenly row row-cols-1 row-cols-md-3 gap-md-3">
+            <div class="col-md-3 shadow rounded">
+              <div class="mt-2 fs-4">Cards Due Today</div>
+              <p class="text-info fs-3">12</p>
+            </div>
+            <div class="col-md-3 shadow rounded mt-md-0 mt-4">
+              <div class="mt-2 fs-4">Unlearned Cards</div>
+              <p class="text-danger fs-3">27</p>
+            </div>
+            <div class="col-md-3 shadow rounded mt-md-0 mt-4">
+              <div class="mt-2 fs-4">Total Cards in Set</div>
+              <p class="text-secondary fs-3">{{this.cards.length}}</p>
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-25 mt-5 fs-4 w-auto">Start today's study session</button><br>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-secondary mt-3" (click)="this.leitnerModalRef = this.bsModalService.show(this.leitnerSettingsModal)">Settings</button>
+          </div>
+        </div>
       </div>
       <div *ngIf="!createdLeitnerSet">
-        <p class="text-secondary">You have not yet started long term learning for this set.</p>
+        <p class="text-secondary">
+          The Leitner system is an efficient flashcard studying method for long-term recall improvement.
+          Cards are shown at varying daily frequencies based on previous recall performance to ensure cards are retained over time.
+          <br><br>
+          You have not yet started Leitner learning for this set. Click the button below to begin.</p>
         <button class="btn btn-primary" (click)="createLeitnerSet()">Start</button>
       </div>
     </div>
@@ -94,3 +118,24 @@
     </div>
   </div>
 </div>
+
+<ng-template #leitnerSettingsModal>
+  <div class="modal-header">
+    <span class="pull-left text-secondary">Leitner settings</span>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="leitnerModalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid">
+      <form (ngSubmit)="updateLeitnerSettings(leitnerSettingsForm)" #leitnerSettingsForm="ngForm" ngNativeValidate>
+        <div class="mb-3">
+          <label for="cardsPerStudySession" class="form-label">Number of cards per study session</label>
+          <input type="number" name="cardsPerStudySession" id="cardsPerStudySession" class="form-control" ngModel required>
+          <div class="form-text">Controls the number of cards presented to you per study session.</div>
+        </div>
+        <button class="btn btn-primary" type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+</ng-template>
