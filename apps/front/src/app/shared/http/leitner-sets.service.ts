@@ -47,4 +47,28 @@ export class LeitnerSetsService {
       return set.data;
     } else return null;
   }
+
+  /**
+   * Updates a LeitnerSet object
+   *
+   * @returns Updated `LeitnerSet` object
+   */
+  async updateLeitnerSet(body: {
+    setId: string,
+    cardsPerSession: number
+  }): Promise<LeitnerSet | null> {
+    let set: ApiResponse<LeitnerSet> | undefined;
+
+    try {
+      set = await lastValueFrom(this.http.patch<ApiResponse<LeitnerSet>>("/api/leitner-sets/" + body.setId, {
+        cardsPerSession: body.cardsPerSession
+      }));
+    } catch (e) {
+      return null;
+    }
+
+    if (set.status === ApiResponseOptions.Success) {
+      return set.data;
+    } else return null;
+  }
 }

@@ -32,14 +32,10 @@
       <h5>Leitner Learning <span class="badge bg-primary text-white fw-normal">Beta</span></h5>
       <div *ngIf="createdLeitnerSet">
         <div class="container-fluid text-center mt-4">
-          <div class="d-flex justify-content-evenly row row-cols-1 row-cols-md-3 gap-md-3">
+          <div class="d-flex justify-content-evenly row row-cols-1 row-cols-md-2">
             <div class="col-md-3 shadow rounded">
               <div class="mt-2 fs-4">Cards Due Today</div>
-              <p class="text-info fs-3">12</p>
-            </div>
-            <div class="col-md-3 shadow rounded mt-md-0 mt-4">
-              <div class="mt-2 fs-4">Unlearned Cards</div>
-              <p class="text-danger fs-3">27</p>
+              <p class="text-info fs-3">{{this.leitnerSetDueToday}}</p>
             </div>
             <div class="col-md-3 shadow rounded mt-md-0 mt-4">
               <div class="mt-2 fs-4">Total Cards in Set</div>
@@ -128,13 +124,18 @@
   </div>
   <div class="modal-body">
     <div class="container-fluid">
-      <form (ngSubmit)="updateLeitnerSettings(leitnerSettingsForm)" #leitnerSettingsForm="ngForm" ngNativeValidate>
+      <form (ngSubmit)="updateLeitnerSettings()" ngNativeValidate>
         <div class="mb-3">
-          <label for="cardsPerStudySession" class="form-label">Number of cards per study session</label>
-          <input type="number" name="cardsPerStudySession" id="cardsPerStudySession" class="form-control" ngModel required>
+          <label for="cardsPerSession" class="form-label">Number of cards per study session</label>
+          <input type="number" name="cardsPerSession" id="cardsPerSession" class="form-control" [(ngModel)]="leitnerSet.cardsPerSession" required>
           <div class="form-text">Controls the number of cards presented to you per study session.</div>
         </div>
-        <button class="btn btn-primary" type="submit">Save</button>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="leitnerSetUpdating">
+            <span *ngIf="leitnerSetUpdating" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Save
+          </button>
+        </div>
       </form>
     </div>
   </div>

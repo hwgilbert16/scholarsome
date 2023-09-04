@@ -2,7 +2,7 @@ import {
   Component,
   ComponentRef,
   ElementRef,
-  OnInit, TemplateRef,
+  OnInit,
   ViewChild,
   ViewContainerRef
 } from "@angular/core";
@@ -16,7 +16,6 @@ import { faGamepad, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { LeitnerSetsService } from "../shared/http/leitner-sets.service";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -53,6 +52,8 @@ export class StudySetComponent implements OnInit {
 
   protected createdLeitnerSet = false;
   protected leitnerSet: LeitnerSet;
+  protected leitnerSetUpdating = false;
+  protected leitnerSetDueToday = 0;
 
   protected cards: ComponentRef<CardComponent>[] = [];
   protected set: Set;
@@ -223,8 +224,15 @@ export class StudySetComponent implements OnInit {
     }
   }
 
-  async updateLeitnerSettings(form: NgForm) {
-    console.log(form.control.value);
+  async updateLeitnerSettings() {
+    this.leitnerSetUpdating = true;
+
+    await this.leitnerSetsService.updateLeitnerSet({
+      setId: this.setId ? this.setId : "",
+      cardsPerSession: this.leitnerSet.cardsPerSession
+    });
+
+    this.leitnerSetUpdating = false;
   }
 
   async ngOnInit(): Promise<void> {
@@ -245,6 +253,9 @@ export class StudySetComponent implements OnInit {
     if (leitnerSet) {
       this.leitnerSet = leitnerSet;
       this.createdLeitnerSet = true;
+      this.leitnerSetDueToday = this.leitnerSet.leitnerCards.filter((c) => {
+        return new Date(c.due).getTime() <= new Date().getTime();
+      }).length;
     }
 
     this.titleService.setTitle(set.title + " — Scholarsome");
