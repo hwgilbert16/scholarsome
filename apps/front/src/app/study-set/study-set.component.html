@@ -43,7 +43,7 @@
             </div>
           </div>
 
-          <button class="btn btn-primary w-25 mt-5 fs-4 w-auto">Start today's study session</button><br>
+          <button [routerLink]="'/leitner-set/study-session/' + setId" class="btn btn-primary w-25 mt-5 fs-4 w-auto">Start today's study session</button><br>
           <div class="d-flex justify-content-end">
             <button class="btn btn-secondary mt-3" (click)="this.leitnerModalRef = this.bsModalService.show(this.leitnerSettingsModal)">Settings</button>
           </div>

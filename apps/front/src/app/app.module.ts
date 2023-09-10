@@ -47,6 +47,7 @@ const Quill: any = QuillNamespace;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ImageResize from "quill-image-resize-module";
+import { LeitnerSetModule } from "./leitner-set/leitner-set.module";
 Quill.register("modules/imageResize", ImageResize);
 
 @NgModule({
@@ -64,6 +65,7 @@ Quill.register("modules/imageResize", ImageResize);
     BrowserAnimationsModule,
     ProfileModule,
     HeaderModule,
+    LeitnerSetModule,
     QuillModule.forRoot(),
     QuillConfigModule.forRoot({
       modules: {
