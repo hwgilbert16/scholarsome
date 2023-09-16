@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { LeitnerSetsService } from "../../shared/http/leitner-sets.service";
-import { Card, LeitnerCard } from "@prisma/client";
+import { LeitnerCard } from "@scholarsome/shared";
 import { DomSanitizer } from "@angular/platform-browser";
+import {Card} from "@prisma/client";
 
 @Component({
   selector: "scholarsome-leitner-set-study-session",
@@ -52,10 +53,10 @@ export class LeitnerSetStudySessionComponent implements OnInit {
     // delayed to occur when text is the least visible during animation
     setTimeout(() => {
       if (this.side === "term") {
-        this.sideText = this.cards[this.index].definition;
+        this.sideText = this.cards[this.index].card.definition;
         this.side = "definition";
       } else {
-        this.sideText = this.cards[this.index].term;
+        this.sideText = this.cards[this.index].card.term;
         this.side = "term";
       }
     }, 150);
@@ -99,7 +100,7 @@ export class LeitnerSetStudySessionComponent implements OnInit {
       this.cards.push(...seenCards.slice(0, leitnerSet.cardsPerSession - halfOfCardsPerSession));
     }
 
-    this.sideText = this.cards[0][leitnerSet.answerWith.toLowerCase() as keyof LeitnerCard] as string;
+    this.sideText = this.cards[0].card[leitnerSet.answerWith.toLowerCase() as keyof Card] as string;
     this.currentCard = this.cards[0];
   }
 }

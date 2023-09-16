@@ -47,15 +47,16 @@ model CardMedia {
 }
 
 model Card {
-  id         String      @id @default(uuid())
-  setId      String
-  index      Int
-  term       String      @db.Text
-  definition String      @db.Text
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  set        Set         @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  media      CardMedia[]
+  id           String        @id @default(uuid())
+  setId        String
+  index        Int
+  term         String        @db.Text
+  definition   String        @db.Text
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  set          Set           @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  media        CardMedia[]
+  leitnerCards LeitnerCard[]
 
   @@unique([setId, index])
   @@index([setId])
@@ -85,18 +86,17 @@ model LeitnerSet {
 model LeitnerCard {
   id                   String               @id @default(uuid())
   leitnerSetId         String
-  index                Int
+  cardId               String
   box                  Int                  @default(1)
   due                  DateTime             @default(now())
-  term                 String               @db.Text
-  definition           String               @db.Text
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
+  card                 Card                 @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   leitnerSet           LeitnerSet           @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // needed for the relation to work
   learnedStudySessions LearnedLeitnerCard[]
 
-  @@unique([leitnerSetId, index])
+  @@unique([leitnerSetId, cardId])
   @@index([leitnerSetId])
 }
 

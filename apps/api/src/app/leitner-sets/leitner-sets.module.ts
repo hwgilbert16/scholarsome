@@ -8,6 +8,7 @@ import { UsersModule } from "../users/users.module";
 @Module({
   imports: [DatabaseModule, SetsModule, UsersModule],
   controllers: [LeitnerSetsController],
-  providers: [LeitnerSetsService]
+  providers: [LeitnerSetsService],
+  exports: [LeitnerSetsService]
 })
 export class LeitnerSetsModule {}

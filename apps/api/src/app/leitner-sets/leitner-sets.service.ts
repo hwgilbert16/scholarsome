@@ -32,7 +32,20 @@ export class LeitnerSetsService {
             updatedAt: true
           }
         },
-        leitnerCards: true
+        leitnerCards: {
+          select: {
+            card: true,
+            cardId: true,
+            box: true,
+            due: true
+          }
+        },
+        studySession: {
+          select: {
+            startedAt: true,
+            learnedCards: true
+          }
+        }
       }
     });
   }
@@ -73,7 +86,20 @@ export class LeitnerSetsService {
             updatedAt: true
           }
         },
-        leitnerCards: true
+        leitnerCards: {
+          select: {
+            card: true,
+            cardId: true,
+            box: true,
+            due: true
+          }
+        },
+        studySession: {
+          select: {
+            startedAt: true,
+            learnedCards: true
+          }
+        }
       }
     });
   }

@@ -83,9 +83,7 @@ export class LeitnerSetsController {
           createMany: {
             data: set.cards.map((c) => {
               return {
-                index: c.index,
-                term: c.term,
-                definition: c.definition
+                cardId: c.id
               };
             })
           }
