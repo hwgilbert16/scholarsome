@@ -17,6 +17,7 @@ import { SetsService } from "../sets/sets.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { LeitnerSet as PrismaLeitnerSet } from "@prisma/client";
 import { UpdateLeitnerSetDto } from "./dto/updateLeitnerSet.dto";
+import * as crypto from "crypto";
 
 @Controller("leitner-sets")
 export class LeitnerSetsController {
@@ -57,10 +58,12 @@ export class LeitnerSetsController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private && user.id !== set.authorId) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    const id = crypto.randomUUID();
 
     return {
       status: ApiResponseOptions.Success,
       data: await this.leitnerSetsService.createLeitnerSet({
+        id,
         set: {
           connect: {
             id: set.id
@@ -69,6 +72,11 @@ export class LeitnerSetsController {
         user: {
           connect: {
             id: user.id
+          }
+        },
+        studySession: {
+          create: {
+            leitnerSetId: id
           }
         },
         leitnerCards: {

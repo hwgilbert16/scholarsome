@@ -57,21 +57,23 @@ model Card {
   set        Set         @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   media      CardMedia[]
 
+  @@unique([setId, index])
   @@index([setId])
 }
 
 model LeitnerSet {
-  id               String        @id @default(uuid())
-  setId            String
-  userId           String
-  cardsPerSession  Int           @default(50)
-  answerWith       Side          @default(TERM)
-  sessionStartedAt DateTime      @default("1970-01-01T00:00:01.000Z")
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  set              Set           @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  leitnerCards     LeitnerCard[]
+  id              String        @id @default(uuid())
+  setId           String
+  userId          String
+  studySessionId  String?       @unique
+  cardsPerSession Int           @default(50)
+  answerWith      Side          @default(TERM)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  set             Set           @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  leitnerCards    LeitnerCard[]
+  studySession    StudySession? @relation(fields: [studySessionId], references: [id])
 
   @@unique([setId, userId])
   @@index([setId])
@@ -81,20 +83,41 @@ model LeitnerSet {
 // box 1 -> card has never been shown before
 // box 2 is the lowest for cards that have not been shown
 model LeitnerCard {
-  id           String     @id @default(uuid())
-  leitnerSetId String
-  index        Int
-  box          Int        @default(1)
-  due          DateTime   @default(now())
-  term         String     @db.Text
-  definition   String     @db.Text
-  lastSeenAt   DateTime   @default("1970-01-01T00:00:01.000Z")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  leitnerSet   LeitnerSet @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                   String               @id @default(uuid())
+  leitnerSetId         String
+  index                Int
+  box                  Int                  @default(1)
+  due                  DateTime             @default(now())
+  term                 String               @db.Text
+  definition           String               @db.Text
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  leitnerSet           LeitnerSet           @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // needed for the relation to work
+  learnedStudySessions LearnedLeitnerCard[]
 
   @@unique([leitnerSetId, index])
   @@index([leitnerSetId])
+}
+
+model StudySession {
+  id           String               @id @default(uuid())
+  leitnerSetId String               @unique
+  leitnerSet   LeitnerSet?
+  learnedCards LearnedLeitnerCard[]
+  startedAt    DateTime             @default("1970-01-01T00:00:01.000Z")
+}
+
+model LearnedLeitnerCard {
+  id             String       @id @default(uuid())
+  leitnerCardId  String
+  studySessionId String
+  leitnerCard    LeitnerCard  @relation(fields: [leitnerCardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySession   StudySession @relation(fields: [studySessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([leitnerCardId, studySessionId])
 }
 
 enum Side {
