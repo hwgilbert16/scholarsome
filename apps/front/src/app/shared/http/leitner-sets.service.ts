@@ -30,7 +30,7 @@ export class LeitnerSetsService {
   }
 
   /**
-   * Creates a LeitnerSet object
+   * Creates a LeitnerSet
    *
    * @returns Created `LeitnerSet` object
    */
@@ -49,19 +49,21 @@ export class LeitnerSetsService {
   }
 
   /**
-   * Updates a LeitnerSet object
+   * Updates a LeitnerSet
    *
    * @returns Updated `LeitnerSet` object
    */
   async updateLeitnerSet(body: {
     setId: string,
-    cardsPerSession: number
+    cardsPerSession?: number,
+    unlearnedCards?: string[]
   }): Promise<LeitnerSet | null> {
     let set: ApiResponse<LeitnerSet> | undefined;
 
     try {
-      set = await lastValueFrom(this.http.patch<ApiResponse<LeitnerSet>>("/api/leitner-sets/" + body.setId, {
-        cardsPerSession: body.cardsPerSession
+      set = await lastValueFrom(this.http.put<ApiResponse<LeitnerSet>>("/api/leitner-sets/" + body.setId, {
+        cardsPerSession: body.cardsPerSession,
+        unlearnedCards: body.unlearnedCards
       }));
     } catch (e) {
       return null;

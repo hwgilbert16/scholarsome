@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { LeitnerSetsService } from "../../shared/http/leitner-sets.service";
 import { LeitnerCard } from "@scholarsome/shared";
 import { DomSanitizer } from "@angular/platform-browser";
-import {Card} from "@prisma/client";
+import { Card } from "@prisma/client";
+import { LeitnerCardsService } from "../../shared/http/leitner-cards.service";
 
 @Component({
   selector: "scholarsome-leitner-set-study-session",
@@ -13,6 +14,7 @@ import {Card} from "@prisma/client";
 export class LeitnerSetStudySessionComponent implements OnInit {
   constructor(
     private readonly leitnerSetsService: LeitnerSetsService,
+    private readonly leitnerCardsService: LeitnerCardsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     public readonly sanitizer: DomSanitizer
@@ -62,8 +64,12 @@ export class LeitnerSetStudySessionComponent implements OnInit {
     }, 150);
   }
 
-  nextCard(type: number) {
-
+  async nextCard(type: number) {
+    await this.leitnerCardsService.updateLeitnerCard({
+      cardId: this.currentCard.cardId,
+      box: this.currentCard.box + 1,
+      learned: true
+    });
   }
 
   async ngOnInit(): Promise<void> {
@@ -84,9 +90,16 @@ export class LeitnerSetStudySessionComponent implements OnInit {
 
     const halfOfCardsPerSession = Math.floor((leitnerSet.cardsPerSession / 2));
 
-    // if this is the first study session
-    if (leitnerSet.leitnerCards.filter((c) => c.box !== 1).length == 0) {
-      this.cards = leitnerSet.leitnerCards.slice(0, halfOfCardsPerSession);
+    // if there is an existing study session started today
+    if (
+      leitnerSet.studySession &&
+      (new Date(leitnerSet.studySession.startedAt).toDateString() == new Date().toDateString())
+    ) {
+      console.log("a");
+      for (const learnedCard of leitnerSet.studySession.learnedCards) {
+        this.cards.push(learnedCard.leitnerCard);
+      }
+    // if a study session has not already been started
     } else {
       const newCards = leitnerSet.leitnerCards.filter((c) => c.box === 1);
       const seenCards = leitnerSet.leitnerCards.filter((c) => c.box > 1);
@@ -98,6 +111,11 @@ export class LeitnerSetStudySessionComponent implements OnInit {
       }
 
       this.cards.push(...seenCards.slice(0, leitnerSet.cardsPerSession - halfOfCardsPerSession));
+
+      await this.leitnerSetsService.updateLeitnerSet({
+        setId: leitnerSet.setId,
+        unlearnedCards: this.cards.map((c) => c.cardId)
+      });
     }
 
     this.sideText = this.cards[0].card[leitnerSet.answerWith.toLowerCase() as keyof Card] as string;

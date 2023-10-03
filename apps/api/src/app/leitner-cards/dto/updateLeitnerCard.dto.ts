@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, Min } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateLeitnerCardDto {
@@ -10,4 +10,12 @@ export class UpdateLeitnerCardDto {
   @Min(2)
   @IsNotEmpty()
     box: number;
+
+  @ApiProperty({
+    description: "Whether the card is now learned",
+    required: true
+  })
+  @IsBoolean()
+  @IsOptional()
+    learned: boolean;
 }

@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { LeitnerCardsController } from "./leitner-cards.controller";
 import { LeitnerCardsService } from "./leitner-cards.service";
 import { UsersModule } from "../users/users.module";
@@ -8,10 +8,11 @@ import { DatabaseModule } from "../providers/database/database.module";
 @Module({
   imports: [
     UsersModule,
-    LeitnerSetsModule,
-    DatabaseModule
+    DatabaseModule,
+    forwardRef(() => LeitnerSetsModule)
   ],
   controllers: [LeitnerCardsController],
-  providers: [LeitnerCardsService]
+  providers: [LeitnerCardsService],
+  exports: [LeitnerCardsService]
 })
 export class LeitnerCardsModule {}

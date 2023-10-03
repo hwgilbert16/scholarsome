@@ -84,4 +84,17 @@ export class LeitnerCardsService {
       where
     });
   }
+
+  /**
+   * Deletes a LeitnerCard from the database
+   *
+   * @param where Prisma LeitnerCardWhereUniqueInput selector
+   *
+   * @returns `LeitnerCard` object that was deleted
+   */
+  async deleteLeitnerCard(where: Prisma.LeitnerCardWhereUniqueInput): Promise<PrismaLeitnerCard> {
+    return this.prisma.leitnerCard.delete({
+      where
+    });
+  }
 }

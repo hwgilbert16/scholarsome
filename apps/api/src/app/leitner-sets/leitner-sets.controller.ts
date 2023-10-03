@@ -4,8 +4,8 @@ import {
   Get,
   NotFoundException,
   Param,
-  Patch,
   Post,
+  Put,
   Request,
   UnauthorizedException
 } from "@nestjs/common";
@@ -18,6 +18,7 @@ import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { LeitnerSet as PrismaLeitnerSet } from "@prisma/client";
 import { UpdateLeitnerSetDto } from "./dto/updateLeitnerSet.dto";
 import * as crypto from "crypto";
+import { LeitnerCardsService } from "../leitner-cards/leitner-cards.service";
 
 @Controller("leitner-sets")
 export class LeitnerSetsController {
@@ -26,6 +27,7 @@ export class LeitnerSetsController {
    */
   constructor(
     private readonly leitnerSetsService: LeitnerSetsService,
+    private readonly leitnerCardsService: LeitnerCardsService,
     private readonly usersService: UsersService,
     private readonly setsService: SetsService
   ) {}
@@ -92,7 +94,7 @@ export class LeitnerSetsController {
     };
   }
 
-  @Patch(":setId")
+  @Put(":setId")
   async updateLeitnerSet(@Param() params: SetIdParam, @Body() body: UpdateLeitnerSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<PrismaLeitnerSet>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -107,6 +109,28 @@ export class LeitnerSetsController {
 
     if (leitnerSet.userId !== user.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
+    if (body.unlearnedCards) {
+      await this.leitnerSetsService.updateLeitnerSet({
+        where: {
+          setId_userId: {
+            setId: params.setId,
+            userId: user.id
+          }
+        },
+        data: {
+          studySession: {
+            update: {
+              unlearnedCards: {
+                deleteMany: {
+                  studySessionUnlearnedId: leitnerSet.studySession.id
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
     return {
       status: ApiResponseOptions.Success,
       data: await this.leitnerSetsService.updateLeitnerSet({
@@ -117,7 +141,20 @@ export class LeitnerSetsController {
           }
         },
         data: {
-          cardsPerSession: body.cardsPerSession
+          cardsPerSession: body.cardsPerSession,
+          studySession: body.unlearnedCards ? {
+            update: {
+              unlearnedCards: {
+                createMany: {
+                  data: body.unlearnedCards.map((id) => {
+                    return {
+                      leitnerCardId: id
+                    };
+                  })
+                }
+              }
+            }
+          } : undefined
         }
       })
     };

@@ -84,40 +84,43 @@ model LeitnerSet {
 // box 1 -> card has never been shown before
 // box 2 is the lowest for cards that have not been shown
 model LeitnerCard {
-  id                   String               @id @default(uuid())
-  leitnerSetId         String
-  cardId               String
-  box                  Int                  @default(1)
-  due                  DateTime             @default(now())
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
-  card                 Card                 @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  leitnerSet           LeitnerSet           @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id           String                 @id @default(uuid())
+  leitnerSetId String
+  cardId       String
+  box          Int                    @default(1)
+  due          DateTime               @default(now())
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  card         Card                   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  leitnerSet   LeitnerSet             @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // needed for the relation to work
-  learnedStudySessions LearnedLeitnerCard[]
+  cardInfos    StudySessionCardInfo[]
 
   @@unique([leitnerSetId, cardId])
   @@index([leitnerSetId])
 }
 
 model StudySession {
-  id           String               @id @default(uuid())
-  leitnerSetId String               @unique
-  leitnerSet   LeitnerSet?
-  learnedCards LearnedLeitnerCard[]
-  startedAt    DateTime             @default("1970-01-01T00:00:01.000Z")
+  id             String                 @id @default(uuid())
+  leitnerSetId   String                 @unique
+  leitnerSet     LeitnerSet?
+  learnedCards   StudySessionCardInfo[] @relation("StudySession_Learned")
+  unlearnedCards StudySessionCardInfo[] @relation("StudySession_Unlearned")
+  startedAt      DateTime               @default("1970-01-01T00:00:01.000Z")
 }
 
-model LearnedLeitnerCard {
-  id             String       @id @default(uuid())
-  leitnerCardId  String
-  studySessionId String
-  leitnerCard    LeitnerCard  @relation(fields: [leitnerCardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  studySession   StudySession @relation(fields: [studySessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+model StudySessionCardInfo {
+  id                      String        @id @default(uuid())
+  leitnerCardId           String
+  studySessionLearnedId   String?
+  studySessionUnlearnedId String?
+  leitnerCard             LeitnerCard   @relation(fields: [leitnerCardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySessionLearned     StudySession? @relation("StudySession_Learned", fields: [studySessionLearnedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySessionUnlearned   StudySession? @relation("StudySession_Unlearned", fields: [studySessionUnlearnedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
 
-  @@index([leitnerCardId, studySessionId])
+  @@index([leitnerCardId, studySessionLearnedId, studySessionUnlearnedId])
 }
 
 enum Side {

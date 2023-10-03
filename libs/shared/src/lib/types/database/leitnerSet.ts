@@ -21,8 +21,32 @@ const leitnerSetWithRelations = Prisma.validator<Prisma.LeitnerSetArgs>()({
     },
     studySession: {
       select: {
+        id: true,
         startedAt: true,
-        learnedCards: true
+        learnedCards: {
+          select: {
+            leitnerCard: {
+              select: {
+                cardId: true,
+                card: true,
+                box: true,
+                due: true
+              }
+            }
+          }
+        },
+        unlearnedCards: {
+          select: {
+            leitnerCard: {
+              select: {
+                cardId: true,
+                card: true,
+                box: true,
+                due: true
+              }
+            }
+          }
+        }
       }
     }
   }
