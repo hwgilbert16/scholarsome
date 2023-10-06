@@ -214,7 +214,7 @@ export class StudySetQuizComponent implements OnInit {
             index: 0,
             answerWith: questionAnswerWith,
             type: "multipleChoice",
-            answer: this.set.cards[index][questionAnswerWith],
+            answer: this.set.cards[index][questionAnswerWith].replace("<p>", "").replace("</p>", ""),
             options,
             correct: false
           });
@@ -273,6 +273,9 @@ export class StudySetQuizComponent implements OnInit {
           break;
         case "multipleChoice":
           if (question.value["multipleChoice"].length < 1) break;
+
+          console.log(questions[question.value["index"]].answer);
+          console.log(questions[question.value["index"]].options?.[question.value["multipleChoice"] as number].option);
 
           if (
             questions[question.value["index"]].answer ===

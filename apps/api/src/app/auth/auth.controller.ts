@@ -155,9 +155,7 @@ export class AuthController {
   ): Promise<ApiResponse<null>> {
     const user = await this.usersService.user({ email: params.email });
 
-    if (user && !user.verified) {
-      await this.mailService.sendPasswordReset(params.email);
-    }
+    if (user) await this.mailService.sendPasswordReset(params.email);
 
     return {
       status: ApiResponseOptions.Success,
