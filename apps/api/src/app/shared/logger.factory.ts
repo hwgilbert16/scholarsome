@@ -4,7 +4,7 @@ import {
   utilities as nestWinstonModuleUtilities
 } from "nest-winston";
 // import winston = require("winston/lib/winston/config");
-import * as winston from 'winston/lib/winston/config';
+import * as winston from "winston/lib/winston/config";
 
 export const LoggerFactory = (appName: string) => {
   const config = {
