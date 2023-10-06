@@ -274,9 +274,6 @@ export class StudySetQuizComponent implements OnInit {
         case "multipleChoice":
           if (question.value["multipleChoice"].length < 1) break;
 
-          console.log(questions[question.value["index"]].answer);
-          console.log(questions[question.value["index"]].options?.[question.value["multipleChoice"] as number].option);
-
           if (
             questions[question.value["index"]].answer ===
             questions[question.value["index"]].options?.[question.value["multipleChoice"] as number].option
