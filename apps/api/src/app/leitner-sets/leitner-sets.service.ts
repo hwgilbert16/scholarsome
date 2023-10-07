@@ -34,6 +34,7 @@ export class LeitnerSetsService {
         },
         leitnerCards: {
           select: {
+            id: true,
             card: true,
             cardId: true,
             box: true,
@@ -112,6 +113,7 @@ export class LeitnerSetsService {
         },
         leitnerCards: {
           select: {
+            id: true,
             card: true,
             cardId: true,
             box: true,

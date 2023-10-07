@@ -24,7 +24,7 @@ export class LeitnerCardsController {
     const leitnerSet = await this.leitnerSetsService.leitnerSets({
       where: {
         leitnerCards: {
-          every: {
+          some: {
             cardId: params.cardId
           }
         },
@@ -33,13 +33,16 @@ export class LeitnerCardsController {
     });
 
     if (!leitnerSet[0]) throw new NotFoundException({ status: "fail", message: "Leitner Set not found" });
+    if (!leitnerSet[0].leitnerCards.filter((lc) => lc.cardId === params.cardId)[0]) throw new NotFoundException({ status: "fail", message: "Leitner Card not found" });
+
+    const leitnerCardId = leitnerSet[0].leitnerCards.filter((lc) => lc.cardId === params.cardId)[0].id;
 
     // remove card from unlearned array if card is now learned
     if (body.learned) {
       await this.leitnerSetsService.updateLeitnerSet({
         where: {
           setId_userId: {
-            setId: leitnerSet[0].id,
+            setId: leitnerSet[0].setId,
             userId: user.id
           }
         },
@@ -48,7 +51,7 @@ export class LeitnerCardsController {
             update: {
               unlearnedCards: {
                 deleteMany: {
-                  leitnerCardId: params.cardId,
+                  leitnerCardId,
                   studySessionUnlearnedId: leitnerSet[0].studySessionId
                 }
               }
@@ -75,7 +78,7 @@ export class LeitnerCardsController {
                 update: {
                   learnedCards: {
                     create: {
-                      leitnerCardId: params.cardId
+                      leitnerCardId
                     }
                   }
                 }

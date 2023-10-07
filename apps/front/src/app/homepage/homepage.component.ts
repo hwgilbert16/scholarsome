@@ -1,5 +1,4 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { Meta, Title } from "@angular/platform-browser";

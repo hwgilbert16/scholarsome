@@ -148,7 +148,7 @@ export class LeitnerSetsController {
                 createMany: {
                   data: body.unlearnedCards.map((id) => {
                     return {
-                      leitnerCardId: id
+                      leitnerCardId: leitnerSet.leitnerCards.filter((lc) => lc.cardId === id)[0].id
                     };
                   })
                 }

@@ -74,7 +74,7 @@ model LeitnerSet {
   set             Set           @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   leitnerCards    LeitnerCard[]
-  studySession    StudySession? @relation(fields: [studySessionId], references: [id])
+  studySession    StudySession? @relation(fields: [studySessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([setId, userId])
   @@index([setId])
@@ -84,17 +84,16 @@ model LeitnerSet {
 // box 1 -> card has never been shown before
 // box 2 is the lowest for cards that have not been shown
 model LeitnerCard {
-  id           String                 @id @default(uuid())
-  leitnerSetId String
-  cardId       String
-  box          Int                    @default(1)
-  due          DateTime               @default(now())
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  card         Card                   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  leitnerSet   LeitnerSet             @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  // needed for the relation to work
-  cardInfos    StudySessionCardInfo[]
+  id                 String                 @id @default(uuid())
+  leitnerSetId       String
+  cardId             String
+  box                Int                    @default(1)
+  due                DateTime               @default(now())
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  card               Card                   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  leitnerSet         LeitnerSet             @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySessionCopies StudySessionCardInfo[]
 
   @@unique([leitnerSetId, cardId])
   @@index([leitnerSetId])

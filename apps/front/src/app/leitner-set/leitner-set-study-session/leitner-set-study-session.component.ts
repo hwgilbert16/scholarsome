@@ -95,7 +95,6 @@ export class LeitnerSetStudySessionComponent implements OnInit {
       leitnerSet.studySession &&
       (new Date(leitnerSet.studySession.startedAt).toDateString() == new Date().toDateString())
     ) {
-      console.log("a");
       for (const learnedCard of leitnerSet.studySession.learnedCards) {
         this.cards.push(learnedCard.leitnerCard);
       }

@@ -13,6 +13,7 @@ const leitnerSetWithRelations = Prisma.validator<Prisma.LeitnerSetArgs>()({
     },
     leitnerCards: {
       select: {
+        id: true,
         card: true,
         cardId: true,
         box: true,

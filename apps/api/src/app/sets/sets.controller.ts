@@ -531,7 +531,35 @@ export class SetsController {
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    // remove media files
     await this.setsService.deleteSetMediaFiles(params.setId);
+
+    // delete study session and relations
+    await this.setsService.updateSet({
+      where: {
+        id: params.setId
+      },
+      data: {
+        leitnerSets: {
+          update: {
+            where: {
+              setId_userId: {
+                setId: params.setId,
+                userId: user.id
+              }
+            },
+            data: {
+              studySession: {
+                delete: true
+              }
+            }
+          }
+        }
+      }
+    });
 
     return {
       status: ApiResponseOptions.Success,

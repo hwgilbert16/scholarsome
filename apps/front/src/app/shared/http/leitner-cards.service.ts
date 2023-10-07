@@ -23,7 +23,7 @@ export class LeitnerCardsService {
     let card: ApiResponse<LeitnerCard> | undefined;
 
     try {
-      card = await lastValueFrom(this.http.patch<ApiResponse<LeitnerCard>>("/api/leitner-sets/" + body.cardId, {
+      card = await lastValueFrom(this.http.patch<ApiResponse<LeitnerCard>>("/api/leitner-sets/cards/" + body.cardId, {
         box: body.box,
         learned: body.learned
       }));
