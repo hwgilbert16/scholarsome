@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator";
+import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateLeitnerCardDto {
@@ -18,4 +18,12 @@ export class UpdateLeitnerCardDto {
   @IsBoolean()
   @IsOptional()
     learned: boolean;
+
+  @ApiProperty({
+    description: "Time when the card will be next due",
+    required: false
+  })
+  @IsDateString()
+  @IsOptional()
+    due: Date;
 }

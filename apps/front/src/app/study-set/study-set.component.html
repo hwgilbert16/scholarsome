@@ -28,7 +28,7 @@
   </div>
   <hr>
   <div class="mt-4 d-flex justify-content-between" *ngIf="set">
-    <div class="ms-2 w-100">
+    <div class="ms-2 w-100" *ngIf="loggedIn">
       <h5>Leitner Learning <span class="badge bg-primary text-white fw-normal">Beta</span></h5>
       <div *ngIf="createdLeitnerSet">
         <div class="container-fluid text-center mt-4">
@@ -43,7 +43,14 @@
             </div>
           </div>
 
-          <button [routerLink]="'/leitner-set/study-session/' + setId" class="btn btn-primary w-25 mt-5 fs-4 w-auto">Start today's study session</button><br>
+          <button [routerLink]="'/leitner-set/study-session/' + setId" [disabled]="leitnerSetStartedToday && leitnerSetUnlearnedCount === 0" class="btn btn-primary w-25 mt-5 fs-5 w-auto text-center">
+            <fa-icon *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount === 0" [icon]="faClock" class="ms-1"></fa-icon>
+            <fa-icon *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount !== 0" [icon]="faForwardStep" class="ms-1"></fa-icon>
+            <fa-icon *ngIf="!leitnerSetStartedToday" [icon]="faPlay" class="ms-1"></fa-icon>
+            <span *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount === 0"> Come back for tomorrow's study session</span>
+            <span *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount !== 0"> Continue today's study session</span>
+            <span *ngIf="!leitnerSetStartedToday"> Start today's study session</span>
+          </button><br>
           <div class="d-flex justify-content-end">
             <button class="btn btn-secondary mt-3" (click)="this.leitnerModalRef = this.bsModalService.show(this.leitnerSettingsModal)">Settings</button>
           </div>
@@ -59,7 +66,7 @@
       </div>
     </div>
   </div>
-  <hr>
+  <hr *ngIf="loggedIn">
   <div class="container-fluid">
     <div class="d-flex justify-content-between">
       <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>

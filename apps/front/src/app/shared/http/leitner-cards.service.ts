@@ -18,14 +18,16 @@ export class LeitnerCardsService {
   async updateLeitnerCard(body: {
     cardId: string,
     box?: number,
-    learned?: boolean
+    learned?: boolean,
+    due?: Date
   }): Promise<LeitnerCard | null> {
     let card: ApiResponse<LeitnerCard> | undefined;
 
     try {
       card = await lastValueFrom(this.http.patch<ApiResponse<LeitnerCard>>("/api/leitner-sets/cards/" + body.cardId, {
         box: body.box,
-        learned: body.learned
+        learned: body.learned,
+        due: body.due
       }));
     } catch (e) {
       return null;

@@ -56,14 +56,16 @@ export class LeitnerSetsService {
   async updateLeitnerSet(body: {
     setId: string,
     cardsPerSession?: number,
-    unlearnedCards?: string[]
+    unlearnedCards?: string[],
+    studySessionStartedAt?: Date
   }): Promise<LeitnerSet | null> {
     let set: ApiResponse<LeitnerSet> | undefined;
 
     try {
       set = await lastValueFrom(this.http.put<ApiResponse<LeitnerSet>>("/api/leitner-sets/" + body.setId, {
         cardsPerSession: body.cardsPerSession,
-        unlearnedCards: body.unlearnedCards
+        unlearnedCards: body.unlearnedCards,
+        studySessionStartedAt: body.studySessionStartedAt
       }));
     } catch (e) {
       return null;

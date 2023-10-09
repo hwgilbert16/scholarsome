@@ -72,6 +72,7 @@ export class LeitnerCardsController {
         },
         data: {
           box: body.box,
+          due: body.due,
           leitnerSet: body.learned ? {
             update: {
               studySession: {

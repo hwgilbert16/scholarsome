@@ -12,7 +12,7 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faGamepad, faChartLine } from "@fortawesome/free-solid-svg-icons";
+import { faGamepad, faChartLine, faPlay, faForwardStep, faClock } from "@fortawesome/free-solid-svg-icons";
 import { faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { LeitnerSetsService } from "../shared/http/leitner-sets.service";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
@@ -49,11 +49,14 @@ export class StudySetComponent implements OnInit {
   protected setId: string | null;
 
   protected author: string;
+  protected loggedIn: boolean;
 
   protected createdLeitnerSet = false;
   protected leitnerSet: LeitnerSet;
+  protected leitnerSetStartedToday = false;
   protected leitnerSetUpdating = false;
   protected leitnerSetDueToday = 0;
+  protected leitnerSetUnlearnedCount = 0;
 
   protected cards: ComponentRef<CardComponent>[] = [];
   protected set: Set;
@@ -68,6 +71,9 @@ export class StudySetComponent implements OnInit {
   protected readonly faClone = faClone;
   protected readonly faPenToSquare = faPenToSquare;
   protected readonly faChartLine = faChartLine;
+  protected readonly faPlay = faPlay;
+  protected readonly faForwardStep = faForwardStep;
+  protected readonly faClock = faClock;
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -256,6 +262,10 @@ export class StudySetComponent implements OnInit {
       this.leitnerSetDueToday = this.leitnerSet.leitnerCards.filter((c) => {
         return new Date(c.due).getTime() <= new Date().getTime();
       }).length;
+      this.leitnerSetUnlearnedCount = this.leitnerSet.studySession ? this.leitnerSet.studySession.unlearnedCards.length : 0;
+
+      this.leitnerSetStartedToday =
+        (!!leitnerSet.studySession) && ((new Date().getTime() - new Date(leitnerSet.studySession.startedAt).getTime()) / 36e5) < 24;
     }
 
     this.titleService.setTitle(set.title + " — Scholarsome");
@@ -269,6 +279,7 @@ export class StudySetComponent implements OnInit {
     this.metaService.addTag({ name: "description", content: description });
 
     const user = await this.users.myUser();
+    this.loggedIn = !!user;
     if (user && user.id === set.authorId) this.userIsAuthor = true;
 
     this.spinner.nativeElement.remove();

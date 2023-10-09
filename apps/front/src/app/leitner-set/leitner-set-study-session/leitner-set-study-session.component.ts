@@ -5,6 +5,8 @@ import { LeitnerCard } from "@scholarsome/shared";
 import { DomSanitizer } from "@angular/platform-browser";
 import { Card } from "@prisma/client";
 import { LeitnerCardsService } from "../../shared/http/leitner-cards.service";
+import { LeitnerIncrements } from "@scholarsome/shared";
+import { faCake, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-leitner-set-study-session",
@@ -25,28 +27,32 @@ export class LeitnerSetStudySessionComponent implements OnInit {
   // The ID of the study set this Leitner set corresponds to,
   // NOT the ID of the Leitner set
   protected setId: string | null;
-  // What the user answers with
-  protected answer: "definition" | "term";
 
   // Whether the page has been loaded
   loaded = false;
 
   // The current index
   protected index = 0;
-  // The current card
-  protected currentCard: LeitnerCard;
+  protected initialLearntCards = 0;
+  // Number of learnt cards in the current study session
+  // Initialized to the length of the learned cards array
+  protected learntCards = 0;
+  // Number of cards to be learnt per study session
+  protected cardsPerSession = 0;
   // The current side being shown
   protected side: string;
   // The text being shown to the user
   protected sideText = "";
-  // Displayed in bottom right showing the progress
-  protected remainingCards = "";
+  // The default side shown to the user
+  protected answerWith: "definition" | "term";
 
   // Whether the card has been flipped or not
   protected flipped = false;
   // Whether the first flip interaction has been made
   // needed to prevent animation classes from being applied until first click
   protected flipInteraction = false;
+
+  protected readonly faCake = faCake;
 
   flipCard() {
     this.flipInteraction = true;
@@ -65,11 +71,28 @@ export class LeitnerSetStudySessionComponent implements OnInit {
   }
 
   async nextCard(type: number) {
+    let newBox;
+    this.learntCards++;
+
+    if (type === -1 && this.cards[this.index].box > 1) {
+      newBox = this.cards[this.index].box - 1;
+    } else if (type === 1 && this.cards[this.index].box < 8) {
+      newBox = this.cards[this.index].box + 1;
+    } else {
+      newBox = this.cards[this.index].box;
+    }
+
     await this.leitnerCardsService.updateLeitnerCard({
-      cardId: this.currentCard.cardId,
-      box: this.currentCard.box + 1,
-      learned: true
+      cardId: this.cards[this.index].cardId,
+      box: newBox,
+      learned: true,
+      // need to add date addition here
+      due: new Date(new Date().setDate(new Date().getDate() + LeitnerIncrements["BOX_" + newBox as keyof typeof LeitnerIncrements]))
     });
+
+    this.index++;
+
+    if (this.index !== this.cards.length) this.sideText = this.cards[this.index].card[this.answerWith as keyof Card] as string;
   }
 
   async ngOnInit(): Promise<void> {
@@ -85,23 +108,46 @@ export class LeitnerSetStudySessionComponent implements OnInit {
       return;
     }
 
-    this.loaded = true;
-    leitnerSet.leitnerCards = leitnerSet.leitnerCards.sort(() => 0.5 - Math.random());
+    this.cardsPerSession = leitnerSet.cardsPerSession;
+    this.answerWith = leitnerSet.answerWith.toLowerCase() === "definition" ? "definition" : "term";
 
-    const halfOfCardsPerSession = Math.floor((leitnerSet.cardsPerSession / 2));
+    leitnerSet.leitnerCards = leitnerSet.leitnerCards.sort(() => 0.5 - Math.random());
 
     // if there is an existing study session started today
     if (
       leitnerSet.studySession &&
-      (new Date(leitnerSet.studySession.startedAt).toDateString() == new Date().toDateString())
+      ((new Date().getTime() - new Date(leitnerSet.studySession.startedAt).getTime()) / 36e5) < 24
     ) {
-      for (const learnedCard of leitnerSet.studySession.learnedCards) {
-        this.cards.push(learnedCard.leitnerCard);
+      if (leitnerSet.studySession.unlearnedCards.length === 0) {
+        this.router.navigate(["study-set/" + this.setId]);
+        return;
       }
-    // if a study session has not already been started
-    } else {
+
+      for (const unlearnedCards of leitnerSet.studySession.unlearnedCards) {
+        this.cards.push(unlearnedCards.leitnerCard);
+      }
+
+      this.learntCards = leitnerSet.studySession.learnedCards.length;
+      this.initialLearntCards = leitnerSet.studySession.learnedCards.length;
+
+    // if it is the first study session
+    } else if (leitnerSet.leitnerCards.filter((c) => c.box === 1).length === leitnerSet.leitnerCards.length) {
       const newCards = leitnerSet.leitnerCards.filter((c) => c.box === 1);
-      const seenCards = leitnerSet.leitnerCards.filter((c) => c.box > 1);
+      this.cards.push(...newCards.slice(0, leitnerSet.cardsPerSession));
+
+      await this.leitnerSetsService.updateLeitnerSet({
+        setId: leitnerSet.setId,
+        unlearnedCards: this.cards.map((c) => c.cardId),
+        studySessionStartedAt: new Date()
+      });
+    // if this is not the first study session
+    } else {
+      const halfOfCardsPerSession = Math.floor((leitnerSet.cardsPerSession / 2));
+
+      const newCards = leitnerSet.leitnerCards.filter((c) => c.box === 1);
+      const existingCards = leitnerSet.leitnerCards.filter((c) =>
+        Math.abs(new Date().getTime() - new Date(c.due).getTime()) / 36e5 < 30
+      );
 
       if (newCards.length > halfOfCardsPerSession) {
         this.cards.push(...newCards.slice(0, halfOfCardsPerSession));
@@ -109,15 +155,12 @@ export class LeitnerSetStudySessionComponent implements OnInit {
         this.cards.push(...newCards);
       }
 
-      this.cards.push(...seenCards.slice(0, leitnerSet.cardsPerSession - halfOfCardsPerSession));
-
-      await this.leitnerSetsService.updateLeitnerSet({
-        setId: leitnerSet.setId,
-        unlearnedCards: this.cards.map((c) => c.cardId)
-      });
+      this.cards.push(...existingCards.slice(0, leitnerSet.cardsPerSession - halfOfCardsPerSession));
     }
 
-    this.sideText = this.cards[0].card[leitnerSet.answerWith.toLowerCase() as keyof Card] as string;
-    this.currentCard = this.cards[0];
+    this.side = leitnerSet.answerWith.toLowerCase();
+    this.sideText = this.cards[this.index].card[leitnerSet.answerWith.toLowerCase() as keyof Card] as string;
+
+    this.loaded = true;
   }
 }

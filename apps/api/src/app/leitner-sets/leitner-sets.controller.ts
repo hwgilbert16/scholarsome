@@ -109,6 +109,9 @@ export class LeitnerSetsController {
 
     if (leitnerSet.userId !== user.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
+    // resets the study session
+    // if we are updating the unlearnedCards field -> it is a new study session
+    // removes all learned cards too
     if (body.unlearnedCards) {
       await this.leitnerSetsService.updateLeitnerSet({
         where: {
@@ -123,6 +126,11 @@ export class LeitnerSetsController {
               unlearnedCards: {
                 deleteMany: {
                   studySessionUnlearnedId: leitnerSet.studySession.id
+                }
+              },
+              learnedCards: {
+                deleteMany: {
+                  studySessionLearnedId: leitnerSet.studySession.id
                 }
               }
             }
@@ -144,6 +152,7 @@ export class LeitnerSetsController {
           cardsPerSession: body.cardsPerSession,
           studySession: body.unlearnedCards ? {
             update: {
+              startedAt: body.studySessionStartedAt,
               unlearnedCards: {
                 createMany: {
                   data: body.unlearnedCards.map((id) => {
