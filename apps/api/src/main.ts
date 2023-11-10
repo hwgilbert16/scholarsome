@@ -70,10 +70,9 @@ async function bootstrap() {
   fs.writeFileSync("./dist/api-spec.json", JSON.stringify(document));
   SwaggerModule.setup("api", app, document);
 
-  const port = process.env.HTTP_PORT || 8080;
   await app.init();
 
-  http.createServer(server).listen(port);
+  http.createServer(server).listen(process.env.HTTP_PORT);
 }
 
 bootstrap();

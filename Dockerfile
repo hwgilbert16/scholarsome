@@ -21,7 +21,9 @@ WORKDIR /usr/src/app
 
 COPY package*.json .
 
-RUN npm install --production --silent --legacy-peer-deps
+RUN apk add g++ make py3-pip
+RUN npm install --production --silent --unsafe-perm --legacy-peer-deps
+RUN apk del g++ make py3-pip
 
 COPY . .
 
