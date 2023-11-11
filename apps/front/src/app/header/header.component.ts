@@ -114,7 +114,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           const user = await this.usersService.myUser();
           if (user) this.user = user;
 
-          await this.viewAvatar();
           this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
         }
       }
@@ -146,6 +145,8 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.cookieService.get("authenticated")) {
       this.signedIn = true;
     }
+
+    if (this.signedIn && !this.hidden) await this.viewAvatar();
 
     // Hide modals when the route changes
     this.router.events.subscribe(() => this.modalRef?.hide());
