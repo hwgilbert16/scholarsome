@@ -1,14 +1,29 @@
+.spinner-border {
+  width: 6rem;
+  height: 6rem;
+}
+
 .flashcard {
   min-height: 65vh;
   cursor: pointer;
+}
+
+.message {
+  margin-top: 5vh;
 }
 
 .flashcard-container {
   margin-top: 2vh;
 }
 
-.message {
-  margin-top: 5vh;
+.back-arrow:hover {
+  animation: button-color-change 0.25s;
+  animation-fill-mode: forwards;
+  cursor: pointer;
+}
+
+.back-arrow {
+  color: #212529;
 }
 
 .flashcard.flip-back {
@@ -29,22 +44,6 @@
 .flashcard.flip-forwards > .card-body {
   animation: flip-card-text-forwards 0s 0.10s;
   animation-fill-mode: forwards;
-}
-
-.back-arrow:hover {
-  animation: button-color-change 0.25s;
-  animation-fill-mode: forwards;
-  cursor: pointer;
-}
-
-@keyframes button-color-change {
-  0% {
-    color: #212529;
-  }
-
-  100% {
-    color: #8438ff;
-  }
 }
 
 @keyframes flip-card-text-back {
@@ -105,4 +104,15 @@
   .flashcard {
     min-height: 60vh;
   }
+}
+
+@keyframes button-color-change {
+  0% {
+    color: #212529;
+  }
+
+  100% {
+    color: #8438ff;
+  }
+
 }

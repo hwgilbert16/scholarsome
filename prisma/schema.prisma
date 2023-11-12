@@ -9,26 +9,28 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sets      Set[]
+  id          String       @id @default(uuid())
+  username    String       @unique
+  email       String       @unique
+  password    String
+  verified    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  sets        Set[]
+  leitnerSets LeitnerSet[]
 }
 
 model Set {
-  id          String   @id @default(uuid())
+  id          String       @id @default(uuid())
   authorId    String
   title       String
-  description String?  @db.Text
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  description String?      @db.Text
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   private     Boolean
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   cards       Card[]
+  leitnerSets LeitnerSet[]
 
   @@index([authorId])
 }
@@ -45,15 +47,82 @@ model CardMedia {
 }
 
 model Card {
-  id         String      @id @default(uuid())
-  setId      String
-  index      Int
-  term       String      @db.Text
-  definition String      @db.Text
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  set        Set         @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  media      CardMedia[]
+  id           String        @id @default(uuid())
+  setId        String
+  index        Int
+  term         String        @db.Text
+  definition   String        @db.Text
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  set          Set           @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  media        CardMedia[]
+  leitnerCards LeitnerCard[]
 
+  @@unique([setId, index])
   @@index([setId])
+}
+
+model LeitnerSet {
+  id              String        @id @default(uuid())
+  setId           String
+  userId          String
+  studySessionId  String?       @unique
+  cardsPerSession Int           @default(50)
+  answerWith      Side          @default(TERM)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  set             Set           @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  leitnerCards    LeitnerCard[]
+  studySession    StudySession? @relation(fields: [studySessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([setId, userId])
+  @@index([setId])
+  @@index([userId])
+}
+
+// box 1 -> card has never been shown before
+// box 2 is the lowest for cards that have not been shown
+model LeitnerCard {
+  id                 String                 @id @default(uuid())
+  leitnerSetId       String
+  cardId             String
+  box                Int                    @default(1)
+  due                DateTime               @default(now())
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  card               Card                   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  leitnerSet         LeitnerSet             @relation(fields: [leitnerSetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySessionCopies StudySessionCardInfo[]
+
+  @@unique([leitnerSetId, cardId])
+  @@index([leitnerSetId])
+}
+
+model StudySession {
+  id             String                 @id @default(uuid())
+  leitnerSetId   String                 @unique
+  leitnerSet     LeitnerSet?
+  learnedCards   StudySessionCardInfo[] @relation("StudySession_Learned")
+  unlearnedCards StudySessionCardInfo[] @relation("StudySession_Unlearned")
+  startedAt      DateTime               @default("1970-01-01T00:00:01.000Z")
+}
+
+model StudySessionCardInfo {
+  id                      String        @id @default(uuid())
+  leitnerCardId           String
+  studySessionLearnedId   String?
+  studySessionUnlearnedId String?
+  leitnerCard             LeitnerCard   @relation(fields: [leitnerCardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySessionLearned     StudySession? @relation("StudySession_Learned", fields: [studySessionLearnedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studySessionUnlearned   StudySession? @relation("StudySession_Unlearned", fields: [studySessionUnlearnedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  @@index([leitnerCardId, studySessionLearnedId, studySessionUnlearnedId])
+}
+
+enum Side {
+  TERM
+  DEFINITION
 }

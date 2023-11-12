@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `LearningCard` MODIFY `box` INTEGER NOT NULL DEFAULT 1;

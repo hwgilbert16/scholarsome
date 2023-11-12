@@ -7,12 +7,15 @@ import {
   ViewContainerRef
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Set } from "@scholarsome/shared";
+import { LeitnerSet, Set } from "@scholarsome/shared";
 import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
+import { faGamepad, faChartLine, faPlay, faForwardStep, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faClone, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { LeitnerSetsService } from "../shared/http/leitner-sets.service";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -29,7 +32,9 @@ export class StudySetComponent implements OnInit {
     private readonly users: UsersService,
     private readonly router: Router,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    private readonly leitnerSetsService: LeitnerSetsService,
+    protected readonly bsModalService: BsModalService
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -44,6 +49,14 @@ export class StudySetComponent implements OnInit {
   protected setId: string | null;
 
   protected author: string;
+  protected loggedIn: boolean;
+
+  protected createdLeitnerSet = false;
+  protected leitnerSet: LeitnerSet;
+  protected leitnerSetStartedToday = false;
+  protected leitnerSetUpdating = false;
+  protected leitnerSetDueToday = 0;
+  protected leitnerSetUnlearnedCount = 0;
 
   protected cards: ComponentRef<CardComponent>[] = [];
   protected set: Set;
@@ -52,8 +65,15 @@ export class StudySetComponent implements OnInit {
 
   protected deleteClicked = false;
 
-  protected readonly faChartLine = faChartLine;
+  protected leitnerModalRef?: BsModalRef;
+
   protected readonly faGamepad = faGamepad;
+  protected readonly faClone = faClone;
+  protected readonly faPenToSquare = faPenToSquare;
+  protected readonly faChartLine = faChartLine;
+  protected readonly faPlay = faPlay;
+  protected readonly faForwardStep = faForwardStep;
+  protected readonly faClock = faClock;
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -202,6 +222,25 @@ export class StudySetComponent implements OnInit {
     await this.router.navigate(["homepage"]);
   }
 
+  async createLeitnerSet() {
+    const leitnerSet = await this.leitnerSetsService.createLeitnerSet(this.setId ? this.setId : "");
+    if (leitnerSet) {
+      this.leitnerSet = leitnerSet;
+      this.createdLeitnerSet = true;
+    }
+  }
+
+  async updateLeitnerSettings() {
+    this.leitnerSetUpdating = true;
+
+    await this.leitnerSetsService.updateLeitnerSet({
+      setId: this.setId ? this.setId : "",
+      cardsPerSession: this.leitnerSet.cardsPerSession
+    });
+
+    this.leitnerSetUpdating = false;
+  }
+
   async ngOnInit(): Promise<void> {
     this.setId = this.route.snapshot.paramMap.get("setId");
     if (!this.setId) {
@@ -214,11 +253,23 @@ export class StudySetComponent implements OnInit {
       this.router.navigate(["404"]);
       return;
     }
+    this.set = set;
+
+    const leitnerSet = await this.leitnerSetsService.leitnerSet(this.setId);
+    if (leitnerSet) {
+      this.leitnerSet = leitnerSet;
+      this.createdLeitnerSet = true;
+      this.leitnerSetDueToday = this.leitnerSet.leitnerCards.filter((c) => {
+        return new Date(c.due).getTime() <= new Date().getTime();
+      }).length;
+      this.leitnerSetUnlearnedCount = this.leitnerSet.studySession ? this.leitnerSet.studySession.unlearnedCards.length : 0;
+
+      this.leitnerSetStartedToday =
+        (!!leitnerSet.studySession) && ((new Date().getTime() - new Date(leitnerSet.studySession.startedAt).getTime()) / 36e5) < 24;
+    }
 
     this.titleService.setTitle(set.title + " — Scholarsome");
-
     let description = "Studying done the correct way on Scholarsome — ";
-
     const firstThree = set.cards.slice(0, 3);
 
     for (const card of firstThree) {
@@ -228,9 +279,7 @@ export class StudySetComponent implements OnInit {
     this.metaService.addTag({ name: "description", content: description });
 
     const user = await this.users.myUser();
-
-    this.set = set;
-
+    this.loggedIn = !!user;
     if (user && user.id === set.authorId) this.userIsAuthor = true;
 
     this.spinner.nativeElement.remove();

@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import("./study-set/study-set.module").then((m) => m.StudySetModule)
   },
   {
+    path: "leitner-set",
+    loadChildren: () => import("./leitner-set/leitner-set.module").then((m) => m.LeitnerSetModule)
+  },
+  {
     path: "profile",
     loadChildren: () => import("./profile/profile.module").then((m) => m.ProfileModule)
   },

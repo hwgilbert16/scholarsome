@@ -21,9 +21,9 @@ export class LandingComponent implements OnInit {
     private readonly router: Router,
     private readonly location: Location,
     private readonly deviceService: DeviceDetectorService,
-    public readonly modalService: ModalService,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    public readonly modalService: ModalService
   ) {
     this.titleService.setTitle("Studying done the correct way — Scholarsome");
     this.metaService.addTag({ name: "description", content: "Scholarsome is the way studying was meant to be. No monthly fees or upsells to get between you and your study tools. Just flashcards." });

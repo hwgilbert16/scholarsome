@@ -60,7 +60,7 @@
               <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false; newLearnedCards = 0">Continue</button>
             </div>
             <div *ngIf="cards.length === 0">
-              <p>You learned all of the cards in this set. Now - do it again!</p>
+              <p>You learned all of the cards in this set.</p>
               <button *ngIf="cards.length === 0" class="btn btn-primary" (click)="reloadPage()">Start over</button>
             </div>
           </div>

@@ -19,6 +19,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GlobalInterceptor } from "./auth/global.interceptor";
 import { MediaModule } from "./media/media.module";
+import { LeitnerSetsModule } from "./leitner-sets/leitner-sets.module";
+import { LeitnerCardsModule } from "./leitner-cards/leitner-cards.module";
 
 @Module({
   imports: [
@@ -68,7 +70,9 @@ import { MediaModule } from "./media/media.module";
         inject: [ConfigService]
       }),
       global: true
-    }
+    },
+    LeitnerSetsModule,
+    LeitnerCardsModule
   ],
   controllers: [],
   providers: [

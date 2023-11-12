@@ -236,7 +236,7 @@ export class CardsService {
 
 
   /**
-   * Queries the database for multiple cardMedia instances
+   * Queries the database for multiple cardMedia objects
    *
    * @param params.skip Optional, Prisma skip selector
    * @param params.take Optional, Prisma take selector

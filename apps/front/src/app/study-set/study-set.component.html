@@ -10,12 +10,12 @@
   </div>
   <div class="d-flex justify-content-evenly">
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
-      <a [routerLink]="['/study-set', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'clone']"></fa-icon> Flashcards</button></a>
+      <a [routerLink]="['/study-set', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="faClone"></fa-icon> Flashcards</button></a>
       <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faChartLine"></fa-icon> Progress</button>
     </div>
     <div class="row mx-1"></div>
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
-      <a [routerLink]="['/study-set', setId, 'quiz']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'pen-to-square']"></fa-icon> Quiz</button></a>
+      <a [routerLink]="['/study-set', setId, 'quiz']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="faPenToSquare"></fa-icon> Quiz</button></a>
       <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faGamepad"></fa-icon> Game</button>
     </div>
   </div>
@@ -27,6 +27,46 @@
     <p class="text-secondary">{{set.description}}</p>
   </div>
   <hr>
+  <div class="mt-4 d-flex justify-content-between" *ngIf="set">
+    <div class="ms-2 w-100" *ngIf="loggedIn">
+      <h5>Leitner Learning <span class="badge bg-primary text-white fw-normal">Beta</span></h5>
+      <div *ngIf="createdLeitnerSet">
+        <div class="container-fluid text-center mt-4">
+          <div class="d-flex justify-content-evenly row row-cols-1 row-cols-md-2">
+            <div class="col-md-3 shadow rounded">
+              <div class="mt-2 fs-4">Cards Due Today</div>
+              <p class="text-info fs-3">{{this.leitnerSetDueToday}}</p>
+            </div>
+            <div class="col-md-3 shadow rounded mt-md-0 mt-4">
+              <div class="mt-2 fs-4">Total Cards in Set</div>
+              <p class="text-secondary fs-3">{{this.cards.length}}</p>
+            </div>
+          </div>
+
+          <button [routerLink]="'/leitner-set/study-session/' + setId" [disabled]="leitnerSetStartedToday && leitnerSetUnlearnedCount === 0" class="btn btn-primary w-25 mt-5 fs-5 w-auto text-center">
+            <fa-icon *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount === 0" [icon]="faClock" class="ms-1"></fa-icon>
+            <fa-icon *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount !== 0" [icon]="faForwardStep" class="ms-1"></fa-icon>
+            <fa-icon *ngIf="!leitnerSetStartedToday" [icon]="faPlay" class="ms-1"></fa-icon>
+            <span *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount === 0"> Come back for tomorrow's study session</span>
+            <span *ngIf="leitnerSetStartedToday && leitnerSetUnlearnedCount !== 0"> Continue today's study session</span>
+            <span *ngIf="!leitnerSetStartedToday"> Start today's study session</span>
+          </button><br>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-secondary mt-3" (click)="this.leitnerModalRef = this.bsModalService.show(this.leitnerSettingsModal)">Settings</button>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!createdLeitnerSet">
+        <p class="text-secondary">
+          The Leitner system is an efficient flashcard studying method for long-term recall improvement.
+          Cards are shown at varying daily frequencies based on previous recall performance to ensure cards are retained over time.
+          <br><br>
+          You have not yet started Leitner learning for this set. Click the button below to begin.</p>
+        <button class="btn btn-primary" (click)="createLeitnerSet()">Start</button>
+      </div>
+    </div>
+  </div>
+  <hr *ngIf="loggedIn">
   <div class="container-fluid">
     <div class="d-flex justify-content-between">
       <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>
@@ -81,3 +121,29 @@
     </div>
   </div>
 </div>
+
+<ng-template #leitnerSettingsModal>
+  <div class="modal-header">
+    <span class="pull-left text-secondary">Leitner settings</span>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="leitnerModalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="container-fluid">
+      <form (ngSubmit)="updateLeitnerSettings()" ngNativeValidate>
+        <div class="mb-3">
+          <label for="cardsPerSession" class="form-label">Number of cards per study session</label>
+          <input type="number" name="cardsPerSession" id="cardsPerSession" class="form-control" [(ngModel)]="leitnerSet.cardsPerSession" required>
+          <div class="form-text">Controls the number of cards presented to you per study session.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="leitnerSetUpdating">
+            <span *ngIf="leitnerSetUpdating" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>
