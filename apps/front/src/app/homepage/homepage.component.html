@@ -8,13 +8,13 @@
   <div class="d-flex header">
     <h2>Your sets</h2>
   </div>
-  <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100">
-    <div *ngIf="sets && sets.length === 0" class="text-secondary">
+  <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="user">
+    <div *ngIf="user.sets.length === 0" class="text-secondary">
       You haven't created any sets yet.
       <a [routerLink]="['/create/set']">Create your first one.</a>
     </div>
     <a
-      *ngFor="let set of sets"
+      *ngFor="let set of user.sets"
       [routerLink]="['/study-set', set.id]"
       class="text-decoration-none"
     >
@@ -29,9 +29,7 @@
               ></fa-icon>
             </h5>
             <h6 class="card-subtitle text-muted">
-              {{ set.cards.length }} term{{
-                this.set.cards.length > 1 ? 's' : ''
-              }}
+              Last updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'} ) }}
             </h6>
           </div>
         </div>
