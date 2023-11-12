@@ -26,6 +26,7 @@ services:
     platform: "linux/amd64"
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
+#      - "(your ssl port):8443"
     environment:
       - "NODE_ENV=${NODE_ENV}"
       - "DATABASE_URL=mysql://scholarsome:${DATABASE_PASSWORD}@mariadb:3306/scholarsome"
