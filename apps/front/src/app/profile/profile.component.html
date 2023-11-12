@@ -12,21 +12,22 @@
       <div class="display-2 mb-2 ms-3">{{user.username}}</div>
     </div>
     <div class="mt-2">
-      <p class="text-secondary">Member since {{registrationDate}}</p>
+      <p class="text-secondary fs-4">Member since {{registrationDate}}</p>
     </div>
   </div>
   <div class="mt-5 mb-4">
     <p class="fs-3">Study sets</p>
     <div *ngFor="let set of user.sets;">
-      <a [routerLink]="['/study-set', set.id]" class="text-decoration-none">
         <div class="mb-2 set-card">
-          <div class="card shadow">
-            <div class="card-body">
-              <h5 class="card-title">{{set.title}} <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon></h5>
+          <a [routerLink]="['/study-set', set.id]" class="text-decoration-none">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">{{set.title}} <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon></h5>
+                <h6 class="card-subtitle text-secondary">Last updated on {{ set.updatedAt.toLocaleString('en-us', { month: 'long', day: 'numeric', year:'numeric' }) }} </h6>
+              </div>
             </div>
-          </div>
+          </a>
         </div>
-      </a>
     </div>
   </div>
 </div>

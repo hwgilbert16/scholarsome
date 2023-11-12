@@ -10,18 +10,16 @@
   </div>
   <div class="d-flex justify-content-evenly">
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
-      <a [routerLink]="['/study-set', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'clone']"></fa-icon> Flashcards</button></a>
-      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faChartLine"></fa-icon> Progress</button>
+      <a [routerLink]="['/study-set', setId, 'flashcards']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow-sm"><fa-icon [icon]="['far', 'clone']"></fa-icon> Flashcards</button></a>
     </div>
     <div class="row mx-1"></div>
     <div class="row-cols-sm-4 col-md-6 m-auto w-50">
-      <a [routerLink]="['/study-set', setId, 'quiz']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow"><fa-icon [icon]="['far', 'pen-to-square']"></fa-icon> Quiz</button></a>
-      <button type="button" class="btn btn-lg btn-light bg-white w-100 shadow-sm" disabled><fa-icon [icon]="faGamepad"></fa-icon> Game</button>
+      <a [routerLink]="['/study-set', setId, 'quiz']"><button type="button" class="btn btn-lg btn-light bg-white w-100 my-2 shadow-sm"><fa-icon [icon]="['far', 'pen-to-square']"></fa-icon> Quiz</button></a>
     </div>
   </div>
   <div class="mt-4 d-flex justify-content-between" *ngIf="set">
     <div class="d-flex align-items-center">
-      <a [routerLink]="['/profile', set.authorId]"><button type="button" class="btn btn-light bg-white shadow"><fa-icon [icon]="['far', 'user']"></fa-icon> Created by <span class="fw-bold">{{author}}</span></button></a>
+      <a [routerLink]="['/profile', set.authorId]"><button type="button" class="btn btn-light bg-white shadow-sm"><fa-icon [icon]="['far', 'user']"></fa-icon> Created by <span class="fw-bold">{{author}}</span></button></a>
       <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']" class="fs-5 ms-3"></fa-icon>
     </div>
     <p class="text-secondary">{{set.description}}</p>
