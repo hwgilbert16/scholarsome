@@ -101,6 +101,21 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    if (this.cookieService.get("authenticated")) {
+      // we set this.user here so that it can be checked on every router event and log users out if auth invalid
+      // however since header initializes on the homepage, this.user will not be set immediately after login
+      // technically this would cause an issue if the tokens were invalid immediately after login
+      // however it is more than overwhelmingly likely that any token issues with be on a future page reload when the user is already logged in
+      this.signedIn = true;
+      const user = await this.usersService.myUser();
+
+      if (user) {
+        this.user = user;
+      } else {
+        this.signedIn = false;
+      }
+    }
+
     this.sharedService
         .isUpdateAvailable()
         .then((r) => (this.updateAvailable = r));
@@ -112,7 +127,14 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (!this.hidden && this.signedIn) {
           const user = await this.usersService.myUser();
-          if (user) this.user = user;
+
+          // if this user was authenticated and is now no longer authenticated, sign them out
+          if (this.user && !user) {
+            await this.authService.logout();
+            await this.router.navigate([""]);
+          } else if (user) {
+            this.user = user;
+          }
 
           await this.viewAvatar();
           this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
@@ -141,10 +163,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (this.deviceService.isTablet() || this.deviceService.isMobile()) {
       this.isMobile = true;
-    }
-
-    if (this.cookieService.get("authenticated")) {
-      this.signedIn = true;
     }
 
     // Hide modals when the route changes
