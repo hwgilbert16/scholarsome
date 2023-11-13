@@ -12,7 +12,6 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
-import { faChartLine, faGamepad } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -51,9 +50,6 @@ export class StudySetComponent implements OnInit {
   protected uploadTooLarge = false;
 
   protected deleteClicked = false;
-
-  protected readonly faChartLine = faChartLine;
-  protected readonly faGamepad = faGamepad;
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -214,6 +210,14 @@ export class StudySetComponent implements OnInit {
       this.router.navigate(["404"]);
       return;
     }
+
+    window.addEventListener("beforeunload", (event) => {
+      if (this.isEditing) {
+        event.preventDefault();
+      }
+
+      return event;
+    });
 
     this.titleService.setTitle(set.title + " — Scholarsome");
 
