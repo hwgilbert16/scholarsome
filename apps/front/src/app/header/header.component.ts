@@ -160,7 +160,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.checkIfVerifiedInCookie();
 
-    if (this.deviceService.isTablet() || this.deviceService.isMobile()) {
+    if (this.deviceService.isMobile()) {
       this.isMobile = true;
     }
 

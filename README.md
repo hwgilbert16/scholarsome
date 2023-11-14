@@ -20,6 +20,10 @@ https://scholarsome.com
 </div>
 
 <p align="center">
+<a href="https://news.ycombinator.com/item?id=36454783" target="_blank"><img height=53 src="https://hackerbadge.now.sh/api?id=36454783&type=orange" alt="Featured on HackerNews"></a>
+</p>
+
+<p align="center">
 <img src="https://i.imgur.com/MshTOaL.png">
 </p>
 
@@ -27,7 +31,9 @@ https://scholarsome.com
 
 Scholarsome <a href="http://ipa-reader.xyz/?text=%CB%88sk%C3%A4l%C9%99rs(%C9%99)m%2F">(pronounced ˈskälərs(ə)m/)</a> is a web-based and open source studying system. Through the use of flashcards, among other core features, users can practice memorization of terms and definitions, along with keeping their data secure locally.
 
-While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on feature sets.
+While other services have begun to paywall core functionalities, Scholarsome intends to offer an equal alternative that does not compromise on features.
+
+You can read more about our design philosophy <a href="https://github.com/hwgilbert16/scholarsome#design-philosophy">here.</a>
 
 ## Features
 
@@ -75,6 +81,18 @@ Scholarsome is an open source project. We believe in a transparent development p
 
 - **Bug reports.** If you run into an issue using Scholarsome, please <a href="https://github.com/hwgilbert16/scholarsome/issues/new">create a bug report</a>. Make sure you attach the `bug` label to your issue.
 - **Feature requests.** We'd love to hear your ideas for future features. Please <a href="https://github.com/hwgilbert16/scholarsome/issues/new">create an issue</a> and attach the `feature request` label to propose a new feature.
+
+## Design Philosophy
+
+Many existing flashcard systems exist that offer countless features - Anki, SuperMemo, etc. However, we recognize that many of these tools can be daunting to new users, or are bloated with features that can be seen as overwhelming. This encourages new flashcard users to stick to simpler tools, causing them to lose out on more advanced functionality. Additionally, not all of these tools are open source.
+
+Scholarsome will bridge this gap between ease of use and functionality in multiple ways.
+
+One way is by offering a familiar web-based interface. There is no syncing between multiple devices to worry about, as data is stored, accessed, and edited from a central server. The process of syncing and having to think about where data is stored can be a confusing topic. Having the place where flashcards are edited be the same place they are stored simplifies this process.
+
+We're also selective about the order in which features are being added. Instead of using a scattershot method, we're working our way up from the simplest features that are the most commonly utilized to the most complex so that they can build upon each other. We write easy to understand guides that are intended to be understood from first glance by the layman. From the ground up, Scholarsome has been designed to have powerful learning tools, but still be understandable by anybody.
+
+It's important to note that Scholarsome is far from complete. We're firm believers of shipping fast and early to gain feedback from users. While some features may be absent at the moment, we love having early users that can ensure we have a stable foundation through valuable feedback.
 
 ## Contact
 
