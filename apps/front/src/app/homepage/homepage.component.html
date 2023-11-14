@@ -13,25 +13,19 @@
       You haven't created any sets yet.
       <a [routerLink]="['/create/set']">Create your first one.</a>
     </div>
-    <div
-      *ngFor="let set of user.sets"
-    >
-      <div class="col">
-        <div class="card shadow-sm set-card" role="button">
-          <a [routerLink]="['/study-set', set.id]" class="text-decoration-none">
-            <div class="card-body">
-              <h5 class="card-title">
-                {{ set.title }}
-                <fa-icon
-                  *ngIf="set.private"
-                  [icon]="['far', 'eye-slash']"
-                ></fa-icon>
-              </h5>
-              <h6 class="card-subtitle text-muted">
-                Last updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'}) }}
-              </h6>
-            </div>
-          </a>
+    <div class="col" *ngFor="let set of user.sets">
+      <div class="card shadow-sm set-card h-100" [routerLink]="['/study-set', set.id]" role="button">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">
+            {{ set.title }}
+            <fa-icon
+              *ngIf="set.private"
+              [icon]="['far', 'eye-slash']"
+            ></fa-icon>
+          </h5>
+        </div>
+        <div class="card-footer mt-auto">
+          <small class="text-body-secondary">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'}) }}</small>
         </div>
       </div>
     </div>

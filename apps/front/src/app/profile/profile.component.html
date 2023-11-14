@@ -18,15 +18,15 @@
   <div class="mt-5 mb-4">
     <p class="fs-3">Study sets</p>
     <div *ngFor="let set of user.sets;">
-        <div class="mb-2 set-card">
-          <a [routerLink]="['/study-set', set.id]" class="text-decoration-none">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">{{set.title}} <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon></h5>
-                <h6 class="card-subtitle text-secondary">Last updated on {{ set.updatedAt.toLocaleString('en-us', { month: 'long', day: 'numeric', year:'numeric' }) }} </h6>
-              </div>
+        <div class="mb-2 set-card" [routerLink]="['/study-set', set.id]">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">{{set.title}} <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon></h5>
             </div>
-          </a>
+            <div class="card-footer mt-auto">
+              <small class="text-body-secondary text-decoration-none">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'long', day: 'numeric', year:'numeric'}) }}</small>
+            </div>
+          </div>
         </div>
     </div>
   </div>

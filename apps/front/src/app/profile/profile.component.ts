@@ -49,6 +49,9 @@ export class ProfileComponent implements OnInit {
     this.user.sets.forEach((s) => {
       s.updatedAt = new Date(s.updatedAt);
     });
+    this.user.sets = this.user.sets.sort((a, b) => {
+      return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+    });
 
     this.spinner.nativeElement.remove();
 
