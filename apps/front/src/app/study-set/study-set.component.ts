@@ -19,9 +19,6 @@ import { Meta, Title } from "@angular/platform-browser";
   styleUrls: ["./study-set.component.scss"]
 })
 export class StudySetComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly route: ActivatedRoute,
     private readonly sets: SetsService,

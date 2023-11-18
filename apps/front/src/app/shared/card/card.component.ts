@@ -61,6 +61,8 @@ export class CardComponent implements OnInit, AfterViewInit {
   protected mainTerm: string;
   protected mainDefinition: string;
 
+  protected emptyCardAlert = false;
+
   protected isMobile = false;
 
   protected modalRef?: BsModalRef;
@@ -123,12 +125,17 @@ export class CardComponent implements OnInit, AfterViewInit {
   }
 
   notifyEmptyInput() {
-    const alert = this.inputsContainer.createComponent<AlertComponent>(AlertComponent);
+    if (!this.emptyCardAlert) {
+      const alert = this.inputsContainer.createComponent<AlertComponent>(AlertComponent);
 
-    alert.instance.message = "Both fields cannot be empty";
-    alert.instance.type = "danger";
-    alert.instance.dismiss = true;
-    alert.instance.spacingClass = "mt-4";
+      alert.instance.message = "Both fields cannot be empty";
+      alert.instance.type = "danger";
+      alert.instance.dismiss = true;
+      alert.instance.spacingClass = "mt-4";
+
+      this.emptyCardAlert = true;
+      setTimeout(() => this.emptyCardAlert = false, 3000);
+    }
   }
 
   moveCard(direction: number) {
