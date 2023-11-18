@@ -144,7 +144,8 @@ export class StudySetQuizComponent implements OnInit {
         }
 
         if (questionType.type === "written") {
-          const answer = this.set.cards[index][questionAnswerWith].replace(/<[^>]+src="([^">]+)">/g, "");
+          const answer = this.set.cards[index][questionAnswerWith].
+              replace(/<[^>]+src="([^">]+)">/g, "").replace("<p>", "").replace("</p>", "");
 
           questions.push({
             question: this.set.cards[index][questionAskWith],
@@ -253,7 +254,8 @@ export class StudySetQuizComponent implements OnInit {
       switch (Object.keys(question.value)[0]) {
         case "written":
           if (
-            compareTwoStrings(response.toLowerCase(), questions[question.value["index"]].answer.toLowerCase()) > 0.85
+            compareTwoStrings(response.toLowerCase().trim(), questions[question.value["index"]].answer.toLowerCase().trim()) > 0.85 ||
+            response.toLowerCase().trim() === questions[question.value["index"]].answer.toLowerCase().trim()
           ) {
             count++;
             questions[question.value["index"]].correct = true;

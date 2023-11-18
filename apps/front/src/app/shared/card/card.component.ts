@@ -85,33 +85,6 @@ export class CardComponent implements OnInit, AfterViewInit {
       this.mainDefinition = String(this.mainDefinition) as string;
     });
 
-    /*
-    all this does here is set the toolbar buttons of the quill editor to have a tab index of -1
-
-    as far as I can tell there's no good way to do this other than a custom toolbar which is more effort than it's worth
-    or this way by just manually setting all the buttons to have the tab index
-
-    for some reason this needs to be wrapped in a setTimeout for the querySelector to successfully find the elements in the dom
-
-    will rewrite this code at some point - it's trash currently - but I'm more concerned about usability
-     */
-    this.bsModalService.onShown.subscribe(() => {
-      setTimeout(() => {
-        const editors = this.elementRef.nativeElement.ownerDocument.querySelectorAll("quill-editor");
-
-        const buttons = [
-          ...editors[0].querySelectorAll("button"),
-          ...editors[0].querySelectorAll("[role=\"button\"]"),
-          ...editors[1].querySelectorAll("button"),
-          ...editors[1].querySelectorAll("[role=\"button\"]")
-        ];
-
-        for (const button of buttons) {
-          button.tabIndex = -1;
-        }
-      }, 0);
-    });
-
     this.bsModalService.onHide.subscribe(() => {
       this.mainTerm = this.termValue ? this.termValue : "";
       this.mainDefinition = this.definitionValue ? this.definitionValue : "";
@@ -131,13 +104,6 @@ export class CardComponent implements OnInit, AfterViewInit {
     ) {
       this.openEditModal();
     }
-
-    // this.renderer.listen("document", "keydown", (event: KeyboardEvent) => {
-    //   if (event.key === "Tab") {
-    //     console.log(this.elementRef.nativeElement.ownerDocument.querySelectorAll("quill-editor")[0].querySelectorAll("button"));
-    //     event.preventDefault();
-    //   }
-    // });
   }
 
   get term(): string {
