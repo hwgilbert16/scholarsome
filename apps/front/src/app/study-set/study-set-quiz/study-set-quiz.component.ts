@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
 import { FormBuilder, FormGroup, NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -23,6 +23,8 @@ export class StudySetQuizComponent implements OnInit {
     private readonly metaService: Meta
   ) {}
 
+  @ViewChild("spinner", { static: true }) spinner: ElementRef;
+  @ViewChild("container", { static: false }) container: ElementRef;
   @ViewChild("quiz", { static: false, read: ViewContainerRef }) quiz: ViewContainerRef;
   @ViewChild("createQuiz") createQuizModal: TemplateRef<HTMLElement>;
 
@@ -30,6 +32,7 @@ export class StudySetQuizComponent implements OnInit {
   trueOrFalseSelected = true;
   multipleChoiceSelected = true;
 
+  loaded = false;
   created = false;
   submitted = false;
 
@@ -316,5 +319,8 @@ export class StudySetQuizComponent implements OnInit {
     }
 
     this.set = set;
+
+    this.spinner.nativeElement.remove();
+    this.loaded = true;
   }
 }

@@ -211,14 +211,6 @@ export class StudySetComponent implements OnInit {
       return;
     }
 
-    window.addEventListener("beforeunload", (event) => {
-      if (this.isEditing) {
-        event.preventDefault();
-      }
-
-      return event;
-    });
-
     this.titleService.setTitle(set.title + " — Scholarsome");
 
     let description = "Studying done the correct way on Scholarsome — ";
