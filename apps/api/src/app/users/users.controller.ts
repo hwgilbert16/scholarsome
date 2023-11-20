@@ -78,14 +78,8 @@ export class UsersController {
     delete user.verified;
     delete user.email;
 
-    for (let i = 0; i < user.sets.length; i++) {
-      if (cookies) {
-        if (user.sets[i].private && user.sets[i].authorId !== cookies.id) {
-          user.sets = user.sets.splice(i, i + 1);
-        }
-      } else {
-        user.sets = user.sets.filter((set) => set.private === false);
-      }
+    if (!cookies || user.id !== cookies.id) {
+      user.sets = user.sets.filter((set) => set.private === false);
     }
 
     return {

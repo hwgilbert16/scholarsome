@@ -1,5 +1,4 @@
 import { Component, ComponentRef, ElementRef, OnInit, ViewChild, ViewContainerRef } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
 import { AlertComponent } from "../../shared/alert/alert.component";
 import { Router } from "@angular/router";
 import { SetsService } from "../../shared/http/sets.service";
@@ -13,11 +12,7 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
   styleUrls: ["./create-study-set.component.scss"]
 })
 export class CreateStudySetComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
-    private readonly http: HttpClient,
     private readonly router: Router,
     private readonly sets: SetsService,
     private readonly titleService: Title,
@@ -35,6 +30,8 @@ export class CreateStudySetComponent implements OnInit {
 
   protected formDisabled = false;
 
+  protected emptyTitleAlert = false;
+
   protected faQuestionCircle = faQuestionCircle;
 
   // index starts at 0
@@ -43,7 +40,7 @@ export class CreateStudySetComponent implements OnInit {
   async createSet() {
     const cards: { index: number; term: string; definition: string; }[] = [];
 
-    if (!this.titleInput.element.nativeElement.value) {
+    if (!this.titleInput.element.nativeElement.value && !this.emptyTitleAlert) {
       const alert = this.titleInput.createComponent<AlertComponent>(AlertComponent);
 
       alert.instance.message = "Title must not be empty";
@@ -51,8 +48,11 @@ export class CreateStudySetComponent implements OnInit {
       alert.instance.dismiss = true;
       alert.instance.spacingClass = "mt-3";
 
+      this.emptyTitleAlert = true;
+      setTimeout(() => this.emptyTitleAlert = false, 3000);
+
       return;
-    }
+    } else if (!this.titleInput.element.nativeElement.value) return;
 
     for (const card of this.cards) {
       if (card.component.instance.term.length !== 0 && card.component.instance.definition.length !== 0) {

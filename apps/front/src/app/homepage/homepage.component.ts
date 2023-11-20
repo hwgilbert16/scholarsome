@@ -1,8 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Set } from "@scholarsome/shared";
-import { SetsService } from "../shared/http/sets.service";
+import { User } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
+import { UsersService } from "../shared/http/users.service";
 
 @Component({
   selector: "scholarsome-view",
@@ -14,8 +13,7 @@ export class HomepageComponent implements OnInit {
    * @ignore
    */
   constructor(
-    private readonly http: HttpClient,
-    private readonly setsService: SetsService,
+    private readonly usersService: UsersService,
     private readonly titleService: Title,
     private readonly metaService: Meta
   ) {
@@ -26,12 +24,17 @@ export class HomepageComponent implements OnInit {
   @ViewChild("container", { static: true }) container: ElementRef;
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
-  sets: Set[];
+  user: User;
 
   async ngOnInit(): Promise<void> {
-    const sets = await this.setsService.mySets();
-    if (sets) {
-      this.sets = sets.sort((a, b) => {
+    const user = await this.usersService.myUser();
+    if (user) {
+      this.user = user;
+
+      this.user.sets.forEach((s) => {
+        s.updatedAt = new Date(s.updatedAt);
+      });
+      this.user.sets = this.user.sets.sort((a, b) => {
         return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
       });
     }

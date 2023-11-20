@@ -164,6 +164,8 @@ export class StudySetFlashcardsComponent implements OnInit {
         this.sideText = this.cards[0][this.side as keyof Card] as string;
       }
 
+      this.flipped = false;
+      this.flipInteraction = false;
       this.currentCard = this.cards[0];
 
       return;

@@ -26,11 +26,10 @@ async function bootstrap() {
 
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
-    bufferLogs: true
+    bufferLogs: process.env.NODE_ENV === "production"
   });
   const logger = LoggerFactory("Scholarsome");
   app.useLogger(logger);
-  logger.log("Application Started!");
 
   app.useGlobalPipes(
       new ValidationPipe({
@@ -68,11 +67,12 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync("./dist/api-spec.json", JSON.stringify(document));
-  SwaggerModule.setup("api", app, document);
 
   await app.init();
 
   http.createServer(server).listen(process.env.HTTP_PORT);
+
+  logger.log("Scholarsome has started!");
 }
 
 bootstrap();

@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild, ViewContainerRef } from "@angular/core";
 import { FormBuilder, FormGroup, NgForm } from "@angular/forms";
 import { SetsService } from "../../shared/http/sets.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -23,6 +23,8 @@ export class StudySetQuizComponent implements OnInit {
     private readonly metaService: Meta
   ) {}
 
+  @ViewChild("spinner", { static: true }) spinner: ElementRef;
+  @ViewChild("container", { static: false }) container: ElementRef;
   @ViewChild("quiz", { static: false, read: ViewContainerRef }) quiz: ViewContainerRef;
   @ViewChild("createQuiz") createQuizModal: TemplateRef<HTMLElement>;
 
@@ -30,6 +32,7 @@ export class StudySetQuizComponent implements OnInit {
   trueOrFalseSelected = true;
   multipleChoiceSelected = true;
 
+  loaded = false;
   created = false;
   submitted = false;
 
@@ -141,7 +144,8 @@ export class StudySetQuizComponent implements OnInit {
         }
 
         if (questionType.type === "written") {
-          const answer = this.set.cards[index][questionAnswerWith].replace(/<[^>]+src="([^">]+)">/g, "");
+          const answer = this.set.cards[index][questionAnswerWith].
+              replace(/<[^>]+src="([^">]+)">/g, "").replace("<p>", "").replace("</p>", "");
 
           questions.push({
             question: this.set.cards[index][questionAskWith],
@@ -250,7 +254,8 @@ export class StudySetQuizComponent implements OnInit {
       switch (Object.keys(question.value)[0]) {
         case "written":
           if (
-            compareTwoStrings(response.toLowerCase(), questions[question.value["index"]].answer.toLowerCase()) > 0.85
+            compareTwoStrings(response.toLowerCase().trim(), questions[question.value["index"]].answer.toLowerCase().trim()) > 0.85 ||
+            response.toLowerCase().trim() === questions[question.value["index"]].answer.toLowerCase().trim()
           ) {
             count++;
             questions[question.value["index"]].correct = true;
@@ -316,5 +321,8 @@ export class StudySetQuizComponent implements OnInit {
     }
 
     this.set = set;
+
+    this.spinner.nativeElement.remove();
+    this.loaded = true;
   }
 }

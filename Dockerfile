@@ -1,4 +1,17 @@
 # syntax=docker/dockerfile:1.3-labs
+FROM node:lts-alpine3.18 as builder
+
+WORKDIR /usr/src/app
+
+RUN apk add g++ make py3-pip
+
+COPY package*.json .
+RUN npm clean-install --production --silent --legacy-peer-deps
+
+COPY . .
+RUN npm run generate
+RUN npm run build
+
 FROM node:lts-alpine3.18
 
 ARG NODE_ENV
@@ -19,16 +32,9 @@ ARG SCHOLARSOME_RECAPTCHA_SECRET
 
 WORKDIR /usr/src/app
 
-COPY package*.json .
-
-RUN apk add g++ make py3-pip
-RUN npm install --production --silent --unsafe-perm --legacy-peer-deps
-RUN apk del g++ make py3-pip
-
 COPY . .
-
-RUN npm run generate
-RUN npm run build
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
 RUN <<EOL
     touch .env
@@ -37,7 +43,6 @@ RUN <<EOL
     echo "DATABASE_URL=$DATABASE_URL\n" >> .env
     echo "JWT_SECRET=$JWT_SECRET\n" >> .env
     echo "HTTP_PORT=$HTTP_PORT\n" >> .env
-
     echo "S3_STORAGE_ENDPOINT=$S3_STORAGE_ENDPOINT\n" >> .env
     echo "S3_STORAGE_ACCESS_KEY=$S3_STORAGE_ACCESS_KEY\n" >> .env
     echo "S3_STORAGE_SECRET_KEY=$S3_STORAGE_SECRET_KEY\n" >> .env

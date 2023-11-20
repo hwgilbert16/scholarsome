@@ -8,34 +8,26 @@
   <div class="d-flex header">
     <h2>Your sets</h2>
   </div>
-  <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100">
-    <div *ngIf="sets && sets.length === 0" class="text-secondary">
+  <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="user">
+    <div *ngIf="user.sets.length === 0" class="text-secondary">
       You haven't created any sets yet.
       <a [routerLink]="['/create/set']">Create your first one.</a>
     </div>
-    <a
-      *ngFor="let set of sets"
-      [routerLink]="['/study-set', set.id]"
-      class="text-decoration-none"
-    >
-      <div class="col">
-        <div class="card shadow set-card" role="button">
-          <div class="card-body">
-            <h5 class="card-title">
-              {{ set.title }}
-              <fa-icon
-                *ngIf="set.private"
-                [icon]="['far', 'eye-slash']"
-              ></fa-icon>
-            </h5>
-            <h6 class="card-subtitle text-muted">
-              {{ set.cards.length }} term{{
-                this.set.cards.length > 1 ? 's' : ''
-              }}
-            </h6>
-          </div>
+    <div class="col" *ngFor="let set of user.sets">
+      <div class="card shadow-sm set-card h-100" [routerLink]="['/study-set', set.id]" role="button">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">
+            {{ set.title }}
+            <fa-icon
+              *ngIf="set.private"
+              [icon]="['far', 'eye-slash']"
+            ></fa-icon>
+          </h5>
+        </div>
+        <div class="card-footer mt-auto">
+          <small class="text-body-secondary">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'}) }}</small>
         </div>
       </div>
-    </a>
+    </div>
   </div>
 </div>

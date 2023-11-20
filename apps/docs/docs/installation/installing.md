@@ -33,13 +33,27 @@ mkdir ~/scholarsome && cd ~/scholarsome
 Download the compose file.
 
 ```
-wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/compose.yml
+wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/release/compose.yml
 ```
+
+:::caution
+If you will be using a valid SSL certificate with Scholarsome, you will need to modify your `compose.yml` file to inform Docker Compose what port you would like the SSL version of Scholarsome to be accessible on. If you use an SSL certificate, Scholarsome will run both an HTTP and HTTPS version of the site.
+
+Open the `compose.yml` file in any text editor and navigate to line 29.
+
+```
+# - "(your ssl port):8443"
+```
+
+Remove the hashtag to uncomment the line, and replace `(your ssl port)` with the port that you would like the SSL version of Scholarsome to be accessible on.
+
+Keep in mind that **non-root** users, by default, **do not have permission to bind to ports lower than 1024.** If you will be running SSL on a port lower than 1024, ensure that the user running the Scholarsome process has necessary permissions.
+:::
 
 Download the environment file and make a copy of it.
 
 ```
-wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.compose.example && cp .env.compose.example .env
+wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/release/.env.compose.example && cp .env.compose.example .env
 ```
 
 Open the `.env` file in any text editor.
@@ -49,7 +63,7 @@ Expand the dropdown below, it lists Scholarsome's environment variables. These a
 Additionally, if you are using S3 as your storage medium, you will need to fill the `S3_` fields as well.
 
 :::info
-If the SMTP fields are left blank, users will be verified by default. Most installations do not need to enforce email verification.
+If the SMTP fields are left blank, users will not have to verify their emails. Most installations do not need to enforce email verification, unless you are planning to expose Scholarsome to other users.
 :::
 
 <details>
@@ -79,7 +93,6 @@ If the SMTP fields are left blank, users will be verified by default. Most insta
 | S3_STORAGE_ACCESS_KEY           | Required if storing files in S3. The name of the bucket being used in S3 to store media files.                                                                         |
 
 </details>
-
 
 Start the service in a detached state.
 
@@ -111,7 +124,7 @@ docker pull hwgilbert16/scholarsome
 Download the environment file and make a copy of it.
 
 ```
-wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/develop/.env.docker.example && cp .env.docker.example .env
+wget https://raw.githubusercontent.com/hwgilbert16/scholarsome/release/.env.docker.example && cp .env.docker.example .env
 ```
 
 Open `.env` in any text editor.

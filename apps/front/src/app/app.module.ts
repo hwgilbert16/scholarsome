@@ -68,6 +68,29 @@ Quill.register("modules/imageResize", ImageResize);
     QuillConfigModule.forRoot({
       modules: {
         imageResize: true,
+        keyboard: {
+          bindings: {
+            tab: {
+              key: 9,
+              handler: () => {
+                const editors = document.querySelectorAll("quill-editor");
+
+                const buttons = [
+                  ...Array.from(editors[0].querySelectorAll("button")),
+                  ...Array.from(editors[0].querySelectorAll("[role=\"button\"]")),
+                  ...Array.from(editors[1].querySelectorAll("button")),
+                  ...Array.from(editors[1].querySelectorAll("[role=\"button\"]"))
+                ];
+
+                for (const button of buttons) {
+                  button.setAttribute("tabindex", "-1");
+                }
+
+                return true;
+              }
+            }
+          }
+        },
         toolbar: [
           ["bold", "italic", "underline", "strike"],
           ["code-block"],

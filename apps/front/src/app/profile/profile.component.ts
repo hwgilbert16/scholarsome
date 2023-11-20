@@ -34,26 +34,32 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    this.user = await this.usersService.user(userId);
-    if (!this.user) {
-      await this.router.navigate(["404"]);
-      return;
-    }
-
     const avatar = await this.mediaService.getAvatar(128, 128, userId);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
     }
 
+    this.user = await this.usersService.user(userId);
+    if (!this.user) {
+      await this.router.navigate(["404"]);
+      return;
+    }
+
+    this.user.sets.forEach((s) => {
+      s.updatedAt = new Date(s.updatedAt);
+    });
+    this.user.sets = this.user.sets.sort((a, b) => {
+      return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+    });
+
+    this.spinner.nativeElement.remove();
+
     this.titleService.setTitle(this.user.username + " — Scholarsome");
     this.metaService.addTag({ name: "description", content: "Scholarsome is the way studying was meant to be. No monthly fees or upsells to get between you and your study tools. Just flashcards." });
 
     this.user.createdAt = new Date(this.user.createdAt);
 
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    this.registrationDate = months[this.user.createdAt.getMonth()] + " " + this.user.createdAt.getDay() + ", " + this.user.createdAt.getFullYear();
-
-    this.spinner.nativeElement.remove();
+    this.registrationDate = this.user.createdAt.toLocaleString("en-us", { month: "long", day: "numeric", year: "numeric" } );
   }
 }

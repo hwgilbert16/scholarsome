@@ -3,8 +3,10 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input, OnInit,
+  Input,
+  OnInit,
   Output,
+  Renderer2,
   TemplateRef,
   ViewChild,
   ViewContainerRef
@@ -26,6 +28,8 @@ export class CardComponent implements OnInit, AfterViewInit {
     private readonly bsModalService: BsModalService,
     private readonly vps: ViewportScroller,
     private readonly deviceService: DeviceDetectorService,
+    private readonly renderer: Renderer2,
+    private readonly elementRef: ElementRef,
     public readonly sanitizer: DomSanitizer
   ) {}
 
@@ -56,6 +60,8 @@ export class CardComponent implements OnInit, AfterViewInit {
   // from updating while a card is being edited
   protected mainTerm: string;
   protected mainDefinition: string;
+
+  protected emptyCardAlert = false;
 
   protected isMobile = false;
 
@@ -119,12 +125,17 @@ export class CardComponent implements OnInit, AfterViewInit {
   }
 
   notifyEmptyInput() {
-    const alert = this.inputsContainer.createComponent<AlertComponent>(AlertComponent);
+    if (!this.emptyCardAlert) {
+      const alert = this.inputsContainer.createComponent<AlertComponent>(AlertComponent);
 
-    alert.instance.message = "Both fields cannot be empty";
-    alert.instance.type = "danger";
-    alert.instance.dismiss = true;
-    alert.instance.spacingClass = "mt-4";
+      alert.instance.message = "Both fields cannot be empty";
+      alert.instance.type = "danger";
+      alert.instance.dismiss = true;
+      alert.instance.spacingClass = "mt-4";
+
+      this.emptyCardAlert = true;
+      setTimeout(() => this.emptyCardAlert = false, 3000);
+    }
   }
 
   moveCard(direction: number) {
