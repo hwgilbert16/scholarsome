@@ -29,9 +29,8 @@ export class CreateStudySetComponent implements OnInit {
   @ViewChild("privateCheck") privateCheckbox: ElementRef;
 
   protected formDisabled = false;
-
   protected emptyTitleAlert = false;
-
+  protected errorEncountered = false;
   protected faQuestionCircle = faQuestionCircle;
 
   // index starts at 0
@@ -39,6 +38,8 @@ export class CreateStudySetComponent implements OnInit {
 
   async createSet() {
     const cards: { index: number; term: string; definition: string; }[] = [];
+
+    this.errorEncountered = false;
 
     if (!this.titleInput.element.nativeElement.value && !this.emptyTitleAlert) {
       const alert = this.titleInput.createComponent<AlertComponent>(AlertComponent);
@@ -76,7 +77,12 @@ export class CreateStudySetComponent implements OnInit {
       cards
     });
 
-    await this.router.navigate(["/study-set/" + set?.id]);
+    if (set && set.id) {
+      await this.router.navigate(["/study-set/" + set?.id]);
+    } else {
+      this.formDisabled = false;
+      this.errorEncountered = true;
+    }
   }
 
   updateCardIndices() {

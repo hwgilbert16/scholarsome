@@ -10,6 +10,9 @@
     <div class="container-fluid mt-3">
       <div class="row mx-md-4">
         <div class="col">
+          <div *ngIf="errorEncountered" class="alert alert-danger" role="alert">
+            There was an error encountered while creating your study set. Open your browser's development console to save the error information and <a href="https://github.com/hwgilbert16/scholarsome/issues">open an issue</a> for assistance.
+          </div>
           <div class="my-3">
             <input type="text" class="form-control" placeholder="Enter a title for your study set..." maxlength="255" #title>
           </div>
@@ -42,6 +45,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="create-header d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
     </div>
   </div>
 
