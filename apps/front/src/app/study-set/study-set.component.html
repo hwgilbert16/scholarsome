@@ -39,6 +39,10 @@
     </div>
     <div *ngIf="set" [hidden]="!isEditing">
       <div class="w-50 mt-3 h-100">
+        <label for="edit-title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="edit-title" [value]="set.title" #editTitle>
+      </div>
+      <div class="w-50 mt-3 h-100">
         <label for="edit-description" class="form-label">Description</label>
         <textarea class="form-control" id="edit-description" [value]="set.description" #editDescription></textarea>
       </div>
