@@ -6,7 +6,6 @@ import {
   Input,
   OnInit,
   Output,
-  Renderer2,
   TemplateRef,
   ViewChild,
   ViewContainerRef
@@ -28,8 +27,6 @@ export class CardComponent implements OnInit, AfterViewInit {
     private readonly bsModalService: BsModalService,
     private readonly vps: ViewportScroller,
     private readonly deviceService: DeviceDetectorService,
-    private readonly renderer: Renderer2,
-    private readonly elementRef: ElementRef,
     public readonly sanitizer: DomSanitizer
   ) {}
 
@@ -48,6 +45,7 @@ export class CardComponent implements OnInit, AfterViewInit {
   @Output() addCardEvent = new EventEmitter();
   @Output() deleteCardEvent = new EventEmitter<number>();
   @Output() moveCardEvent = new EventEmitter<{ index: number, direction: number }>();
+  @Output() editCardEvent = new EventEmitter();
 
   @ViewChild("card", { static: false }) cardElement: Element;
   @ViewChild("term", { static: false }) termElement: ElementRef;

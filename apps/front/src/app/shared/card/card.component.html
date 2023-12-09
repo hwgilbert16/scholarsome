@@ -37,11 +37,11 @@
       <div class="row row-cols-1 row-cols-md-2">
         <div class="col border-end">
           <p class="fs-2">Term</p>
-          <quill-editor [(ngModel)]="termValue" id="termEditor" class="w-100"></quill-editor>
+          <quill-editor [(ngModel)]="termValue" (ngModelChange)="editCardEvent.emit()" id="termEditor" class="w-100"></quill-editor>
         </div>
         <div class="col mt-4 mt-md-0">
           <p class="fs-2 pull-right">Definition</p>
-          <quill-editor [(ngModel)]="definitionValue" id="definitionEditor" class="w-100"></quill-editor>
+          <quill-editor [(ngModel)]="definitionValue" (ngModelChange)="editCardEvent.emit()" id="definitionEditor" class="w-100"></quill-editor>
         </div>
       </div>
       <div *ngIf="!isMobile" class="mt-2">
