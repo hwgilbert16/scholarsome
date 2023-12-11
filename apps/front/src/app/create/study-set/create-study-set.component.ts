@@ -99,6 +99,7 @@ export class CreateStudySetComponent implements OnInit, AfterViewInit {
     if (!savedSetObj) return;
 
     const set: SavedSet = JSON.parse(savedSetObj);
+    set.cards = set.cards.sort((a, b) => a.index - b.index);
 
     this.title = set.title;
     this.description = set.description;

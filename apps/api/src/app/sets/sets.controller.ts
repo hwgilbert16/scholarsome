@@ -7,7 +7,7 @@ import {
   Param,
   Patch,
   Post,
-  Request,
+  Request, StreamableFile,
   UnauthorizedException,
   UnsupportedMediaTypeException,
   UploadedFile,
@@ -186,6 +186,33 @@ export class SetsController {
       status: ApiResponseOptions.Success,
       data: set
     };
+  }
+
+  /**
+   * Converts a set to an Anki-compatible .apkg file
+   *
+   * @returns `Set` object
+   */
+  @ApiOperation( {
+    summary: "Converts a set to an Anki-compatible .apkg file"
+  })
+  @Get("export/anki/:setId")
+  async convertSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<StreamableFile> {
+    const set = await this.setsService.set({
+      id: params.setId
+    });
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+
+    if (set.private) {
+      const userCookie = this.usersService.getUserInfo(req);
+
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    }
+
+    const apkg = this.setsService.encodeAnkiApkg(set);
+
+    return new StreamableFile(apkg);
   }
 
   /**
