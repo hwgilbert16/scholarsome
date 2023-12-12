@@ -7,7 +7,7 @@ import {
   Param,
   Patch,
   Post,
-  Request, StreamableFile,
+  Request, Response, StreamableFile,
   UnauthorizedException,
   UnsupportedMediaTypeException,
   UploadedFile,
@@ -17,7 +17,7 @@ import {
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
-import { Request as ExpressRequest, Express } from "express";
+import { Request as ExpressRequest, Response as ExpressResponse, Express } from "express";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { Set } from "@prisma/client";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -43,6 +43,7 @@ import { UserIdParam } from "../users/param/userId.param";
 import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
+import { Throttle } from "@nestjs/throttler";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -191,13 +192,15 @@ export class SetsController {
   /**
    * Converts a set to an Anki-compatible .apkg file
    *
+   * @remarks Throttled to 1 request every 5 seconds
    * @returns `Set` object
    */
   @ApiOperation( {
     summary: "Converts a set to an Anki-compatible .apkg file"
   })
+  @Throttle(1, 5000)
   @Get("export/anki/:setId")
-  async convertSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<StreamableFile> {
+  async convertSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
       id: params.setId
     });
@@ -210,7 +213,12 @@ export class SetsController {
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    const apkg = this.setsService.encodeAnkiApkg(set);
+    const apkg = await this.setsService.encodeAnkiApkg(set);
+
+    res.set({
+      "Content-Type": "application/octet-stream",
+      "Content-Disposition": `attachment; filename="${set.title + ".apkg"}`
+    });
 
     return new StreamableFile(apkg);
   }

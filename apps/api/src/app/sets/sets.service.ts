@@ -102,8 +102,9 @@ export class SetsService {
    *
    * @returns Buffer of the .apkg file
    */
-  public encodeAnkiApkg(set: Set): Buffer {
+  public async encodeAnkiApkg(set: Set): Promise<Buffer> {
     const db = new Database(":memory:");
+    const apkg = new AdmZip();
 
     const apkgSql = fs.readFileSync(path.join(__dirname, "assets", "apkgExport", "createApkg.sql"), "utf-8");
     const colSql = fs.readFileSync(path.join(__dirname, "assets", "apkgExport", "col.sql"), "utf-8");
@@ -295,8 +296,75 @@ export class SetsService {
     const cardSql = fs.readFileSync(path.join(__dirname, "assets", "apkgExport", "cards.sql"), "utf-8");
     const cardCreation = db.prepare(cardSql);
 
-    for (const card of set.cards) {
+    const mediaJson: { [key: string]: string } = {};
+    let mediaCounter = 0;
+
+    for (let i = 0; i < set.cards.length; i++) {
       const noteId = Math.ceil(Math.random() * 1e13);
+
+      const termMatches = set.cards[i].term.match(/<[^>]+src="([^">]+)"/g);
+      const definitionMatches = set.cards[i].definition.match(/<[^>]+src="([^">]+)"/g);
+
+      let sources = [];
+
+      if (termMatches) sources = Object.values(termMatches);
+      if (definitionMatches) sources = [...sources, ...Object.values(definitionMatches)];
+
+      if (sources) {
+        for (const match of sources) {
+          // const extension = match.split(".")[1].slice(0, -1);
+
+          const src = match.split("\"")[1];
+          const fileName = src.split("/")[5];
+
+          set.cards[i].term = set.cards[i].term.replaceAll(src, fileName);
+          set.cards[i].definition = set.cards[i].definition.replaceAll(src, fileName);
+
+          mediaJson[mediaCounter.toString()] = fileName;
+
+          let file: Buffer;
+
+          // get file from s3
+          if (
+            this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+            this.configService.get<string>("STORAGE_TYPE") === "S3"
+          ) {
+            const s3 = await new S3({
+              credentials: {
+                accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+                secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+              },
+              endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+              region: this.configService.get<string>("S3_STORAGE_REGION")
+            });
+
+            const s3File = await s3.getObject({
+              Key: "media/sets/" + set.id + "/" + fileName,
+              Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
+            });
+
+            if (s3File) {
+              file = Buffer.from(await s3File.Body.transformToByteArray());
+            } else continue;
+          }
+
+          // get file locally
+          if (this.configService.get<string>("STORAGE_TYPE") === "local") {
+            const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", set.id, fileName);
+
+            if (fs.existsSync(filePath)) {
+              const localFile = fs.readFileSync(filePath);
+
+              if (localFile) {
+                file = localFile;
+              } else continue;
+            }
+          }
+
+          apkg.addFile(mediaCounter.toString(), file);
+          mediaCounter++;
+        }
+      }
 
       noteCreation.run(
           noteId,
@@ -304,9 +372,9 @@ export class SetsService {
           modelAndColId,
           Math.round(Date.now() / 1000),
           "",
-          card.term + "" + card.definition,
-          card.term,
-          crypto.createHash("sha1").update(card.term).digest("hex").toString().substring(0, 9),
+          set.cards[i].term + "" + set.cards[i].definition,
+          set.cards[i].term,
+          crypto.createHash("sha1").update(set.cards[i].term).digest("hex").toString().substring(0, 9),
           ""
       );
 
@@ -322,9 +390,8 @@ export class SetsService {
     const serialized = db.serialize();
     db.close();
 
-    const apkg = new AdmZip();
     apkg.addFile("collection.anki2", serialized);
-    apkg.addFile("media", Buffer.from("{}", "utf-8"));
+    apkg.addFile("media", Buffer.from(JSON.stringify(mediaJson), "utf-8"));
 
     return apkg.toBuffer();
   }

@@ -145,10 +145,10 @@ export class AuthController {
   /**
    * Sends a password reset for a given user
    *
-   * @remarks Throttled to 5 requests per minute
+   * @remarks Throttled to 1 request per minute
    * @returns Success response
    */
-  @Throttle(5, 600)
+  @Throttle(5, 60000)
   @Get("reset/sendReset/:email")
   async sendReset(
     @Param() params: { email: string }
@@ -262,10 +262,10 @@ export class AuthController {
   /**
    * Registers a new user
    *
-   * @remarks Throttled to 1 request per 15 minutes
+   * @remarks Throttled to 1 request per 3 minutes
    * @returns Success response
    */
-  @Throttle(5, 900)
+  @Throttle(5, 180000)
   @Post("register")
   async register(
     @Body() registerDto: RegisterDto,

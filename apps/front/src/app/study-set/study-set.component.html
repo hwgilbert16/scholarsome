@@ -26,9 +26,18 @@
   </div>
   <hr>
   <div class="container-fluid">
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between align-items-center">
       <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>
       <div>
+        <div class="btn-group me-1">
+          <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Export
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" (click)="exportSet('anki')">Anki</a></li>
+            <li><a class="dropdown-item" (click)="exportSet('quizlet')">Quizlet</a></li>
+          </ul>
+        </div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
         <div class="d-flex align-items-center">
           <div class="text-danger" *ngIf="uploadTooLarge">The upload size cannot exceed 30 megabytes.</div>

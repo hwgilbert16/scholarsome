@@ -21,7 +21,7 @@ import { Meta, Title } from "@angular/platform-browser";
 export class StudySetComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly sets: SetsService,
+    public readonly sets: SetsService,
     private readonly users: UsersService,
     private readonly router: Router,
     private readonly titleService: Title,
@@ -48,6 +48,21 @@ export class StudySetComponent implements OnInit {
   protected uploadTooLarge = false;
 
   protected deleteClicked = false;
+
+  async exportSet(type: "anki" | "quizlet") {
+    const file = await this.sets.convertSetToApkg(this.set.id);
+
+    if (!file) return;
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(file);
+    link.download = this.set.title + ".apkg";
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+  }
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
