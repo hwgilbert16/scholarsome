@@ -102,7 +102,7 @@ export class SetsService {
    *
    * @returns Buffer of the .apkg file
    */
-  public async encodeAnkiApkg(set: Set): Promise<Buffer> {
+  public async exportAsAnkiApkg(set: Set): Promise<Buffer> {
     const db = new Database(":memory:");
     const apkg = new AdmZip();
 
@@ -312,8 +312,6 @@ export class SetsService {
 
       if (sources) {
         for (const match of sources) {
-          // const extension = match.split(".")[1].slice(0, -1);
-
           const src = match.split("\"")[1];
           const fileName = src.split("/")[5];
 
@@ -394,6 +392,35 @@ export class SetsService {
     apkg.addFile("media", Buffer.from(JSON.stringify(mediaJson), "utf-8"));
 
     return apkg.toBuffer();
+  }
+
+  public exportAsQuizletTxt(set: Set, sideDiscriminator: string, cardDiscriminator: string): Buffer | false {
+    let txt = "";
+
+    for (const card of set.cards) {
+      if (
+        card.term.includes(sideDiscriminator) ||
+        card.term.includes(cardDiscriminator) ||
+        card.definition.includes(sideDiscriminator) ||
+        card.definition.includes(cardDiscriminator)
+      ) return false;
+
+      const term = card.term
+          .replaceAll(/<img[^>]*>/g, "")
+          .replaceAll(/<sound[^>]*>/g, "")
+          .replaceAll("<p><br></p>", "\n")
+          .replaceAll(/<[^>]+>|<[^>]+\/>/g, "");
+
+      const definition = card.definition
+          .replaceAll(/<img[^>]*>/g, "")
+          .replaceAll(/<sound[^>]*>/g, "")
+          .replaceAll("<p><br></p>", "\n")
+          .replaceAll(/<[^>]+>|<[^>]+\/>/g, "");
+
+      txt += term.trim() + sideDiscriminator.trim() + definition.trim() + cardDiscriminator.trim();
+    }
+
+    return Buffer.from(txt, "utf-8");
   }
 
   /**
