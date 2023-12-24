@@ -49,7 +49,7 @@ export class StudySetComponent implements OnInit {
 
   protected deleteClicked = false;
 
-  async exportSet(type: "anki" | "quizlet") {
+  async exportSet() {
     const file = await this.sets.convertSetToApkg(this.set.id);
 
     if (!file) return;

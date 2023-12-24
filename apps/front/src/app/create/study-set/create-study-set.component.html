@@ -5,7 +5,10 @@
         Create a new study set
         <a href="/handbook/usage/creating-sets#creating-manually" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
       </h2>
-      <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
+      <button type="submit" class="btn btn-primary" (click)="createSet()">
+        <span [hidden]="!formDisabled" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Create
+      </button>
     </div>
     <div class="create-header">
       <p class="text-secondary">Your progress will be saved, even if you reload or close the browser.</p>
@@ -14,7 +17,7 @@
       <div class="row mx-md-4">
         <div class="col">
           <div *ngIf="errorEncountered" class="alert alert-danger" role="alert">
-            There was an error encountered while creating your study set. Open your browser's development console to save the error information and <a href="https://github.com/hwgilbert16/scholarsome/issues">open an issue</a> for assistance.
+            There was an error encountered while creating your study set. Your progress has not been lost. Open your browser's development console to save the error information and <a href="https://github.com/hwgilbert16/scholarsome/issues">open an issue</a> for assistance.
           </div>
           <div class="my-3">
             <input type="text" class="form-control" placeholder="Enter a title for your study set..." maxlength="255" (change)="saveProgress()" [(ngModel)]="title" #titleElement>
@@ -50,7 +53,10 @@
       </div>
     </div>
     <div class="create-header d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary" (click)="createSet()">Create</button>
+      <button type="submit" class="btn btn-primary" [disabled]="formDisabled" (click)="createSet()">
+        <span [hidden]="!formDisabled" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Create
+      </button>
     </div>
   </div>
 

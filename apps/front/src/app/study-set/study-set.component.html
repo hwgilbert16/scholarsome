@@ -29,13 +29,13 @@
     <div class="d-flex justify-content-between align-items-center">
       <h5>{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</h5>
       <div>
-        <div class="btn-group me-1">
+        <div class="btn-group me-1" [hidden]="isEditing">
           <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             Export
           </button>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" (click)="exportSet('anki')">Anki</a></li>
-            <li><a class="dropdown-item" (click)="exportSet('quizlet')">Quizlet</a></li>
+            <li><a class="dropdown-item" (click)="exportSet()">Anki</a></li>
+<!--            <li><a class="dropdown-item" (click)="exportSet('quizlet')">Quizlet</a></li>-->
           </ul>
         </div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
@@ -46,12 +46,12 @@
         </div>
       </div>
     </div>
-    <div *ngIf="set" [hidden]="!isEditing">
-      <div class="w-50 mt-3 h-100">
+    <div *ngIf="set" [hidden]="!isEditing" class="">
+      <div class="w-50 mt-3">
         <label for="edit-title" class="form-label">Title</label>
         <input type="text" class="form-control" id="edit-title" [value]="set.title" #editTitle>
       </div>
-      <div class="w-50 mt-3 h-100">
+      <div class="w-50 mt-3">
         <label for="edit-description" class="form-label">Description</label>
         <textarea class="form-control" id="edit-description" [value]="set.description" #editDescription></textarea>
       </div>
