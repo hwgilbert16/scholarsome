@@ -23,6 +23,12 @@
       <div class="mb-3">
         <textarea class="form-control" name="description" placeholder="Add a description..." [disabled]="clicked" ngModel ngDefaultControl></textarea>
       </div>
+      <div class="mb-3">
+        <input class="form-control" name="termDefinitionDiscriminator" placeholder="Type your term and definition discriminator..." [disabled]="clicked" ngModel required>
+      </div>
+      <div class="mb-3">
+        <input class="form-control" name="rowDiscriminator" placeholder="Type your row discriminator..." [disabled]="clicked" ngModel required>
+      </div>
       <div class="form-check mb-3">
         <input type="checkbox" class="form-check-input" id="quizletImportPrivateCheck" name="privateCheck" [disabled]="clicked" ngModel>
         <label class="form-check-label" for="quizletImportPrivateCheck">Viewable only to me</label>

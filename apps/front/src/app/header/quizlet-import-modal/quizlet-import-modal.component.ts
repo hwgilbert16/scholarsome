@@ -42,7 +42,9 @@ export class QuizletImportModalComponent {
     this.clicked = true;
     this.response = "";
 
-    const exported = form.value["importSet"].substring(0, form.value["importSet"].length - 1).split(";");
+    const exported = form.value["importSet"]
+        // substring to get rid of last semicolon
+        .substring(0, form.value["importSet"].length - 1).split(form.value["rowDiscriminator"]);
 
     // need to add a regex check here to ensure pattern is valid
 
@@ -56,12 +58,12 @@ export class QuizletImportModalComponent {
     const cards: { index: number; term: string; definition: string; }[] = [];
 
     for (let i = 0; i < exported.length; i++) {
-      const split = exported[i].split("\t");
+      const split = exported[i].split(form.value["termDefinitionDiscriminator"]);
 
       cards.push({
         index: i,
-        term: split[0],
-        definition: split[1]
+        term: split[0].replace(/(\r\n|\r|\n)/g, "<p><br></p>"),
+        definition: split[1].replace(/(\r\n|\r|\n)/g, "<p><br></p>")
       });
     }
 

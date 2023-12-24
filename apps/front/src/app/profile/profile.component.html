@@ -5,15 +5,13 @@
 </div>
 
 <div class="h-100 container-fluid profile-container mt-4" *ngIf="user">
-  <div class="d-flex justify-content-between align-items-center h-100">
-    <div class="d-flex">
+  <div>
+    <div class="d-flex align-items-center text-wrap">
       <fa-icon *ngIf="!avatarUrl" [icon]="['far', 'user']" class="display-2"></fa-icon>
       <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar">
-      <div class="display-2 mb-2 ms-3">{{user.username}}</div>
+      <div class="display-5 fw-bold ms-3 text-break">{{user.username}}</div>
     </div>
-    <div class="mt-2">
-      <p class="text-secondary fs-4">Member since {{registrationDate}}</p>
-    </div>
+    <p class="text-secondary fs-4 mt-4">Member since {{registrationDate}}</p>
   </div>
   <div class="mt-5 mb-4">
     <p class="fs-3">Study sets</p>

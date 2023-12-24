@@ -21,7 +21,7 @@ import { Meta, Title } from "@angular/platform-browser";
 export class StudySetComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
-    private readonly sets: SetsService,
+    public readonly sets: SetsService,
     private readonly users: UsersService,
     private readonly router: Router,
     private readonly titleService: Title,
@@ -34,6 +34,7 @@ export class StudySetComponent implements OnInit {
   @ViewChild("cardsContainer", { static: true, read: ViewContainerRef }) cardsContainer: ViewContainerRef;
   @ViewChild("privateCheck", { static: false }) privateCheck: ElementRef;
   @ViewChild("editDescription", { static: false }) editDescription: ElementRef;
+  @ViewChild("editTitle", { static: false }) editTitle: ElementRef;
 
   protected userIsAuthor = false;
   protected isEditing = false;
@@ -47,6 +48,21 @@ export class StudySetComponent implements OnInit {
   protected uploadTooLarge = false;
 
   protected deleteClicked = false;
+
+  async exportSet() {
+    const file = await this.sets.convertSetToApkg(this.set.id);
+
+    if (!file) return;
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(file);
+    link.download = this.set.title + ".apkg";
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+  }
 
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
@@ -141,6 +157,7 @@ export class StudySetComponent implements OnInit {
 
       const updated = await this.sets.updateSet({
         id: this.set.id,
+        title: this.editTitle.nativeElement.value,
         description: this.editDescription.nativeElement.value,
         private: this.privateCheck.nativeElement.checked,
         cards: this.cards.map((c) => {

@@ -70,6 +70,18 @@ export class SetsService {
     } else return null;
   }
 
+  async convertSetToApkg(setId: string): Promise<Blob | null> {
+    let file: Blob | undefined;
+
+    try {
+      file = await lastValueFrom(this.http.get("/api/sets/export/anki/" + setId, { responseType: "blob" }));
+    } catch (e) {
+      return null;
+    }
+
+    return file;
+  }
+
   /**
    * Creates a set
    *
