@@ -1,16 +1,14 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
-import { Request } from "express";
-import * as jwt from "jsonwebtoken";
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { NextFunction, Request, Response } from "express";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { AuthService } from "../auth/auth.service";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
-import { Response } from "express";
-import { JwtService } from "@nestjs/jwt";
-import { AuthService } from "./auth.service";
-import { Observable } from "rxjs";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
-export class GlobalInterceptor implements NestInterceptor {
+export class TokenRefreshMiddleware implements NestMiddleware {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -18,22 +16,15 @@ export class GlobalInterceptor implements NestInterceptor {
     @InjectRedis() private readonly redis: Redis
   ) {}
 
-  /**
-   * Global interceptor for the access-refresh token authentication flow.
-   *
-   * Renews access tokens on each request if they are missing and/or expired.
-   */
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const req = context.switchToHttp().getRequest() as Request;
-
+  use(req: Request, res: Response, next: NextFunction) {
     if (
       req.cookies &&
       "authenticated" in req.cookies &&
       !("access_token" in req.cookies) &&
       !("refresh_token" in req.cookies)
     ) {
-      this.authService.logout(req, context.switchToHttp().getResponse());
-      return next.handle();
+      this.authService.logout(req, res);
+      return next();
     }
 
     if (
@@ -44,7 +35,7 @@ export class GlobalInterceptor implements NestInterceptor {
       if (
         !("access_token" in req.cookies) &&
         "refresh_token" in req.cookies
-      ) this.renewAccessToken(req, context.switchToHttp().getResponse());
+      ) this.renewAccessToken(req, res);
 
       // if your access token is expired
       try {
@@ -53,14 +44,14 @@ export class GlobalInterceptor implements NestInterceptor {
         // and you have a refresh token
         if ("refresh_token" in req.cookies) {
           // renew your access token
-          this.renewAccessToken(req, context.switchToHttp().getResponse());
+          this.renewAccessToken(req, res);
         } else {
-          this.authService.logout(req, context.switchToHttp().getResponse());
+          this.authService.logout(req, res);
         }
       }
     }
 
-    return next.handle();
+    next();
   }
 
   renewAccessToken(req: Request, res: Response): boolean {
@@ -83,6 +74,8 @@ export class GlobalInterceptor implements NestInterceptor {
     // the route following this interceptor will not see the cookie unless if we modify the cookie object here
     // this is only for the request that this interceptor is directly in front of
     req.cookies["access_token"] = token;
+
+    console.log(token);
 
     // but this actually sets the cookie for future requests
     res.cookie("access_token", token, { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });

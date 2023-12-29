@@ -16,9 +16,8 @@ import { CardsModule } from "./cards/cards.module";
 import { UsersModule } from "./users/users.module";
 import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { JwtModule } from "@nestjs/jwt";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { GlobalInterceptor } from "./auth/global.interceptor";
 import { MediaModule } from "./media/media.module";
+import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
 
 @Module({
   imports: [
@@ -71,12 +70,7 @@ import { MediaModule } from "./media/media.module";
     }
   ],
   controllers: [],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: GlobalInterceptor
-    }
-  ],
+  providers: [],
   exports: [JwtModule]
 })
 export class AppModule implements NestModule {
@@ -92,5 +86,9 @@ export class AppModule implements NestModule {
           .apply(HttpsRedirectMiddleware)
           .forRoutes({ path: "*", method: RequestMethod.ALL });
     }
+
+    consumer
+        .apply(TokenRefreshMiddleware)
+        .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }
