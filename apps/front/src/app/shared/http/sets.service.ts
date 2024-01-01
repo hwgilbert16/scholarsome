@@ -70,11 +70,41 @@ export class SetsService {
     } else return null;
   }
 
+  /**
+   * Converts a set to an Anki-compatible .apkg file
+   *
+   * @param setId ID of the set to convert
+   *
+   * @returns Blob of the .apkg
+   */
   async convertSetToApkg(setId: string): Promise<Blob | null> {
     let file: Blob | undefined;
 
     try {
       file = await lastValueFrom(this.http.get("/api/sets/export/anki/" + setId, { responseType: "blob" }));
+    } catch (e) {
+      return null;
+    }
+
+    return file;
+  }
+
+  /**
+   * Converts a set to a .txt which can be imported into Quizlet
+   *
+   * @param setId ID of the set to convert
+   * @param sideDiscriminator Character(s) to discriminate between sides of a card in the string
+   * @param cardDiscriminator Character(s) to discriminate between cards in the string
+   *
+   * @returns Blob of the .txt
+   */
+  async convertSetToQuizletTxt(setId: string, sideDiscriminator: string, cardDiscriminator: string): Promise<Blob | null> {
+    let file: Blob | undefined;
+
+    try {
+      file = await lastValueFrom(
+          this.http.get("/api/sets/export/quizlet/" + setId + "/" + sideDiscriminator + "/" + cardDiscriminator, { responseType: "blob" })
+      );
     } catch (e) {
       return null;
     }

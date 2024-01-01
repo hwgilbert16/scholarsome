@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -44,6 +45,7 @@ import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
 import { Throttle } from "@nestjs/throttler";
+import { QuizletExportParams } from "./param/quizletExportParams";
 // import { QuizletExportParams } from "./param/quizletExportParams";
 
 @ApiTags("Sets")
@@ -205,7 +207,7 @@ export class SetsController {
   })
   @Throttle(1, 3000)
   @Get("export/anki/:setId")
-  async convertSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
+  async exportSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
       id: params.setId
     });
@@ -228,44 +230,44 @@ export class SetsController {
     return new StreamableFile(apkg);
   }
 
-  // /**
-  //  * Converts a set to a .txt file that can be imported into Quizlet
-  //  *
-  //  * @remarks Throttled to 1 request every 3 seconds
-  //  */
-  // @ApiOperation( {
-  //   summary: "Converts a set to a .txt that can be imported in Quizlet",
-  //   description: "Converts a Scholarsome set to a .txt that can be imported in Quizlet. Media (images, videos, etc) will not be included in the exported .txt, as Quizlet does not provide an ability to import these materials."
-  // })
-  // @ApiUnauthorizedResponse({
-  //   description: "Invalid authentication to access the requested resource",
-  //   type: ErrorResponse
-  // })
-  // @Throttle(1, 3000)
-  // @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
-  // async convertSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
-  //   const set = await this.setsService.set({
-  //     id: params.setId
-  //   });
-  //   if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
-  //
-  //   if (set.private) {
-  //     const userCookie = this.usersService.getUserInfo(req);
-  //
-  //     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-  //     if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-  //   }
-  //
-  //   const txt = this.setsService.exportAsQuizletTxt(set, params.sideDiscriminator, params.cardDiscriminator);
-  //   if (!txt) throw new BadRequestException("At least one card in the set contains side or card discriminator characters. The set must not contain the characters being used to format the exported set.");
-  //
-  //   res.set({
-  //     "Content-Type": "application/octet-stream",
-  //     "Content-Disposition": `attachment; filename="${set.title + ".txt"}`
-  //   });
-  //
-  //   return new StreamableFile(txt);
-  // }
+  /**
+   * Converts a set to a .txt file that can be imported into Quizlet
+   *
+   * @remarks Throttled to 1 request every 3 seconds
+   */
+  @ApiOperation( {
+    summary: "Converts a set to a .txt that can be imported in Quizlet",
+    description: "Converts a Scholarsome set to a .txt that can be imported in Quizlet. Media (images, videos, etc) will not be included in the exported .txt, as Quizlet does not provide an ability to import these materials."
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
+  @Throttle(1, 3000)
+  @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
+  async exportSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
+    const set = await this.setsService.set({
+      id: params.setId
+    });
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+
+    if (set.private) {
+      const userCookie = this.usersService.getUserInfo(req);
+
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    }
+
+    const txt = this.setsService.exportAsQuizletTxt(set, params.sideDiscriminator, params.cardDiscriminator);
+    if (!txt) throw new BadRequestException("At least one card in the set contains side or card discriminator characters. The set must not contain the characters being used to format the exported set.");
+
+    res.set({
+      "Content-Type": "application/octet-stream",
+      "Content-Disposition": `attachment; filename="${set.title + ".txt"}`
+    });
+
+    return new StreamableFile(txt);
+  }
 
   /**
    * Creates a set from an Anki .apkg file

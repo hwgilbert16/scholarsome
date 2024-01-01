@@ -75,8 +75,6 @@ export class TokenRefreshMiddleware implements NestMiddleware {
     // this is only for the request that this interceptor is directly in front of
     req.cookies["access_token"] = token;
 
-    console.log(token);
-
     // but this actually sets the cookie for future requests
     res.cookie("access_token", token, { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
   }

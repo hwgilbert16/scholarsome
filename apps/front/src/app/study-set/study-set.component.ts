@@ -12,6 +12,7 @@ import { SetsService } from "../shared/http/sets.service";
 import { CardComponent } from "../shared/card/card.component";
 import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
+import { QuizletExportModalComponent } from "./quizlet-export-modal/quizlet-export-modal.component";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -36,6 +37,8 @@ export class StudySetComponent implements OnInit {
   @ViewChild("editDescription", { static: false }) editDescription: ElementRef;
   @ViewChild("editTitle", { static: false }) editTitle: ElementRef;
 
+  @ViewChild("quizletExportModal") quizletExportModal: QuizletExportModalComponent;
+
   protected userIsAuthor = false;
   protected isEditing = false;
   protected setId: string | null;
@@ -46,12 +49,10 @@ export class StudySetComponent implements OnInit {
   protected set: Set;
 
   protected uploadTooLarge = false;
-
   protected deleteClicked = false;
 
-  async exportSet() {
+  async convertSetToApkg() {
     const file = await this.sets.convertSetToApkg(this.set.id);
-
     if (!file) return;
 
     const link = document.createElement("a");
