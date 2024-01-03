@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -190,6 +191,45 @@ export class SetsController {
       status: ApiResponseOptions.Success,
       data: set
     };
+  }
+
+  /**
+   * Converts a set to a .csv file
+   *
+   * @remarks Throttled to 1 request every 3 seconds
+   */
+  @Throttle(1, 3000)
+  @ApiOperation( {
+    summary: "Converts a set to an Anki-compatible .apkg file",
+    description: "Converts a Scholarsome set to an Anki-compatible .apkg file. Includes media (images, videos, etc) with the exported .apkg file."
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
+  @Get("export/csv/:setId")
+  async exportSetToCsv(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
+    const set = await this.setsService.set({
+      id: params.setId
+    });
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+
+    if (set.private) {
+      const userCookie = this.usersService.getUserInfo(req);
+
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    }
+
+    const csv = this.setsService.exportAsCsv(set);
+    if (!csv) throw new InternalServerErrorException("Error converting set to csv file");
+
+    res.set({
+      "Content-Type": "application/octet-stream",
+      "Content-Disposition": `attachment; filename="${set.title + ".csv"}`
+    });
+
+    return new StreamableFile(csv);
   }
 
   /**

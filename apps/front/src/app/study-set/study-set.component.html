@@ -36,6 +36,7 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" (click)="convertSetToApkg()">Anki</a></li>
             <li><a class="dropdown-item" (click)="this.quizletExportModal.open(set)">Quizlet</a></li>
+            <li><a class="dropdown-item" (click)="convertSetToCsv()">CSV</a></li>
           </ul>
         </div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>

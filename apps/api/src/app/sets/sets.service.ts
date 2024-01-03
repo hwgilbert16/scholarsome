@@ -394,6 +394,15 @@ export class SetsService {
     return apkg.toBuffer();
   }
 
+  /**
+   * Takes a set object and converts it to a string that can be imported into Quizlet
+   *
+   * @param set Set object
+   * @param sideDiscriminator Character(s) to discriminate between sides of a card in the string
+   * @param cardDiscriminator Character(s) to discriminate between cards in the string
+   *
+   * @returns Buffer of the .csv file
+   */
   public exportAsQuizletTxt(set: Set, sideDiscriminator: string, cardDiscriminator: string): Buffer | false {
     let txt = "";
 
@@ -421,6 +430,41 @@ export class SetsService {
     }
 
     return Buffer.from(txt, "utf-8");
+  }
+
+  /**
+   * Takes a set object and converts it to a .csv file
+   *
+   * @param set Set object
+   *
+   * @returns Buffer of the .csv file
+   */
+  public exportAsCsv(set: Set): Buffer | false {
+    let csv = "";
+
+    for (const card of set.cards) {
+      const term =
+        "\"" +
+        card.term
+            .replaceAll(/<img[^>]*>/g, "")
+            .replaceAll(/<sound[^>]*>/g, "")
+            .replaceAll("<p><br></p>", "\n")
+            .replaceAll(/<[^>]+>|<[^>]+\/>/g, "") +
+        "\"";
+
+      const definition =
+        "\"" +
+        card.definition
+            .replaceAll(/<img[^>]*>/g, "")
+            .replaceAll(/<sound[^>]*>/g, "")
+            .replaceAll("<p><br></p>", "\n")
+            .replaceAll(/<[^>]+>|<[^>]+\/>/g, "") +
+        "\"";
+
+      csv += term + "," + definition + "\n";
+    }
+
+    return Buffer.from(csv, "utf-8");
   }
 
   /**

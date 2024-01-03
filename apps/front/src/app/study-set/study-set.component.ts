@@ -65,6 +65,20 @@ export class StudySetComponent implements OnInit {
     document.body.removeChild(link);
   }
 
+  async convertSetToCsv() {
+    const file = await this.sets.convertSetToCsv(this.set.id);
+    if (!file) return;
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(file);
+    link.download = this.set.title + ".csv";
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+  }
+
   updateCardIndices() {
     for (let i = 0; i < this.cards.length; i++) {
       this.cards[i].instance.cardIndex = i;

@@ -71,6 +71,25 @@ export class SetsService {
   }
 
   /**
+   * Converts a set to a CSV file
+   *
+   * @param setId ID of the set to convert
+   *
+   * @returns Blob of the .csv
+   */
+  async convertSetToCsv(setId: string): Promise<Blob | null> {
+    let file: Blob | undefined;
+
+    try {
+      file = await lastValueFrom(this.http.get("/api/sets/export/csv/" + setId, { responseType: "blob" }));
+    } catch (e) {
+      return null;
+    }
+
+    return file;
+  }
+
+  /**
    * Converts a set to an Anki-compatible .apkg file
    *
    * @param setId ID of the set to convert
@@ -103,7 +122,12 @@ export class SetsService {
 
     try {
       file = await lastValueFrom(
-          this.http.get("/api/sets/export/quizlet/" + setId + "/" + sideDiscriminator + "/" + cardDiscriminator, { responseType: "blob" })
+          this.http.get("/api/sets/export/quizlet/" +
+            setId +
+            "/" +
+            encodeURIComponent(sideDiscriminator) +
+            "/" +
+            encodeURIComponent(cardDiscriminator), { responseType: "blob" })
       );
     } catch (e) {
       return null;
