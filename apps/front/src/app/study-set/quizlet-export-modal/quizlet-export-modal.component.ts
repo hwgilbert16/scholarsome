@@ -69,5 +69,6 @@ export class QuizletExportModalComponent {
     document.body.removeChild(link);
 
     this.clicked = false;
+    this.modalRef?.hide();
   }
 }
