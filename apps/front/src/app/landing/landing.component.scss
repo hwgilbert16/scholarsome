@@ -1,110 +1,145 @@
-.background {
-  background-image: url('../../assets/landing/desktop.svg');
-  background-color: #FFFFFF;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
+//.background {
+//  background-image: url('../../assets/landing/desktop.svg');
+//  background-color: #FFFFFF;
+//  background-repeat: no-repeat;
+//  background-size: cover;
+//  background-position: center center;
+//  min-height: 100vh;
+//
+//  overflow: hidden;
+//}
+//
+//.display-2 {
+//  color: #8338ff;
+//}
+//
+//.github {
+//  color: white;
+//}
+//
+//.logo {
+//  animation: 1s ease-out 0s 1 slideInFromBottom;
+//}
+//
+//.login-desktop {
+//  position: fixed;
+//  top: 0;
+//  right: 0;
+//}
+//
+//.container-fluid {
+//  animation: 1.75s ease-out 0s 1 slideInFromBottom;
+//}
+//
+//html {
+//  overflow-y: hidden !important;
+//  overflow-x: hidden !important;
+//}
+//
+//@media only screen and (min-device-width : 1px) and (max-device-width : 480px) {
+//  .background {
+//    background-image: url('../../assets/landing/mobile.svg');
+//  }
+//
+//  .login-desktop {
+//    display: none;
+//  }
+//
+//  .mobile {
+//    display: inherit;
+//  }
+//
+//  .logo {
+//    margin-top: 5%;
+//    margin-left: 5%;
+//    width: 50%;
+//    height: 50%;
+//  }
+//
+//  .showcase {
+//    border: 4px solid #8338ff;
+//    border-radius: 10px;
+//  }
+//}
+//
+//@media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
+//  .background {
+//    background-image: url('../../assets/landing/desktop.svg');
+//  }
+//
+//  .mobile {
+//    display: none;
+//  }
+//
+//  .logo {
+//    margin-left: 4%;
+//    margin-top: 5%;
+//    width: 25%;
+//    height: 25%;
+//  }
+//
+//  .container-fluid {
+//    margin-left: 4%;
+//  }
+//
+//  .subheader {
+//    width: 90%;
+//  }
+//
+//  .showcase {
+//    width: 90%;
+//    border: 8px solid #8338ff;
+//    border-radius: 10px;
+//  }
+//}
+//
+//@keyframes slideInFromBottom {
+//  0% {
+//    transform: translateY(1000%);
+//    opacity: 0;
+//  }
+//
+//  50% {
+//    opacity: 0;
+//  }
+//
+//  100% {
+//    transform: translateY(0);
+//    opacity: 100;
+//  }
+//}
+
+.main-screen {
   min-height: 100vh;
-
-  overflow: hidden;
 }
 
-.display-2 {
-  color: #8338ff;
+.nav-link {
+  color: black;
 }
 
-.github {
-  color: white;
+.navbar-brand {
+  margin-right: -1rem !important;
 }
 
-.logo {
-  animation: 1s ease-out 0s 1 slideInFromBottom;
+.showcase-row {
+  margin-top: 3vh;
 }
 
-.login-desktop {
-  position: fixed;
-  top: 0;
-  right: 0;
+.showcase-image {
+  border: 3px solid #8338ff;
+  border-radius: 15px;
+  box-shadow: #8338ff 0 18px 50px -10px;;
 }
 
-.container-fluid {
-  animation: 1.75s ease-out 0s 1 slideInFromBottom;
-}
-
-html {
-  overflow-y: hidden !important;
-  overflow-x: hidden !important;
-}
-
-@media only screen and (min-device-width : 1px) and (max-device-width : 480px) {
-  .background {
-    background-image: url('../../assets/landing/mobile.svg');
-  }
-
-  .login-desktop {
-    display: none;
-  }
-
-  .mobile {
-    display: inherit;
-  }
-
-  .logo {
-    margin-top: 5%;
-    margin-left: 5%;
-    width: 50%;
-    height: 50%;
-  }
-
-  .showcase {
-    border: 4px solid #8338ff;
-    border-radius: 10px;
+@media only screen and (min-device-width : 481px) and (max-device-width : 961px) {
+  .main-screen {
+    margin-top: 5rem;
   }
 }
 
-@media only screen and (min-device-width : 768px) and (max-device-width : 7680px) {
-  .background {
-    background-image: url('../../assets/landing/desktop.svg');
-  }
-
-  .mobile {
-    display: none;
-  }
-
-  .logo {
-    margin-left: 4%;
-    margin-top: 5%;
-    width: 25%;
-    height: 25%;
-  }
-
-  .container-fluid {
-    margin-left: 4%;
-  }
-
-  .subheader {
-    width: 90%;
-  }
-
-  .showcase {
-    width: 90%;
-    border: 8px solid #8338ff;
-    border-radius: 10px;
-  }
-}
-
-@keyframes slideInFromBottom {
-  0% {
-    transform: translateY(1000%);
-    opacity: 0;
-  }
-
-  50% {
-    opacity: 0;
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 100;
+@media only screen and (min-device-width : 1200px) and (max-device-width : 7680px) {
+  .navbar-container {
+    padding-left: 15%;
+    padding-right: 15%;
   }
 }
