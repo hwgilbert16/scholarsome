@@ -33,7 +33,17 @@
 }
 
 .section-3 {
-  background: linear-gradient(to bottom, rgba(220, 200, 255, 0.2), rgba(190, 170, 255, 0.4));
+  background: linear-gradient(to top, #e5ddff, white);
+}
+
+.section-4 {
+  background: linear-gradient(to bottom, #e5ddff, white);
+}
+
+.section-5-rectangle {
+  min-height: 20vh;
+  background-color: #0d141c;
+  width: 100%;
 }
 
 .section-3-feature-image {
@@ -103,5 +113,21 @@ body {
   .section-3-features {
     margin-left: 15rem;
     margin-right: 15rem;
+  }
+
+  .section-4-content {
+    margin-left: 15rem;
+    margin-right: 15rem;
+  }
+
+  .section-5-rectangle {
+    margin-left: 20rem;
+    margin-right: 20rem;
+    border-radius: 1rem;
+  }
+
+  .section-5-tagline {
+    margin-left: 20rem;
+    margin-right: 20rem;
   }
 }
