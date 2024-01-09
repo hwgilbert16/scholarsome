@@ -38,12 +38,17 @@
 
 .section-4 {
   background: linear-gradient(to bottom, #e5ddff, white);
+  margin-bottom: 7vh;
 }
 
 .section-5-rectangle {
-  min-height: 20vh;
   background-color: #0d141c;
   width: 100%;
+}
+
+.section-5-tagline {
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .section-3-feature-image {
@@ -63,7 +68,7 @@ body {
 // landscape phones
 @media only screen and (min-device-width : 321px) and (max-device-width: 850px) and (orientation: landscape) {
   .main-screen {
-    margin-top: 10vh;
+    margin-top: 18vh;
   }
 
   .section-3-feature-image {
@@ -121,13 +126,8 @@ body {
   }
 
   .section-5-rectangle {
-    margin-left: 20rem;
-    margin-right: 20rem;
     border-radius: 1rem;
-  }
-
-  .section-5-tagline {
-    margin-left: 20rem;
-    margin-right: 20rem;
+    margin-left: 20vw;
+    margin-right: 20vw;
   }
 }

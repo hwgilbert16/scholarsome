@@ -3,7 +3,7 @@ import { ModalService } from "../shared/modal.service";
 import { CookieService } from "ngx-cookie";
 import { Router } from "@angular/router";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { faUpRightFromSquare, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Location } from "@angular/common";
 import { Meta, Title } from "@angular/platform-browser";
 import { SharedService } from "../shared/shared.service";
@@ -33,6 +33,9 @@ export class LandingComponent implements OnInit {
   protected stargazers: number;
   protected readonly faGithub = faGithub;
   protected readonly faUpRightFromSquare = faUpRightFromSquare;
+  protected readonly faArrowRight = faArrowRight;
+
+  protected readonly document = document;
 
   async ngOnInit(): Promise<void> {
     if (this.cookieService.get("authenticated") === "true") {

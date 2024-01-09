@@ -1,27 +1,3 @@
-<!--<div class="background">-->
-<!--  <div class="login-desktop mt-3 me-3">-->
-<!--    <button class="btn btn-lg btn-outline-light me-2" (click)="this.modalService.modal.next('login-open')" aria-label="Log in">Log in</button>-->
-<!--    <a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="github"><button class="btn btn-lg btn-outline-light" aria-label="GitHub link"><fa-icon [icon]="faGithub"></fa-icon></button></a>-->
-<!--  </div>-->
-<!--  <img class="logo" src="assets/header/scholarsome-logo-purple-lowercase.svg" alt="Scholarsome">-->
-<!--  <div class="container-fluid">-->
-<!--    <div class="row row-cols-1 row-cols-md-2 align-items-center">-->
-<!--      <div class="col mt-lg-0 mt-4">-->
-<!--        <h1 class="display-2 fw-bold">Studying done the <span class="text-decoration-underline">correct</span> way</h1>-->
-<!--        <p class="display-6 subheader">No monthly fees or upsells to get between you and your study tools. Just flashcards.</p>-->
-<!--        <div class="d-flex gap-2">-->
-<!--          <button class="btn btn-lg btn-primary mt-4" (click)="this.modalService.modal.next('register-open')" aria-label="Sign up">Sign up for free</button>-->
-<!--          <button class="btn btn-lg btn-outline-primary mt-4 mobile" (click)="this.modalService.modal.next('login-open')" aria-label="Log in">Log in</button>-->
-<!--          <a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="mobile"><button class="btn btn-lg btn-outline-primary mt-4" aria-label="GitHub link"><fa-icon [icon]="faGithub"></fa-icon></button></a>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="col">-->
-<!--        <img src="assets/landing/showcase.png" class="showcase shadow-lg mt-lg-0 mt-4" />-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-
 <nav class="navbar fixed-top navbar-expand-xxl bg-white">
   <div class="container-fluid navbar-container">
     <a class="navbar-brand" href="#">
@@ -32,8 +8,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav gap-3">
-        <a class="nav-link fs-5" href="#">Documentation</a>
-        <a class="nav-link fs-5" href="#">Discord <fa-icon [icon]="faUpRightFromSquare"></fa-icon></a>
+        <a class="nav-link fs-5" [href]="document.location.href + 'handbook'">Documentation</a>
+        <a class="nav-link fs-5" href="https://discord.gg/hRgVvc5MKf" target="_blank">Discord <fa-icon [icon]="faUpRightFromSquare"></fa-icon></a>
       </div>
       <div class="navbar-nav ms-auto mt-3 mt-md-0">
         <a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="d-flex align-items-center text-decoration-none text-black">
@@ -175,11 +151,20 @@
   </div>
 </div>
 
-<div class="section-5 mt-5">
+<div class="section-5 my-xl-5">
   <div class="d-flex justify-content-center mt">
-    <div class="section-5-rectangle round text-center">
+    <div class="section-5-rectangle round text-center pb-3">
       <h2 class="text-white display-3 fw-bold mt-3">We're open-source, too</h2>
-      <p class="fs-4 text-white section-5-tagline mt-3">Scholarsome is proud to be released under the AGPL-3.0 license. With the help of our detailed documentation, you can easily get a fully-functional local instance running using Docker.</p>
+      <p class="fs-4 text-white mt-3 mx-5">Scholarsome is proud to be released under the AGPL-3.0 license. With the help of our detailed documentation, you can easily get a fully-functional local instance running using Docker.</p>
+      <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
+        <a [href]="document.location.href + 'handbook'" target="_blank">
+          <button type="button" class="btn btn-light btn-lg bg-white">Read the docs</button>
+        </a>
+        <a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="pt-2 text-white text-decoration-none d-flex">
+          <p class="text-white fs-6">Star us on GitHub</p>
+          <fa-icon [icon]="faArrowRight" class="ms-1"></fa-icon>
+        </a>
+      </div>
     </div>
   </div>
 </div>
