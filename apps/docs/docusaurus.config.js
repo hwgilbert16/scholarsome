@@ -54,6 +54,7 @@ const config = {
   organizationName: 'Scholarsome',
   projectName: 'Scholarsome',
   trailingSlash: true,
+  staticDirectories: ['public', 'static'],
 
   presets,
 

@@ -32,10 +32,12 @@ Below these buttons, there will be a preview of the cards that you're about to i
 
 Click the "import" button. The fields in the Quizlet creation page will now be filled with your set data from Scholarsome. You can now create your Quizlet set as normal.
 
-## Exporting to CSV
+## Exporting to a CSV file
 
 :::danger
 When exporting to a CSV file, only text will be exported. Images and other media will not be included in the export.
 :::
 
 Navigate to the set within Scholarsome. Click the purple-outlined "export" button on the right hand side of the page, and then click "CSV" in the dropdown menu. After a few seconds, a .csv file containing the set's contents will be downloaded to your browser.
+
+## Exporting media
