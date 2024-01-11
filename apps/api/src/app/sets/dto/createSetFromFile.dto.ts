@@ -8,7 +8,7 @@ import { ApiProperty } from "@nestjs/swagger";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 import { Multer } from "multer";
 
-export class CreateSetFromApkgDto {
+export class CreateSetFromFileDto {
   @ApiProperty({
     description: "The title of the set"
   })
@@ -34,7 +34,7 @@ export class CreateSetFromApkgDto {
     private: string;
 
   @ApiProperty({
-    description: "The .apkg file",
+    description: "The file to import cards from",
     type: "string",
     format: "binary"
   })

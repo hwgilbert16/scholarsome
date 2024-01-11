@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
-import { AnkiCard, AnkiNote, Set } from "@scholarsome/shared";
+import { GeneralCard, AnkiNote, Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
@@ -12,7 +12,9 @@ import * as crypto from "crypto";
 import * as sharp from "sharp";
 import * as fs from "fs";
 import * as path from "path";
-import { S3 } from "@aws-sdk/client-s3";
+import { GetObjectCommandOutput, S3 } from "@aws-sdk/client-s3";
+import { CardsService } from "../cards/cards.service";
+import { parse } from "csv-parse/sync";
 
 @Injectable()
 export class SetsService {
@@ -22,7 +24,8 @@ export class SetsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly cardsService: CardsService
   ) {}
 
   /**
@@ -449,6 +452,7 @@ export class SetsService {
             .replaceAll(/<img[^>]*>/g, "")
             .replaceAll(/<sound[^>]*>/g, "")
             .replaceAll("<p><br></p>", "\n")
+            .replaceAll("\"", "\"\"")
             .replaceAll(/<[^>]+>|<[^>]+\/>/g, "") +
         "\"";
 
@@ -458,6 +462,7 @@ export class SetsService {
             .replaceAll(/<img[^>]*>/g, "")
             .replaceAll(/<sound[^>]*>/g, "")
             .replaceAll("<p><br></p>", "\n")
+            .replaceAll("\"", "\"\"")
             .replaceAll(/<[^>]+>|<[^>]+\/>/g, "") +
         "\"";
 
@@ -465,6 +470,102 @@ export class SetsService {
     }
 
     return Buffer.from(csv, "utf-8");
+  }
+
+  /**
+   * Takes a CSV file and converts it to an array of cards
+   *
+   * @param file CSV file
+   *
+   * @returns Array of the cards
+   *
+   * @remarks False indicates that the CSV failed to be parsed
+   */
+  decodeCsvFile(file: Express.Multer.File): GeneralCard[] | false {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let parsed: Array<any>;
+
+    try {
+      // eslint-disable-next-line camelcase
+      parsed = parse(file.buffer.toString(), { skip_empty_lines: true });
+    } catch (e) {
+      return false;
+    }
+
+    const cards: GeneralCard[] = [];
+
+    for (let i = 0; i < parsed.length; i++) {
+      cards.push({
+        term: parsed[i][0],
+        definition: parsed[i][1],
+        index: i
+      });
+    }
+
+    return cards;
+  }
+
+  /**
+   * Gets the media content of a set and packages it into a .zip file
+   *
+   * @param setId ID of the set to export the media from
+   *
+   * @returns Buffer of the .zip file
+   *
+   * @remarks False return means that something went wrong
+   * @remarks Null return means that the set does not have any media within its cards
+   */
+  public async exportSetMedia(setId: string): Promise<Buffer | false | null> {
+    const zip = new AdmZip();
+
+    const media = await this.cardsService.cardMedias({
+      where: {
+        card: {
+          setId
+        }
+      }
+    });
+    if (!media) return false;
+    if (media.length === 0) return null;
+
+    if (
+      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
+      this.configService.get<string>("STORAGE_TYPE") === "S3"
+    ) {
+      const s3 = await new S3({
+        credentials: {
+          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+        },
+        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+        region: this.configService.get<string>("S3_STORAGE_REGION")
+      });
+
+      for (const mediaFile of media) {
+        let file: GetObjectCommandOutput;
+
+        try {
+          file = await s3.getObject({
+            Key: "media/sets/" + setId + "/" + mediaFile.name,
+            Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
+          });
+        } catch (e) {
+          return false;
+        }
+
+        zip.addFile(mediaFile.name, Buffer.from(await file.Body.transformToByteArray()));
+      }
+    } else {
+      for (const mediaFile of media) {
+        const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId, mediaFile.name);
+
+        if (fs.existsSync(filePath)) {
+          zip.addFile(mediaFile.name, fs.readFileSync(filePath));
+        }
+      }
+    }
+
+    return zip.toBuffer();
   }
 
   /**
@@ -478,7 +579,7 @@ export class SetsService {
    *
    * @returns Array of cards generated from the file
    */
-  public async decodeAnkiApkg(file: Buffer, setId: string): Promise<{ cards: AnkiCard[], media: string[] } | false> {
+  public async decodeAnkiApkg(file: Buffer, setId: string): Promise<{ cards: GeneralCard[], media: string[] } | false> {
     const zip = new AdmZip(file);
     const dbFile = zip.readFile("collection.anki2");
 

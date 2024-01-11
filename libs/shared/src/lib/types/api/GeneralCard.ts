@@ -1,4 +1,4 @@
-export type AnkiCard = {
+export type GeneralCard = {
   term: string;
   definition: string;
   index: number;
