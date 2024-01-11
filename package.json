@@ -102,7 +102,7 @@
     "redocusaurus": "^1.6.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.5.0",
-    "sharp": "^0.32.1",
+    "sharp": "^0.32.6",
     "string-similarity": "^4.0.4",
     "tslib": "^2.3.0",
     "typescript": "4.8.4",
