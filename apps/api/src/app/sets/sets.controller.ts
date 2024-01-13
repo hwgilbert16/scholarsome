@@ -372,6 +372,7 @@ export class SetsController {
     description: "Uploaded file is not a properly formatted CSV",
     type: ErrorResponse
   })
+  @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("csv")
   async createSetFromCsvFile(@Body() body: CreateSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {

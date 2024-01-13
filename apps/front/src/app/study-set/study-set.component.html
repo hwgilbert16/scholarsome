@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-center mt-5" #spinner>
-  <div class="spinner-border text-primary" role="status">
+  <div class="loading-spinner spinner-border text-primary" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
 </div>
@@ -24,32 +24,62 @@
     </div>
     <p class="fs-5 fw-semibold mt-3">{{this.cards.length}} term{{this.cards.length > 1 ? 's' : ''}} in this set</p>
   </div>
-  <div>
+  <div *ngIf="set">
     <p class="text-secondary text-wrap text-break">{{set.description}}</p>
   </div>
   <hr>
   <div class="container-fluid">
     <div class="d-flex justify-content-end align-items-center">
       <div>
+        <div class="btn-group me-1" *ngIf="set" [hidden]="isEditing">
+          <button [disabled]="set.private" type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <fa-icon [icon]="faShareFromSquare"></fa-icon>
+            Share
+          </button>
+          <div class="share-dropdown dropdown-menu p-3 text-secondary">
+            <p>Copy the link below to share this set with others</p>
+            <div class="input-group">
+              <button *ngIf="isHttps" (click)="navigator.clipboard.writeText(window.location.href)" type="button" class="btn btn-outline-secondary">
+                <fa-icon [icon]="faClipboard"></fa-icon>
+              </button>
+              <input type="text" class="form-control" [value]="window.location.href" disabled>
+            </div>
+          </div>
+        </div>
         <div class="btn-group me-1" [hidden]="isEditing">
-          <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <fa-icon [icon]="faFileExport"></fa-icon>
             Export
           </button>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" (click)="convertSetToApkg()">Anki</a></li>
-            <li><a class="dropdown-item" (click)="this.quizletExportModal.open(set)">Quizlet</a></li>
-            <li><a class="dropdown-item" (click)="convertSetToCsv()">CSV</a></li>
+            <a href="/handbook/usage/sets/exporting-sets" target="_blank" class="text-decoration-none help-button">
+              <fa-icon [icon]="faQuestionCircle" class="ms-3 fs-5"></fa-icon>
+            </a>
+            <div class="dropdown-divider"></div>
+            <li><a class="dropdown-item" (click)="convertSetToApkg()">Anki (.apkg)</a></li>
+            <li><a class="dropdown-item" (click)="this.quizletExportModal.open(set)">Quizlet (.txt)</a></li>
+            <li><a class="dropdown-item" (click)="convertSetToCsv()">CSV (.csv)</a></li>
           </ul>
         </div>
-        <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">Edit</button>
+        <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">
+          <fa-icon [icon]="faPencil"></fa-icon>
+          Edit
+        </button>
         <div class="d-flex align-items-center">
           <div class="text-danger" *ngIf="uploadTooLarge">The upload size cannot exceed 30 megabytes.</div>
-          <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" (click)="saveCards()">Save</button>
-          <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" (click)="viewCards(); deleteClicked = false; uploadTooLarge = false;">Cancel</button>
+          <button type="submit" class="btn btn-primary me-2" [hidden]="!isEditing" [disabled]="saveInProgress" (click)="saveCards()">
+            <span *ngIf="saveInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+            <fa-icon [icon]="faSave"></fa-icon>
+            Save
+          </button>
+          <button type="submit" class="btn btn-secondary" [hidden]="!isEditing" [disabled]="saveInProgress" (click)="viewCards(); deleteClicked = false; uploadTooLarge = false;">
+            <fa-icon [icon]="faCancel"></fa-icon>
+            Cancel
+          </button>
         </div>
       </div>
     </div>
-    <div *ngIf="set" [hidden]="!isEditing" class="">
+    <div *ngIf="set" [hidden]="!isEditing">
       <div class="w-50 mt-3">
         <label for="edit-title" class="form-label">Title</label>
         <input type="text" class="form-control" id="edit-title" [value]="set.title" #editTitle>
@@ -63,11 +93,20 @@
         <label class="form-check-label" for="privateCheck">Private set</label>
       </div>
       <div class="mt-3 mb-5">
-        <button type="button" class="btn btn-danger" [hidden]="deleteClicked" (click)="deleteClicked = true">Delete this set</button>
+        <button type="button" class="btn btn-danger" [hidden]="deleteClicked" (click)="deleteClicked = true">
+          <fa-icon [icon]="faTrashCan"></fa-icon>
+          Delete this set
+        </button>
         <div [hidden]="!deleteClicked">
           <div class="d-flex">
-            <button type="button" class="btn btn-danger me-2" (click)="deleteSet()">Confirm</button>
-            <button type="button" class="btn btn-outline-secondary" (click)="deleteClicked = false">Cancel</button>
+            <button type="button" class="btn btn-danger me-2" (click)="deleteSet()">
+              <fa-icon [icon]="faTrashCan"></fa-icon>
+              Confirm
+            </button>
+            <button type="button" class="btn btn-outline-secondary" (click)="deleteClicked = false">
+              <fa-icon [icon]="faCancel"></fa-icon>
+              Cancel
+            </button>
           </div>
         </div>
       </div>
