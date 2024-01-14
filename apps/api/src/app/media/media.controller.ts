@@ -40,6 +40,7 @@ import { SetIdAndFileParam } from "./param/setIdAndFile.param";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { ErrorResponse } from "../shared/response/error.response";
 import { SetAvatarDto } from "./dto/setAvatar.dto";
+import { sanitize } from "sanitize-filename-ts";
 
 @ApiTags("Media")
 @Controller("media")
@@ -107,7 +108,11 @@ export class MediaController {
     }
 
     if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", params.setId, params.file);
+      const filePath = path.join(
+          this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets",
+          sanitize(params.setId),
+          sanitize(params.file)
+      );
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {
@@ -203,7 +208,10 @@ export class MediaController {
         res.write(await file.Body.transformToByteArray());
       }
     } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", userId + ".jpeg");
+      const filePath = path.join(
+          this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars",
+          sanitize(userId) + ".jpeg"
+      );
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {

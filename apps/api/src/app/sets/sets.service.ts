@@ -496,8 +496,8 @@ export class SetsService {
 
     for (let i = 0; i < parsed.length; i++) {
       cards.push({
-        term: parsed[i][0].replace("\n", "<br>"),
-        definition: parsed[i][1].replace("\n", "<br>"),
+        term: parsed[i][0].replaceAll("\n", "<br>"),
+        definition: parsed[i][1].replaceAll("\n", "<br>"),
         index: i
       });
     }
