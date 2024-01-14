@@ -37,7 +37,8 @@
             Share
           </button>
           <div class="share-dropdown dropdown-menu p-3 text-secondary">
-            <p>Copy the link below to share this set with others</p>
+            <p>The URL of this page can be used by anyone to access this set.</p>
+            <p>It can be copied from below or from the address bar of this page.</p>
             <div class="input-group">
               <button *ngIf="isHttps" (click)="navigator.clipboard.writeText(window.location.href)" type="button" class="btn btn-outline-secondary">
                 <fa-icon [icon]="faClipboard"></fa-icon>
@@ -56,9 +57,25 @@
               <fa-icon [icon]="faQuestionCircle" class="ms-3 fs-5"></fa-icon>
             </a>
             <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" (click)="convertSetToApkg()">Anki (.apkg)</a></li>
-            <li><a class="dropdown-item" (click)="this.quizletExportModal.open(set)">Quizlet (.txt)</a></li>
-            <li><a class="dropdown-item" (click)="convertSetToCsv()">CSV (.csv)</a></li>
+            <li><a class="dropdown-item" (click)="this.quizletExportModal.open(set)">
+              <fa-icon [icon]="faQ" class="quizlet-color"></fa-icon>
+              To Quizlet (.txt)
+            </a></li>
+            <li><a class="dropdown-item" [ngClass]="{'disabled': ankiExportInProgress}" (click)="convertSetToApkg()">
+              <span *ngIf="ankiExportInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+              <fa-icon [icon]="faStar" class="anki-color"></fa-icon>
+              To Anki (.apkg)
+            </a></li>
+            <li><a class="dropdown-item csv-dropdown" [ngClass]="{'disabled': csvExportInProgress}" (click)="convertSetToCsv()">
+              <span *ngIf="csvExportInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+              <fa-icon [icon]="faFileCsv"></fa-icon>
+              <span class="csv-dropdown-text">To CSV (.csv)</span>
+            </a></li>
+            <li><a class="dropdown-item" [ngClass]="{'disabled': mediaExportInProgress}" (click)="exportSetMedia()">
+              <span *ngIf="mediaExportInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+              <fa-icon [icon]="faImages"></fa-icon>
+              Media (.zip)
+            </a></li>
           </ul>
         </div>
         <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">

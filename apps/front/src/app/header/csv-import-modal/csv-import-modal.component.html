@@ -7,12 +7,12 @@
     </div>
     <div class="col">
       <div class="row text-center justify-content-center">
-        <img src="assets/header/anki.jpeg" class="mb-2 anki-import-logo">
+        <fa-icon [icon]="faFileCsv" class="csv-logo quizlet-color"></fa-icon>
         <div class="fs-3 mb-2">
-          Import a study set from Anki
-          <a href="/handbook/usage/sets/importing-sets/#importing-from-anki" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
+          Import a study set from a CSV file
+          <a href="/handbook/usage/sets/importing-sets/#importing-from-a-csv-file" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
         </div>
-        <div class="fs-6 text-secondary">If you've created a set in Anki, you can import it to Scholarsome.<br><br> To learn more, click <a href="/handbook/usage/sets/importing-sets/#importing-from-anki" target="_blank">here.</a><br><br>At the moment, only notes with a traditional front and back are supported. Multiple fields will be supported in a future release.</div>
+        <div class="fs-6 text-secondary">If you have a two-column CSV file, with terms being in the first column and definitions in the second column, you can import the file as a set into Scholarsome.<br><br>To learn more, <a href="/handbook/usage/sets/importing-sets/#importing-from-a-csv-file" target="_blank">click here.</a></div>
       </div>
     </div>
     <hr>
@@ -28,7 +28,7 @@
         <label class="form-check-label" for="ankiImportPrivateCheck">Viewable only to me</label>
       </div>
       <div class="mb-3">
-        <input type="file" accept=".apkg" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="clicked" ngModel required>
+        <input type="file" accept="text/csv" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="clicked" ngModel required>
         <div *ngIf="response === 'incompatible'" class="form-text text-danger">The note types in this .apkg are not currently compatible with Scholarsome.</div>
       </div>
       <div class="modal-footer">

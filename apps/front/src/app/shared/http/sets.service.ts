@@ -90,6 +90,25 @@ export class SetsService {
   }
 
   /**
+   * Exports set media to a .zip file
+   *
+   * @param setId ID of the set to convert
+   *
+   * @returns Blob of the .zip
+   */
+  async exportSetMedia(setId: string): Promise<Blob | null> {
+    let file: Blob | undefined;
+
+    try {
+      file = await lastValueFrom(this.http.get("/api/sets/export/media/" + setId, { responseType: "blob" }));
+    } catch (e) {
+      return null;
+    }
+
+    return file;
+  }
+
+  /**
    * Converts a set to an Anki-compatible .apkg file
    *
    * @param setId ID of the set to convert
@@ -203,6 +222,41 @@ export class SetsService {
 
     try {
       set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/apkg", formData));
+    } catch (e) {
+      return null;
+    }
+
+    if (set.status === ApiResponseOptions.Success) {
+      return set.data;
+    } else return null;
+  }
+
+  /**
+   * Creates a set from a .csv file
+   *
+   * @param body.title Title of the set
+   * @param body.description Optional, description of the set
+   * @param body.private Whether the set should be publicly visible
+   * @param body.file The .csv file to be uploaded
+   *
+   * @returns Created `Set` object
+   */
+  async createSetFromCsv(body: {
+    title: string;
+    description?: string;
+    private: boolean;
+    file: File
+  }): Promise<Set | null> {
+    let set: ApiResponse<Set> | undefined;
+
+    const formData = new FormData();
+    formData.append("title", body.title);
+    if (body.description) formData.append("description", body.description);
+    formData.append("private", body.private.toString());
+    formData.append("file", body.file);
+
+    try {
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/csv", formData));
     } catch (e) {
       return null;
     }

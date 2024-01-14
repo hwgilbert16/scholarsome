@@ -108,6 +108,22 @@
                 &nbsp;From Anki
                 </a>
             </li>
+            <li>
+              <a
+                class="dropdown-item ms-1"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  this.cookieService.get('authenticated')
+                    ? (this.modalRef = csvImportModal.open())
+                    : (this.modalRef = loginModal.open())
+                "
+              ><fa-icon [icon]="faFileCsv"></fa-icon>
+                &nbsp;<span class="file-icon">From CSV</span>
+              </a>
+            </li>
           </ul>
         </li>
       </ul>
@@ -203,3 +219,4 @@
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
 <scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>
+<scholarsome-csv-import-modal #csvImport></scholarsome-csv-import-modal>

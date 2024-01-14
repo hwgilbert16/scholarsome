@@ -14,7 +14,7 @@ import { UsersService } from "../shared/http/users.service";
 import { Meta, Title } from "@angular/platform-browser";
 import { QuizletExportModalComponent } from "./quizlet-export-modal/quizlet-export-modal.component";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
-import { faFileExport, faShareFromSquare, faPencil, faSave, faCancel, faTrashCan, faClipboard } from "@fortawesome/free-solid-svg-icons";
+import { faFileExport, faShareFromSquare, faPencil, faSave, faCancel, faTrashCan, faClipboard, faStar, faQ, faFileCsv, faImages } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -51,6 +51,9 @@ export class StudySetComponent implements OnInit {
   protected set: Set;
 
   protected saveInProgress = false;
+  protected ankiExportInProgress = false;
+  protected csvExportInProgress = false;
+  protected mediaExportInProgress = false;
   protected uploadTooLarge = false;
   protected deleteClicked = false;
 
@@ -65,13 +68,22 @@ export class StudySetComponent implements OnInit {
   protected readonly faCancel = faCancel;
   protected readonly faTrashCan = faTrashCan;
   protected readonly faClipboard = faClipboard;
+  protected readonly faStar = faStar;
+  protected readonly faQ = faQ;
+  protected readonly faFileCsv = faFileCsv;
+  protected readonly faImages = faImages;
 
   protected readonly navigator = navigator;
   protected readonly window = window;
 
   async convertSetToApkg() {
+    this.ankiExportInProgress = true;
+
     const file = await this.sets.convertSetToApkg(this.set.id);
-    if (!file) return;
+    if (!file) {
+      this.ankiExportInProgress = false;
+      return;
+    }
 
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(file);
@@ -81,11 +93,18 @@ export class StudySetComponent implements OnInit {
     link.click();
 
     document.body.removeChild(link);
+
+    this.ankiExportInProgress = false;
   }
 
   async convertSetToCsv() {
+    this.csvExportInProgress = true;
+
     const file = await this.sets.convertSetToCsv(this.set.id);
-    if (!file) return;
+    if (!file) {
+      this.csvExportInProgress = false;
+      return;
+    }
 
     const link = document.createElement("a");
     link.href = window.URL.createObjectURL(file);
@@ -95,6 +114,29 @@ export class StudySetComponent implements OnInit {
     link.click();
 
     document.body.removeChild(link);
+
+    this.csvExportInProgress = false;
+  }
+
+  async exportSetMedia() {
+    this.mediaExportInProgress = true;
+
+    const file = await this.sets.exportSetMedia(this.set.id);
+    if (!file) {
+      this.mediaExportInProgress = false;
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(file);
+    link.download = this.set.title + ".zip";
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+
+    this.mediaExportInProgress = false;
   }
 
   updateCardIndices() {

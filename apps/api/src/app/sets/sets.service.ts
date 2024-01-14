@@ -487,7 +487,7 @@ export class SetsService {
 
     try {
       // eslint-disable-next-line camelcase
-      parsed = parse(file.buffer.toString(), { skip_empty_lines: true });
+      parsed = parse(file.buffer.toString().replace(/\r\n/g, "\n"), { skip_empty_lines: false });
     } catch (e) {
       return false;
     }
@@ -496,8 +496,8 @@ export class SetsService {
 
     for (let i = 0; i < parsed.length; i++) {
       cards.push({
-        term: parsed[i][0],
-        definition: parsed[i][1],
+        term: parsed[i][0].replace("\n", "<br>"),
+        definition: parsed[i][1].replace("\n", "<br>"),
         index: i
       });
     }

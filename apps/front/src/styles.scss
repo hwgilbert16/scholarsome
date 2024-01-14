@@ -64,6 +64,14 @@ img {
   color: black;
 }
 
+.anki-color {
+  color: #051e59;
+}
+
+.quizlet-color {
+  color: #5162ff;
+}
+
 .help-button:hover {
   animation: help-button-color-change 0.25s;
   animation-fill-mode: forwards;
