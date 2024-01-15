@@ -7,6 +7,8 @@ import { ApiProperty } from "@nestjs/swagger";
 // needed for multer file type declaration
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
 import { Multer } from "multer";
+import { Transform, TransformFnParams } from "class-transformer";
+import * as sanitizeHtml from "sanitize-html";
 
 export class CreateSetFromFileDto {
   @ApiProperty({
@@ -14,6 +16,7 @@ export class CreateSetFromFileDto {
   })
   @IsString()
   @IsNotEmpty()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     title: string;
 
   @ApiProperty({
@@ -22,6 +25,7 @@ export class CreateSetFromFileDto {
   })
   @IsString()
   @IsOptional()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     description: string;
 
   // this is needed to be submitted as string because form-data is used for this endpoint
@@ -31,6 +35,7 @@ export class CreateSetFromFileDto {
   })
   @IsString()
   @IsNotEmpty()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     private: string;
 
   @ApiProperty({

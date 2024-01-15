@@ -7,9 +7,10 @@ import {
   IsString,
   ValidateNested
 } from "class-validator";
-import { Type } from "class-transformer";
+import { Transform, TransformFnParams, Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { CardValidator } from "../validator/card.validator";
+import * as sanitizeHtml from "sanitize-html";
 
 export class CreateSetDto {
   @ApiProperty({
@@ -18,6 +19,7 @@ export class CreateSetDto {
   })
   @IsString()
   @IsNotEmpty()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     title: string;
 
   @ApiProperty({
@@ -27,6 +29,7 @@ export class CreateSetDto {
   })
   @IsString()
   @IsOptional()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     description: string;
 
   @ApiProperty({
