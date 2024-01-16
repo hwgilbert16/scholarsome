@@ -241,7 +241,7 @@ export class SetsController {
    */
   @Throttle(1, 3000)
   @ApiOperation( {
-    summary: "Converts a set to an Anki-compatible .apkg file",
+    summary: "Exports a set to a .csv file",
     description: "Converts a Scholarsome set to an Anki-compatible .apkg file. Includes media (images, videos, etc) with the exported .apkg file."
   })
   @ApiUnauthorizedResponse({
@@ -279,7 +279,7 @@ export class SetsController {
    * @remarks Throttled to 1 request every 3 seconds
    */
   @ApiOperation( {
-    summary: "Converts a set to an Anki-compatible .apkg file",
+    summary: "Exports a set to an Anki-compatible .apkg file",
     description: "Converts a Scholarsome set to an Anki-compatible .apkg file. Includes media (images, videos, etc) with the exported .apkg file."
   })
   @ApiUnauthorizedResponse({
@@ -317,7 +317,7 @@ export class SetsController {
    * @remarks Throttled to 1 request every 3 seconds
    */
   @ApiOperation( {
-    summary: "Converts a set to a .txt that can be imported in Quizlet",
+    summary: "Exports a set to a .txt that can be imported in Quizlet",
     description: "Converts a Scholarsome set to a .txt that can be imported in Quizlet. Media (images, videos, etc) will not be included in the exported .txt, as Quizlet does not provide an ability to import these materials."
   })
   @ApiUnauthorizedResponse({
@@ -356,7 +356,7 @@ export class SetsController {
    * @returns Created `Set` object
    */
   @ApiOperation( {
-    summary: "Create a set from a .apkg file",
+    summary: "Imports a set from a .apkg file",
     description: "Converts a .apkg file to a Scholarsome set. Compatible only with simple front-back Anki sets, multiple fields currently unsupported."
   })
   @ApiConsumes("multipart/form-data")
@@ -375,7 +375,7 @@ export class SetsController {
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("csv")
-  async createSetFromCsvFile(@Body() body: CreateSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
+  async importSetFromCsvFile(@Body() body: CreateSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
@@ -421,7 +421,7 @@ export class SetsController {
    * @returns Created `Set` object
    */
   @ApiOperation( {
-    summary: "Create a set from a .apkg file",
+    summary: "Imports a set from a .apkg file",
     description: "Converts a .apkg file to a Scholarsome set. Compatible only with simple front-back Anki sets, multiple fields currently unsupported."
   })
   @ApiConsumes("multipart/form-data")
@@ -440,7 +440,7 @@ export class SetsController {
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("apkg")
-  async createSetFromAnkiApkg(@Body() body: CreateSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
+  async importSetFromAnkiApkg(@Body() body: CreateSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
     const user = this.usersService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 

@@ -41,3 +41,7 @@ When exporting to a CSV file, only text will be exported. Images and other media
 Navigate to the set within Scholarsome. Click the purple-outlined "export" button on the right hand side of the page, and then click "CSV" in the dropdown menu. After a few seconds, a .csv file containing the set's contents will be downloaded to your browser.
 
 ## Exporting media
+
+When exporting to Quizlet or a CSV file, media is not included in the export. However, the media contained within a set can still be exported easily.
+
+To export the media of a set, navigate to the set within Scholarsome. Click the purple-outlined "export" button on the right hand side of the page, and then click "Media" in the dropdown menu. After a few seconds, a .zip file containing the set's media contents will be downloaded to your browser.

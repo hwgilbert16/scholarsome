@@ -59,3 +59,11 @@ In this menu, you can configure the set's title, description, and visibility. Ad
 Click the purple "Create" button once you are ready to import the set.
 
 ## Importing from a CSV file
+
+To import a set from a `.csv` file, you will need to have a `.csv` file that has two columns. The left column should contain the "terms" of your set, and the right column should contain the "definitions" of your set.
+
+Click the purple button in the Scholarsome navigation bar that says "Create", and then click "From CSV." A menu will open.
+
+In this menu, you can configure the set's title, description, and visibility. At the bottom, click "Choose File," and then select your `.csv` file to upload it.
+
+Click the purple "Create" button once you are ready to import the set. You will be redirected to your new set once it is created. If the window closes and you aren't redirected, go to the homepage to find the new set.
