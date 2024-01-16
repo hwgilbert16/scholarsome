@@ -18,6 +18,7 @@ import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { JwtModule } from "@nestjs/jwt";
 import { MediaModule } from "./media/media.module";
 import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
+import { ConvertingModule } from "./converting/converting.module";
 
 @Module({
   imports: [
@@ -67,7 +68,8 @@ import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
         inject: [ConfigService]
       }),
       global: true
-    }
+    },
+    ConvertingModule
   ],
   controllers: [],
   providers: [],

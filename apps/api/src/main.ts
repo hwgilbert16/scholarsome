@@ -63,7 +63,11 @@ async function bootstrap() {
         .listen(8443);
   }
 
-  const config = new DocumentBuilder().setTitle("Scholarsome").build();
+  const config = new DocumentBuilder()
+      .setTitle("Scholarsome API")
+      .setVersion("")
+      .setDescription("This page contains documentation about how to use the Scholarsome API. Currently, only endpoints that do not require authentication are able to be used. In a future update, API tokens will be introduced that allow for the usage of privileged endpoints.")
+      .build();
 
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync("./dist/api-spec.json", JSON.stringify(document));

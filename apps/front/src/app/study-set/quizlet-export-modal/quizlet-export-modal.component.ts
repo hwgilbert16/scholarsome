@@ -1,10 +1,10 @@
 import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
-import { SetsService } from "../../shared/http/sets.service";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { faQ } from "@fortawesome/free-solid-svg-icons";
 import { NgForm } from "@angular/forms";
 import { Set } from "@scholarsome/shared";
+import { ConvertingService } from "../../shared/http/converting.service";
 
 @Component({
   selector: "scholarsome-quizlet-export-modal",
@@ -14,7 +14,7 @@ import { Set } from "@scholarsome/shared";
 export class QuizletExportModalComponent {
   constructor(
     private readonly bsModalService: BsModalService,
-    private readonly setsService: SetsService
+    private readonly convertingService: ConvertingService
   ) {
     this.bsModalService.onHide.subscribe(() => {
       this.clicked = false;
@@ -48,7 +48,7 @@ export class QuizletExportModalComponent {
     const sideDiscriminator = form.controls["sideDiscriminator"].value;
     const cardDiscriminator = form.controls["cardDiscriminator"].value;
 
-    const file = await this.setsService.convertSetToQuizletTxt(
+    const file = await this.convertingService.exportSetToQuizletTxt(
         this.set.id,
         sideDiscriminator,
         cardDiscriminator

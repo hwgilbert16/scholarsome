@@ -61,12 +61,12 @@
               <fa-icon [icon]="faQ" class="quizlet-color"></fa-icon>
               To Quizlet (.txt)
             </a></li>
-            <li><a class="dropdown-item" [ngClass]="{'disabled': ankiExportInProgress}" (click)="convertSetToApkg()">
+            <li><a class="dropdown-item" [ngClass]="{'disabled': ankiExportInProgress}" (click)="exportSetToAnkiApkg()">
               <span *ngIf="ankiExportInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
               <fa-icon [icon]="faStar" class="anki-color"></fa-icon>
               To Anki (.apkg)
             </a></li>
-            <li><a class="dropdown-item csv-dropdown" [ngClass]="{'disabled': csvExportInProgress}" (click)="convertSetToCsv()">
+            <li><a class="dropdown-item csv-dropdown" [ngClass]="{'disabled': csvExportInProgress}" (click)="exportSetToCsv()">
               <span *ngIf="csvExportInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
               <fa-icon [icon]="faFileCsv"></fa-icon>
               <span class="csv-dropdown-text">To CSV (.csv)</span>

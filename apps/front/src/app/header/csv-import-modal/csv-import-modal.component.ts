@@ -1,10 +1,10 @@
 import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { SetsService } from "../../shared/http/sets.service";
 import { Router } from "@angular/router";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { ConvertingService } from "../../shared/http/converting.service";
 
 @Component({
   selector: "scholarsome-csv-import-modal",
@@ -14,7 +14,7 @@ import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
 export class CsvImportModalComponent {
   constructor(
     private readonly bsModalService: BsModalService,
-    private readonly setsService: SetsService,
+    private readonly convertingService: ConvertingService,
     private readonly router: Router
   ) {
     this.bsModalService.onHide.subscribe(() => {
@@ -52,7 +52,7 @@ export class CsvImportModalComponent {
       if (this.response !== "incompatible" && !this.submitted) this.uploading = true;
     }, 3000);
 
-    const set = await this.setsService.createSetFromCsv({
+    const set = await this.convertingService.importSetFromCsv({
       title: form.value["title"],
       description: form.value["description"],
       private: form.value["privateCheck"] === true,

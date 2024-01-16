@@ -15,6 +15,7 @@ import { Meta, Title } from "@angular/platform-browser";
 import { QuizletExportModalComponent } from "./quizlet-export-modal/quizlet-export-modal.component";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { faFileExport, faShareFromSquare, faPencil, faSave, faCancel, faTrashCan, faClipboard, faStar, faQ, faFileCsv, faImages } from "@fortawesome/free-solid-svg-icons";
+import { ConvertingService } from "../shared/http/converting.service";
 
 @Component({
   selector: "scholarsome-study-set",
@@ -24,11 +25,12 @@ import { faFileExport, faShareFromSquare, faPencil, faSave, faCancel, faTrashCan
 export class StudySetComponent implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
-    public readonly sets: SetsService,
     private readonly users: UsersService,
     private readonly router: Router,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    private readonly setsService: SetsService,
+    private readonly convertingService: ConvertingService
   ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -76,10 +78,10 @@ export class StudySetComponent implements OnInit {
   protected readonly navigator = navigator;
   protected readonly window = window;
 
-  async convertSetToApkg() {
+  async exportSetToAnkiApkg() {
     this.ankiExportInProgress = true;
 
-    const file = await this.sets.convertSetToApkg(this.set.id);
+    const file = await this.convertingService.exportSetToAnkiApkg(this.set.id);
     if (!file) {
       this.ankiExportInProgress = false;
       return;
@@ -97,10 +99,10 @@ export class StudySetComponent implements OnInit {
     this.ankiExportInProgress = false;
   }
 
-  async convertSetToCsv() {
+  async exportSetToCsv() {
     this.csvExportInProgress = true;
 
-    const file = await this.sets.convertSetToCsv(this.set.id);
+    const file = await this.convertingService.exportSetToCsv(this.set.id);
     if (!file) {
       this.csvExportInProgress = false;
       return;
@@ -121,7 +123,7 @@ export class StudySetComponent implements OnInit {
   async exportSetMedia() {
     this.mediaExportInProgress = true;
 
-    const file = await this.sets.exportSetMedia(this.set.id);
+    const file = await this.convertingService.exportSetMedia(this.set.id);
     if (!file) {
       this.mediaExportInProgress = false;
       return;
@@ -232,7 +234,7 @@ export class StudySetComponent implements OnInit {
 
     this.set.description = this.editDescription.nativeElement.value;
 
-    const updated = await this.sets.updateSet({
+    const updated = await this.setsService.updateSet({
       id: this.set.id,
       title: this.editTitle.nativeElement.value,
       description: this.editDescription.nativeElement.value,
@@ -301,7 +303,7 @@ export class StudySetComponent implements OnInit {
   }
 
   async deleteSet() {
-    await this.sets.deleteSet(this.set.id);
+    await this.setsService.deleteSet(this.set.id);
     await this.router.navigate(["homepage"]);
   }
 
@@ -312,7 +314,7 @@ export class StudySetComponent implements OnInit {
       return;
     }
 
-    const set = await this.sets.set(this.setId);
+    const set = await this.setsService.set(this.setId);
     if (!set) {
       this.router.navigate(["404"]);
       return;

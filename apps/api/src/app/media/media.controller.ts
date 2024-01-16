@@ -52,7 +52,7 @@ export class MediaController {
 
   @ApiOperation({
     summary: "Get a set media file",
-    description: "Retrieves a media file that is attached to as et"
+    description: "Retrieves a media file that is attached to a set"
   })
   @ApiOkResponse({
     description: "File content"

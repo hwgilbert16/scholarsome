@@ -10,7 +10,7 @@ import { Multer } from "multer";
 import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
 
-export class CreateSetFromFileDto {
+export class ImportSetFromFileDto {
   @ApiProperty({
     description: "The title of the set"
   })
