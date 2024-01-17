@@ -7,7 +7,7 @@ import { Test } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
 import { UsersService } from "../users/users.service";
 import { RedisService } from "@liaoliaots/nestjs-redis";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { MailService } from "../providers/mail/mail.service";
 import { Request, Response } from "express";
 import { HttpException } from "@nestjs/common";
@@ -123,8 +123,7 @@ describe("AuthController", () => {
         {
           provide: RedisService,
           useValue: createMock<RedisService>()
-        },
-        ThrottlerGuard
+        }
       ],
       controllers: [
         AuthController

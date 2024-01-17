@@ -92,7 +92,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async viewAvatar() {
-    const avatar = await this.mediaService.getAvatar(64, 64);
+    const avatar = await this.mediaService.getMyAvatar(64, 64);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));

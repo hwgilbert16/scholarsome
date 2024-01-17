@@ -20,7 +20,6 @@ import {
 } from "@nestjs/common";
 import { SetsService } from "../sets/sets.service";
 import { UsersService } from "../users/users.service";
-import { Throttle } from "@nestjs/throttler";
 import {
   ApiBadRequestResponse,
   ApiConsumes,
@@ -75,7 +74,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3000)
   @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
   async exportSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -117,7 +115,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3000)
   @Get("export/anki/:setId")
   async exportSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -148,7 +145,6 @@ export class ConvertingController {
    *
    * @remarks Throttled to 1 request every 3 seconds
    */
-  @Throttle(1, 3000)
   @ApiOperation( {
     summary: "Export a set to a .csv file",
     description: "Converts a Scholarsome set to a .csv file. Media (images, videos, etc) will not be included in the exported file.\n\nLearn more by clicking <a href='../usage/sets/exporting-sets/#exporting-to-a-csv-file'>here.</a>"
@@ -190,7 +186,6 @@ export class ConvertingController {
    *
    * @remarks Throttled to 1 request every 3 seconds
    */
-  @Throttle(1, 3000)
   @ApiOperation( {
     summary: "Export the media of a set in a .zip file",
     description: "Gets the media content of a set and packages it into a .zip file\n\nLearn more by clicking <a href='../usage/sets/exporting-sets/#exporting-media'>here.</a>"

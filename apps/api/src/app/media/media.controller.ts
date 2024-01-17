@@ -37,6 +37,7 @@ import { SetIdAndFileParam } from "./param/setIdAndFile.param";
 import { ApiResponseOptions } from "@scholarsome/shared";
 import { ErrorResponse } from "../shared/response/error.response";
 import { SetAvatarDto } from "./dto/setAvatar.dto";
+import { UserIdParam } from "../users/param/userId.param";
 
 @ApiTags("Media")
 @Controller("media")
@@ -121,8 +122,8 @@ export class MediaController {
   }
 
   @ApiOperation({
-    summary: "Get a avatar",
-    description: "Retrieves a user avatar based on their user ID"
+    summary: "Get the avatar of the authenticated user",
+    description: "Retrieves the avatar of the authenticated user"
   })
   @ApiOkResponse({
     description: "Avatar content"
@@ -141,24 +142,16 @@ export class MediaController {
     description: "The height of the returned image",
     required: false
   })
-  @Get("/avatars/:userId?")
-  async getAvatar(
-    @Param() params: { userId: string },
+  @UseGuards(AuthenticatedGuard)
+  @Get("/avatars/me")
+  async getMyAvatar(
     @Request() req: ExpressRequest,
     @Res({ passthrough: true }) res: Response,
     @Query("width") width: string,
     @Query("height") height: string
   ) {
-    let userId = "";
-
-    if (params.userId) {
-      userId = params.userId;
-    } else {
-      const userCookie = this.usersService.getUserInfo(req);
-      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-
-      userId = userCookie.id;
-    }
+    const userCookie = this.usersService.getUserInfo(req);
+    if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     if (
       this.configService.get<string>("STORAGE_TYPE") === "s3"
@@ -176,7 +169,7 @@ export class MediaController {
 
       try {
         file = await s3.getObject({
-          Key: "media/avatars/" + userId + ".jpeg",
+          Key: "media/avatars/" + userCookie.id + ".jpeg",
           Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
         });
       } catch (e) {
@@ -200,7 +193,103 @@ export class MediaController {
         res.write(await file.Body.transformToByteArray());
       }
     } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", userId + ".jpeg");
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", userCookie.id + ".jpeg");
+
+      if (fs.existsSync(filePath)) {
+        res.writeHead(200, {
+          "Content-Type": "image/jpeg"
+        });
+
+        if (height || width) {
+          res.write(
+              await sharp(fs.readFileSync(filePath))
+                  .resize({
+                    width: width ? Number(width) : 128,
+                    height: height ? Number(height) : 128
+                  })
+                  .toBuffer()
+          );
+        } else {
+          res.write(fs.readFileSync(filePath));
+        }
+
+        res.end();
+      } else {
+        throw new NotFoundException({ status: "fail", message: "Media not found" });
+      }
+    }
+  }
+
+  @ApiOperation({
+    summary: "Get a avatar",
+    description: "Retrieves a user avatar based on their user ID"
+  })
+  @ApiOkResponse({
+    description: "Avatar content"
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiQuery({
+    name: "width",
+    description: "The width of the returned image",
+    required: false
+  })
+  @ApiQuery({
+    name: "height",
+    description: "The height of the returned image",
+    required: false
+  })
+  @Get("/avatars/:userId")
+  async getAvatar(
+    @Param() params: UserIdParam,
+    @Request() req: ExpressRequest,
+    @Res({ passthrough: true }) res: Response,
+    @Query("width") width: string,
+    @Query("height") height: string
+  ) {
+    if (
+      this.configService.get<string>("STORAGE_TYPE") === "s3"
+    ) {
+      let file: GetObjectCommandOutput;
+
+      const s3 = await new S3({
+        credentials: {
+          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+        },
+        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+        region: this.configService.get<string>("S3_STORAGE_REGION")
+      });
+
+      try {
+        file = await s3.getObject({
+          Key: "media/avatars/" + params.userId + ".jpeg",
+          Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
+        });
+      } catch (e) {
+        throw new NotFoundException({ status: "fail", message: "Media not found" });
+      }
+
+      res.writeHead(200, {
+        "Content-Type": "image/jpeg"
+      });
+
+      if (height || width) {
+        res.write(
+            await sharp(await file.Body.transformToByteArray())
+                .resize({
+                  width: width ? Number(width) : 128,
+                  height: height ? Number(height) : 128
+                })
+                .toBuffer()
+        );
+      } else {
+        res.write(await file.Body.transformToByteArray());
+      }
+    } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars", params.userId + ".jpeg");
 
       if (fs.existsSync(filePath)) {
         res.writeHead(200, {

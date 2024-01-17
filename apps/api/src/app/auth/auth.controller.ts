@@ -9,13 +9,11 @@ import {
   Post,
   Req,
   Request,
-  Res,
-  UseGuards
+  Res
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { Response, Request as ExpressRequest } from "express";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -32,7 +30,6 @@ import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("Authentication")
 @ApiExcludeController()
-@UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
   private readonly redis: Redis;
@@ -148,7 +145,6 @@ export class AuthController {
    * @remarks Throttled to 1 request per minute
    * @returns Success response
    */
-  @Throttle(5, 60000)
   @Get("reset/sendReset/:email")
   async sendReset(
     @Param() params: { email: string }
@@ -265,7 +261,6 @@ export class AuthController {
    * @remarks Throttled to 1 request per 3 minutes
    * @returns Success response
    */
-  @Throttle(5, 180000)
   @Post("register")
   async register(
     @Body() registerDto: RegisterDto,
