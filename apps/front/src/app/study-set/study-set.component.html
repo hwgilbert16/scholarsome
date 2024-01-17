@@ -37,13 +37,16 @@
             Share
           </button>
           <div class="share-dropdown dropdown-menu p-3 text-secondary">
+            <a href="/handbook/usage/sets/sharing-sets" target="_blank" class="text-decoration-none text-black fs-5">
+              <fa-icon [icon]="faQuestionCircle" class="help-button"></fa-icon>
+            </a>
             <p>The URL of this page can be used by anyone to access this set.</p>
             <p>It can be copied from below or from the address bar of this page.</p>
             <div class="input-group">
               <button *ngIf="isHttps" (click)="navigator.clipboard.writeText(window.location.href)" type="button" class="btn btn-outline-secondary">
                 <fa-icon [icon]="faClipboard"></fa-icon>
               </button>
-              <input type="text" class="form-control" [value]="window.location.href" disabled>
+              <input type="text" class="form-control cursor-text" [value]="window.location.href" disabled>
             </div>
           </div>
         </div>

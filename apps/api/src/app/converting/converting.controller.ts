@@ -43,6 +43,7 @@ import { SetSuccessResponse } from "../sets/response/success/set.success.respons
 import { ImportSetFromFileDto } from "./dto/importSetFromFile.dto";
 import * as crypto from "crypto";
 import { Set } from "@prisma/client";
+import { ConvertingService } from "./converting.service";
 
 @ApiTags("Converting")
 @Controller("converting")
@@ -50,7 +51,8 @@ export class ConvertingController {
   constructor(
     private readonly setsService: SetsService,
     private readonly usersService: UsersService,
-    private readonly cardsService: CardsService
+    private readonly cardsService: CardsService,
+    private readonly convertingService: ConvertingService
   ) {}
 
   /**
@@ -88,7 +90,7 @@ export class ConvertingController {
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    const txt = this.setsService.exportAsQuizletTxt(set, params.sideDiscriminator, params.cardDiscriminator);
+    const txt = this.convertingService.convertSetToQuizletTxt(set, params.sideDiscriminator, params.cardDiscriminator);
     if (!txt) throw new BadRequestException("At least one card in the set contains side or card discriminator characters. The set must not contain the characters being used to format the exported set.");
 
     res.set({
@@ -130,7 +132,7 @@ export class ConvertingController {
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    const apkg = await this.setsService.exportAsAnkiApkg(set);
+    const apkg = await this.convertingService.convertSetToApkg(set);
     if (!apkg) throw new InternalServerErrorException("Error converting set to apkg file");
 
     res.set({
@@ -172,7 +174,7 @@ export class ConvertingController {
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    const csv = this.setsService.exportAsCsv(set);
+    const csv = this.convertingService.convertSetToCsv(set);
     if (!csv) throw new InternalServerErrorException("Error converting set to csv file");
 
     res.set({
@@ -214,7 +216,7 @@ export class ConvertingController {
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    const zip = await this.setsService.exportSetMedia(set.id);
+    const zip = await this.convertingService.createZipOfSetMedia(set.id);
     if (zip === false) throw new InternalServerErrorException();
     if (zip === null) throw new HttpException("No Content", HttpStatus.NO_CONTENT);
 
@@ -262,7 +264,7 @@ export class ConvertingController {
 
     const uuid = crypto.randomUUID();
 
-    const decoded = await this.setsService.decodeAnkiApkg(file.buffer, uuid);
+    const decoded = await this.convertingService.apkgToCardsAndMedia(file.buffer, uuid);
     if (!decoded) throw new UnsupportedMediaTypeException({ status: "fail", message: "Set is incompatible to import" });
 
     const create = await this.setsService.createSet({
@@ -342,7 +344,7 @@ export class ConvertingController {
     });
     if (!author) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
-    const cards = this.setsService.decodeCsvFile(file);
+    const cards = this.convertingService.csvToCards(file);
     if (!cards) throw new BadRequestException();
 
     const set = await this.setsService.createSet({

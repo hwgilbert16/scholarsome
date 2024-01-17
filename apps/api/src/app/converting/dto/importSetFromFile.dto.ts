@@ -4,9 +4,6 @@ import {
   IsString
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-// needed for multer file type declaration
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-import { Multer } from "multer";
 import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
 

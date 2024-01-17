@@ -22,9 +22,6 @@ import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import * as fs from "fs";
 import * as path from "path";
 import { S3 } from "@aws-sdk/client-s3";
-// needed for multer file type declaration
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-import { Multer } from "multer";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import * as sharp from "sharp";

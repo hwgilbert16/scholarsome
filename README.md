@@ -24,7 +24,7 @@ https://scholarsome.com
 </p>
 
 <p align="center">
-<img src="https://i.imgur.com/MshTOaL.png">
+<img src="apps/docs/static/img/homepage.png">
 </p>
 
 ## About
@@ -37,17 +37,17 @@ You can read more about our design philosophy <a href="https://github.com/hwgilb
 
 ## Features
 
-Implemented features include:
+- Create your own study sets 🏗️
+- Share your sets with other users 🤝
+- Import sets from Anki, Quizlet, and CSV files 🔼
+- Export sets to Anki, Quizlet, and CSV files 🔽
+- Study flashcards in multiple learning modes, mimicking real-world flashcards 📖
+- Create quizzes using fill-in-the-blank, true/false, and multiple choice questions ✏️
+- Edit your sets 🛠️
+- Change set visibility 🔓
 
-- Create your own study sets ✅
-- Import sets from Anki and Quizlet ✅
-- Study flashcards in multiple learning modes ✅
-- Create quizzes using fill-in-the-blank, true/false, and multiple choice questions ✅
-- Edit your sets ✅
-- Change set visibility ✅
-
-<img src="https://i.imgur.com/Xey0pzK.gif" width="50%">
-<img src="https://s12.gifyu.com/images/SWNMa.gif" width="50%">
+<img src="https://s13.gifyu.com/images/S0cB1.gif" width="50%">
+<img src="https://s13.gifyu.com/images/S0cBD.gif" width="50%">
 
 ## Features coming soon...
 

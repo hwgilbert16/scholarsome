@@ -10,7 +10,7 @@ export class ConvertingService {
   constructor(private readonly http: HttpClient) {}
 
   /**
-   * Converts a set to a .txt which can be imported into Quizlet
+   * Exports a set to a .txt which can be imported into Quizlet
    *
    * @param setId ID of the set to convert
    * @param sideDiscriminator Character(s) to discriminate between sides of a card in the string
@@ -38,7 +38,7 @@ export class ConvertingService {
   }
 
   /**
-   * Converts a set to an Anki-compatible .apkg file
+   * Exports a set to an Anki-compatible .apkg file
    *
    * @param setId ID of the set to convert
    *
@@ -57,7 +57,7 @@ export class ConvertingService {
   }
 
   /**
-   * Converts a set to a CSV file
+   * Exports a set to a CSV file
    *
    * @param setId ID of the set to convert
    *
@@ -95,7 +95,7 @@ export class ConvertingService {
   }
 
   /**
-   * Creates a set from an Anki .apkg file
+   * Imports a set from an Anki .apkg file
    *
    * @param body.title Title of the set
    * @param body.description Optional, description of the set
@@ -130,7 +130,7 @@ export class ConvertingService {
   }
 
   /**
-   * Creates a set from a .csv file
+   * Imports a set from a .csv file
    *
    * @param body.title Title of the set
    * @param body.description Optional, description of the set

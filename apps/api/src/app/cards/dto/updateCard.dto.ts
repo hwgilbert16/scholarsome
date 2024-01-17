@@ -22,7 +22,7 @@ export class UpdateCardDto {
   @IsNotEmpty()
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-    allowedAttributes: { "img": ["src"], "span": ["style"] },
+    allowedAttributes: { "img": ["src", "width", "height"], "span": ["style"] },
     allowedSchemes: ["data"]
   }))
     term?: string;
@@ -36,7 +36,7 @@ export class UpdateCardDto {
   @IsNotEmpty()
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-    allowedAttributes: { "img": ["src"], "span": ["style"] },
+    allowedAttributes: { "img": ["src", "width", "height"], "span": ["style"] },
     allowedSchemes: ["data"]
   }))
     definition?: string;

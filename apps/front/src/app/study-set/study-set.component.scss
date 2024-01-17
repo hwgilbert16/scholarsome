@@ -28,6 +28,10 @@
   margin: 0.44rem;
 }
 
+.cursor-text {
+  cursor: text;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
   .set-view {
     width: 100%;
