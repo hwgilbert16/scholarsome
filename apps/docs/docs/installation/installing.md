@@ -5,7 +5,7 @@ sidebar_position: 2
 # Installing
 
 :::info
-This section is about installing Scholarsome in a production environment. If you are looking for guidance on how to use the application, refer to the [usage section](../usage/creating-sets.md). If you are trying to run the application for development purposes, refer to the [development guide](../development/development-guide.md).
+This section is about installing Scholarsome in a production environment. If you are looking for guidance on how to use the application, refer to the [usage section](../usage/overview.md). If you are trying to run the application for development purposes, refer to the [development guide](../development/development-guide.md).
 :::
 
 Scholarsome can be installed one of two ways for production uses: via Docker Compose, or Docker.

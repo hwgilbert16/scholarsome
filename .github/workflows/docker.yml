@@ -1,7 +1,8 @@
 name: Build and push image
 on:
   push:
-    branches: [release]
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -37,6 +38,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/scholarsome:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/scholarsome:latest,${{ secrets.DOCKER_USERNAME }}/scholarsome:${{ github.ref_name }}
 
 

@@ -1,5 +1,7 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform, TransformFnParams } from "class-transformer";
+import * as sanitizeHtml from "sanitize-html";
 
 export class UpdateCardDto {
   @ApiProperty({
@@ -18,6 +20,11 @@ export class UpdateCardDto {
   @IsString()
   @IsOptional()
   @IsNotEmpty()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+    allowedAttributes: { "img": ["src", "width", "height"], "span": ["style"] },
+    allowedSchemes: ["data"]
+  }))
     term?: string;
 
   @ApiProperty({
@@ -27,5 +34,10 @@ export class UpdateCardDto {
   @IsString()
   @IsOptional()
   @IsNotEmpty()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+    allowedAttributes: { "img": ["src", "width", "height"], "span": ["style"] },
+    allowedSchemes: ["data"]
+  }))
     definition?: string;
 }

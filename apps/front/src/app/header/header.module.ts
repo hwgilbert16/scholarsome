@@ -14,6 +14,7 @@ import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-pas
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
 import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
 import { ResendEmailComponent } from "./resend-email/resend-email.component";
+import { CsvImportModalComponent } from "./csv-import-modal/csv-import-modal.component";
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { ResendEmailComponent } from "./resend-email/resend-email.component";
     ForgotPasswordModalComponent,
     RegisterModalComponent,
     ProfilePictureModalComponent,
-    ResendEmailComponent
+    ResendEmailComponent,
+    CsvImportModalComponent
   ],
   exports: [HeaderComponent, AnkiImportModalComponent]
 })

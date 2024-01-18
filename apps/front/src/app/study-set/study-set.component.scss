@@ -1,4 +1,4 @@
-.spinner-border {
+.loading-spinner {
   width: 6rem;
   height: 6rem;
 }
@@ -16,9 +16,29 @@
   cursor: pointer;
 }
 
+.share-dropdown {
+  min-width: 20vw;
+}
+
+.csv-dropdown {
+  margin-left: 0.1rem;
+}
+
+.csv-dropdown-text {
+  margin: 0.44rem;
+}
+
+.cursor-text {
+  cursor: text;
+}
+
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
   .set-view {
     width: 100%;
+  }
+
+  .share-dropdown {
+    min-width: 90vw;
   }
 }
 

@@ -1,9 +1,9 @@
 import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { SetsService } from "../../shared/http/sets.service";
 import { Router } from "@angular/router";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { ConvertingService } from "../../shared/http/converting.service";
 
 @Component({
   selector: "scholarsome-anki-import-modal",
@@ -13,7 +13,7 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 export class AnkiImportModalComponent {
   constructor(
     private readonly bsModalService: BsModalService,
-    private readonly setsService: SetsService,
+    private readonly convertingService: ConvertingService,
     private readonly router: Router
   ) {
     this.bsModalService.onHide.subscribe(() => {
@@ -50,7 +50,7 @@ export class AnkiImportModalComponent {
       if (this.response !== "incompatible" && !this.submitted) this.uploading = true;
     }, 3000);
 
-    const set = await this.setsService.createSetFromApkg({
+    const set = await this.convertingService.importSetFromAnkiApkg({
       title: form.value["title"],
       description: form.value["description"],
       private: form.value["privateCheck"] === true,

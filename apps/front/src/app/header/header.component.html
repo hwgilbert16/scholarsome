@@ -51,7 +51,7 @@
             class="btn btn-primary dropdown-toggle fs-5 h-100 w-25"
             aria-controls="dropdown-basic"
           >
-            Create <span class="badge bg-white text-primary">New</span>
+            Create
             <span class="caret"></span>
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
@@ -106,8 +106,23 @@
                 "
                 ><fa-icon [icon]="faStar" class="anki-color"></fa-icon>
                 &nbsp;From Anki
-                <span class="badge bg-primary text-white">New</span></a
-              >
+                </a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item ms-1"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  this.cookieService.get('authenticated')
+                    ? (this.modalRef = csvImportModal.open())
+                    : (this.modalRef = loginModal.open())
+                "
+              ><fa-icon [icon]="faFileCsv"></fa-icon>
+                &nbsp;<span class="file-icon">From CSV</span>
+              </a>
             </li>
           </ul>
         </li>
@@ -204,3 +219,4 @@
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
 <scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>
+<scholarsome-csv-import-modal #csvImport></scholarsome-csv-import-modal>

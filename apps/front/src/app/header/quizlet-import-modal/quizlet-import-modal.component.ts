@@ -1,10 +1,10 @@
 import { Component, TemplateRef, ViewChild } from "@angular/core";
 import { faQ } from "@fortawesome/free-solid-svg-icons";
 import { NgForm } from "@angular/forms";
-import { SetsService } from "../../shared/http/sets.service";
 import { Router } from "@angular/router";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { ConvertingService } from "../../shared/http/converting.service";
 
 @Component({
   selector: "scholarsome-quizlet-import-modal",
@@ -14,7 +14,7 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 export class QuizletImportModalComponent {
   constructor(
     private readonly bsModalService: BsModalService,
-    private readonly setsService: SetsService,
+    private readonly convertingService: ConvertingService,
     private readonly router: Router
   ) {
     this.bsModalService.onHide.subscribe(() => {
@@ -42,36 +42,13 @@ export class QuizletImportModalComponent {
     this.clicked = true;
     this.response = "";
 
-    const exported = form.value["importSet"]
-        // substring to get rid of last semicolon
-        .substring(0, form.value["importSet"].length - 1).split(form.value["rowDiscriminator"]);
-
-    // need to add a regex check here to ensure pattern is valid
-
-    if (exported.length < 1) {
-      // quizletImportRes set to pattern indicates that the pattern is invalid
-      this.response = "pattern";
-      this.clicked = false;
-      return;
-    }
-
-    const cards: { index: number; term: string; definition: string; }[] = [];
-
-    for (let i = 0; i < exported.length; i++) {
-      const split = exported[i].split(form.value["termDefinitionDiscriminator"]);
-
-      cards.push({
-        index: i,
-        term: split[0].replace(/(\r\n|\r|\n)/g, "<p><br></p>"),
-        definition: split[1].replace(/(\r\n|\r|\n)/g, "<p><br></p>")
-      });
-    }
-
-    const set = await this.setsService.createSet({
+    const set = await this.convertingService.importSetFromQuizletTxt({
       title: form.value["title"],
       description: form.value["description"],
       private: form.value["privateCheck"] === true,
-      cards: cards
+      sideDiscriminator: form.value["termDefinitionDiscriminator"],
+      cardDiscriminator: form.value["rowDiscriminator"],
+      set: form.value["set"]
     });
 
     if (set) {

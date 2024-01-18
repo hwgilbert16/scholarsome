@@ -18,7 +18,7 @@ $enable-negative-margins: true;
 @import '~quill/dist/quill.snow.css';
 
 body {
-  background-color: white;
+  background-color: #f8fafb;
 }
 
 .grecaptcha-badge {
@@ -31,6 +31,10 @@ body {
 
 textarea {
   resize: none;
+}
+
+.github:hover {
+  color: #8438ff !important;
 }
 
 .modal-open {
@@ -58,6 +62,14 @@ img {
 
 .help-button {
   color: black;
+}
+
+.anki-color {
+  color: #051e59;
+}
+
+.quizlet-color {
+  color: #5162ff;
 }
 
 .help-button:hover {

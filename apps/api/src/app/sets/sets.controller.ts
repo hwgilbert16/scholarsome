@@ -7,35 +7,27 @@ import {
   Param,
   Patch,
   Post,
-  Request, Response, StreamableFile,
+  Request,
   UnauthorizedException,
-  UnsupportedMediaTypeException,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors
+  UseGuards
 } from "@nestjs/common";
 import { AuthenticatedGuard } from "../auth/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
-import { Request as ExpressRequest, Response as ExpressResponse, Express } from "express";
+import { Request as ExpressRequest } from "express";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { Set } from "@prisma/client";
-import { FileInterceptor } from "@nestjs/platform-express";
-// needed for multer file type declaration
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-import { Multer } from "multer";
 import * as crypto from "crypto";
 import { CardsService } from "../cards/cards.service";
 import { CardMedia } from "@prisma/client";
 import {
-  ApiConsumes, ApiCreatedResponse,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse, ApiUnsupportedMediaTypeResponse
+  ApiUnauthorizedResponse
 } from "@nestjs/swagger";
-import { CreateSetFromApkgDto } from "./dto/createSetFromApkg.dto";
 import { CreateSetDto } from "./dto/createSet.dto";
 import { UpdateSetDto } from "./dto/updateSet.dto";
 import { SetIdParam } from "./param/setIdParam.param";
@@ -43,8 +35,6 @@ import { UserIdParam } from "../users/param/userId.param";
 import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
-import { Throttle } from "@nestjs/throttler";
-// import { QuizletExportParams } from "./param/quizletExportParams";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -187,165 +177,6 @@ export class SetsController {
     return {
       status: ApiResponseOptions.Success,
       data: set
-    };
-  }
-
-  /**
-   * Converts a set to an Anki-compatible .apkg file
-   *
-   * @remarks Throttled to 1 request every 3 seconds
-   */
-  @ApiOperation( {
-    summary: "Converts a set to an Anki-compatible .apkg file",
-    description: "Converts a Scholarsome set to an Anki-compatible .apkg file. Includes media (images, videos, etc) with the exported .apkg file."
-  })
-  @ApiUnauthorizedResponse({
-    description: "Invalid authentication to access the requested resource",
-    type: ErrorResponse
-  })
-  @Throttle(1, 3000)
-  @Get("export/anki/:setId")
-  async convertSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
-    const set = await this.setsService.set({
-      id: params.setId
-    });
-    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
-
-    if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
-
-      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-      if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-    }
-
-    const apkg = await this.setsService.exportAsAnkiApkg(set);
-
-    res.set({
-      "Content-Type": "application/octet-stream",
-      "Content-Disposition": `attachment; filename="${set.title + ".apkg"}`
-    });
-
-    return new StreamableFile(apkg);
-  }
-
-  // /**
-  //  * Converts a set to a .txt file that can be imported into Quizlet
-  //  *
-  //  * @remarks Throttled to 1 request every 3 seconds
-  //  */
-  // @ApiOperation( {
-  //   summary: "Converts a set to a .txt that can be imported in Quizlet",
-  //   description: "Converts a Scholarsome set to a .txt that can be imported in Quizlet. Media (images, videos, etc) will not be included in the exported .txt, as Quizlet does not provide an ability to import these materials."
-  // })
-  // @ApiUnauthorizedResponse({
-  //   description: "Invalid authentication to access the requested resource",
-  //   type: ErrorResponse
-  // })
-  // @Throttle(1, 3000)
-  // @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
-  // async convertSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
-  //   const set = await this.setsService.set({
-  //     id: params.setId
-  //   });
-  //   if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
-  //
-  //   if (set.private) {
-  //     const userCookie = this.usersService.getUserInfo(req);
-  //
-  //     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-  //     if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-  //   }
-  //
-  //   const txt = this.setsService.exportAsQuizletTxt(set, params.sideDiscriminator, params.cardDiscriminator);
-  //   if (!txt) throw new BadRequestException("At least one card in the set contains side or card discriminator characters. The set must not contain the characters being used to format the exported set.");
-  //
-  //   res.set({
-  //     "Content-Type": "application/octet-stream",
-  //     "Content-Disposition": `attachment; filename="${set.title + ".txt"}`
-  //   });
-  //
-  //   return new StreamableFile(txt);
-  // }
-
-  /**
-   * Creates a set from an Anki .apkg file
-   *
-   * @returns Created `Set` object
-   */
-  @ApiOperation( {
-    summary: "Create a set from a .apkg file",
-    description: "Converts a .apkg file to a Scholarsome set. Compatible only with simple front-back Anki sets, multiple fields currently unsupported."
-  })
-  @ApiConsumes("multipart/form-data")
-  @ApiCreatedResponse({
-    description: "Expected response to a valid request",
-    type: SetSuccessResponse
-  })
-  @ApiUnauthorizedResponse({
-    description: "Invalid authentication to access the requested resource",
-    type: ErrorResponse
-  })
-  @ApiUnsupportedMediaTypeResponse({
-    description: "Uploaded file contains unsupported cards",
-    type: ErrorResponse
-  })
-  @UseGuards(AuthenticatedGuard)
-  @UseInterceptors(FileInterceptor("file"))
-  @Post("apkg")
-  async createSetFromAnkiApkg(@Body() body: CreateSetFromApkgDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
-    const user = this.usersService.getUserInfo(req);
-    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-
-    const author = await this.usersService.user({
-      email: user.email
-    });
-    if (!author) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-
-    const uuid = crypto.randomUUID();
-
-    const decoded = await this.setsService.decodeAnkiApkg(file.buffer, uuid);
-    if (!decoded) throw new UnsupportedMediaTypeException({ status: "fail", message: "Set is incompatible to import" });
-
-    const create = await this.setsService.createSet({
-      id: uuid,
-      author: {
-        connect: {
-          email: author.email
-        }
-      },
-      title: body.title,
-      description: body.description,
-      private: body.private === "true",
-      cards: {
-        createMany: {
-          data: decoded.cards.map((c) => {
-            return {
-              index: c.index,
-              term: c.term,
-              definition: c.definition
-            };
-          })
-        }
-      }
-    });
-
-    for (const media of decoded.media) {
-      const card = create.cards.find((c) => c.term.includes(media) || c.definition.includes(media));
-      if (!card) continue;
-
-      await this.cardsService.createCardMedia({
-        card: {
-          connect: {
-            id: card.id
-          }
-        },
-        name: media
-      });
-    }
-
-    return {
-      status: ApiResponseOptions.Success,
-      data: create
     };
   }
 

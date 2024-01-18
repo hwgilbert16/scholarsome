@@ -70,18 +70,6 @@ export class SetsService {
     } else return null;
   }
 
-  async convertSetToApkg(setId: string): Promise<Blob | null> {
-    let file: Blob | undefined;
-
-    try {
-      file = await lastValueFrom(this.http.get("/api/sets/export/anki/" + setId, { responseType: "blob" }));
-    } catch (e) {
-      return null;
-    }
-
-    return file;
-  }
-
   /**
    * Creates a set
    *
@@ -114,41 +102,6 @@ export class SetsService {
         private: body.private,
         cards: body.cards
       }));
-    } catch (e) {
-      return null;
-    }
-
-    if (set.status === ApiResponseOptions.Success) {
-      return set.data;
-    } else return null;
-  }
-
-  /**
-   * Creates a set from an Anki .apkg file
-   *
-   * @param body.title Title of the set
-   * @param body.description Optional, description of the set
-   * @param body.private Whether the set should be publicly visible
-   * @param body.file The .apkg file to be uploaded
-   *
-   * @returns Created `Set` object
-   */
-  async createSetFromApkg(body: {
-    title: string;
-    description?: string;
-    private: boolean;
-    file: File
-  }): Promise<Set | null> {
-    let set: ApiResponse<Set> | undefined;
-
-    const formData = new FormData();
-    formData.append("title", body.title);
-    if (body.description) formData.append("description", body.description);
-    formData.append("private", body.private.toString());
-    formData.append("file", body.file);
-
-    try {
-      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/apkg", formData));
     } catch (e) {
       return null;
     }

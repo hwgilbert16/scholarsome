@@ -11,10 +11,6 @@
   text-decoration-color: #8438ff !important;
 }
 
-.github:hover {
-  color: #8438ff !important;
-}
-
 .nav-link:hover {
   text-decoration: underline;
 }
@@ -27,17 +23,13 @@ a:hover {
   width: 9vw;
 }
 
-.quizlet-color {
-  color: #5162ff;
-}
-
-.anki-color {
-  color: #051e59;
-}
-
 .avatar {
   border-radius: 50px;
   cursor: pointer;
+}
+
+.file-icon {
+  margin-left: 0.14rem;
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {

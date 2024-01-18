@@ -15,7 +15,6 @@ import {
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
 import { Response, Request as ExpressRequest } from "express";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -24,19 +23,15 @@ import * as jwt from "jsonwebtoken";
 import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 import { MailService } from "../providers/mail/mail.service";
-import { RedisService } from "@liaoliaots/nestjs-redis";
-import Redis from "ioredis";
-import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
 import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
+import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 
 @ApiTags("Authentication")
 @ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
-  private readonly redis: Redis;
-
   /**
    * @ignore
    */
@@ -44,12 +39,8 @@ export class AuthController {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly mailService: MailService,
-    private readonly jwtService: JwtService,
-    private readonly redisService: RedisService
-  ) {
-    this.redis = this.redisService.getClient();
-  }
+    private readonly mailService: MailService
+  ) {}
 
   /*
    * Password reset routes
@@ -145,10 +136,10 @@ export class AuthController {
   /**
    * Sends a password reset for a given user
    *
-   * @remarks Throttled to 1 request per minute
+   * @remarks Throttled to 1 request per 5 seconds
    * @returns Success response
    */
-  @Throttle(5, 60000)
+  @Throttle(1, 5)
   @Get("reset/sendReset/:email")
   async sendReset(
     @Param() params: { email: string }
@@ -262,10 +253,10 @@ export class AuthController {
   /**
    * Registers a new user
    *
-   * @remarks Throttled to 1 request per 3 minutes
+   * @remarks Throttled to 1 request per 5 seconds
    * @returns Success response
    */
-  @Throttle(5, 180000)
+  @Throttle(1, 5)
   @Post("register")
   async register(
     @Body() registerDto: RegisterDto,

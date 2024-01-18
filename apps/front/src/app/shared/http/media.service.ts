@@ -13,15 +13,38 @@ export class MediaService {
    *
    * @param width Optional, the returned width of the avatar
    * @param height Optional, the returned height of the avatar
-   * @param userId Optional, ID of the user. Endpoint will use ID in cookies if no ID is provided.
    */
-  async getAvatar(width?: number, height?: number, userId?: string): Promise<Blob | false> {
+  async getMyAvatar(width?: number, height?: number): Promise<Blob | false> {
+    let response;
+
+    try {
+      response = await lastValueFrom(
+          this.http.get("/api/media/avatars/me" +
+          "?width=" + (width ? width : "") +
+          "&height=" + (height ? height : ""),
+          { responseType: "blob" })
+      );
+    } catch (e) {
+      return false;
+    }
+
+    return response;
+  }
+
+  /**
+   * Gets a user avatar file
+   *
+   * @param userId ID of the user. Endpoint will use ID in cookies if no ID is provided.
+   * @param width Optional, the returned width of the avatar
+   * @param height Optional, the returned height of the avatar
+   */
+  async getAvatar(userId: string, width?: number, height?: number): Promise<Blob | false> {
     let response;
 
     try {
       response = await lastValueFrom(
           this.http.get("/api/media/avatars/" +
-            (userId ? userId : "") +
+            userId +
             "?width=" + (width ? width : "") +
             "&height=" + (height ? height : ""),
           { responseType: "blob" })

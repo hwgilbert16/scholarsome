@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { BsModalRef } from "ngx-bootstrap/modal";
 import { ModalService } from "../shared/modal.service";
 import { AuthService } from "../auth/auth.service";
 import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar, faImage, faFileCsv } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -20,6 +20,7 @@ import { MediaService } from "../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
 import { UsersService } from "../shared/http/users.service";
+import { CsvImportModalComponent } from "./csv-import-modal/csv-import-modal.component";
 
 @Component({
   selector: "scholarsome-header",
@@ -34,6 +35,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
   @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
+  @ViewChild("csvImport") csvImportModal: CsvImportModalComponent;
 
   // Whether an update is available compared to the current running version
   protected updateAvailable: boolean;
@@ -67,12 +69,12 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;
   protected readonly faArrowRightFromBracket = faArrowRightFromBracket;
+  protected readonly faFileCsv = faFileCsv;
 
   /**
    * @ignore
    */
   constructor(
-    private readonly bsModalService: BsModalService,
     private readonly modalService: ModalService,
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
@@ -90,7 +92,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async viewAvatar() {
-    const avatar = await this.mediaService.getAvatar(64, 64);
+    const avatar = await this.mediaService.getMyAvatar(64, 64);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));

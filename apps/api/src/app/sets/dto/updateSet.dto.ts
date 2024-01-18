@@ -1,7 +1,8 @@
 import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
+import { Transform, TransformFnParams, Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { CardWithIdValidator } from "../validator/cardWithId.validator";
+import * as sanitizeHtml from "sanitize-html";
 
 export class UpdateSetDto {
   @ApiProperty({
@@ -10,6 +11,7 @@ export class UpdateSetDto {
   })
   @IsString()
   @IsOptional()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     title?: string;
 
   @ApiProperty({
@@ -18,6 +20,7 @@ export class UpdateSetDto {
   })
   @IsString()
   @IsOptional()
+  @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     description?: string;
 
   @ApiProperty({
