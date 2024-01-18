@@ -456,6 +456,37 @@ export class ConvertingService {
   }
 
   /**
+   * Converts a Quizlet export into cards that can be used in a Scholarsome set
+   *
+   * @param setString The string of text that contains the cards that was exported by Quizlet
+   * @param sideDiscriminator Character(s) to discriminate between sides of a card in the string
+   * @param cardDiscriminator Character(s) to discriminate between cards in the string
+   *
+   * @returns Array of cards generated from the string of text
+   */
+  public quizletStringToCards(setString: string, sideDiscriminator: string, cardDiscriminator: string): GeneralCard[] | false {
+    const cardsRaw = setString
+        // substring to get rid of last semicolon
+        .substring(0, setString.length - 1).split(cardDiscriminator);
+
+    if (cardsRaw.length < 1) return false;
+
+    const cards: GeneralCard[] = [];
+
+    for (let i = 0; i < cardsRaw.length; i++) {
+      const split = cardsRaw[i].split(sideDiscriminator);
+
+      cards.push({
+        index: i,
+        term: split[0].replace(/(\r\n|\r|\n)/g, "<p><br></p>"),
+        definition: split[1].replace(/(\r\n|\r|\n)/g, "<p><br></p>")
+      });
+    }
+
+    return cards;
+  }
+
+  /**
    * Converts the Buffer of a .apkg file to a JSON of the cards contained within
    * and uploads media to storage destination (local or S3)
    *

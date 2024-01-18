@@ -34,7 +34,7 @@
         <label class="form-check-label" for="quizletImportPrivateCheck">Viewable only to me</label>
       </div>
       <div class="mb-3">
-        <textarea class="form-control" rows="6" name="importSet" placeholder="Paste in your exported set here..." [disabled]="clicked" ngModel ngDefaultControl required></textarea>
+        <textarea class="form-control" rows="6" name="set" placeholder="Paste in your exported set here..." [disabled]="clicked" ngModel ngDefaultControl required></textarea>
         <div *ngIf="response === 'pattern'" class="form-text text-danger">Your exported set is not correctly formatted.</div>
       </div>
       <div class="modal-footer">

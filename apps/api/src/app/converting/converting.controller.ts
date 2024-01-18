@@ -43,8 +43,11 @@ import { ImportSetFromFileDto } from "./dto/importSetFromFile.dto";
 import * as crypto from "crypto";
 import { Set } from "@prisma/client";
 import { ConvertingService } from "./converting.service";
+import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { ImportSetFromQuizletDto } from "./dto/importSetFromQuizlet.dto";
 
 @ApiTags("Converting")
+@UseGuards(ThrottlerGuard)
 @Controller("converting")
 export class ConvertingController {
   constructor(
@@ -74,6 +77,7 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
+  @Throttle(1, 3)
   @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
   async exportSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -115,6 +119,7 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
+  @Throttle(1, 3)
   @Get("export/anki/:setId")
   async exportSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -156,6 +161,7 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
+  @Throttle(1, 3)
   @Get("export/csv/:setId")
   async exportSetToCsv(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -197,6 +203,7 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
+  @Throttle(1, 3)
   @Get("export/media/:setId")
   async exportSetMedia(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -221,6 +228,69 @@ export class ConvertingController {
     });
 
     return new StreamableFile(zip);
+  }
+
+  /**
+   * Creates a set from a set exported from Quizlet
+   *
+   * @returns Created `Set` object
+   */
+  @ApiOperation( {
+    summary: "Import a set from Quizlet",
+    description: "Converts a set exported from Quizlet into a Scholarsome set.\n\nLearn more by clicking <a href='../usage/sets/importing-sets/#importing-from-quizlet'>here.</a>"
+  })
+  @ApiCreatedResponse({
+    description: "Expected response to a valid request",
+    type: SetSuccessResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
+  @ApiUnsupportedMediaTypeResponse({
+    description: "Uploaded file is not a properly formatted CSV",
+    type: ErrorResponse
+  })
+  @UseGuards(AuthenticatedGuard)
+  @Post("import/quizlet")
+  async importSetFromQuizletTxt(@Body() body: ImportSetFromQuizletDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    const user = this.usersService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const author = await this.usersService.user({
+      email: user.email
+    });
+    if (!author) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const cards = this.convertingService.quizletStringToCards(body.set, body.sideDiscriminator, body.cardDiscriminator);
+    if (!cards) throw new BadRequestException("The set is not correctly formatted");
+
+    const set = await this.setsService.createSet({
+      author: {
+        connect: {
+          email: author.email
+        }
+      },
+      title: body.title,
+      description: body.description,
+      private: body.private,
+      cards: {
+        createMany: {
+          data: cards.map((c) => {
+            return {
+              index: c.index,
+              term: c.term,
+              definition: c.definition
+            };
+          })
+        }
+      }
+    });
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: set
+    };
   }
 
   /**

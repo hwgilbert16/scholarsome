@@ -95,6 +95,48 @@ export class ConvertingService {
   }
 
   /**
+   * Creates a set from a set exported from Quizlet
+   *
+   * @param body.title Title of the set
+   * @param body.description Optional, description of the set
+   * @param body.private Whether the set should be publicly visible
+   * @param body.sideDiscriminator Character(s) to discriminate between sides of a card in the string
+   * @param body.cardDiscriminator Character(s) to discriminate between cards in the string
+   * @param body.set The string of text that contains the cards that was exported by Quizlet
+   *
+   * @returns Blob of the .zip
+   */
+  async importSetFromQuizletTxt(body: {
+    title: string;
+    description?: string;
+    private: boolean;
+    sideDiscriminator: string;
+    cardDiscriminator: string;
+    set: string
+  }): Promise<Set | null> {
+    let set: ApiResponse<Set> | undefined;
+
+    try {
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/converting/import/quizlet", {
+        title: body.title,
+        description: body.description ? body.description : "",
+        private: body.private,
+        sideDiscriminator: body.sideDiscriminator,
+        cardDiscriminator: body.cardDiscriminator,
+        set: body.set
+      }));
+    } catch (e) {
+      return null;
+    }
+
+    if (set.status === "success") {
+      return set.data;
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * Imports a set from an Anki .apkg file
    *
    * @param body.title Title of the set

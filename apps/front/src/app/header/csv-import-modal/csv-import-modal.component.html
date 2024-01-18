@@ -29,7 +29,7 @@
       </div>
       <div class="mb-3">
         <input type="file" accept="text/csv" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="clicked" ngModel required>
-        <div *ngIf="response === 'incompatible'" class="form-text text-danger">The note types in this .apkg are not currently compatible with Scholarsome.</div>
+        <div *ngIf="response === 'fail'" class="form-text text-danger">Something went wrong. Are you sure this is a valid .csv file?</div>
       </div>
       <div class="modal-footer">
         <span *ngIf="uploading" class="text-secondary">Uploading media, this may take a minute...</span>

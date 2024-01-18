@@ -48,10 +48,6 @@ export class CsvImportModalComponent {
 
     if (!this.file) return;
 
-    setTimeout(() => {
-      if (this.response !== "incompatible" && !this.submitted) this.uploading = true;
-    }, 3000);
-
     const set = await this.convertingService.importSetFromCsv({
       title: form.value["title"],
       description: form.value["description"],
@@ -66,7 +62,7 @@ export class CsvImportModalComponent {
       this.file = null;
       this.submitted = true;
     } else {
-      this.response = "incompatible";
+      this.response = "fail";
       this.clicked = false;
       this.file = null;
       this.uploading = false;
