@@ -77,9 +77,9 @@ body {
 }
 
 // landscape tablets
-@media only screen and (min-device-width : 850px) and (max-device-width : 1223px) and (orientation : landscape) {
+@media only screen and (min-device-width : 850px) and (max-device-width : 1370px) {
   .main-screen {
-    margin-top: 17vh;
+    padding-top: 17vh;
   }
 
   .as-seen-on {
@@ -93,7 +93,7 @@ body {
 }
 
 // desktop
-@media only screen and (min-device-width : 1224px) and (max-device-width : 7680px) {
+@media only screen and (min-device-width : 1370px) and (max-device-width : 7680px) {
   .navbar-container {
     padding-left: 15%;
     padding-right: 15%;

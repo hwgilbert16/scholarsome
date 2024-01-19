@@ -13,7 +13,7 @@
       </div>
       <div class="navbar-nav ms-auto mt-3 mt-md-0">
         <a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="d-flex align-items-center text-decoration-none text-black">
-          <div class="fs-6 me-4 mb-2 mb-md-0 github">
+          <div *ngIf="stargazers !== 0" class="fs-6 me-4 mb-2 mb-md-0 github">
             <fa-icon [icon]="faGithub"></fa-icon>&nbsp;&nbsp;{{stargazers}} stars
           </div>
         </a>
@@ -152,10 +152,10 @@
     </div>
   </div>
 
-  <div class="section-5 mt-xl-5 mb-xl-2">
+  <div class="section-5 pt-xxl-5 pb-xxl-2">
     <div class="d-flex justify-content-center mt">
       <div class="section-5-rectangle round text-center pb-3">
-        <h2 class="text-white display-3 fw-bold mt-3">We're open-source, too</h2>
+        <h2 class="text-white display-3 fw-bold mx-2 mt-3">We're open-source, too</h2>
         <p class="fs-4 text-white mt-3 mx-5">Scholarsome is proud to be released under the AGPL-3.0 license. With the help of our detailed documentation, you can easily get a fully-functional local instance running using Docker.</p>
         <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
           <a [href]="document.location.href + 'handbook'" target="_blank">
