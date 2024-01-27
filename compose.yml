@@ -4,7 +4,13 @@ services:
     image: redis:latest
     expose:
       - "6379:6379"
-    command: "redis-server --save 20 1 --requirepass ${DATABASE_PASSWORD}"
+    command: >
+      redis-server
+      --save 900 1
+      --appendonly yes
+      --appendfilename "/data/appendonly.aof"
+      --dir "/data"
+      --requirepass ${DATABASE_PASSWORD}
     volumes:
       - redis:/data
     restart: always
@@ -60,6 +66,5 @@ services:
     restart: always
 volumes:
   redis:
-    driver: local
   mariadb:
   scholarsome:

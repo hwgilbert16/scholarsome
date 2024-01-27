@@ -9,15 +9,13 @@ import { ConfigService } from "@nestjs/config";
 import * as fs from "fs";
 import * as path from "path";
 import { S3 } from "@aws-sdk/client-s3";
-import { CardsService } from "../cards/cards.service";
 
 @Injectable()
 export class SetsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService,
-    private readonly cardsService: CardsService
+    private readonly configService: ConfigService
   ) {}
 
   /**

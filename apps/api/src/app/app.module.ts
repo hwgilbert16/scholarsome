@@ -44,12 +44,22 @@ import { ConvertingModule } from "./converting/converting.module";
     RedisModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        config: {
+        defaultOptions: {
           host: configService.get<string>("REDIS_HOST"),
           port: configService.get<number>("REDIS_PORT"),
           username: configService.get<string>("REDIS_USERNAME"),
           password: configService.get<string>("REDIS_PASSWORD")
-        }
+        },
+        config: [
+          {
+            namespace: "apiToken",
+            keyPrefix: "apiToken&",
+            name: "apiToken"
+          },
+          {
+            namespace: "default"
+          }
+        ]
       })
     }),
     AuthModule,
