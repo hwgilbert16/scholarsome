@@ -22,7 +22,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { S3 } from "@aws-sdk/client-s3";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import * as sharp from "sharp";
 import {
   ApiNotFoundResponse,

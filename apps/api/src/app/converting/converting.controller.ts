@@ -36,7 +36,7 @@ import { ErrorResponse } from "../shared/response/error.response";
 import { QuizletExportParams } from "./param/quizletExportParams";
 import { CardsService } from "../cards/cards.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { SetSuccessResponse } from "../sets/response/success/set.success.response";
 import { ImportSetFromFileDto } from "./dto/importSetFromFile.dto";

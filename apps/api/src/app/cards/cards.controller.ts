@@ -14,7 +14,7 @@ import {
 import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { CreateCardGuard } from "./guards/create-card.guard";

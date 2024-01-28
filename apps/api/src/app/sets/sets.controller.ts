@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest } from "express";

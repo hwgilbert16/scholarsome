@@ -27,22 +27,21 @@ import { MailService } from "../providers/mail/mail.service";
 import { User } from "@prisma/client";
 import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
-import { AuthenticatedGuard } from "./authenticated.guard";
+import { AuthenticatedGuard } from "./guards/authenticated.guard";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
+import { CreateApiKeyDto } from "./dto/createApiKey.dto";
+import { AccessTokenAuthenticatedGuard } from "./guards/accessTokenAuthenticated.guard";
 
 @ApiTags("Authentication")
 @ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
-  private readonly apiTokenRedis: Redis;
+  private readonly apiKeyRedis: Redis;
 
-  /**
-   * @ignore
-   */
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
@@ -51,7 +50,7 @@ export class AuthController {
     private readonly prisma: PrismaService,
     private readonly redisService: RedisService
   ) {
-    this.apiTokenRedis = this.redisService.getClient("apiToken");
+    this.apiKeyRedis = this.redisService.getClient("apiToken");
   }
 
   /*
@@ -62,12 +61,13 @@ export class AuthController {
 
   @UseGuards(AuthenticatedGuard)
   @Post("apiKey")
-  async createApiKey(@Req() req: ExpressRequest): Promise<ApiResponse<{ apiKey: string }>> {
+  async createApiKey(@Body() createApiKeyDto: CreateApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ name: string, apiKey: string }>> {
     const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const apiKey = await this.prisma.apiKey.create({
       data: {
+        name: createApiKeyDto.name,
         user: {
           connect: {
             id: user.id
@@ -76,7 +76,7 @@ export class AuthController {
       }
     });
 
-    this.apiTokenRedis.set(
+    this.apiKeyRedis.set(
         apiKey.apiKey,
         JSON.stringify({
           id: user.id,
@@ -87,6 +87,7 @@ export class AuthController {
     return {
       status: ApiResponseOptions.Success,
       data: {
+        name: createApiKeyDto.name,
         apiKey: apiKey.apiKey
       }
     };
@@ -111,7 +112,7 @@ export class AuthController {
       }
     });
 
-    this.apiTokenRedis.del(deleteApiKeyDto.apiKey);
+    this.apiKeyRedis.del(deleteApiKeyDto.apiKey);
 
     return {
       status: ApiResponseOptions.Success,
@@ -437,6 +438,7 @@ export class AuthController {
    *
    * @returns Void
    */
+  @UseGuards(AccessTokenAuthenticatedGuard)
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,

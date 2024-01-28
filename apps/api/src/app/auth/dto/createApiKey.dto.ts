@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class DeleteApiKeyDto {
+export class CreateApiKeyDto {
   @ApiProperty({
-    description: "The ID of the API key",
-    example: "384ecc57-28d6-4c33-8f41-a27ec3992b42"
+    description: "The name to describe the purpose of the API key",
+    example: "API Key #1"
   })
   @IsString()
   @IsNotEmpty()
-    apiKey: string;
+    name: string;
 }

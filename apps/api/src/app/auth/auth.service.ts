@@ -16,7 +16,7 @@ import { JwtPayload } from "jwt-decode";
 @Injectable()
 export class AuthService {
   private readonly refreshTokenRedis: Redis;
-  private readonly apiTokenRedis: Redis;
+  private readonly apiKeyRedis: Redis;
 
   /**
    * @ignore
@@ -29,7 +29,7 @@ export class AuthService {
     private readonly redisService: RedisService
   ) {
     this.refreshTokenRedis = this.redisService.getClient("default");
-    this.apiTokenRedis = this.redisService.getClient("apiToken");
+    this.apiKeyRedis = this.redisService.getClient("apiToken");
   }
 
   /**
@@ -51,7 +51,7 @@ export class AuthService {
 
       return decoded as { id: string; email: string; };
     } else if (req.header("x-api-key")) {
-      const info = await this.apiTokenRedis.get(req.header("x-api-key"));
+      const info = await this.apiKeyRedis.get(req.header("x-api-key"));
 
       if (info) {
         return JSON.parse(info);

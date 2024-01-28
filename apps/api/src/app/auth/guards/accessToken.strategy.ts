@@ -1,7 +1,3 @@
-/**
- * @file Strategy for checking whether a user's access token is still valid
- */
-
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
@@ -10,10 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import * as jwt from "jsonwebtoken";
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-  /**
-   * @ignore
-   */
+export class AccessTokenStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
@@ -23,6 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ) {
           return req.cookies.access_token;
         }
+
         return new UnauthorizedException();
       }]),
       ignoreExpiration: true,
@@ -35,12 +29,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       jwt.verify(req.cookies.access_token, this.configService.get<string>("JWT_SECRET"));
     } catch (e) {
-      throw new UnauthorizedException("Token expired");
+      throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    if (!payload) {
-      throw new UnauthorizedException();
-    }
+    if (!payload) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     return { email: payload.email };
   }

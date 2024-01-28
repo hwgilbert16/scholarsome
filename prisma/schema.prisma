@@ -62,7 +62,8 @@ model Card {
 model ApiKey {
   id     String @id @default(uuid())
   userId String
-  apiKey String @default(cuid()) @unique
+  name   String
+  apiKey String @unique @default(cuid())
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId])
