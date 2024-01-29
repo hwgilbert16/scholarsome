@@ -14,7 +14,7 @@ import {
 import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { CreateCardGuard } from "./guards/create-card.guard";
@@ -34,6 +34,7 @@ import { CreateCardDto } from "./dto/createCard.dto";
 import { UpdateCardDto } from "./dto/updateCard.dto";
 import { CardSuccessResponse } from "./response/success/card.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
+import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Cards")
 @Controller("cards")
@@ -44,7 +45,8 @@ export class CardsController {
   constructor(
     private readonly cardsService: CardsService,
     private readonly setsService: SetsService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService
   ) {}
 
   /**
@@ -69,7 +71,7 @@ export class CardsController {
   })
   @Get(":cardId")
   async card(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
 
     let userId = "";
 
@@ -286,7 +288,7 @@ export class CardsController {
   })
   @Delete(":cardId")
   async deleteCard(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const card = await this.cardsService.card({ id: params.cardId });

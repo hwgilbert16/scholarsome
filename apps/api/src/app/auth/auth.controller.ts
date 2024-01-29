@@ -1,20 +1,21 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   HttpCode,
   HttpException,
-  HttpStatus,
+  HttpStatus, NotFoundException,
   Param,
   Post,
   Req,
   Request,
   Res,
+  UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { Response, Request as ExpressRequest } from "express";
+import { Request as ExpressRequest, Response } from "express";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -26,24 +27,103 @@ import { MailService } from "../providers/mail/mail.service";
 import { User } from "@prisma/client";
 import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { AuthenticatedGuard } from "./guards/authenticated.guard";
+import { PrismaService } from "../providers/database/prisma/prisma.service";
+import { RedisService } from "@liaoliaots/nestjs-redis";
+import Redis from "ioredis";
+import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
+import { CreateApiKeyDto } from "./dto/createApiKey.dto";
+import { AccessTokenAuthenticatedGuard } from "./guards/accessTokenAuthenticated.guard";
 
 @ApiTags("Authentication")
 @ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
-  /**
-   * @ignore
-   */
+  private readonly apiKeyRedis: Redis;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly mailService: MailService
-  ) {}
+    private readonly mailService: MailService,
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService
+  ) {
+    this.apiKeyRedis = this.redisService.getClient("apiToken");
+  }
 
   /*
+   *
+   * API key CRUD routes
+   *
+   */
+
+  @UseGuards(AuthenticatedGuard)
+  @Post("apiKey")
+  async createApiKey(@Body() createApiKeyDto: CreateApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ name: string, apiKey: string }>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const apiKey = await this.prisma.apiKey.create({
+      data: {
+        name: createApiKeyDto.name,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
+    this.apiKeyRedis.set(
+        apiKey.apiKey,
+        JSON.stringify({
+          id: user.id,
+          email: user.email
+        })
+    );
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: {
+        name: createApiKeyDto.name,
+        apiKey: apiKey.apiKey
+      }
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete("apiKey")
+  async deleteAPIKey(@Body() deleteApiKeyDto: DeleteApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ apiKey: string }>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const apiKey = await this.prisma.apiKey.findUnique({
+      where: {
+        apiKey: deleteApiKeyDto.apiKey
+      }
+    });
+    if (!apiKey) throw new NotFoundException({ status: "fail", message: "API key was not found" });
+
+    await this.prisma.apiKey.delete({
+      where: {
+        apiKey: deleteApiKeyDto.apiKey
+      }
+    });
+
+    this.apiKeyRedis.del(deleteApiKeyDto.apiKey);
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: null
+    };
+  }
+
+  /*
+   *
    * Password reset routes
+   *
    */
 
   /**
@@ -155,7 +235,9 @@ export class AuthController {
   }
 
   /*
+   *
    * Registration routes
+   *
    */
 
   /**
@@ -220,7 +302,7 @@ export class AuthController {
   async resendVerificationMail(
     @Request() req: ExpressRequest
   ): Promise<ApiResponse<null>> {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) {
       return {
         status: ApiResponseOptions.Fail,
@@ -291,7 +373,9 @@ export class AuthController {
   }
 
   /*
+   *
    * Login routes
+   *
    */
 
   /**
@@ -354,6 +438,7 @@ export class AuthController {
    *
    * @returns Void
    */
+  @UseGuards(AccessTokenAuthenticatedGuard)
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,

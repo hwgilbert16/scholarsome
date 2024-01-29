@@ -17,6 +17,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   sets      Set[]
+  apiKeys   ApiKey[]
 }
 
 model Set {
@@ -56,4 +57,14 @@ model Card {
   media      CardMedia[]
 
   @@index([setId])
+}
+
+model ApiKey {
+  id     String @id @default(uuid())
+  userId String
+  name   String
+  apiKey String @unique @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId])
 }

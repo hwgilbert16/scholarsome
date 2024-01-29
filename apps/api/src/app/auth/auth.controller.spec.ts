@@ -12,6 +12,7 @@ import { MailService } from "../providers/mail/mail.service";
 import { Request, Response } from "express";
 import { HttpException } from "@nestjs/common";
 import { ApiResponseOptions } from "@scholarsome/shared";
+import { PrismaService } from "../providers/database/prisma/prisma.service";
 
 describe("AuthController", () => {
   let authController: AuthController;
@@ -123,6 +124,10 @@ describe("AuthController", () => {
         {
           provide: RedisService,
           useValue: createMock<RedisService>()
+        },
+        {
+          provide: PrismaService,
+          useValue: createMock<PrismaService>()
         }
       ],
       controllers: [

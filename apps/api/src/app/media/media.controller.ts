@@ -15,7 +15,6 @@ import {
   UseInterceptors
 } from "@nestjs/common";
 import { Express, Request as ExpressRequest, Response } from "express";
-import { UsersService } from "../users/users.service";
 import { ConfigService } from "@nestjs/config";
 import { SetsService } from "../sets/sets.service";
 import { GetObjectCommandOutput } from "@aws-sdk/client-s3";
@@ -23,7 +22,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { S3 } from "@aws-sdk/client-s3";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import * as sharp from "sharp";
 import {
   ApiNotFoundResponse,
@@ -38,14 +37,15 @@ import { ApiResponseOptions } from "@scholarsome/shared";
 import { ErrorResponse } from "../shared/response/error.response";
 import { SetAvatarDto } from "./dto/setAvatar.dto";
 import { UserIdParam } from "../users/param/userId.param";
+import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Media")
 @Controller("media")
 export class MediaController {
   constructor(
-    private readonly usersService: UsersService,
     private readonly setsService: SetsService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService
   ) {}
 
   @ApiOperation({
@@ -67,7 +67,7 @@ export class MediaController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie || set.authorId !== userCookie.id) {
         throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -150,7 +150,7 @@ export class MediaController {
     @Query("width") width: string,
     @Query("height") height: string
   ) {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     if (
@@ -332,7 +332,7 @@ export class MediaController {
   async setAvatar(@Body() setAvatarDto: SetAvatarDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException();
 
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const avatar = await sharp(file.buffer)

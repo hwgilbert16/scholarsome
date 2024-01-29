@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest } from "express";
@@ -35,6 +35,7 @@ import { UserIdParam } from "../users/param/userId.param";
 import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
+import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -45,7 +46,8 @@ export class SetsController {
   constructor(
     private readonly setsService: SetsService,
     private readonly usersService: UsersService,
-    private readonly cardsService: CardsService
+    private readonly cardsService: CardsService,
+    private readonly authService: AuthService
   ) {}
 
   /**
@@ -68,7 +70,7 @@ export class SetsController {
   })
   @Get("user/me")
   async mySets(@Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
-    const user = this.usersService.getUserInfo(req);
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     return {
@@ -99,7 +101,7 @@ export class SetsController {
   })
   @Get("user/:userId")
   async sets(@Request() req: ExpressRequest, @Param() params: UserIdParam): Promise<ApiResponse<Set[]>> {
-    const user = this.usersService.getUserInfo(req);
+    const user = await this.authService.getUserInfo(req);
 
     // if a user is requesting their own sets -> don't filter private sets
     if (user && params.userId === user.id) {
@@ -168,7 +170,7 @@ export class SetsController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -199,7 +201,7 @@ export class SetsController {
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
-    const user = this.usersService.getUserInfo(req);
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({
