@@ -67,10 +67,6 @@ body {
 
 // landscape phones
 @media only screen and (min-device-width : 321px) and (max-device-width: 850px) and (orientation: landscape) {
-  .main-screen {
-    margin-top: 18vh;
-  }
-
   .section-3-feature-image {
     width: 80%;
   }
@@ -78,10 +74,6 @@ body {
 
 // landscape tablets
 @media only screen and (min-device-width : 850px) and (max-device-width : 1370px) {
-  .main-screen {
-    padding-top: 17vh;
-  }
-
   .as-seen-on {
     margin-top: 10vh;
     margin-bottom: 4vh;
@@ -101,10 +93,6 @@ body {
 
   .as-seen-on {
     margin-bottom: 2vh;
-  }
-
-  .main-screen {
-    margin-top: 5vh;
   }
 
   .section-2-laptop {
