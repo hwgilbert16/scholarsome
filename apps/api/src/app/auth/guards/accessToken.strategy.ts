@@ -6,7 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import * as jwt from "jsonwebtoken";
 
 @Injectable()
-export class AccessTokenStrategy extends PassportStrategy(Strategy) {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, "accessToken") {
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
