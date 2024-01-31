@@ -1,0 +1,12 @@
+<form (ngSubmit)="submit()" ngNativeValidate>
+  <div class="mb-3">
+    <input type="file" accept="image/png,image/jpeg" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="clicked" ngModel required>
+    <div  class="form-text">Changing your avatar will replace the existing one.</div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" [disabled]="clicked">
+      <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Submit
+    </button>
+  </div>
+</form>

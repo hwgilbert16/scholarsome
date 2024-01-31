@@ -197,6 +197,14 @@
                 <fa-icon [icon]="faImage"></fa-icon> Avatar
               </a>
               <a
+                *ngIf="user"
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
+                [routerLink]="'settings'">
+                <fa-icon [icon]="faGear"></fa-icon> Settings
+              </a>
+              <a
                 class="dropdown-item"
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
