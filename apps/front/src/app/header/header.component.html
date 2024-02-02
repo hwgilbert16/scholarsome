@@ -189,14 +189,6 @@
                 <fa-icon [icon]="['far', 'user']"></fa-icon> Profile
               </a>
               <a
-                class="dropdown-item"
-                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
-                [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
-                (click)="this.profilePictureModal.open()"
-              >
-                <fa-icon [icon]="faImage"></fa-icon> Avatar
-              </a>
-              <a
                 *ngIf="user"
                 class="dropdown-item"
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
@@ -226,5 +218,4 @@
 <scholarsome-login-modal #login></scholarsome-login-modal>
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
-<scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>
 <scholarsome-csv-import-modal #csvImport></scholarsome-csv-import-modal>

@@ -15,7 +15,6 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
-import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
 import { MediaService } from "../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
@@ -34,7 +33,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("login") loginModal: LoginModalComponent;
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
-  @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
   @ViewChild("csvImport") csvImportModal: CsvImportModalComponent;
 
   // Whether an update is available compared to the current running version
@@ -138,8 +136,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if (user) {
             this.user = user;
           }
-
-          this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
         }
       }
     });

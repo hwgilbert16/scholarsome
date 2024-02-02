@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   NotFoundException,
   Param,
@@ -360,6 +360,49 @@ export class MediaController {
       if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
 
       fs.writeFileSync(path.join(filePath, userCookie.id + ".jpeg"), avatar);
+    }
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: null
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @ApiOperation({
+    summary: "Delete the authenticated user's avatar"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request"
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
+  @Delete("/avatars/me")
+  async deleteAvatar(@Request() req: ExpressRequest) {
+    const userCookie = await this.authService.getUserInfo(req);
+    if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    if (
+      this.configService.get<string>("STORAGE_TYPE") === "s3"
+    ) {
+      const s3 = await new S3({
+        credentials: {
+          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
+        },
+        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
+        region: this.configService.get<string>("S3_STORAGE_REGION")
+      });
+
+      await s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/avatars/" + userCookie.id + ".jpeg" });
+    } else if (this.configService.get<string>("STORAGE_TYPE") === "local") {
+      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "avatars");
+
+      if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
+
+      fs.unlinkSync(path.join(filePath, userCookie.id + ".jpeg"));
     }
 
     return {

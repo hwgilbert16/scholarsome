@@ -1,12 +1,21 @@
-<form (ngSubmit)="submit()" ngNativeValidate>
+<div *ngIf="existingAvatarUrl" class="text-center">
+  <img class="rounded-circle shadow-sm" alt="Current profile picture" [src]="existingAvatarUrl">
+</div>
+
+<form class="mt-3 py-5" (ngSubmit)="submit()" ngNativeValidate>
   <div class="mb-3">
-    <input type="file" accept="image/png,image/jpeg" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="clicked" ngModel required>
-    <div  class="form-text">Changing your avatar will replace the existing one.</div>
+    <input type="file" accept="image/png,image/jpeg" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="changeClicked" ngModel required>
+    <div class="form-text">Reload the page to see your new profile picture after changing it.</div>
+    <div *ngIf="changeError" class="form-text text-danger">Something went wrong. Try again, or look at the developer console for more information.</div>
   </div>
-  <div class="modal-footer">
-    <button type="submit" class="btn btn-primary" [disabled]="clicked">
-      <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-      Submit
+  <div class="d-flex justify-content-between">
+    <button type="submit" class="btn btn-primary" [disabled]="changeClicked">
+      <span *ngIf="changeClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Change avatar
+    </button>
+    <button type="button" class="btn btn-danger" (click)="deleteAvatar()" [disabled]="deleteClicked || !existingAvatarUrl">
+      <span *ngIf="deleteClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Delete avatar
     </button>
   </div>
 </form>

@@ -75,4 +75,19 @@ export class MediaService {
 
     return true;
   }
+
+  /**
+   * Deletes a user avatar
+   *
+   * @returns Boolean of whether the operation was successful
+   */
+  async deleteMyAvatar(): Promise<boolean> {
+    try {
+      await lastValueFrom(this.http.delete("/api/media/avatars/me"));
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
 }
