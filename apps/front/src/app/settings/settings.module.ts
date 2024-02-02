@@ -3,9 +3,8 @@ import { CommonModule } from "@angular/common";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { SettingsRoutingModule } from "./settings-routing.module";
 import { SettingsComponent } from "./settings.component";
-import { ProfilePictureSettingsComponent } from "./profile-picture-settings/profile-picture-settings.component";
+import { AvatarSettingsComponent } from "./avatar-settings/avatar-settings.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
   imports: [
@@ -13,9 +12,8 @@ import { SharedModule } from "../shared/shared.module";
     SettingsRoutingModule,
     FontAwesomeModule,
     FormsModule,
-    ReactiveFormsModule,
-    SharedModule
+    ReactiveFormsModule
   ],
-  declarations: [SettingsComponent, ProfilePictureSettingsComponent]
+  declarations: [SettingsComponent, AvatarSettingsComponent]
 })
 export class SettingsModule {}

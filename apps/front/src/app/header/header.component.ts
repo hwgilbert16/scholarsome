@@ -136,6 +136,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if (user) {
             this.user = user;
           }
+
+          this.sharedService.avatarUpdateEvent.asObservable().subscribe(async () => {
+            await this.viewAvatar();
+          });
         }
       }
     });
@@ -191,6 +195,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.verificationResult = cookie.includes("true");
     }
+
+    this.sharedService.avatarUpdateEvent.subscribe(() => {
+      console.log("aaa");
+      this.viewAvatar();
+    });
   }
 
   ngOnDestroy() {

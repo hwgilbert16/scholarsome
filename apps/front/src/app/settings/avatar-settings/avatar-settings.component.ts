@@ -1,16 +1,18 @@
 import { Component, OnInit } from "@angular/core";
 import { MediaService } from "../../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { SharedService } from "../../shared/shared.service";
 
 @Component({
-  selector: "scholarsome-profile-picture-settings",
-  templateUrl: "./profile-picture-settings.component.html",
-  styleUrls: ["./profile-picture-settings.component.scss"]
+  selector: "scholarsome-avatar-settings",
+  templateUrl: "./avatar-settings.component.html",
+  styleUrls: ["./avatar-settings.component.scss"]
 })
-export class ProfilePictureSettingsComponent implements OnInit {
+export class AvatarSettingsComponent implements OnInit {
   constructor(
     private readonly mediaService: MediaService,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly sharedService: SharedService
   ) {}
 
   protected changeClicked = false;
@@ -32,6 +34,7 @@ export class ProfilePictureSettingsComponent implements OnInit {
     this.changeClicked = false;
 
     await this.viewAvatar();
+    this.sharedService.avatarUpdateEvent.next();
   }
 
   async viewAvatar() {
@@ -48,6 +51,7 @@ export class ProfilePictureSettingsComponent implements OnInit {
     this.deleteClicked = true;
 
     await this.mediaService.deleteMyAvatar();
+    this.sharedService.avatarUpdateEvent.next();
 
     this.existingAvatarUrl = null;
     this.deleteClicked = false;

@@ -48,6 +48,7 @@ const Quill: any = QuillNamespace;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ImageResize from "quill-image-resize-module";
+import { SharedService } from "./shared/shared.service";
 Quill.register("modules/imageResize", ImageResize);
 
 @NgModule({
@@ -106,7 +107,7 @@ Quill.register("modules/imageResize", ImageResize);
       }
     })
   ],
-  providers: [],
+  providers: [SharedService],
   bootstrap: [AppComponent, HeadScriptsComponent]
 })
 export class AppModule {
