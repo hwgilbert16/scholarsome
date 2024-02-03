@@ -8,7 +8,7 @@ export class StorageConfig {
   /**
    * @ignore
    */
-  constructor(private configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   private checkStorageType(storageType: string): storageType is StorageType {
     return ['local', 's3'].includes(storageType);
