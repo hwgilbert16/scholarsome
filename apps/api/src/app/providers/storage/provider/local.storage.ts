@@ -27,4 +27,55 @@ export class LocalStorageProvider implements StorageProvider {
 
     await fs.promises.writeFile(path, data);
   }
+
+  public async getDirectoryFiles(path: string): Promise<Uint8Array[]> {
+    if (!(await this.isDir(path)))
+      throw new Error(`the path provided is not a directory: "${path}"`);
+
+    const filenames = await fs.promises.readdir(path);
+    const files = await Promise.all(
+      filenames.map(
+        async (filename) =>
+          await fs.promises.readFile(node_path.join(path, filename))
+      )
+    );
+
+    return files;
+  }
+
+  public async deleteFile(path: string): Promise<void> {
+    if (!(await this.isFile(path)))
+      throw new Error(`the path provided is not a file: "${path}"`);
+
+    await fs.promises.rm(path);
+  }
+
+  public async deleteDirectoryFiles(path: string): Promise<void> {
+    if (!(await this.isDir(path)))
+      throw new Error(`the path provided is not a directory: "${path}"`);
+
+    await fs.promises.rm(path, { recursive: true, force: true });
+  }
+
+  /**
+   * Checks whether given path is a directory.
+   *
+   * @param path Path to a file or directory.
+   *
+   * @returns Is path a directory.
+   */
+  private async isDir(path: string): Promise<boolean> {
+    return (await fs.promises.stat(path)).isDirectory();
+  }
+
+  /**
+   * Checks whether given path is a file.
+   *
+   * @param path Path to a file or directory.
+   *
+   * @returns Is path a file.
+   */
+  private async isFile(path: string): Promise<boolean> {
+    return (await fs.promises.stat(path)).isDirectory();
+  }
 }

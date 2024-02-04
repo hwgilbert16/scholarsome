@@ -33,4 +33,49 @@ export class S3StorageProvider implements StorageProvider {
   public async putFile(path: string, data: Buffer) {
     await this.s3.putObject({ Body: data, Bucket: this.bucket, Key: path });
   }
+
+  public async getDirectoryFiles(path: string): Promise<Uint8Array[]> {
+    // TODO: throw an error if path is a file.
+
+    const files = await this.s3.listObjects({
+      Prefix: path,
+      Delimiter: "/",
+      Bucket: this.bucket,
+    });
+
+    const contents = await Promise.all(
+      files.Contents.map(
+        async ({ Key }) => await this.s3.getObject({ Key, Bucket: this.bucket })
+      )
+    );
+
+    return await Promise.all(
+      contents.map(async (file) => await file.Body.transformToByteArray())
+    );
+  }
+
+  public async deleteFile(path: string): Promise<void> {
+    // TODO: throw an error if path is a directory.
+
+    await this.s3.deleteObject({
+      Key: path,
+      Bucket: this.bucket,
+    });
+  }
+
+  public async deleteDirectoryFiles(path: string): Promise<void> {
+    // TODO: throw an error if path is a file.
+
+    const files = await this.s3.listObjects({
+      Prefix: path,
+      Bucket: this.bucket,
+    });
+
+    await Promise.all(
+      files.Contents.map(
+        async ({ Key }) =>
+          await this.s3.deleteObject({ Key, Bucket: this.bucket })
+      )
+    );
+  }
 }
