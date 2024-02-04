@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faKey } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-settings",
@@ -8,4 +8,5 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 })
 export class SettingsComponent {
   protected readonly faImage = faImage;
+  protected readonly faKey = faKey;
 }

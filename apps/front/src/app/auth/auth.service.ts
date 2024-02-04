@@ -30,7 +30,7 @@ export class AuthService {
    * @returns HTTP response of request
    */
   async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
-    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/sendReset/" + submitResetForm.email, { observe: "response" }));
+    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/send/" + submitResetForm.email, { observe: "response" }));
 
     if (req.status === 429) {
       return ApiResponseOptions.Ratelimit;
@@ -47,13 +47,48 @@ export class AuthService {
    * @returns HTTP status of request
    */
   async setPassword(resetForm: ResetForm): Promise<string> {
-    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/setPassword", { password: resetForm.password }, { observe: "response" }));
+    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/password/set", { newPassword: resetForm.password }, { observe: "response" }));
 
     if (req.status === 429) {
       return "ratelimit";
     } else if (req.body) {
       return req.body.status;
     } else return "error";
+  }
+
+  /**
+   * Makes a request to update the password of a user that is already authenticated
+   *
+   * @param existingPassword The existing password of the user
+   * @param newPassword The new password of the user
+   *
+   * @returns HTTP status of request
+   */
+  async setPasswordAuthenticated(existingPassword: string, newPassword: string): Promise<ApiResponseOptions | null> {
+    try {
+      await lastValueFrom(this.http.post<ApiResponse<User>>(
+          "/api/auth/reset/password/set",
+          {
+            existingPassword,
+            newPassword
+          }, { observe: "response" }))
+      ;
+
+      return ApiResponseOptions.Success;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        switch (e.status) {
+          case 401:
+            return ApiResponseOptions.Incorrect;
+          case 429:
+            return ApiResponseOptions.Ratelimit;
+          default:
+            return ApiResponseOptions.Error;
+        }
+      }
+
+      return ApiResponseOptions.Error;
+    }
   }
 
   /**

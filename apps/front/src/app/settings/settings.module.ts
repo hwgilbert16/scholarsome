@@ -5,6 +5,7 @@ import { SettingsRoutingModule } from "./settings-routing.module";
 import { SettingsComponent } from "./settings.component";
 import { AvatarSettingsComponent } from "./avatar-settings/avatar-settings.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ChangePasswordSettingsComponent } from "./change-password-settings/change-password-settings.component";
 
 @NgModule({
   imports: [
@@ -14,6 +15,10 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
     FormsModule,
     ReactiveFormsModule
   ],
-  declarations: [SettingsComponent, AvatarSettingsComponent]
+  declarations: [
+    SettingsComponent,
+    AvatarSettingsComponent,
+    ChangePasswordSettingsComponent
+  ]
 })
 export class SettingsModule {}
