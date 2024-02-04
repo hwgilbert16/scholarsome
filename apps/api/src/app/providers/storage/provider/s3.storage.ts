@@ -1,6 +1,6 @@
-import { S3 } from '@aws-sdk/client-s3';
-import { StorageProvider } from '../interfaces/storage-provider.interface';
-import { ConfigService } from '@nestjs/config';
+import { S3 } from "@aws-sdk/client-s3";
+import { StorageProvider } from "../interfaces/storage-provider.interface";
+import { ConfigService } from "@nestjs/config";
 
 export class S3StorageProvider implements StorageProvider {
   private s3: S3;
@@ -9,19 +9,19 @@ export class S3StorageProvider implements StorageProvider {
   constructor(readonly configService: ConfigService) {
     this.s3 = new S3({
       credentials: {
-        accessKeyId: configService.get<string>('S3_STORAGE_ACCESS_KEY'),
-        secretAccessKey: configService.get<string>('S3_STORAGE_SECRET_KEY'),
+        accessKeyId: configService.get<string>("S3_STORAGE_ACCESS_KEY"),
+        secretAccessKey: configService.get<string>("S3_STORAGE_SECRET_KEY"),
       },
-      endpoint: configService.get<string>('S3_STORAGE_ENDPOINT'),
-      region: configService.get<string>('S3_STORAGE_REGION'),
+      endpoint: configService.get<string>("S3_STORAGE_ENDPOINT"),
+      region: configService.get<string>("S3_STORAGE_REGION"),
     });
 
-    this.bucket = configService.get<string>('S3_STORAGE_BUCKET');
+    this.bucket = configService.get<string>("S3_STORAGE_BUCKET");
   }
 
-  public async getFile(key: string): Promise<Uint8Array | null> {
+  public async getFile(path: string): Promise<Uint8Array | null> {
     const file = await this.s3.getObject({
-      Key: key,
+      Key: path,
       Bucket: this.bucket,
     });
 
@@ -30,7 +30,7 @@ export class S3StorageProvider implements StorageProvider {
     return content;
   }
 
-  public async putFile(key: string, body: Buffer) {
-    await this.s3.putObject({ Body: body, Bucket: this.bucket, Key: key });
+  public async putFile(path: string, data: Buffer) {
+    await this.s3.putObject({ Body: data, Bucket: this.bucket, Key: path });
   }
 }

@@ -2,19 +2,19 @@ export interface StorageProvider {
   /**
    * Gets file content in bytes by filename.
    *
-   * @param key Filename
+   * @param path Path to file, relative to root of storage directory
    *
    * @returns File content in bytes or null if file does not exist.
    */
-  getFile(key: string): Promise<Uint8Array | null>;
+  getFile(path: string): Promise<Uint8Array | null>;
 
   /**
    * Puts a file.
    *
-   * @param key Filename
-   * @param body File content in bytes
+   * @param path Path to file, relative to root of storage directory
+   * @param data File content in bytes
    *
    */
 
-  putFile(key: string, body: Uint8Array);
+  putFile(path: string, data: Uint8Array): Promise<void>;
 }
