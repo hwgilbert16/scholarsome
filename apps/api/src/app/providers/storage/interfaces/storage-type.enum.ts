@@ -1,4 +1,4 @@
 export enum StorageType {
-  Local = 'local',
-  S3 = 's3',
+  Local = "local",
+  S3 = "s3",
 }

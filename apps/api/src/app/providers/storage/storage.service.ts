@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { StorageProvider } from './interfaces/storage-provider.interface';
-import { ConfigService } from '@nestjs/config';
-import { StorageConfig } from './storage.config';
-import { StorageType } from './interfaces/storage-type.enum';
-import { S3StorageProvider } from './provider/s3.storage';
-import { LocalStorageProvider } from './provider/local.storage';
+import { Injectable } from "@nestjs/common";
+import { StorageProvider } from "./interfaces/storage-provider.interface";
+import { ConfigService } from "@nestjs/config";
+import { StorageConfig } from "./storage.config";
+import { StorageType } from "./interfaces/storage-type.enum";
+import { S3StorageProvider } from "./provider/s3.storage";
+import { LocalStorageProvider } from "./provider/local.storage";
 
 @Injectable()
 export class StorageService {

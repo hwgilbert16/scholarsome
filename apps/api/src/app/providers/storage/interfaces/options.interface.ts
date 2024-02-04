@@ -1,4 +1,4 @@
-import { StorageType } from './storage-type.enum';
+import { StorageType } from "./storage-type.enum";
 
 export interface StorageOptions {
   storageType: StorageType;
