@@ -10,9 +10,6 @@ import { LocalStorageProvider } from "./provider/local.storage";
 export class StorageService {
   private storageProvider: StorageProvider;
 
-  /**
-   * @ignore
-   */
   constructor(
     private readonly configService: ConfigService,
     private readonly storageConfig: StorageConfig

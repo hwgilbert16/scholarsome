@@ -5,9 +5,6 @@ import { type StorageOptions } from "./interfaces/options.interface";
 
 @Injectable()
 export class StorageConfig {
-  /**
-   * @ignore
-   */
   constructor(private readonly configService: ConfigService) {}
 
   private checkStorageType(storageType: string): storageType is StorageType {
