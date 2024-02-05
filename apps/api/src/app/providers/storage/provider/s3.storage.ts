@@ -1,6 +1,7 @@
 import { S3 } from "@aws-sdk/client-s3";
 import { StorageProvider } from "../interfaces/storage-provider.interface";
 import { ConfigService } from "@nestjs/config";
+import { File } from "../interfaces/file.interface";
 
 export class S3StorageProvider implements StorageProvider {
   private s3: S3;
@@ -19,7 +20,7 @@ export class S3StorageProvider implements StorageProvider {
     this.bucket = configService.get<string>("S3_STORAGE_BUCKET");
   }
 
-  public async getFile(path: string): Promise<Uint8Array | null> {
+  public async getFile(path: string): Promise<File> {
     const file = await this.s3.getObject({
       Key: path,
       Bucket: this.bucket,
@@ -27,15 +28,16 @@ export class S3StorageProvider implements StorageProvider {
 
     const content = await file.Body.transformToByteArray();
 
-    return content;
+    return { path, content };
   }
 
   public async putFile(path: string, data: Buffer) {
     await this.s3.putObject({ Body: data, Bucket: this.bucket, Key: path });
   }
 
-  public async getDirectoryFiles(path: string): Promise<Uint8Array[]> {
-    // TODO: throw an error if path is a file.
+  public async getDirectoryFiles(path: string): Promise<File[]> {
+    if (!(await this.isDirectory(path)))
+      throw new Error(`the path provided is not a directory: "${path}"`);
 
     const files = await this.s3.listObjects({
       Prefix: path,
@@ -43,19 +45,20 @@ export class S3StorageProvider implements StorageProvider {
       Bucket: this.bucket,
     });
 
-    const contents = await Promise.all(
-      files.Contents.map(
-        async ({ Key }) => await this.s3.getObject({ Key, Bucket: this.bucket })
-      )
+    const contents: File[] = await Promise.all(
+      files.Contents.map(async ({ Key }) => {
+        const file = await this.s3.getObject({ Key, Bucket: this.bucket });
+
+        return { path: Key, content: await file.Body.transformToByteArray() };
+      })
     );
 
-    return await Promise.all(
-      contents.map(async (file) => await file.Body.transformToByteArray())
-    );
+    return contents;
   }
 
   public async deleteFile(path: string): Promise<void> {
-    // TODO: throw an error if path is a directory.
+    if (!(await this.isFile(path)))
+      throw new Error(`the path provided is not a file: "${path}"`);
 
     await this.s3.deleteObject({
       Key: path,
@@ -64,9 +67,10 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   public async deleteDirectoryFiles(path: string): Promise<void> {
-    // TODO: throw an error if path is a file.
+    if (!(await this.isDirectory(path)))
+      throw new Error(`the path provided is not a directory: "${path}"`);
 
-    const files = await this.s3.listObjects({
+    const files = await this.s3.listObjectsV2({
       Prefix: path,
       Bucket: this.bucket,
     });
@@ -77,5 +81,23 @@ export class S3StorageProvider implements StorageProvider {
           await this.s3.deleteObject({ Key, Bucket: this.bucket })
       )
     );
+  }
+
+  public async isDirectory(path: string): Promise<boolean> {
+    const object = await this.s3.listObjectsV2({
+      Prefix: path,
+      Bucket: this.bucket,
+    });
+
+    return !!object.Contents.length;
+  }
+
+  public async isFile(path: string): Promise<boolean> {
+    const object = await this.s3.listObjectsV2({
+      Prefix: path,
+      Bucket: this.bucket,
+    });
+
+    return !object.Contents.length;
   }
 }
