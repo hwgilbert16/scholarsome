@@ -47,6 +47,9 @@ export class S3StorageProvider implements StorageProvider {
 
     const contents: File[] = await Promise.all(
       files.Contents.map(async ({ Key }) => {
+        if (Key.slice(path.length).includes("/"))
+          throw new Error(`directory "${path}" contains subdirectories.`);
+
         const file = await this.s3.getObject({ Key, Bucket: this.bucket });
 
         return {
@@ -79,10 +82,12 @@ export class S3StorageProvider implements StorageProvider {
     });
 
     await Promise.all(
-      files.Contents.map(
-        async ({ Key }) =>
-          await this.s3.deleteObject({ Key, Bucket: this.bucket })
-      )
+      files.Contents.map(async ({ Key }) => {
+        if (Key.slice(path.length).includes("/"))
+          throw new Error(`directory "${path}" contains subdirectories.`);
+
+        await this.s3.deleteObject({ Key, Bucket: this.bucket });
+      })
     );
   }
 

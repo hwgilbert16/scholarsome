@@ -27,6 +27,7 @@ export interface StorageProvider {
    * @param path Path to directory, relative to root of storage directory.
    *
    * @throws {Error} The path provided is a file instead of a directory.
+   * @throws {Error} Directory contains nested subdirectories.
    *
    * @returns Every file's content.
    */
@@ -48,6 +49,8 @@ export interface StorageProvider {
    * @param path Path to directory, relative to root of storage directory.
    *
    * @throws {Error} The path provided is a file instead of a directory.
+   * @throws {Error} Directory contains nested subdirectories.
+   *
    */
   deleteDirectoryFiles(path: string): Promise<void>;
 

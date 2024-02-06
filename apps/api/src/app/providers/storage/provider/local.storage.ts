@@ -57,6 +57,10 @@ export class LocalStorageProvider implements StorageProvider {
     if (!(await this.isDirectory(path)))
       throw new Error(`the path provided is not a directory: "${path}"`);
 
+    for (const entity of await fs.promises.readdir(path))
+      if (await this.isDirectory(entity))
+        throw new Error(`directory "${path}" contains subdirectories.`);
+
     await fs.promises.rm(path, { recursive: false, force: false });
   }
 
