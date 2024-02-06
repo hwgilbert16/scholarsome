@@ -61,7 +61,7 @@ export class LocalStorageProvider implements StorageProvider {
       if (await this.isDirectory(entity))
         throw new Error(`directory "${path}" contains subdirectories.`);
 
-    await fs.promises.rm(path, { recursive: false, force: false });
+    await fs.promises.rm(path, { recursive: true, force: true });
   }
 
   public async isDirectory(path: string): Promise<boolean> {
