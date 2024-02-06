@@ -34,6 +34,8 @@ export class LocalStorageProvider implements StorageProvider {
       throw new Error(`the path provided is not a directory: "${path}"`);
 
     const filenames = await fs.promises.readdir(path);
+
+    // node will throw an error if readFile() is called on a directory
     const files: File[] = await Promise.all(
       filenames.map(async (fileName) => ({
         fileName,
@@ -55,7 +57,7 @@ export class LocalStorageProvider implements StorageProvider {
     if (!(await this.isDirectory(path)))
       throw new Error(`the path provided is not a directory: "${path}"`);
 
-    await fs.promises.rm(path, { recursive: true, force: true });
+    await fs.promises.rm(path, { recursive: false, force: false });
   }
 
   public async isDirectory(path: string): Promise<boolean> {
@@ -63,6 +65,6 @@ export class LocalStorageProvider implements StorageProvider {
   }
 
   public async isFile(path: string): Promise<boolean> {
-    return (await fs.promises.stat(path)).isDirectory();
+    return (await fs.promises.stat(path)).isFile();
   }
 }
