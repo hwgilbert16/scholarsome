@@ -31,7 +31,7 @@ export class S3StorageProvider implements StorageProvider {
     return { fileName: path, content };
   }
 
-  public async putFile(path: string, data: Buffer) {
+  public async putFile(path: string, data: Buffer): Promise<void> {
     await this.s3.putObject({ Body: data, Bucket: this.bucket, Key: path });
   }
 

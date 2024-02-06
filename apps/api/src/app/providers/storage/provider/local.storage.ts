@@ -19,7 +19,7 @@ export class LocalStorageProvider implements StorageProvider {
     return { fileName: path, content: await fs.promises.readFile(filePath) };
   }
 
-  public async putFile(path: string, data: Uint8Array) {
+  public async putFile(path: string, data: Uint8Array): Promise<void> {
     const filePath = node_path.join(this.localStorageDir, path);
     const fileDir = node_path.dirname(filePath);
 
