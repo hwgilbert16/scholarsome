@@ -6,7 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar, faImage, faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar, faImage, faFileCsv, faGear } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -15,7 +15,6 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
-import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
 import { MediaService } from "../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
@@ -34,7 +33,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("login") loginModal: LoginModalComponent;
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
-  @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
   @ViewChild("csvImport") csvImportModal: CsvImportModalComponent;
 
   // Whether an update is available compared to the current running version
@@ -70,6 +68,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly faStar = faStar;
   protected readonly faArrowRightFromBracket = faArrowRightFromBracket;
   protected readonly faFileCsv = faFileCsv;
+  protected readonly faGear = faGear;
 
   /**
    * @ignore
@@ -138,7 +137,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             this.user = user;
           }
 
-          this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
+          this.sharedService.avatarUpdateEvent.asObservable().subscribe(async () => {
+            await this.viewAvatar();
+          });
         }
       }
     });
@@ -194,6 +195,11 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.verificationResult = cookie.includes("true");
     }
+
+    this.sharedService.avatarUpdateEvent.subscribe(() => {
+      console.log("aaa");
+      this.viewAvatar();
+    });
   }
 
   ngOnDestroy() {

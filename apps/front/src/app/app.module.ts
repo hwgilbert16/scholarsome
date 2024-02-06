@@ -35,6 +35,7 @@ import { ProfileModule } from "./profile/profile.module";
 import { HeadScriptsComponent } from "./head-scripts/head-scripts.component";
 import { QuillConfigModule, QuillModule } from "ngx-quill";
 import { HeaderModule } from "./header/header.module";
+import { SettingsModule } from "./settings/settings.module";
 
 // there's something weird that needs to be done with the webpack config
 // to get this to work the correct way
@@ -47,6 +48,7 @@ const Quill: any = QuillNamespace;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ImageResize from "quill-image-resize-module";
+import { SharedService } from "./shared/shared.service";
 Quill.register("modules/imageResize", ImageResize);
 
 @NgModule({
@@ -64,6 +66,7 @@ Quill.register("modules/imageResize", ImageResize);
     BrowserAnimationsModule,
     ProfileModule,
     HeaderModule,
+    SettingsModule,
     QuillModule.forRoot(),
     QuillConfigModule.forRoot({
       modules: {
@@ -95,16 +98,16 @@ Quill.register("modules/imageResize", ImageResize);
           ["bold", "italic", "underline", "strike"],
           ["code-block"],
           [{ list: "ordered" }, { list: "bullet" }],
-          [{ "header": 1 }, { "header": 2 }],
+          [{ header: 1 }, { header: 2 }],
           [{ color: [] }, { background: [] }],
-          [{ "script": "sub" }, { "script": "super" }],
+          [{ script: "sub" }, { script: "super" }],
           ["link", "image"],
           ["clean"]
         ]
       }
     })
   ],
-  providers: [],
+  providers: [SharedService],
   bootstrap: [AppComponent, HeadScriptsComponent]
 })
 export class AppModule {

@@ -20,7 +20,17 @@ describe("AuthController", () => {
   let mailService: MailService;
   let authService: AuthService;
 
-  const resetPasswordToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJyZXNldCI6InRydWUiLCJlbWFpbCI6ImFAYS5jb20ifQ.4xRSOpUWnOUmX24W_cQn3ss4H-qNPB5D84eHLXIg1gQ";
+  /*
+  The JWT secret for this is "a"
+
+  {
+  "sub": "1234567890",
+  "iat": 1516239022,
+  "forPasswordReset": "true",
+  "email": "a@a.com"
+  }
+   */
+  const resetPasswordToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaWF0IjoxNTE2MjM5MDIyLCJmb3JQYXNzd29yZFJlc2V0IjoidHJ1ZSIsImVtYWlsIjoiYUBhLmNvbSJ9.ngZpWCACqusCexG6yUFpbsbkwnviNSbDHd5b6sILuX4";
 
   const resetTokenReq = {
     cookies: {
@@ -153,7 +163,7 @@ describe("AuthController", () => {
 
   describe("when the POST /reset/password route is called", () => {
     const dto = {
-      password: "a"
+      newPassword: "a"
     };
 
     const res = {
@@ -170,17 +180,13 @@ describe("AuthController", () => {
         }
       } as Request;
 
-      const result = await authController.resetPassword(dto, res, req);
-
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(result).toEqual({
-        status: ApiResponseOptions.Fail,
-        message: "Invalid reset token"
-      });
+      await expect(async () => {
+        await authController.setPassword(dto, res, req);
+      }).rejects.toThrow(HttpException);
     });
 
     it("should successfully reset the user's password", async () => {
-      const result = await authController.resetPassword(dto, res, resetTokenReq);
+      const result = await authController.setPassword(dto, res, resetTokenReq);
 
       expect(usersService.updateUser).toHaveBeenCalledWith({
         where: {
@@ -206,19 +212,19 @@ describe("AuthController", () => {
     } as any as Response;
 
     it("should redirect to /reset", async () => {
-      await authController.setResetCookie({ token: "" }, res);
+      await authController.verifyPasswordResetRequest({ token: "" }, res);
 
       expect(res.redirect).toHaveBeenCalled();
     });
 
     it("should not set a cookie if the param is not valid", async () => {
-      await authController.setResetCookie({ token: "" }, res);
+      await authController.verifyPasswordResetRequest({ token: "" }, res);
 
       expect(res.cookie).not.toHaveBeenCalled();
     });
 
     it("should set a cookie if the param is valid", async () => {
-      await authController.setResetCookie({ token: resetPasswordToken }, res);
+      await authController.verifyPasswordResetRequest({ token: resetPasswordToken }, res);
 
       expect(res.cookie).toHaveBeenCalledWith("resetPasswordToken", resetPasswordToken, {
         httpOnly: false,
@@ -229,19 +235,19 @@ describe("AuthController", () => {
 
   describe("when the GET /reset/password/:email route is called", () => {
     it("should send an email if user is valid", async () => {
-      await authController.sendReset({ email: "true" });
+      await authController.sendPasswordReset({ email: "true" });
 
       expect(mailService.sendPasswordReset).toHaveBeenCalledWith("true");
     });
 
     it("should not send an email if user is not valid", async () => {
-      await authController.sendReset({ email: "false" });
+      await authController.sendPasswordReset({ email: "false" });
 
       expect(mailService.sendPasswordReset).not.toHaveBeenCalled();
     });
 
     it("should return the correct value", async () => {
-      const result = await authController.sendReset({ email: "true" });
+      const result = await authController.sendPasswordReset({ email: "true" });
 
       expect(result).toEqual({
         status: ApiResponseOptions.Success,

@@ -1,0 +1,20 @@
+<div *ngIf="existingAvatarUrl" class="text-center">
+  <img class="rounded-circle shadow-sm" alt="Current profile picture" [src]="existingAvatarUrl">
+</div>
+
+<form class="py-5" (ngSubmit)="submit()" ngNativeValidate>
+  <div class="mb-3">
+    <input type="file" accept="image/png,image/jpeg" class="form-control" name="file" (change)="onFileUpload($event)" [disabled]="changeClicked" ngModel required>
+    <div *ngIf="changeError" class="form-text text-danger">Something went wrong. Try again, or look at the developer console for more information.</div>
+  </div>
+  <div class="d-flex justify-content-between">
+    <button type="submit" class="btn btn-primary" [disabled]="changeClicked">
+      <span *ngIf="changeClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Change avatar
+    </button>
+    <button type="button" class="btn btn-danger" (click)="deleteAvatar()" [disabled]="deleteClicked || !existingAvatarUrl">
+      <span *ngIf="deleteClicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Delete avatar
+    </button>
+  </div>
+</form>

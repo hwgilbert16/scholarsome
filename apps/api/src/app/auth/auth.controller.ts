@@ -34,6 +34,7 @@ import Redis from "ioredis";
 import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
 import { CreateApiKeyDto } from "./dto/createApiKey.dto";
 import { AccessTokenAuthenticatedGuard } from "./guards/accessTokenAuthenticated.guard";
+import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
 @ApiExcludeController()
@@ -127,58 +128,103 @@ export class AuthController {
    */
 
   /**
+   * Changes the email of an authenticated user
+   *
+   * @returns Updated User object
+   */
+  @Post("reset/email/set")
+  async resetEmail(
+    @Body() resetPasswordDto: ResetEmailDto,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: ExpressRequest
+  ): Promise<ApiResponse<User>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const updatedUser = await this.usersService.updateUser({
+      where: {
+        id: user.id
+      },
+      data: {
+        email: resetPasswordDto.newEmail
+      }
+    });
+
+    if (req.cookies["access_token"]) await this.authService.logout(req, res);
+
+    delete updatedUser.password;
+    delete updatedUser.verified;
+    delete updatedUser.email;
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: updatedUser
+    };
+  }
+
+  /**
    * Resets the password of a user after checking for a valid reset token in their cookies.
    *
-   * @returns Whether the user's password was successfully updated
+   * @returns Updated User object
    */
-  @Post("reset/setPassword")
-  async resetPassword(
+  @Post("reset/password/set")
+  async setPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res({ passthrough: true }) res: Response,
     @Req() req: ExpressRequest
   ): Promise<ApiResponse<User>> {
-    let decoded: { email: string; reset: boolean };
+    let email = "";
 
-    try {
-      decoded = jwt.verify(
-          req.cookies["resetPasswordToken"],
-          this.configService.get<string>("JWT_SECRET")
-      ) as { email: string; reset: boolean };
-    } catch (e) {
-      res.status(401);
+    if (req.cookies["resetPasswordToken"]) {
+      let decoded: { email: string; forPasswordReset: boolean };
 
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Invalid reset token"
-      };
+      try {
+        decoded = jwt.verify(
+            req.cookies["resetPasswordToken"],
+            this.configService.get<string>("JWT_SECRET")
+        ) as { email: string; forPasswordReset: boolean };
+      } catch (e) {
+        throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      }
+
+      if (!decoded || !decoded.forPasswordReset) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+      res.cookie("resetPasswordToken", "", {
+        httpOnly: false,
+        expires: new Date()
+      });
+
+      email = decoded.email;
+    } else if (resetPasswordDto.existingPassword) {
+      const userCookie = await this.authService.getUserInfo(req);
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+      const user = await this.usersService.user({ id: userCookie.id });
+      if (!user) throw new NotFoundException({ status: "fail", message: "User not found" });
+
+      email = user.email;
+
+      if (!bcrypt.compareSync(resetPasswordDto.existingPassword, user.password)) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    } else {
+      throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    if (!decoded || !decoded.reset) {
-      res.status(401);
-
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Invalid reset token"
-      };
-    }
-
-    res.cookie("resetPasswordToken", "", {
-      httpOnly: false,
-      expires: new Date()
-    });
-
-    const query = await this.usersService.updateUser({
+    const updatedUser = await this.usersService.updateUser({
       where: {
-        email: decoded.email
+        email: email
       },
       data: {
-        password: await bcrypt.hash(resetPasswordDto.password, 10)
+        password: await bcrypt.hash(resetPasswordDto.newPassword, 10)
       }
     });
 
+    delete updatedUser.password;
+    delete updatedUser.verified;
+    delete updatedUser.email;
+
     return {
       status: ApiResponseOptions.Success,
-      data: query
+      data: updatedUser
     };
   }
 
@@ -188,22 +234,22 @@ export class AuthController {
    * @remarks This is the link that is emailed to users when a password reset is requested.
    * @returns Void, redirect to /api/auth/redirect
    */
-  @Get("reset/password/setCookie/:token")
-  async setResetCookie(
+  @Get("reset/password/verify/:token")
+  async verifyPasswordResetRequest(
     @Param() params: { token: string },
     @Res() res: Response
   ): Promise<void> {
-    let decoded: { email: string; reset: boolean };
+    let decoded: { email: string; forPasswordReset: boolean };
     try {
       decoded = jwt.verify(
           params.token,
           this.configService.get<string>("JWT_SECRET")
-      ) as { email: string; reset: boolean };
+      ) as { email: string; forPasswordReset: boolean };
     } catch (e) {
       return res.redirect("/");
     }
 
-    if (decoded && decoded.reset) {
+    if (decoded && decoded.forPasswordReset) {
       res.cookie("resetPasswordToken", params.token, {
         httpOnly: false,
         expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10))
@@ -220,8 +266,8 @@ export class AuthController {
    * @returns Success response
    */
   @Throttle(1, 5)
-  @Get("reset/sendReset/:email")
-  async sendReset(
+  @Get("reset/password/send/:email")
+  async sendPasswordReset(
     @Param() params: { email: string }
   ): Promise<ApiResponse<null>> {
     const user = await this.usersService.user({ email: params.email });
