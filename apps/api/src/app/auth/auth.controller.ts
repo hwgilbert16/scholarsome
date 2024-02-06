@@ -34,6 +34,7 @@ import Redis from "ioredis";
 import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
 import { CreateApiKeyDto } from "./dto/createApiKey.dto";
 import { AccessTokenAuthenticatedGuard } from "./guards/accessTokenAuthenticated.guard";
+import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
 @ApiExcludeController()
@@ -127,9 +128,44 @@ export class AuthController {
    */
 
   /**
+   * Changes the email of an authenticated user
+   *
+   * @returns Updated User object
+   */
+  @Post("reset/email/set")
+  async resetEmail(
+    @Body() resetPasswordDto: ResetEmailDto,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: ExpressRequest
+  ): Promise<ApiResponse<User>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const updatedUser = await this.usersService.updateUser({
+      where: {
+        id: user.id
+      },
+      data: {
+        email: resetPasswordDto.newEmail
+      }
+    });
+
+    if (req.cookies["access_token"]) await this.authService.logout(req, res);
+
+    delete updatedUser.password;
+    delete updatedUser.verified;
+    delete updatedUser.email;
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: updatedUser
+    };
+  }
+
+  /**
    * Resets the password of a user after checking for a valid reset token in their cookies.
    *
-   * @returns Whether the user's password was successfully updated
+   * @returns Updated User object
    */
   @Post("reset/password/set")
   async setPassword(

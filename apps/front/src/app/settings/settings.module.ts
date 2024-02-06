@@ -6,6 +6,7 @@ import { SettingsComponent } from "./settings.component";
 import { AvatarSettingsComponent } from "./avatar-settings/avatar-settings.component";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ChangePasswordSettingsComponent } from "./change-password-settings/change-password-settings.component";
+import { ChangeEmailSettingsComponent } from "./change-email-settings/change-email-settings.component";
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { ChangePasswordSettingsComponent } from "./change-password-settings/chan
   declarations: [
     SettingsComponent,
     AvatarSettingsComponent,
-    ChangePasswordSettingsComponent
+    ChangePasswordSettingsComponent,
+    ChangeEmailSettingsComponent
   ]
 })
 export class SettingsModule {}

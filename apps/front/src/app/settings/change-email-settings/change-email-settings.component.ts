@@ -2,59 +2,49 @@ import { Component } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { AuthService } from "../../auth/auth.service";
 import { ApiResponseOptions } from "@scholarsome/shared";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: "scholarsome-change-password-settings",
-  templateUrl: "./change-password-settings.component.html",
-  styleUrls: ["./change-password-settings.component.scss"]
+  selector: "scholarsome-change-email-settings",
+  templateUrl: "./change-email-settings.component.html",
+  styleUrls: ["./change-email-settings.component.scss"]
 })
-export class ChangePasswordSettingsComponent {
-  constructor(
-    private readonly authService: AuthService
-  ) {}
+export class ChangeEmailSettingsComponent {
+  constructor(private readonly authService: AuthService, private readonly router: Router) {}
 
   protected clicked = false;
   protected error = false;
-  protected invalidPassword = false;
   protected notMatching = false;
   protected rateLimit = false;
-  protected success = false;
 
   async submit(form: NgForm) {
     this.clicked = true;
     this.error = false;
-    this.invalidPassword = false;
     this.notMatching = false;
     this.rateLimit = false;
-    this.success = false;
 
-    if (form.value["newPassword"] !== form.value["confirmNewPassword"]) {
+    if (form.value["newEmail"] !== form.value["confirmNewEmail"]) {
       this.notMatching = true;
       this.clicked = false;
       return;
     }
 
-    const response = await this.authService.setPasswordAuthenticated(
-        form.value["existingPassword"],
-        form.value["newPassword"]
+    const response = await this.authService.setEmail(
+        form.value["newEmail"]
     );
 
     this.clicked = false;
 
     switch (response) {
       case ApiResponseOptions.Success:
-        this.success = true;
         form.resetForm();
+        this.router.navigate(["/"]);
         break;
       case ApiResponseOptions.Ratelimit:
         this.rateLimit = true;
         break;
-      case ApiResponseOptions.Incorrect:
-        this.invalidPassword = true;
-        break;
       default:
         this.error = true;
-        break;
     }
   }
 }

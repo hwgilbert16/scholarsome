@@ -16,21 +16,17 @@ import { User } from "@prisma/client";
   providedIn: "root"
 })
 export class AuthService {
-  /**
-   * @ignore
-   */
   constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) {}
 
-
   /**
-   * Makes a request to submit a password reset based on information from `SubmitResetForm`
+   * Makes a request to change the password of a user that is already authenticated
    *
-   * @param submitResetForm `SubmitResetForm` object
+   * @param newEmail The new email address
    *
-   * @returns HTTP response of request
+   * @returns HTTP sttus of the request
    */
-  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
-    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/send/" + submitResetForm.email, { observe: "response" }));
+  async setEmail(newEmail: string): Promise<ApiResponseOptions> {
+    const req = await lastValueFrom(this.http.post<ApiResponse<User>>("/api/auth/reset/email/set", { newEmail: newEmail }, { observe: "response" }));
 
     if (req.status === 429) {
       return ApiResponseOptions.Ratelimit;
@@ -54,6 +50,23 @@ export class AuthService {
     } else if (req.body) {
       return req.body.status;
     } else return "error";
+  }
+
+  /**
+   * Makes a request to submit a password reset based on information from `SubmitResetForm`
+   *
+   * @param submitResetForm `SubmitResetForm` object
+   *
+   * @returns HTTP response of request
+   */
+  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
+    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/send/" + submitResetForm.email, { observe: "response" }));
+
+    if (req.status === 429) {
+      return ApiResponseOptions.Ratelimit;
+    } else if (req.body) {
+      return ApiResponseOptions.Success;
+    } else return ApiResponseOptions.Fail;
   }
 
   /**
