@@ -28,7 +28,7 @@ export class S3StorageProvider implements StorageProvider {
 
     const content = await file.Body.transformToByteArray();
 
-    return { path, content };
+    return { fileName: path, content };
   }
 
   public async putFile(path: string, data: Buffer) {
@@ -49,7 +49,10 @@ export class S3StorageProvider implements StorageProvider {
       files.Contents.map(async ({ Key }) => {
         const file = await this.s3.getObject({ Key, Bucket: this.bucket });
 
-        return { path: Key, content: await file.Body.transformToByteArray() };
+        return {
+          fileName: Key,
+          content: await file.Body.transformToByteArray(),
+        };
       })
     );
 

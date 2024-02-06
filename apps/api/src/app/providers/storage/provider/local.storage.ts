@@ -16,7 +16,7 @@ export class LocalStorageProvider implements StorageProvider {
 
     if (!fs.existsSync(filePath)) return null;
 
-    return { path, content: await fs.promises.readFile(filePath) };
+    return { fileName: path, content: await fs.promises.readFile(filePath) };
   }
 
   public async putFile(path: string, data: Uint8Array) {
@@ -35,9 +35,9 @@ export class LocalStorageProvider implements StorageProvider {
 
     const filenames = await fs.promises.readdir(path);
     const files: File[] = await Promise.all(
-      filenames.map(async (filename) => ({
-        path: filename,
-        content: await fs.promises.readFile(node_path.join(path, filename)),
+      filenames.map(async (fileName) => ({
+        fileName,
+        content: await fs.promises.readFile(node_path.join(path, fileName)),
       }))
     );
 

@@ -1,4 +1,4 @@
 export interface File {
-  path: string;
+  fileName: string;
   content: Uint8Array;
 }
