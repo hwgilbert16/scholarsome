@@ -71,6 +71,7 @@ Quill.register("modules/imageResize", ImageResize);
     QuillConfigModule.forRoot({
       modules: {
         imageResize: true,
+        formula: true,
         keyboard: {
           bindings: {
             tab: {
@@ -96,7 +97,7 @@ Quill.register("modules/imageResize", ImageResize);
         },
         toolbar: [
           ["bold", "italic", "underline", "strike"],
-          ["code-block"],
+          ["code-block", "formula"],
           [{ list: "ordered" }, { list: "bullet" }],
           [{ header: 1 }, { header: 2 }],
           [{ color: [] }, { background: [] }],

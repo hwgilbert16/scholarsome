@@ -33,7 +33,8 @@
         ],
         "scripts": [
           "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
-          "node_modules/quill/dist/quill.min.js"
+          "node_modules/quill/dist/quill.min.js",
+          "node_modules/katex/dist/katex.min.js"
         ],
         "ngxEnv": {
           "prefix": "SCHOLARSOME_"
