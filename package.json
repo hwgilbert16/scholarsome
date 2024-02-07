@@ -88,7 +88,7 @@
     "ngx-cookie": "^6.0.1",
     "ngx-device-detector": "^5.0.1",
     "ngx-quill": "^20.0.0",
-    "nodemailer": "^6.8.0",
+    "nodemailer": "^6.9.9",
     "nx": "15.9.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
