@@ -89,6 +89,37 @@ export class SetsService {
   }
 
   /**
+   * Shifts the index of all cards in a set with an index greater than or equal to startIndex a specified amount
+   *
+   * @param setId ID of the set
+   * @param startIndex The index to start the shift at
+   * @param shiftAmount The amount to shift each index
+   *
+   * @returns Void
+   */
+  public async shiftCardIndices(
+      setId: string,
+      startIndex: number,
+      shiftAmount: number
+  ): Promise<void> {
+    const cardsToUpdate = await this.prisma.card.findMany({
+      where: {
+        index: { gte: startIndex },
+        setId: setId
+      }
+    });
+
+    const updates = cardsToUpdate.map((card) => {
+      return this.prisma.card.update({
+        where: { id: card.id },
+        data: { index: card.index + shiftAmount }
+      });
+    });
+
+    await Promise.all(updates);
+  }
+
+  /**
    * Queries the database for a unique set
    *
    * @param setWhereUniqueInput Prisma `SetWhereUniqueInput` selector

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
 
@@ -8,6 +8,7 @@ export class CardWithIdValidator {
     id: string;
 
   @IsNumber()
+  @Min(0)
   @IsNotEmpty()
     index: number;
 
