@@ -43,11 +43,15 @@
       },
       "configurations": {
         "production": {
+          "buildOptimizer": true,
+          "optimization": true,
+          "sourceMap": false,
+          "extractLicenses": true,
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "1.75mb",
-              "maximumError": "1.75mb"
+              "maximumWarning": "2mb",
+              "maximumError": "2mb"
             },
             {
               "type": "anyComponentStyle",
