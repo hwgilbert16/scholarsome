@@ -90,7 +90,7 @@ export class CardsService {
           fs.writeFileSync(path.join(filePath, fileName), decoded);
         }
 
-        side = side.replace(source, "/api/media/sets/" + fileName);
+        side = side.replace(source, "/api/sets/" + setId + "/media/" + fileName);
       }
     } else return false;
 
@@ -138,7 +138,6 @@ export class CardsService {
       include: { set: true, media: true }
     });
   }
-
 
   /**
    * Queries the database for multiple cards

@@ -37,7 +37,7 @@ import { ErrorResponse } from "../shared/response/error.response";
 import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Cards")
-@Controller("cards")
+@Controller("sets/cards")
 export class CardsController {
   /**
    * @ignore

@@ -39,8 +39,7 @@ import { SetAvatarDto } from "./dto/setAvatar.dto";
 import { UserIdParam } from "../users/param/userId.param";
 import { AuthService } from "../auth/auth.service";
 
-@ApiTags("Media")
-@Controller("media")
+@Controller()
 export class MediaController {
   constructor(
     private readonly setsService: SetsService,
@@ -48,6 +47,7 @@ export class MediaController {
     private readonly authService: AuthService
   ) {}
 
+  @ApiTags("Sets")
   @ApiOperation({
     summary: "Get a set media file",
     description: "Retrieves a media file that is attached to a set"
@@ -59,7 +59,7 @@ export class MediaController {
     description: "Resource not found or inaccessible",
     type: ErrorResponse
   })
-  @Get("/sets/:setId/:file")
+  @Get(["sets/:setId/media/:file", "media/sets/:setId/:file"])
   async getSetFile(@Param() params: SetIdAndFileParam, @Request() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
     const set = await this.setsService.set({
       id: params.setId
@@ -121,6 +121,24 @@ export class MediaController {
     }
   }
 
+  @ApiTags("Sets")
+  @ApiOperation({
+    summary: "Get a set media file",
+    description: "Retrieves a media file that is attached to a set. Deprecated URL - see route above for correct URL.",
+    deprecated: true
+  })
+  @ApiOkResponse({
+    description: "File content"
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @Get("media/sets/:setId/:file")
+  // eslint-disable-next-line no-empty-function
+  async getSetFileDeprecatedUrl() {}
+
+  @ApiTags("Users")
   @ApiOperation({
     summary: "Get the avatar of the authenticated user",
     description: "Retrieves the avatar of the authenticated user"
@@ -143,7 +161,7 @@ export class MediaController {
     required: false
   })
   @UseGuards(AuthenticatedGuard)
-  @Get("/avatars/me")
+  @Get("users/me/avatar")
   async getMyAvatar(
     @Request() req: ExpressRequest,
     @Res({ passthrough: true }) res: Response,
@@ -220,6 +238,7 @@ export class MediaController {
     }
   }
 
+  @ApiTags("Users")
   @ApiOperation({
     summary: "Get a avatar",
     description: "Retrieves a user avatar based on their user ID"
@@ -241,7 +260,7 @@ export class MediaController {
     description: "The height of the returned image",
     required: false
   })
-  @Get("/avatars/:userId")
+  @Get("users/:userId/avatar")
   async getAvatar(
     @Param() params: UserIdParam,
     @Request() req: ExpressRequest,
@@ -316,10 +335,11 @@ export class MediaController {
     }
   }
 
+  @ApiTags("Users")
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @ApiOperation({
-    summary: "Set a user's avatar"
+    summary: "Set the authenticated user's avatar"
   })
   @ApiOkResponse({
     description: "Expected response to a valid request"
@@ -328,7 +348,7 @@ export class MediaController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Post("/avatars")
+  @Post("user/me/avatar")
   async setAvatar(@Body() setAvatarDto: SetAvatarDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException();
 
@@ -368,6 +388,7 @@ export class MediaController {
     };
   }
 
+  @ApiTags("Users")
   @UseGuards(AuthenticatedGuard)
   @ApiOperation({
     summary: "Delete the authenticated user's avatar"
@@ -379,7 +400,7 @@ export class MediaController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Delete("/avatars/me")
+  @Delete("user/me/avatar")
   async deleteAvatar(@Request() req: ExpressRequest) {
     const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });

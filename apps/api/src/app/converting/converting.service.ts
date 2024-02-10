@@ -595,8 +595,6 @@ export class ConvertingService {
                   const name = crypto.randomUUID();
                   media.push(name + extension);
 
-                  const fileName = setId + "/" + name + extension;
-
                   // upload to s3
                   if (
                     this.configService.get<string>("STORAGE_TYPE") === "s3" ||
@@ -611,7 +609,7 @@ export class ConvertingService {
                       region: this.configService.get<string>("S3_STORAGE_REGION")
                     });
 
-                    await s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + fileName });
+                    await s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId + "/" + name + extension });
                   }
 
                   // upload locally
@@ -621,12 +619,12 @@ export class ConvertingService {
                     if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
                     if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId), { recursive: true });
 
-                    fs.writeFileSync(path.join(filePath, fileName), file);
+                    fs.writeFileSync(path.join(filePath, setId, name + extension), file);
                   }
 
                   // replace src with new fileName
-                  cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/media/sets/" + fileName);
-                  cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/media/sets/" + fileName);
+                  cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/sets/" + setId + "/media/" + name + extension);
+                  cards[i].definition = cards[i].definition.replace(mediaLegend[x][1], "/api/sets/" + setId + "/media/" + name + extension);
 
                   break;
                 }

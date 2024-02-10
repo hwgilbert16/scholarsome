@@ -49,7 +49,7 @@ import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Converting")
 @UseGuards(ThrottlerGuard)
-@Controller("converting")
+@Controller("sets/converting")
 export class ConvertingController {
   constructor(
     private readonly setsService: SetsService,

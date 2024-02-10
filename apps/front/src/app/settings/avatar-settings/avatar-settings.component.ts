@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { MediaService } from "../../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { SharedService } from "../../shared/shared.service";
+import { UsersService } from "../../shared/http/users.service";
 
 @Component({
   selector: "scholarsome-avatar-settings",
@@ -10,7 +10,7 @@ import { SharedService } from "../../shared/shared.service";
 })
 export class AvatarSettingsComponent implements OnInit {
   constructor(
-    private readonly mediaService: MediaService,
+    private readonly usersService: UsersService,
     private readonly sanitizer: DomSanitizer,
     private readonly sharedService: SharedService
   ) {}
@@ -27,7 +27,7 @@ export class AvatarSettingsComponent implements OnInit {
     this.changeClicked = true;
     this.changeError = false;
 
-    const response = await this.mediaService.setAvatar(this.newAvatar);
+    const response = await this.usersService.setMyAvatar(this.newAvatar);
 
     this.changeError = !response;
 
@@ -38,7 +38,7 @@ export class AvatarSettingsComponent implements OnInit {
   }
 
   async viewAvatar() {
-    const avatar = await this.mediaService.getMyAvatar(128, 128);
+    const avatar = await this.usersService.getMyAvatar(128, 128);
 
     if (avatar) {
       this.existingAvatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
@@ -50,7 +50,7 @@ export class AvatarSettingsComponent implements OnInit {
   async deleteAvatar() {
     this.deleteClicked = true;
 
-    await this.mediaService.deleteMyAvatar();
+    await this.usersService.deleteMyAvatar();
     this.sharedService.avatarUpdateEvent.next();
 
     this.existingAvatarUrl = null;
