@@ -135,7 +135,7 @@
       <div class="container-fluid" [hidden]="!isEditing">
         <div class="row">
           <div class="card bg-white">
-            <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard({ editingEnabled: true })">
+            <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard({ editingEnabled: true, isSaved: false })">
               <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>
             </div>
           </div>
@@ -145,7 +145,7 @@
       <div class="container-fluid" [hidden]="!isEditing">
         <div class="row">
           <div class="card my-3 bg-white">
-            <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard({ editingEnabled: true })">
+            <div class="card-body d-flex justify-content-center mt-2 fs-4 new-card" (click)="addCard({ editingEnabled: true, isSaved: false })">
               <p><fa-icon [icon]="['far', 'plus-square']" class="pe-1"></fa-icon>Add new card</p>
             </div>
           </div>

@@ -30,17 +30,20 @@ export class CardComponent implements OnInit, AfterViewInit {
     public readonly sanitizer: DomSanitizer
   ) {}
 
+  protected changingTerm: string;
+  protected changingDefinition: string;
+
   @Input() editingEnabled = false;
 
   @Input() cardId: string;
   @Input() cardIndex: number;
 
+  @Input() originalIndex: number;
+  @Input() isSaved: boolean;
+
   @Input() upArrow = true;
   @Input() downArrow = true;
   @Input() trashCan = true;
-
-  @Input() termValue?: string;
-  @Input() definitionValue?: string;
 
   @Output() addCardEvent = new EventEmitter();
   @Output() deleteCardEvent = new EventEmitter<number>();
@@ -48,16 +51,16 @@ export class CardComponent implements OnInit, AfterViewInit {
   @Output() editCardEvent = new EventEmitter();
 
   @ViewChild("card", { static: false }) cardElement: Element;
-  @ViewChild("term", { static: false }) termElement: ElementRef;
-  @ViewChild("definition", { static: false }) definitionElement: ElementRef;
+  @ViewChild("termDiv", { static: false }) termElement: ElementRef;
+  @ViewChild("definitionDiv", { static: false }) definitionElement: ElementRef;
   @ViewChild("inputsContainer", { static: false, read: ViewContainerRef }) inputsContainer: ViewContainerRef;
 
   @ViewChild("editModal") modal: TemplateRef<HTMLElement>;
 
   // these two vars exist so that we can prevent the main card
   // from updating while a card is being edited
-  protected mainTerm: string;
-  protected mainDefinition: string;
+  protected actualTerm: string;
+  protected actualDefinition: string;
 
   protected emptyCardAlert = false;
 
@@ -67,8 +70,8 @@ export class CardComponent implements OnInit, AfterViewInit {
   protected readonly faPenToSquare = faPenToSquare;
 
   ngOnInit() {
-    this.mainTerm = this.termValue ? this.termValue : "";
-    this.mainDefinition = this.definitionValue ? this.definitionValue : "";
+    this.actualTerm = this.changingTerm ? this.changingTerm : "";
+    this.actualDefinition = this.changingDefinition ? this.changingDefinition : "";
 
     this.isMobile = this.deviceService.isMobile();
   }
@@ -81,13 +84,13 @@ export class CardComponent implements OnInit, AfterViewInit {
     otherwise it's distracting to see changes in the background while typing
      */
     this.bsModalService.onShow.subscribe(() => {
-      this.mainTerm = String(this.mainTerm) as string;
-      this.mainDefinition = String(this.mainDefinition) as string;
+      this.actualTerm = String(this.actualTerm) as string;
+      this.actualDefinition = String(this.actualDefinition) as string;
     });
 
     this.bsModalService.onHide.subscribe(() => {
-      this.mainTerm = this.termValue ? this.termValue : "";
-      this.mainDefinition = this.definitionValue ? this.definitionValue : "";
+      this.actualTerm = this.changingTerm ? this.changingTerm : "";
+      this.actualDefinition = this.changingDefinition ? this.changingDefinition : "";
     });
 
     // scroll to bottom of cards list
@@ -98,20 +101,30 @@ export class CardComponent implements OnInit, AfterViewInit {
     // open the edit modal when new cards are added
     if (
       this.editingEnabled &&
-      !this.termValue &&
-      !this.definitionValue &&
+      !this.changingTerm &&
+      !this.changingDefinition &&
       (this.upArrow || this.downArrow)
     ) {
       this.openEditModal();
     }
   }
 
+  @Input()
   get term(): string {
-    return this.mainTerm;
+    return this.actualTerm;
+  }
+  set term(value: string) {
+    this.changingTerm = value;
+    this.actualTerm = value;
   }
 
+  @Input()
   get definition(): string {
-    return this.mainDefinition;
+    return this.actualDefinition;
+  }
+  set definition(value: string) {
+    this.changingDefinition = value;
+    this.actualDefinition = value;
   }
 
   openEditModal() {
