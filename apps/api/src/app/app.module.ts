@@ -2,7 +2,7 @@ import {
   MiddlewareConsumer,
   Module,
   NestModule,
-  RequestMethod
+  RequestMethod,
 } from "@nestjs/common";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
@@ -19,6 +19,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { MediaModule } from "./media/media.module";
 import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
 import { ConvertingModule } from "./converting/converting.module";
+import { StorageModule } from "./providers/storage/storage.module";
 
 @Module({
   imports: [
@@ -26,20 +27,20 @@ import { ConvertingModule } from "./converting/converting.module";
       rootPath: join(__dirname, "..", "front"),
       serveStaticOptions: {
         cacheControl: true,
-        maxAge: 31536000
+        maxAge: 31536000,
       },
-      exclude: ["/api/(.*)", "/handbook/(.*)"]
+      exclude: ["/api/(.*)", "/handbook/(.*)"],
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "docs"),
       serveRoot: "/handbook",
       serveStaticOptions: {
         cacheControl: true,
-        maxAge: 31536000
-      }
+        maxAge: 31536000,
+      },
     }),
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     RedisModule.forRootAsync({
       inject: [ConfigService],
@@ -48,24 +49,25 @@ import { ConvertingModule } from "./converting/converting.module";
           host: configService.get<string>("REDIS_HOST"),
           port: configService.get<number>("REDIS_PORT"),
           username: configService.get<string>("REDIS_USERNAME"),
-          password: configService.get<string>("REDIS_PASSWORD")
+          password: configService.get<string>("REDIS_PASSWORD"),
         },
         config: [
           {
             namespace: "apiToken",
             keyPrefix: "apiToken&",
-            name: "apiToken"
+            name: "apiToken",
           },
           {
-            namespace: "default"
-          }
-        ]
-      })
+            namespace: "default",
+          },
+        ],
+      }),
     }),
     AuthModule,
     DatabaseModule,
     SetsModule,
     MailModule,
+    StorageModule,
     CardsModule,
     UsersModule,
     MediaModule,
@@ -73,17 +75,17 @@ import { ConvertingModule } from "./converting/converting.module";
       ...JwtModule.registerAsync({
         useFactory: (configService: ConfigService) => ({
           secret: configService.get("JWT_SECRET"),
-          signOptions: { expiresIn: "14d" }
+          signOptions: { expiresIn: "14d" },
         }),
-        inject: [ConfigService]
+        inject: [ConfigService],
       }),
-      global: true
+      global: true,
     },
-    ConvertingModule
+    ConvertingModule,
   ],
   controllers: [],
   providers: [],
-  exports: [JwtModule]
+  exports: [JwtModule],
 })
 export class AppModule implements NestModule {
   constructor(private configService: ConfigService) {}
@@ -95,12 +97,12 @@ export class AppModule implements NestModule {
       this.configService.get<string>("SSL_KEY_PATH").length > 0
     ) {
       consumer
-          .apply(HttpsRedirectMiddleware)
-          .forRoutes({ path: "*", method: RequestMethod.ALL });
+        .apply(HttpsRedirectMiddleware)
+        .forRoutes({ path: "*", method: RequestMethod.ALL });
     }
 
     consumer
-        .apply(TokenRefreshMiddleware)
-        .forRoutes({ path: "*", method: RequestMethod.ALL });
+      .apply(TokenRefreshMiddleware)
+      .forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }
