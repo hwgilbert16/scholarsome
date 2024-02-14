@@ -48,6 +48,7 @@ export class CardComponent implements OnInit, AfterViewInit {
   @Output() addCardEvent = new EventEmitter();
   @Output() deleteCardEvent = new EventEmitter<number>();
   @Output() moveCardEvent = new EventEmitter<{ index: number, direction: number }>();
+  @Output() indexChangeEvent = new EventEmitter<{ newIndex: number }>();
   @Output() editCardEvent = new EventEmitter();
 
   @ViewChild("card", { static: false }) cardElement: Element;

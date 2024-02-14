@@ -197,6 +197,17 @@ export class StudySetComponent implements OnInit {
       }
     });
 
+    card.instance.indexChangeEvent.subscribe((e) => {
+      if (this.cards.length > 1) {
+        this.cards.splice(e.newIndex, 0, this.cards.splice(card.instance.cardIndex, 1)[0]);
+
+        this.cardsContainer.move(card.hostView, e.newIndex);
+        card.instance.cardIndex = e.newIndex;
+
+        this.updateCardIndices();
+      }
+    });
+
     card.instance.addCardEvent.subscribe(() => {
       this.addCard({ editingEnabled: true, isSaved: false });
     });
@@ -273,9 +284,8 @@ export class StudySetComponent implements OnInit {
     }
     this.set = updated;
 
-    for (let i = 0; i < updated.cards.length; i++) {
-      this.cards[i].instance.cardId = updated.cards[i].id;
-    }
+    this.cards = [];
+    this.cardsContainer.clear();
 
     this.isEditing = false;
     this.saveInProgress = false;
@@ -316,10 +326,14 @@ export class StudySetComponent implements OnInit {
 
         const index = this.set.cards.findIndex((c) => c.index === this.cards[i].instance.originalIndex);
 
-        this.cards[i].instance.editingEnabled = false;
         this.cards[i].instance.term = this.set.cards[index].term;
         this.cards[i].instance.definition = this.set.cards[index].definition;
-        this.cards[i].instance.cardIndex = this.cards[i].instance.originalIndex;
+
+        if (this.cards[i].instance.cardIndex !== this.cards[i].instance.originalIndex) {
+          this.cards[i].instance.indexChangeEvent.emit({ newIndex: this.cards[i].instance.originalIndex });
+        }
+
+        this.cards[i].instance.editingEnabled = false;
       }
 
       this.updateCardIndices();
