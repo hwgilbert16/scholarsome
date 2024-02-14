@@ -191,8 +191,8 @@ export class CreateStudySetComponent implements OnInit, AfterViewInit {
     const card = this.cardContainer.createComponent<CardComponent>(CardComponent);
 
     card.instance.cardIndex = config?.index ? config.index : this.cardContainer.length - 1;
-    card.instance.termValue = config?.term ? config.term : "";
-    card.instance.definitionValue = config?.definition ? config.definition : "";
+    card.instance.term = config?.term ? config.term : "";
+    card.instance.definition = config?.definition ? config.definition : "";
     card.instance.editingEnabled = true;
 
     card.instance.deleteCardEvent.subscribe((e) => {
@@ -239,8 +239,8 @@ export class CreateStudySetComponent implements OnInit, AfterViewInit {
 
     this.cards.push({
       cardIndexRef: () => card.instance.cardIndex,
-      termRef: () => card.instance.termValue ? card.instance.termValue : "",
-      definitionRef: () => card.instance.definitionValue ? card.instance.definitionValue : ""
+      termRef: () => card.instance.term ? card.instance.term : "",
+      definitionRef: () => card.instance.definition ? card.instance.definition : ""
     });
 
     this.saveProgress();

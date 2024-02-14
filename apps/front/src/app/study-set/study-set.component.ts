@@ -153,7 +153,9 @@ export class StudySetComponent implements OnInit {
 
   addCard(opts: {
     id?: string;
+    isSaved: boolean;
     index?: number;
+    originalIndex?: number;
     editingEnabled: boolean;
     upArrow?: boolean;
     downArrow?: boolean;
@@ -164,13 +166,15 @@ export class StudySetComponent implements OnInit {
     const card = this.cardsContainer.createComponent<CardComponent>(CardComponent);
 
     card.instance.cardId = opts.id ? opts.id : "";
+    card.instance.isSaved = opts.isSaved;
     card.instance.cardIndex = opts.index ? opts.index : this.cards.length;
+    card.instance.originalIndex = opts.originalIndex ? opts.originalIndex : this.cards.length;
     card.instance.editingEnabled = opts.editingEnabled;
     card.instance.upArrow = opts.upArrow ? opts.upArrow : false;
     card.instance.downArrow = opts.downArrow ? opts.downArrow : false;
     card.instance.trashCan = opts.trashCan ? opts.trashCan : false;
-    card.instance.termValue = opts.term ? opts.term : "";
-    card.instance.definitionValue = opts.definition ? opts.definition : "";
+    card.instance.term = opts.term ? opts.term : "";
+    card.instance.definition = opts.definition ? opts.definition : "";
 
     card.instance.deleteCardEvent.subscribe((e) => {
       if (this.cardsContainer.length > 1) {
@@ -193,8 +197,19 @@ export class StudySetComponent implements OnInit {
       }
     });
 
+    card.instance.indexChangeEvent.subscribe((e) => {
+      if (this.cards.length > 1) {
+        this.cards.splice(e.newIndex, 0, this.cards.splice(card.instance.cardIndex, 1)[0]);
+
+        this.cardsContainer.move(card.hostView, e.newIndex);
+        card.instance.cardIndex = e.newIndex;
+
+        this.updateCardIndices();
+      }
+    });
+
     card.instance.addCardEvent.subscribe(() => {
-      this.addCard({ editingEnabled: true });
+      this.addCard({ editingEnabled: true, isSaved: false });
     });
 
     this.cards.push(card);
@@ -228,8 +243,6 @@ export class StudySetComponent implements OnInit {
 
     for (const card of this.cards) {
       card.instance.editingEnabled = false;
-      card.instance.termValue = card.instance.term;
-      card.instance.definitionValue = card.instance.definition;
     }
 
     this.set.description = this.editDescription.nativeElement.value;
@@ -271,9 +284,8 @@ export class StudySetComponent implements OnInit {
     }
     this.set = updated;
 
-    for (let i = 0; i < updated.cards.length; i++) {
-      this.cards[i].instance.cardId = updated.cards[i].id;
-    }
+    this.cards = [];
+    this.cardsContainer.clear();
 
     this.isEditing = false;
     this.saveInProgress = false;
@@ -283,22 +295,48 @@ export class StudySetComponent implements OnInit {
   viewCards() {
     this.isEditing = false;
 
-    this.cards = [];
-    this.cardsContainer.clear();
+    // if viewCards is called because page is loading
+    if (this.cards.length === 0) {
+      this.cards = [];
+      this.cardsContainer.clear();
 
-    if (this.set) {
-      // sort the cards by index
-      for (const card of this.set.cards.sort((a, b) => {
-        return a.index - b.index;
-      })) {
-        this.addCard({
-          id: card.id,
-          index: card.index,
-          editingEnabled: false,
-          term: card.term,
-          definition: card.definition
-        });
+      if (this.set) {
+        // sort the cards by index
+        for (const card of this.set.cards.sort((a, b) => {
+          return a.index - b.index;
+        })) {
+          this.addCard({
+            id: card.id,
+            isSaved: true,
+            index: card.index,
+            editingEnabled: false,
+            term: card.term,
+            definition: card.definition
+          });
+        }
       }
+    } else {
+      // if viewCards is called because editing was canceled
+      for (let i = this.cards.length - 1; i >= 0; i--) {
+        if (!this.cards[i].instance.isSaved) {
+          this.cards[i].destroy();
+          this.cards.splice(i, 1);
+          continue;
+        }
+
+        const index = this.set.cards.findIndex((c) => c.index === this.cards[i].instance.originalIndex);
+
+        this.cards[i].instance.term = this.set.cards[index].term;
+        this.cards[i].instance.definition = this.set.cards[index].definition;
+
+        if (this.cards[i].instance.cardIndex !== this.cards[i].instance.originalIndex) {
+          this.cards[i].instance.indexChangeEvent.emit({ newIndex: this.cards[i].instance.originalIndex });
+        }
+
+        this.cards[i].instance.editingEnabled = false;
+      }
+
+      this.updateCardIndices();
     }
   }
 

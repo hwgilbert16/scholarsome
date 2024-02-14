@@ -15,7 +15,6 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
-import { MediaService } from "../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
 import { UsersService } from "../shared/http/users.service";
@@ -79,7 +78,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
     private readonly sharedService: SharedService,
-    private readonly mediaService: MediaService,
     private readonly sanitizer: DomSanitizer,
     private readonly usersService: UsersService,
     public readonly cookieService: CookieService
@@ -91,7 +89,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async viewAvatar() {
-    const avatar = await this.mediaService.getMyAvatar(64, 64);
+    const avatar = await this.usersService.getMyAvatar(64, 64);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));

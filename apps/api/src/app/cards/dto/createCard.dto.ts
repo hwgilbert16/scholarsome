@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
@@ -17,7 +17,8 @@ export class CreateCardDto {
     example: 0
   })
   @IsNumber()
-  @IsNotEmpty()
+  @Min(0)
+  @IsOptional()
     index: number;
 
   @ApiProperty({

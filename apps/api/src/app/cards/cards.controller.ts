@@ -37,7 +37,7 @@ import { ErrorResponse } from "../shared/response/error.response";
 import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Cards")
-@Controller("cards")
+@Controller("sets/cards")
 export class CardsController {
   /**
    * @ignore
@@ -127,6 +127,27 @@ export class CardsController {
       throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
+    const set = await this.setsService.set({ id: body.setId });
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+
+    let index = body.index;
+    const indices = set.cards.map((c) => c.index)
+        .sort((a, b) => a - b);
+
+    if (indices.includes(body.index)) {
+      // if the index already exists
+      await this.setsService.shiftCardIndices(set.id, body.index, 1);
+
+      index = body.index;
+    } else if (body.index > indices[indices.length - 1] + 1) {
+      // if the provided index is greater than +1 of the existing highest index
+      index = indices[indices.length - 1] + 1;
+    } else if (!body.index) {
+      // if no provided index
+      // index is +1 of the index of the last card in the set
+      index = indices[indices.length - 1] + 1;
+    }
+
     let media = [];
 
     const termScanned = await this.cardsService.scanAndUploadMedia(body.term, body.setId);
@@ -144,7 +165,7 @@ export class CardsController {
     return {
       status: ApiResponseOptions.Success,
       data: await this.cardsService.createCard({
-        index: body.index,
+        index: index,
         term: body.term,
         definition: body.definition,
         media: {

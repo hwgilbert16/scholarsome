@@ -376,6 +376,7 @@ export class SetsController {
           createMany: {
             data: body.cards.map((c) => {
               return {
+                id: c.id,
                 index: c.index,
                 term: c.term,
                 definition: c.definition
