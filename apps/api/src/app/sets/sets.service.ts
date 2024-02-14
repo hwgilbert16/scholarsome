@@ -5,17 +5,14 @@ import { Set } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
 import jwt_decode from "jwt-decode";
 import { UsersService } from "../users/users.service";
-import { ConfigService } from "@nestjs/config";
-import * as fs from "fs";
-import * as path from "path";
-import { S3 } from "@aws-sdk/client-s3";
+import { StorageService } from "../providers/storage/storage.service";
 
 @Injectable()
 export class SetsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService
+    private readonly storageService: StorageService
   ) {}
 
   /**
@@ -24,38 +21,7 @@ export class SetsService {
    * @param setId ID of the set to delete media from
    */
   async deleteSetMediaFiles(setId: string): Promise<void> {
-    if (
-      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
-      this.configService.get<string>("STORAGE_TYPE") === "S3"
-    ) {
-      const s3 = await new S3({
-        credentials: {
-          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-        },
-        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-        region: this.configService.get<string>("S3_STORAGE_REGION")
-      });
-
-      const listedObjects = await s3.listObjectsV2( { Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Prefix: "media/sets/" + setId } );
-      if (!listedObjects.Contents || listedObjects.Contents.length === 0) return;
-
-      const objects: { Key: string }[] = [];
-
-      for (const object of listedObjects.Contents) {
-        objects.push({ Key: object.Key });
-      }
-
-      await s3.deleteObjects({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Delete: { Objects: objects } });
-      await s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId });
-    }
-
-    if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId);
-
-      if (!fs.existsSync(filePath)) return;
-      fs.rmSync(filePath, { recursive: true, force: true });
-    }
+    return await this.storageService.getInstance().deleteDirectoryFiles("media/sets/" + setId);
   }
 
   /**

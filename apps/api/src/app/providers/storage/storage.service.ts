@@ -8,7 +8,7 @@ import { LocalStorageProvider } from "./provider/local.storage";
 
 @Injectable()
 export class StorageService {
-  private storageProvider: StorageProvider;
+  private readonly storageProvider: StorageProvider;
 
   constructor(
     private readonly configService: ConfigService,
@@ -17,9 +17,9 @@ export class StorageService {
     const storageOptions = storageConfig.createStorageOptions();
 
     this.storageProvider =
-      storageOptions.storageType === StorageType.S3
-        ? new S3StorageProvider(configService)
-        : new LocalStorageProvider(configService);
+      storageOptions.storageType === StorageType.S3 ?
+        new S3StorageProvider(configService) :
+        new LocalStorageProvider(configService);
   }
 
   /**

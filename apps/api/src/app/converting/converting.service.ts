@@ -1,21 +1,20 @@
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { CardsService } from "../cards/cards.service";
 import { GeneralCard, AnkiNote, Set } from "@scholarsome/shared";
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import AdmZip = require("adm-zip");
-import { GetObjectCommandOutput, S3 } from "@aws-sdk/client-s3";
 import { parse } from "csv-parse/sync";
 import * as Database from "better-sqlite3";
 import * as sharp from "sharp";
+import { StorageService } from "../providers/storage/storage.service";
 
 @Injectable()
 export class ConvertingService {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly cardsService: CardsService
+    private readonly cardsService: CardsService,
+    private readonly storageService: StorageService
   ) {}
 
   /**
@@ -281,46 +280,10 @@ export class ConvertingService {
 
           mediaJson[mediaCounter.toString()] = fileName;
 
-          let file: Buffer;
+          const file = await this.storageService.getInstance()
+              .getFile("media/sets/" + set.id + "/" + fileName);
 
-          // get file from s3
-          if (
-            this.configService.get<string>("STORAGE_TYPE") === "s3" ||
-            this.configService.get<string>("STORAGE_TYPE") === "S3"
-          ) {
-            const s3 = await new S3({
-              credentials: {
-                accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-                secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-              },
-              endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-              region: this.configService.get<string>("S3_STORAGE_REGION")
-            });
-
-            const s3File = await s3.getObject({
-              Key: "media/sets/" + set.id + "/" + fileName,
-              Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
-            });
-
-            if (s3File) {
-              file = Buffer.from(await s3File.Body.transformToByteArray());
-            } else continue;
-          }
-
-          // get file locally
-          if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-            const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", set.id, fileName);
-
-            if (fs.existsSync(filePath)) {
-              const localFile = fs.readFileSync(filePath);
-
-              if (localFile) {
-                file = localFile;
-              } else continue;
-            }
-          }
-
-          apkg.addFile(mediaCounter.toString(), file);
+          apkg.addFile(mediaCounter.toString(), Buffer.from(file.content));
           mediaCounter++;
         }
       }
@@ -346,7 +309,9 @@ export class ConvertingService {
       );
     }
 
+    // convert db to buffer
     const serialized = db.serialize();
+
     db.close();
 
     apkg.addFile("collection.anki2", serialized);
@@ -415,42 +380,12 @@ export class ConvertingService {
     if (!media) return false;
     if (media.length === 0) return null;
 
-    if (
-      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
-      this.configService.get<string>("STORAGE_TYPE") === "S3"
-    ) {
-      const s3 = await new S3({
-        credentials: {
-          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-        },
-        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-        region: this.configService.get<string>("S3_STORAGE_REGION")
-      });
+    const files = await this.storageService.getInstance()
+        .getDirectoryFiles("media/sets/" + setId);
 
-      for (const mediaFile of media) {
-        let file: GetObjectCommandOutput;
-
-        try {
-          file = await s3.getObject({
-            Key: "media/sets/" + setId + "/" + mediaFile.name,
-            Bucket: this.configService.get<string>("S3_STORAGE_BUCKET")
-          });
-        } catch (e) {
-          return false;
-        }
-
-        zip.addFile(mediaFile.name, Buffer.from(await file.Body.transformToByteArray()));
-      }
-    } else {
-      for (const mediaFile of media) {
-        const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId, mediaFile.name);
-
-        if (fs.existsSync(filePath)) {
-          zip.addFile(mediaFile.name, fs.readFileSync(filePath));
-        }
-      }
-    }
+    files.map((file) => zip.addFile(
+        file.fileName, Buffer.from(file.content)
+    ));
 
     return zip.toBuffer();
   }
@@ -595,32 +530,8 @@ export class ConvertingService {
                   const name = crypto.randomUUID();
                   media.push(name + extension);
 
-                  // upload to s3
-                  if (
-                    this.configService.get<string>("STORAGE_TYPE") === "s3" ||
-                    this.configService.get<string>("STORAGE_TYPE") === "S3"
-                  ) {
-                    const s3 = await new S3({
-                      credentials: {
-                        accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-                        secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-                      },
-                      endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-                      region: this.configService.get<string>("S3_STORAGE_REGION")
-                    });
-
-                    await s3.putObject({ Body: file, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId + "/" + name + extension });
-                  }
-
-                  // upload locally
-                  if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-                    const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets");
-
-                    if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
-                    if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId), { recursive: true });
-
-                    fs.writeFileSync(path.join(filePath, setId, name + extension), file);
-                  }
+                  await this.storageService.getInstance()
+                      .putFile("media/sets/" + setId + "/" + name + extension, file);
 
                   // replace src with new fileName
                   cards[i].term = cards[i].term.replace(mediaLegend[x][1], "/api/sets/" + setId + "/media/" + name + extension);

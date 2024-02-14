@@ -195,7 +195,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.sharedService.avatarUpdateEvent.subscribe(() => {
-      console.log("aaa");
       this.viewAvatar();
     });
   }

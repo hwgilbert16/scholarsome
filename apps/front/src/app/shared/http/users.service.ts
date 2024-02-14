@@ -89,7 +89,7 @@ export class UsersService {
 
     try {
       response = await lastValueFrom(
-          this.http.get("/api/users" + userId + "/avatar" +
+          this.http.get("/api/users/" + userId + "/avatar" +
          "?width=" + (width ? width : "") +
           "&height=" + (height ? height : ""),
           { responseType: "blob" })
