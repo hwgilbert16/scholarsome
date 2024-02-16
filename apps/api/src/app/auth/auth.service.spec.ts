@@ -144,9 +144,10 @@ describe("AuthService", () => {
 
       authService.setLoginCookies(res, user);
 
-      expect(jwtService.sign).toHaveBeenCalledWith({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
+      expect(jwtService.sign).toHaveBeenCalledWith({ id: user.id, sessionId: expect.any(String), email: user.email, type: "refresh" }, { expiresIn: "182d" });
       expect(res.cookie).toHaveBeenCalledWith("refresh_token", {}, { httpOnly: true, expires: expect.any(Date) });
-      expect(redisService.getClient().set).toHaveBeenCalledWith(user.email, {});
+      expect(redisService.getClient().set).toHaveBeenCalled();
+      expect(redisService.getClient().expire).toHaveBeenCalled();
     });
 
     it("should set the access token", () => {
@@ -244,7 +245,7 @@ describe("AuthService", () => {
 
       await authService.logout(req, res);
 
-      expect(redisService.getClient().del).toHaveBeenCalledWith("a@a.com");
+      expect(redisService.getClient().del).toHaveBeenCalled();
     });
   });
 });

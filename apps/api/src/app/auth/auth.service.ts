@@ -121,7 +121,7 @@ export class AuthService {
 
     res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: refreshTokenExpiry });
     this.refreshTokenRedis.set(sessionId, refreshToken);
-    this.refreshTokenRedis.expire(sessionId, (refreshTokenExpiry.getTime() - new Date().getTime()) / 1000);
+    this.refreshTokenRedis.expire(sessionId, Math.abs((refreshTokenExpiry.getTime() - new Date().getTime()) / 1000));
 
     res.cookie("access_token", this.jwtService.sign(
         {

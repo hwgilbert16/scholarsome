@@ -36,13 +36,11 @@ import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
 import { AuthService } from "../auth/auth.service";
+import { HtmlDecodePipe } from "./pipes/html-decode.pipe";
 
 @ApiTags("Sets")
 @Controller("sets")
 export class SetsController {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly setsService: SetsService,
     private readonly usersService: UsersService,
@@ -200,7 +198,7 @@ export class SetsController {
   })
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+  async createSet(@Body(HtmlDecodePipe) body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
@@ -291,7 +289,7 @@ export class SetsController {
   })
   @UseGuards(AuthenticatedGuard)
   @Patch(":setId")
-  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+  async updateSet(@Param() params: SetIdParam, @Body(HtmlDecodePipe) body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     const set = await this.setsService.set({
       id: params.setId
     });
