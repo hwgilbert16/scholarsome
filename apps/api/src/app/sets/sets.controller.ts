@@ -426,7 +426,6 @@ export class SetsController {
    *
    * @returns Deleted `Set` Object
    */
-  @UseGuards(AuthenticatedGuard)
   @ApiOperation( {
     summary: "Delete a set"
   })
@@ -438,6 +437,7 @@ export class SetsController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
+  @UseGuards(AuthenticatedGuard)
   @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
