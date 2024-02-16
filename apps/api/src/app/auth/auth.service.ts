@@ -117,9 +117,11 @@ export class AuthService {
         },
         { expiresIn: "182d" }
     );
+    const refreshTokenExpiry = new Date(new Date().setDate(new Date().getDate() + 182));
 
-    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: refreshTokenExpiry });
     this.refreshTokenRedis.set(sessionId, refreshToken);
+    this.refreshTokenRedis.expire(sessionId, (refreshTokenExpiry.getTime() - new Date().getTime()) / 1000);
 
     res.cookie("access_token", this.jwtService.sign(
         {
@@ -143,7 +145,7 @@ export class AuthService {
 
     const user = jwt.decode(req.cookies.access_token);
     if (user && "email" in (user as jwt.JwtPayload)) {
-      this.refreshTokenRedis.del(user["email"]);
+      this.refreshTokenRedis.del(user["sessionId"]);
     }
   }
 }

@@ -56,21 +56,16 @@ export class TokenRefreshMiddleware implements NestMiddleware {
   }
 
   renewAccessToken(req: Request, res: Response): boolean {
-    let refreshToken: { id: string; email: string; type: "refresh" };
-
-    if (!req.cookies["refresh_token"] || !req.cookies["refresh_token"].sessionId) {
-      this.authService.logout(req, res);
-      return true;
-    }
-
-    if (!this.redis.get(req.cookies["refresh_token"].sessionId)) {
-      this.authService.logout(req, res);
-      return true;
-    }
+    let refreshToken: { id: string; sessionId: string; email: string; type: "refresh" };
 
     try {
-      refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_SECRET")) as { id: string; email: string; type: "refresh" };
+      refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_SECRET")) as { id: string; sessionId: string; email: string; type: "refresh" };
     } catch (e) {
+      this.authService.logout(req, res);
+      return true;
+    }
+
+    if (!refreshToken.sessionId || !this.redis.get(req.cookies["refresh_token"].sessionId)) {
       this.authService.logout(req, res);
       return true;
     }

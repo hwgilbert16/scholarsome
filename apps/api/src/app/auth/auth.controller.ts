@@ -33,7 +33,6 @@ import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
 import { CreateApiKeyDto } from "./dto/createApiKey.dto";
-import { AccessTokenAuthenticatedGuard } from "./guards/accessTokenAuthenticated.guard";
 import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
@@ -484,7 +483,6 @@ export class AuthController {
    *
    * @returns Void
    */
-  @UseGuards(AccessTokenAuthenticatedGuard)
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,
