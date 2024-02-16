@@ -39,9 +39,6 @@ import { AuthService } from "../auth/auth.service";
 @ApiTags("Cards")
 @Controller("sets/cards")
 export class CardsController {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly cardsService: CardsService,
     private readonly setsService: SetsService,

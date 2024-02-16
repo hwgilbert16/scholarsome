@@ -5,9 +5,6 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class MailService {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,

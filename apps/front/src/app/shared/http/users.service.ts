@@ -7,9 +7,6 @@ import { lastValueFrom } from "rxjs";
   providedIn: "root"
 })
 export class UsersService {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly http: HttpClient
   ) {}

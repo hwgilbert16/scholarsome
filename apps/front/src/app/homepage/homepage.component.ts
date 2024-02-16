@@ -9,9 +9,6 @@ import { UsersService } from "../shared/http/users.service";
   styleUrls: ["./homepage.component.scss"]
 })
 export class HomepageComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly usersService: UsersService,
     private readonly titleService: Title,

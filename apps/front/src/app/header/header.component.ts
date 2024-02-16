@@ -69,9 +69,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly faFileCsv = faFileCsv;
   protected readonly faGear = faGear;
 
-  /**
-   * @ignore
-   */
   constructor(
     private readonly modalService: ModalService,
     private readonly authService: AuthService,

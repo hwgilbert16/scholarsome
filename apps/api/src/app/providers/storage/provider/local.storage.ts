@@ -66,6 +66,8 @@ export class LocalStorageProvider implements StorageProvider {
   public async deleteDirectoryFiles(path: string): Promise<void> {
     const dirPath = nodePath.join(this.localStorageDir, path);
 
+    if (!fs.existsSync(dirPath)) return;
+
     if (!(await this.isDirectory(dirPath))) {
       throw new Error(`the path provided is not a directory: "${dirPath}"`);
     }

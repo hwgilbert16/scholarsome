@@ -6,6 +6,7 @@ import { AuthService } from "../auth/auth.service";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import * as jwt from "jsonwebtoken";
+import * as crypto from "crypto";
 
 @Injectable()
 export class TokenRefreshMiddleware implements NestMiddleware {
@@ -57,7 +58,12 @@ export class TokenRefreshMiddleware implements NestMiddleware {
   renewAccessToken(req: Request, res: Response): boolean {
     let refreshToken: { id: string; email: string; type: "refresh" };
 
-    if (!this.redis.get(req.cookies.refresh_token)) {
+    if (!req.cookies["refresh_token"] || !req.cookies["refresh_token"].sessionId) {
+      this.authService.logout(req, res);
+      return true;
+    }
+
+    if (!this.redis.get(req.cookies["refresh_token"].sessionId)) {
       this.authService.logout(req, res);
       return true;
     }
@@ -69,13 +75,13 @@ export class TokenRefreshMiddleware implements NestMiddleware {
       return true;
     }
 
-    const token = this.jwtService.sign({ id: refreshToken.id, email: refreshToken.email, type: "access" }, { expiresIn: "15m" });
+    const accessToken = this.jwtService.sign({ id: refreshToken.id, sessionId: crypto.randomUUID(), email: refreshToken.email, type: "access" }, { expiresIn: "15m" });
 
     // the route following this interceptor will not see the cookie unless if we modify the cookie object here
     // this is only for the request that this interceptor is directly in front of
-    req.cookies["access_token"] = token;
+    req.cookies["access_token"] = accessToken;
 
     // but this actually sets the cookie for future requests
-    res.cookie("access_token", token, { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie("access_token", accessToken, { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
   }
 }

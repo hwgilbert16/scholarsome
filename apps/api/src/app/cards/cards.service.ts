@@ -8,9 +8,6 @@ import { StorageService } from "../providers/storage/storage.service";
 
 @Injectable()
 export class CardsService {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService

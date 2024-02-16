@@ -444,13 +444,15 @@ export class SetsController {
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
+    const set = await this.setsService.deleteSet({
+      id: params.setId
+    });
+
     await this.setsService.deleteSetMediaFiles(params.setId);
 
     return {
       status: ApiResponseOptions.Success,
-      data: await this.setsService.deleteSet({
-        id: params.setId
-      })
+      data: set
     };
   }
 }
