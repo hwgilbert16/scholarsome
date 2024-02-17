@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { User } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
 import { UsersService } from "../shared/http/users.service";
+import { faPlus, faClone, faFolder } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-view",
@@ -23,6 +24,10 @@ export class HomepageComponent implements OnInit {
 
   user: User;
 
+  protected readonly faClone = faClone;
+  protected readonly faFolder = faFolder;
+  protected readonly faPlus = faPlus;
+
   async ngOnInit(): Promise<void> {
     const user = await this.usersService.myUser();
     if (user) {
@@ -32,6 +37,10 @@ export class HomepageComponent implements OnInit {
         s.updatedAt = new Date(s.updatedAt);
       });
       this.user.sets = this.user.sets.sort((a, b) => {
+        return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+      });
+
+      this.user.folders = this.user.folders.sort((a, b) => {
         return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
       });
     }

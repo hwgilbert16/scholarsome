@@ -114,6 +114,7 @@ export class SetsService {
   /**
    * Makes a request to update a set
    *
+   * @param body.id The ID of the set to be updated
    * @param body.title Title of the set
    * @param body.description Optional, description of the set
    * @param body.private Optional, whether the set should be publicly visible
