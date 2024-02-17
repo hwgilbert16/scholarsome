@@ -69,12 +69,29 @@
                 "
                 [routerLink]="
                   this.cookieService.get('authenticated')
+                    ? 'create/folder'
+                    : undefined
+                "
+              ><fa-icon [icon]="faFolder"></fa-icon> &nbsp;Folder</a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  !this.cookieService.get('authenticated')
+                    ? (this.modalRef = loginModal.open())
+                    : ''
+                "
+                [routerLink]="
+                  this.cookieService.get('authenticated')
                     ? 'create/set'
                     : undefined
                 "
-                ><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study
-                set</a
-              >
+                ><fa-icon [icon]="faClone"></fa-icon> &nbsp;Study set</a>
             </li>
             <li>
               <a

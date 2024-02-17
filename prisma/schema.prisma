@@ -29,7 +29,7 @@ model Set {
   description String?  @db.Text
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   private     Boolean
-  folder      Folder?  @relation(fields: [folderId], references: [id])
+  folders     Folder[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   cards       Card[]
