@@ -1,10 +1,12 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { faFolder, faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { AbstractControl, FormControl, FormGroup, Validators } from "@angular/forms";
 import { Set } from "@scholarsome/shared";
 import { SetsService } from "../../shared/http/sets.service";
 import { FoldersService } from "../../shared/http/folders.service";
 import { Router } from "@angular/router";
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-create-folder",
@@ -15,8 +17,11 @@ export class CreateFolderComponent implements OnInit {
   constructor(
     private readonly setsService: SetsService,
     private readonly foldersService: FoldersService,
-    private readonly router: Router
-  ) {}
+    private readonly router: Router,
+    private readonly titleService: Title
+  ) {
+    this.titleService.setTitle("Create a folder — Scholarsome");
+  }
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
@@ -33,7 +38,7 @@ export class CreateFolderComponent implements OnInit {
   submitted = false;
   loading = true;
 
-  protected readonly faFolder = faFolder;
+  protected readonly faFolderPlus = faFolderPlus;
   protected readonly faQuestionCircle = faQuestionCircle;
 
   toggleSetSelection(index: string) {
@@ -52,7 +57,7 @@ export class CreateFolderComponent implements OnInit {
     return set.value;
   }
 
-  async submit(form: FormGroup) {
+  async submit() {
     if (this.createFolderForm.invalid) {
       this.createFolderForm.markAllAsTouched();
       return;

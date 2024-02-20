@@ -105,9 +105,8 @@
                     ? (this.modalRef = quizletImportModal.open())
                     : (this.modalRef = loginModal.open())
                 "
-                ><fa-icon [icon]="faQ" class="quizlet-color"></fa-icon>
-                &nbsp;From Quizlet</a
-              >
+                ><fa-icon [icon]="faQ"></fa-icon>
+                &nbsp;From Quizlet</a>
             </li>
             <li>
               <a
@@ -121,7 +120,7 @@
                     ? (this.modalRef = ankiImportModal.open())
                     : (this.modalRef = loginModal.open())
                 "
-                ><fa-icon [icon]="faStar" class="anki-color"></fa-icon>
+                ><fa-icon [icon]="faStar"></fa-icon>
                 &nbsp;From Anki
                 </a>
             </li>
@@ -187,7 +186,7 @@
               class="nav-link dropdown-toggle text-black text-left"
               data-bs-toggle="dropdown"
             >
-              <fa-icon [icon]="['far', 'user']"></fa-icon>
+              <fa-icon [icon]="faUser"></fa-icon>
             </a>
             <a
               *ngIf="avatarUrl"
@@ -203,7 +202,7 @@
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
                 [routerLink]="'profile/' + user.id">
-                <fa-icon [icon]="['far', 'user']"></fa-icon> Profile
+                <fa-icon [icon]="faUser"></fa-icon> Profile
               </a>
               <a
                 class="dropdown-item"

@@ -1,15 +1,17 @@
-<form [formGroup]="createFolderForm" [hidden]="loading" (ngSubmit)="submit(createFolderForm)">
+<form [formGroup]="createFolderForm" [hidden]="loading" (ngSubmit)="submit()">
   <div class="py-4 mx-md-5 mx-2">
     <div class="d-flex justify-content-between text-nowrap">
       <h2>
-        <fa-icon [icon]="faFolder"></fa-icon>
-        Create a new folder
-        <a href="/handbook/usage/creating-folders" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
+        <fa-icon [icon]="faFolderPlus"></fa-icon>
+        Create a folder
       </h2>
-      <button type="submit" class="btn btn-primary" [disabled]="submitted">
-        <span *ngIf="submitted" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Create
-      </button>
+      <div>
+        <a href="/handbook/usage/creating-folders" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5 me-2"></fa-icon></a>
+        <button type="submit" class="btn btn-primary" [disabled]="submitted">
+          <span *ngIf="submitted" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          Create
+        </button>
+      </div>
     </div>
     <div class="container-fluid p-0 mt-3">
       <div class="row">
@@ -49,13 +51,13 @@
       <p class="text-secondary">Select which sets should be inside this folder.</p>
     </div>
     <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="sets">
-      <div class="col-md-2 col-12" *ngFor="let set of sets; let i = index;">
+      <div class="col-md-3 col-12" *ngFor="let set of sets; let i = index;">
         <div
           class="card shadow-sm" role="button"
           (click)="toggleSetSelection(set.id)"
         >
           <div class="card-body d-flex justify-content-between align-items-center fs-5">
-            <div class="fw-semibold">
+            <div class="fw-semibold set-name">
               {{ set.title }}
               <fa-icon
                 *ngIf="set.private"
@@ -63,7 +65,7 @@
               ></fa-icon>
             </div>
             <input
-              class="form-check-input"
+              class="form-check-input ms-2"
               type="checkbox"
               value=""
               [disabled]="createFolderForm.disabled"

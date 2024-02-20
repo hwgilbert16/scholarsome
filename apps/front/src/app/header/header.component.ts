@@ -6,7 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar, faFileCsv, faGear, faFolder, faClone } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar, faFileCsv, faGear, faFolder, faClone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -61,6 +61,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly packageJson = packageJson;
   protected readonly window = window;
 
+  protected readonly faUser = faUser;
   protected readonly faQ = faQ;
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;
