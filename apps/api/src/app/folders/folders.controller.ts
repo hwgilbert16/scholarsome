@@ -171,6 +171,16 @@ export class FoldersController {
       });
     }
 
+    if (
+      body.parentFolderId &&
+      !author.folders.map((f) => f.id).includes(body.parentFolderId)
+    ) {
+      throw new NotFoundException({
+        status: "fail",
+        message: "Parent folder does not exist"
+      });
+    }
+
     for (const setId of body.sets) {
       const set = await this.setsService.set({
         id: setId
@@ -193,6 +203,11 @@ export class FoldersController {
         description: body.description,
         color: body.color,
         private: body.private,
+        parentFolder: body.parentFolderId ? {
+          connect: {
+            id: body.parentFolderId
+          }
+        } : {},
         sets: {
           connect: body.sets.map((s) => {
             return { id: s };

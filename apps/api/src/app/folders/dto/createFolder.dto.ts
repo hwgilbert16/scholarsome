@@ -4,7 +4,8 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsOptional,
-  IsString, IsUUID,
+  IsString,
+  IsUUID,
   Length
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
@@ -50,6 +51,14 @@ export class CreateFolderDto {
   @IsBoolean()
   @IsNotEmpty()
     private: boolean;
+
+  @ApiProperty({
+    description: "The ID of the folder to nest this folder within",
+    example: true
+  })
+  @IsString()
+  @IsOptional()
+    parentFolderId: string;
 
   @ApiProperty({
     description: "The IDs of sets to put within this folder",

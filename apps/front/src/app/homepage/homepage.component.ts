@@ -40,9 +40,11 @@ export class HomepageComponent implements OnInit {
         return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
       });
 
-      this.user.folders = this.user.folders.sort((a, b) => {
-        return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
-      });
+      this.user.folders = this.user.folders
+          .sort((a, b) => {
+            return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+          })
+          .filter((f) => !f.parentFolderId);
     }
 
     this.spinner.nativeElement.remove();

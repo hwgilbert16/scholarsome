@@ -1,10 +1,23 @@
 <div class="d-flex justify-content-center mt-5" #spinner>
-  <div class="spinner-border text-primary" role="status">
+  <div class="loading-spinner spinner-border text-primary" role="status">
     <span class="visually-hidden">Loading...</span>
   </div>
 </div>
 
 <div class="py-4 mx-md-5 mx-2" [hidden]="loading" #container>
+  <div class="d-flex gap-1 mb-n2" *ngIf="folderPath.length > 1">
+    <p
+      class="text-secondary"
+      *ngFor="let folder of folderPath; let i = index;"
+    >
+      <span
+        [routerLink]="['/folder', folder.id]"
+        [ngClass]="{'fw-bold': i + 1 === folderPath.length }"
+        class="text-decoration-underline cursor-pointer"
+      >{{folder.name}}</span>
+      <span *ngIf="i + 1 !== folderPath.length"> /</span>
+    </p>
+  </div>
   <h1 *ngIf="folder" class="fs-2">
     <fa-icon [icon]="faFolder" [ngStyle]="{'color': folder.color}"></fa-icon>
     {{folder.name}}
@@ -16,8 +29,8 @@
         Subfolders
       </h2>
     </div>
-    <p class="text-secondary my-3" *ngIf="subfolders && subfolders.length === 0">There are no subfolders in this folder.</p>
-    <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="subfolders && subfolders.length > 0">
+    <p class="text-secondary mt-3 mb-4" *ngIf="subfolders && subfolders.length === 0">There are no subfolders in this folder.</p>
+    <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-4" *ngIf="subfolders && subfolders.length > 0">
       <div class="col-md-3" *ngFor="let folder of subfolders">
         <div class="card shadow-sm set-card h-100" [routerLink]="['/folder', folder.id]" role="button">
           <div class="card-body d-flex flex-column">

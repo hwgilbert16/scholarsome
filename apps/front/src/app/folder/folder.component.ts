@@ -15,11 +15,16 @@ export class FolderComponent implements OnInit {
     private readonly foldersService: FoldersService,
     private readonly route: ActivatedRoute,
     private readonly router: Router
-  ) {}
+  ) {
+    // to ensure that clicking on breadcrumbs work
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  }
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
   folder: Folder;
+
+  folderPath: { name: string; id: string; }[] = [];
 
   subfolders: PrismaFolder[];
   sets: Set[] = [];
@@ -44,6 +49,30 @@ export class FolderComponent implements OnInit {
     }
 
     this.folder = folder;
+
+    let parentFolderId = folder.parentFolderId;
+
+    this.folderPath.push({
+      name: folder.name,
+      id: folder.id
+    });
+
+    while (parentFolderId) {
+      const parentFolder = await this.foldersService.folder(parentFolderId);
+
+      if (parentFolder) {
+        this.folderPath.push({
+          name: parentFolder.name,
+          id: parentFolder.id
+        });
+
+        parentFolderId = parentFolder.parentFolderId;
+      } else {
+        parentFolderId = "";
+      }
+    }
+
+    this.folderPath = this.folderPath.reverse();
 
     this.sets = folder.sets;
     this.subfolders = folder.subfolders;

@@ -86,6 +86,7 @@ export class FoldersService {
     description?: string;
     color: string;
     private: boolean;
+    parentFolderId?: string;
     sets: string[]
   }): Promise<Folder | null> {
     let folder: ApiResponse<Folder> | undefined;
@@ -96,6 +97,7 @@ export class FoldersService {
         description: body.description,
         color: body.color,
         private: body.private,
+        parentFolderId: body.parentFolderId,
         sets: body.sets
       }));
     } catch (e) {

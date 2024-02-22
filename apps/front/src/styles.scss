@@ -78,6 +78,10 @@ img {
   animation-fill-mode: forwards;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 @keyframes help-button-color-change {
   0% {
     color: #212529;
