@@ -22,6 +22,7 @@ import { ConvertingModule } from "./converting/converting.module";
 import { StorageModule } from "./providers/storage/storage.module";
 import { APP_FILTER } from "@nestjs/core";
 import { CommonHttpExceptionFilter } from "./shared/exception/filters/common-http-exception.filter";
+import { HttpExceptionFilter } from "./shared/exception/filters/http-exception.filter";
 
 @Module({
   imports: [
@@ -87,6 +88,11 @@ import { CommonHttpExceptionFilter } from "./shared/exception/filters/common-htt
   ],
   controllers: [],
   providers: [
+    // higher-priority filters go after lower-priority ones.
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: CommonHttpExceptionFilter,
