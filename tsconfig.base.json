@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@scholarsome/shared": ["libs/shared/src/index.ts"]
+      "@scholarsome/shared": ["libs/shared/src/index.ts"],
+      "@api/*": ["./apps/api/src/app/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
