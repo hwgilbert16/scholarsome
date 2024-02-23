@@ -20,6 +20,8 @@ import { MediaModule } from "./media/media.module";
 import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
 import { ConvertingModule } from "./converting/converting.module";
 import { StorageModule } from "./providers/storage/storage.module";
+import { APP_FILTER } from "@nestjs/core";
+import { CommonHttpExceptionFilter } from "./shared/exception/filters/common-http-exception.filter";
 
 @Module({
   imports: [
@@ -84,7 +86,12 @@ import { StorageModule } from "./providers/storage/storage.module";
     ConvertingModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: CommonHttpExceptionFilter,
+    },
+  ],
   exports: [JwtModule],
 })
 export class AppModule implements NestModule {
