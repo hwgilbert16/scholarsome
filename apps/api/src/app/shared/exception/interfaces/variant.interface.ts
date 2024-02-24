@@ -1,3 +1,7 @@
 export interface Variant {
-  new (): this;
+  new (): {};
+}
+
+export interface CustomizableVariant {
+  new (customDetail: string): {};
 }

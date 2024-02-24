@@ -10,8 +10,8 @@ export function ExceptionVariant(
     propertyKey: string
   ) {
     class Exception extends CommonHttpException {
-      constructor() {
-        super(title, detail, status);
+      constructor(customDetail?: string) {
+        super(title, customDetail ?? detail, status);
       }
     }
 
