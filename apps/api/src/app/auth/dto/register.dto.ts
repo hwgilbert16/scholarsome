@@ -7,7 +7,7 @@ export class RegisterDto {
   @IsNotEmpty({ message: "username should not be empty" })
   username: string;
 
-  @IsEmail(null, { message: "email must be valid" })
+  @IsEmail({}, { message: "email must be valid" })
   @IsNotEmpty({ message: "email should not be empty" })
   email: string;
 
