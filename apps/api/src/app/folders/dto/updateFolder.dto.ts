@@ -3,9 +3,9 @@ import {
   IsArray,
   IsBoolean,
   IsOptional,
-  IsString, IsUUID,
-  Length,
-  ValidateNested
+  IsString,
+  IsUUID,
+  Length
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, TransformFnParams } from "class-transformer";
@@ -52,11 +52,19 @@ export class UpdateFolderDto {
     private?: boolean;
 
   @ApiProperty({
+    description: "The IDs of folders to nest within this folder",
+    example: true
+  })
+  @IsArray()
+  @ArrayMinSize(0)
+  @IsUUID("4", { each: true })
+    subfolders?: string[];
+
+  @ApiProperty({
     description: "The IDs of sets to put within this folder",
     example: true
   })
   @IsArray()
-  @ValidateNested({ each: true })
   @ArrayMinSize(0)
   @IsUUID("4", { each: true })
     sets?: string[];

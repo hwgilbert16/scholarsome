@@ -10,7 +10,7 @@ CREATE TABLE `Folder` (
     `parentFolderId` VARCHAR(191) NULL,
     `authorId` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `description` VARCHAR(191) NULL,
+    `description` TEXT NULL,
     `color` VARCHAR(7) NOT NULL,
     `private` BOOLEAN NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

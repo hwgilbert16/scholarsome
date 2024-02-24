@@ -21,9 +21,9 @@
             <div
               class="form-text text-danger"
               *ngIf="
-              !createFolderForm.get('name')?.valid &&
+              !createFolderForm.controls.name.valid &&
               !createFolderForm.disabled &&
-              (createFolderForm.get('name')?.dirty || createFolderForm.get('name')?.touched || submitted)"
+              (createFolderForm.controls.name.dirty || createFolderForm.controls.name.touched || submitted)"
             >You must provide a title for your folder.</div>
             <div
               class="form-text text-danger"

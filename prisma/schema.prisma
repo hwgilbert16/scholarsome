@@ -42,7 +42,7 @@ model Folder {
   parentFolderId String?
   authorId       String
   name           String
-  description    String?
+  description    String?  @db.Text
   color          String   @db.VarChar(7)
   private        Boolean
   createdAt      DateTime @default(now())

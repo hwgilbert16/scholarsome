@@ -47,7 +47,7 @@ export class FoldersController {
     description: "Gets all of the folders of the user that is currently authenticated"
   })
   @UseGuards(AuthenticatedGuard)
-  @Get("me")
+  @Get("user/me")
   async myFolders(@Request() req: ExpressRequest): Promise<ApiResponse<Folder[]>> {
     const user = await this.authService.getUserInfo(req);
     if (!user) {
@@ -240,6 +240,14 @@ export class FoldersController {
       });
     }
 
+    const currentSetIDs = folder.sets.map((s) => s.id);
+    const removedSetIDs = currentSetIDs.filter((id) => !body.sets.includes(id));
+    const newSetIDs = body.sets.filter((id) => !currentSetIDs.includes(id));
+
+    const currentSubfolderIDs = folder.subfolders.map((f) => f.id);
+    const removedSubfolderIDs = currentSubfolderIDs.filter((id) => !body.subfolders.includes(id));
+    const newSubfolderIDs = body.subfolders.filter((id) => !currentSubfolderIDs.includes(id));
+
     return {
       status: ApiResponseOptions.Success,
       data: await this.foldersService.updateFolder({
@@ -251,8 +259,19 @@ export class FoldersController {
           description: body.description,
           color: body.color,
           private: body.private,
+          subfolders: {
+            connect: newSubfolderIDs.map((s) => {
+              return { id: s };
+            }),
+            disconnect: removedSubfolderIDs.map((s) => {
+              return { id: s };
+            })
+          },
           sets: {
-            connect: body.sets.map((s) => {
+            connect: newSetIDs.map((s) => {
+              return { id: s };
+            }),
+            disconnect: removedSetIDs.map((s) => {
               return { id: s };
             })
           }

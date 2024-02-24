@@ -60,7 +60,7 @@ export class FoldersService {
     let folders: ApiResponse<Folder[]> | undefined;
 
     try {
-      folders = await lastValueFrom(this.http.get<ApiResponse<Folder[]>>("/api/sets/user/me"));
+      folders = await lastValueFrom(this.http.get<ApiResponse<Folder[]>>("/api/sets/folders/user/me"));
     } catch (e) {
       return null;
     }
@@ -122,11 +122,12 @@ export class FoldersService {
    */
   async updateFolder(body: {
     id: string;
-    name: string;
+    name?: string;
     description?: string;
-    color: string;
-    private: boolean;
-    sets: string[]
+    color?: string;
+    private?: boolean;
+    subfolders?: string[];
+    sets?: string[]
   }): Promise<Folder | null> {
     let folder: ApiResponse<Folder> | undefined;
 
@@ -136,6 +137,7 @@ export class FoldersService {
         description: body.description,
         color: body.color,
         private: body.private,
+        subfolders: body.subfolders,
         sets: body.sets
       }));
     } catch (e) {
