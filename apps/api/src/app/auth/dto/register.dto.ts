@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { ValidationError } from "@api/shared/exception/annotations/validationError.decorator";
+import { ValidationError } from "@api/shared/exception/annotations/validation-error.decorator";
 
 @ValidationError("Invalid registration credentials.")
 export class RegisterDto {
