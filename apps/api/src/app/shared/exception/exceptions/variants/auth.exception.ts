@@ -22,7 +22,7 @@ export class AuthException {
   @ExceptionVariant(
     "Invalid credentials.",
     "Wrong email or password.",
-    HttpStatus.BAD_REQUEST
+    HttpStatus.UNAUTHORIZED
   )
   public static readonly InvalidCredentials: Variant;
 
@@ -36,9 +36,16 @@ export class AuthException {
   // Tokens
 
   @ExceptionVariant(
+    "Token is not provided.",
+    "Log in to access the requested resource.",
+    HttpStatus.UNAUTHORIZED
+  )
+  public static readonly TokenNotProvided: Variant;
+
+  @ExceptionVariant(
     "Invalid token provided.",
     "Invalid authentication token provided to access the requested resource.",
-    HttpStatus.FORBIDDEN
+    HttpStatus.UNAUTHORIZED
   )
   public static readonly InvalidTokenProvided: Variant;
 
