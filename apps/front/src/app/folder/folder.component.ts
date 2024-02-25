@@ -3,7 +3,7 @@ import { FoldersService } from "../shared/http/folders.service";
 import { Folder } from "@scholarsome/shared";
 import { Set, Folder as PrismaFolder } from "@prisma/client";
 import { ActivatedRoute, Router } from "@angular/router";
-import { faFolder, faClone, faFolderTree, faPencil, faCancel, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faClone, faFolderTree, faPencil, faCancel, faSave, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { UsersService } from "../shared/http/users.service";
 import { AbstractControl, FormControl, FormGroup, Validators } from "@angular/forms";
 import { SetsService } from "../shared/http/sets.service";
@@ -53,6 +53,7 @@ export class FolderComponent implements OnInit {
   protected editingLoading = false;
   protected loading = true;
 
+  protected readonly faArrowUp = faArrowUp;
   protected readonly faFolder = faFolder;
   protected readonly faClone = faClone;
   protected readonly faFolderTree = faFolderTree;
@@ -60,8 +61,24 @@ export class FolderComponent implements OnInit {
   protected readonly faCancel = faCancel;
   protected readonly faSave = faSave;
 
+  toggleParentFolderSelection(index: string) {
+    if (this.saveForm.disabled) return;
+    if (this.isSubfolderSelected(index)) {
+      this.toggleSubfolderSelection(index);
+    }
+
+    if (this.saveForm.controls.parentFolderId.value === index) {
+      this.saveForm.controls.parentFolderId.setValue("");
+    } else {
+      this.saveForm.controls.parentFolderId.setValue(index);
+    }
+  }
+
   toggleSubfolderSelection(index: string) {
     if (this.saveForm.disabled) return;
+    if (this.saveForm.controls.parentFolderId.value === index) {
+      this.toggleParentFolderSelection(index);
+    }
 
     const folder = this.saveForm.controls.subfolders.get(index);
     if (!folder) return;
@@ -93,6 +110,11 @@ export class FolderComponent implements OnInit {
   }
 
   async save() {
+    if (this.saveForm.invalid) {
+      this.saveForm.markAllAsTouched();
+      return;
+    }
+
     this.saveForm.disable();
     this.saveInProgress = true;
 
@@ -139,6 +161,7 @@ export class FolderComponent implements OnInit {
     this.saveForm.controls.description.setValue(this.folder.description);
     this.saveForm.controls.color.setValue(this.folder.color);
     this.saveForm.controls.private.setValue(this.folder.private);
+    this.saveForm.controls.parentFolderId.setValue(this.folder.parentFolderId ? this.folder.parentFolderId : "");
 
     this.editingLoading = false;
 

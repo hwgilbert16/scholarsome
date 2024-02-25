@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
-import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+import { faClone, faFolderPlus, faArrowUp, faFolderTree } from "@fortawesome/free-solid-svg-icons";
 import { AbstractControl, FormControl, FormGroup, Validators } from "@angular/forms";
 import { FoldersService } from "../../shared/http/folders.service";
 import { Router } from "@angular/router";
-import { Title } from "@angular/platform-browser";
+import { Meta, Title } from "@angular/platform-browser";
 import { UsersService } from "../../shared/http/users.service";
 import { Set, Folder } from "@prisma/client";
 
@@ -18,9 +18,11 @@ export class CreateFolderComponent implements OnInit {
     private readonly usersService: UsersService,
     private readonly foldersService: FoldersService,
     private readonly router: Router,
-    private readonly titleService: Title
+    private readonly titleService: Title,
+    private readonly metaService: Meta
   ) {
     this.titleService.setTitle("Create a folder — Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Create a new Scholarsome folder to contain your study sets. Scholarsome is the way studying was meant to be." });
   }
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
@@ -31,7 +33,8 @@ export class CreateFolderComponent implements OnInit {
     color: new FormControl("#8338ff"),
     private: new FormControl(false),
     parentFolderId: new FormControl(""),
-    sets: new FormGroup({})
+    sets: new FormGroup({}),
+    subfolders: new FormGroup({})
   });
 
   sets: Set[] = [];
@@ -40,11 +43,36 @@ export class CreateFolderComponent implements OnInit {
   submitted = false;
   loading = true;
 
+  protected readonly faClone = faClone;
+  protected readonly faArrowUp = faArrowUp;
   protected readonly faFolderPlus = faFolderPlus;
   protected readonly faQuestionCircle = faQuestionCircle;
+  protected readonly faFolderTree = faFolderTree;
 
-  toggleFolderSelection(index: string) {
+  toggleSubfolderSelection(index: string) {
     if (this.createFolderForm.disabled) return;
+    if (this.createFolderForm.controls.parentFolderId.value === index) {
+      this.toggleParentFolderSelection(index);
+    }
+
+    const folder = this.createFolderForm.controls.subfolders.get(index);
+    if (!folder) return;
+
+    folder.setValue(!folder.value);
+  }
+
+  isSubfolderSelected(index: string): boolean {
+    const subfolder = this.createFolderForm.controls.subfolders.get(index);
+    if (!subfolder) return false;
+
+    return subfolder.value;
+  }
+
+  toggleParentFolderSelection(index: string) {
+    if (this.createFolderForm.disabled) return;
+    if (this.isSubfolderSelected(index)) {
+      this.toggleSubfolderSelection(index);
+    }
 
     if (this.createFolderForm.controls.parentFolderId.value === index) {
       this.createFolderForm.controls.parentFolderId.setValue("");
@@ -111,15 +139,25 @@ export class CreateFolderComponent implements OnInit {
     const user = await this.usersService.myUser();
 
     if (user) {
-      const formSets = new FormGroup({});
-
       if (user.sets.length > 0) {
+        const formSets = new FormGroup({});
+
         for (const set of user.sets) {
           formSets.addControl(set.id, new FormControl(false));
         }
+
+        this.createFolderForm.setControl("sets", formSets);
       }
 
-      this.createFolderForm.setControl("sets", formSets);
+      if (user.folders.length > 0) {
+        const formSubfolders = new FormGroup({});
+
+        for (const folder of user.folders) {
+          formSubfolders.addControl(folder.id, new FormControl(false));
+        }
+
+        this.createFolderForm.setControl("subfolders", formSubfolders);
+      }
 
       this.sets = user.sets;
       this.folders = user.folders;
