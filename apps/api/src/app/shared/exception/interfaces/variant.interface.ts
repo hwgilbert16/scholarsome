@@ -3,5 +3,5 @@ export interface Variant {
 }
 
 export interface CustomizableVariant {
-  new (customDetail: string): {};
+  new (customDetail?: string): {};
 }
