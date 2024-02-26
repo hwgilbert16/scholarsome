@@ -52,10 +52,19 @@ export class UpdateFolderDto {
     private?: boolean;
 
   @ApiProperty({
+    description: "The ID of the folder to nest this folder within",
+    example: true
+  })
+  @IsString()
+  @IsOptional()
+    parentFolderId: string;
+
+  @ApiProperty({
     description: "The IDs of folders to nest within this folder",
     example: true
   })
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(0)
   @IsUUID("4", { each: true })
     subfolders?: string[];
@@ -65,6 +74,7 @@ export class UpdateFolderDto {
     example: true
   })
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(0)
   @IsUUID("4", { each: true })
     sets?: string[];

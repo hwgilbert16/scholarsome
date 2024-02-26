@@ -3,10 +3,11 @@ import { FoldersService } from "../shared/http/folders.service";
 import { Folder } from "@scholarsome/shared";
 import { Set, Folder as PrismaFolder } from "@prisma/client";
 import { ActivatedRoute, Router } from "@angular/router";
-import { faFolder, faClone, faFolderTree, faPencil, faCancel, faSave, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faClone, faFolderTree, faPencil, faCancel, faSave, faArrowUp, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { UsersService } from "../shared/http/users.service";
 import { AbstractControl, FormControl, FormGroup, Validators } from "@angular/forms";
 import { SetsService } from "../shared/http/sets.service";
+import { Meta, Title } from "@angular/platform-browser";
 
 @Component({
   selector: "scholarsome-folder",
@@ -19,11 +20,10 @@ export class FolderComponent implements OnInit {
     private readonly usersService: UsersService,
     private readonly setsService: SetsService,
     private readonly route: ActivatedRoute,
-    private readonly router: Router
-  ) {
-    // to ensure that clicking on breadcrumbs work
-    // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-  }
+    private readonly router: Router,
+    private readonly metaService: Meta,
+    private readonly titleService: Title
+  ) {}
 
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
@@ -48,6 +48,8 @@ export class FolderComponent implements OnInit {
   });
   protected saveInProgress = false;
 
+  protected deleteClicked = false;
+
   protected userIsAuthor = false;
   protected editing = false;
   protected editingLoading = false;
@@ -60,6 +62,7 @@ export class FolderComponent implements OnInit {
   protected readonly faPencil = faPencil;
   protected readonly faCancel = faCancel;
   protected readonly faSave = faSave;
+  protected readonly faTrashCan = faTrashCan;
 
   toggleParentFolderSelection(index: string) {
     if (this.saveForm.disabled) return;
@@ -109,6 +112,11 @@ export class FolderComponent implements OnInit {
     return set.value;
   }
 
+  async delete() {
+    await this.foldersService.deleteFolder(this.folder.id);
+    await this.router.navigate(["homepage"]);
+  }
+
   async save() {
     if (this.saveForm.invalid) {
       this.saveForm.markAllAsTouched();
@@ -141,6 +149,7 @@ export class FolderComponent implements OnInit {
       description: this.saveForm.controls.description.value!,
       color: this.saveForm.controls.color.value!,
       private: this.saveForm.controls.private.value!,
+      parentFolderId: this.saveForm.controls.parentFolderId.value!,
       subfolders: selectedSubfolders,
       sets: selectedSets
     });
@@ -199,8 +208,6 @@ export class FolderComponent implements OnInit {
   }
 
   async view() {
-    this.folderPath = [];
-
     const folder = await this.foldersService.folder(this.folderId);
     if (!folder) {
       this.router.navigate(["404"]);
@@ -208,8 +215,13 @@ export class FolderComponent implements OnInit {
     }
 
     this.folder = folder;
+    this.folder.sets = this.folder.sets.map((f) => {
+      return { ...f, updatedAt: new Date(f.updatedAt) };
+    });
 
     const user = await this.usersService.myUser();
+
+    const folderPath = [];
 
     if (user && folder.authorId === user.id) {
       this.userIsAuthor = true;
@@ -217,7 +229,7 @@ export class FolderComponent implements OnInit {
 
     let parentFolderId = folder.parentFolderId;
 
-    this.folderPath.push({
+    folderPath.push({
       name: folder.name,
       id: folder.id
     });
@@ -226,7 +238,7 @@ export class FolderComponent implements OnInit {
       const parentFolder = await this.foldersService.folder(parentFolderId);
 
       if (parentFolder) {
-        this.folderPath.push({
+        folderPath.push({
           name: parentFolder.name,
           id: parentFolder.id
         });
@@ -237,7 +249,7 @@ export class FolderComponent implements OnInit {
       }
     }
 
-    this.folderPath = this.folderPath.reverse();
+    this.folderPath = folderPath.reverse();
 
     this.editing = false;
     this.saveInProgress = false;
@@ -259,7 +271,29 @@ export class FolderComponent implements OnInit {
 
     await this.view();
 
+    // for when someone clicks on a folder from within another folder
+    // we need to manually trigger the change in the page
+    this.route.url.subscribe(async () => {
+      if (this.router.getCurrentNavigation()?.previousNavigation) {
+        this.loading = true;
+
+        const folderId = this.route.snapshot.paramMap.get("folderId");
+        if (!folderId) {
+          await this.router.navigate(["404"]);
+          return;
+        }
+
+        this.folderId = folderId;
+
+        await this.view();
+
+        this.loading = false;
+      }
+    });
+
+    this.titleService.setTitle(this.folder.name + " Folder — Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Study using the sets inside the " + this.folder.name + " folder on Scholarsome." });
+
     this.loading = false;
-    this.spinner.nativeElement.remove();
   }
 }

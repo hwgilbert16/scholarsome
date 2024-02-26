@@ -9,7 +9,7 @@ import {
   Length
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { Transform, TransformFnParams, Type } from "class-transformer";
+import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
 
 export class CreateFolderDto {
@@ -61,12 +61,22 @@ export class CreateFolderDto {
     parentFolderId: string;
 
   @ApiProperty({
+    description: "The IDs of folders to nest within this folder",
+    example: true
+  })
+  @IsArray()
+  @IsOptional()
+  @ArrayMinSize(0)
+  @IsUUID("4", { each: true })
+    subfolders?: string[];
+
+  @ApiProperty({
     description: "The IDs of sets to put within this folder",
     example: true
   })
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(0)
-  @Type(() => String)
   @IsUUID("4", { each: true, message: "Invalid UUID" })
     sets: string[];
 }

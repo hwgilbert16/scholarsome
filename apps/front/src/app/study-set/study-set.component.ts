@@ -358,9 +358,9 @@ export class StudySetComponent implements OnInit {
       return;
     }
 
-    this.titleService.setTitle(set.title + " — Scholarsome");
+    this.titleService.setTitle(set.title + " Set — Scholarsome");
 
-    let description = "Studying done the correct way on Scholarsome — ";
+    let description = "Study the " + set.title + " set for free on Scholarsome — ";
 
     const firstThree = set.cards.slice(0, 3);
 

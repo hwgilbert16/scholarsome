@@ -51,7 +51,7 @@
         <fa-icon class="fs-3" [icon]="faArrowUp"></fa-icon>
         Parent Folder
       </h2>
-      <p>Select the folder that this folder should be nested inside.</p>
+      <p>Select the folder that this folder should be placed within.</p>
     </div>
     <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="folders">
       <p class="text-secondary" *ngIf="folders.length === 0">You currently do not have any folders.</p>
@@ -82,7 +82,7 @@
         <fa-icon class="fs-3" [icon]="faFolderTree"></fa-icon>
         Subfolders
       </h2>
-      <p>Select the folders that should be nested within this folder.</p>
+      <p>Select which folders should be placed within this folder.</p>
     </div>
     <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="folders">
       <p class="text-secondary" *ngIf="folders.length === 0">You currently do not have any folders.</p>
@@ -113,7 +113,7 @@
         <fa-icon class="fs-3" [icon]="faClone"></fa-icon>
         Sets
       </h2>
-      <p>Select which sets should be inside this folder.</p>
+      <p>Select which sets should be placed within this folder.</p>
     </div>
     <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="sets">
       <p class="text-secondary" *ngIf="sets.length === 0">You currently do not have any sets.</p>

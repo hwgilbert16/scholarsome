@@ -126,6 +126,7 @@ export class FoldersService {
     description?: string;
     color?: string;
     private?: boolean;
+    parentFolderId?: string;
     subfolders?: string[];
     sets?: string[]
   }): Promise<Folder | null> {
@@ -137,6 +138,7 @@ export class FoldersService {
         description: body.description,
         color: body.color,
         private: body.private,
+        parentFolderId: body.parentFolderId,
         subfolders: body.subfolders,
         sets: body.sets
       }));

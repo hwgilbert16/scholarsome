@@ -170,6 +170,16 @@ export class FoldersService {
    * @returns `Folder` object that was deleted
    */
   async deleteFolder(where: Prisma.FolderWhereUniqueInput): Promise<Folder> {
+    // disconnect subfolders
+    await this.prisma.folder.update({
+      where,
+      data: {
+        subfolders: {
+          set: []
+        }
+      }
+    });
+
     return this.prisma.folder.delete({
       where,
       include: {

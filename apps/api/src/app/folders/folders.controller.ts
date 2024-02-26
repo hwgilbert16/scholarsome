@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -181,6 +182,16 @@ export class FoldersController {
       });
     }
 
+    if (
+      body.parentFolderId &&
+      body.subfolders.includes(body.parentFolderId)
+    ) {
+      throw new BadRequestException({
+        status: "fail",
+        message: "The parent folder cannot be a member of the subfolder array"
+      });
+    }
+
     for (const setId of body.sets) {
       const set = await this.setsService.set({
         id: setId
@@ -207,11 +218,16 @@ export class FoldersController {
           connect: {
             id: body.parentFolderId
           }
-        } : {},
+        } : undefined,
+        subfolders: {
+          connect: body.subfolders ? body.subfolders.map((f) => {
+            return { id: f };
+          }): undefined
+        },
         sets: {
-          connect: body.sets.map((s) => {
+          connect: body.sets ? body.sets.map((s) => {
             return { id: s };
-          })
+          }) : undefined
         }
       })
     };
@@ -240,13 +256,37 @@ export class FoldersController {
       });
     }
 
+    if (
+      body.parentFolderId &&
+      body.subfolders.includes(body.parentFolderId)
+    ) {
+      throw new BadRequestException({
+        status: "fail",
+        message: "The parent folder cannot be a member of the subfolder array"
+      });
+    }
+
     const currentSetIDs = folder.sets.map((s) => s.id);
-    const removedSetIDs = currentSetIDs.filter((id) => !body.sets.includes(id));
-    const newSetIDs = body.sets.filter((id) => !currentSetIDs.includes(id));
+    let removedSetIDs: string[];
+
+    if (body.sets) {
+      removedSetIDs = currentSetIDs.filter((id) => !body.sets.includes(id));
+    } else {
+      removedSetIDs = currentSetIDs;
+    }
+
+    const newSetIDs = body.sets ? body.sets.filter((id) => !currentSetIDs.includes(id)) : [];
 
     const currentSubfolderIDs = folder.subfolders.map((f) => f.id);
-    const removedSubfolderIDs = currentSubfolderIDs.filter((id) => !body.subfolders.includes(id));
-    const newSubfolderIDs = body.subfolders.filter((id) => !currentSubfolderIDs.includes(id));
+    let removedSubfolderIDs: string[];
+
+    if (body.subfolders) {
+      removedSubfolderIDs = currentSubfolderIDs.filter((id) => !body.subfolders.includes(id));
+    } else {
+      removedSubfolderIDs = currentSubfolderIDs;
+    }
+
+    const newSubfolderIDs = body.subfolders ? body.subfolders.filter((id) => !currentSubfolderIDs.includes(id)) : [];
 
     return {
       status: ApiResponseOptions.Success,
@@ -259,6 +299,10 @@ export class FoldersController {
           description: body.description,
           color: body.color,
           private: body.private,
+          parentFolder: {
+            connect: body.parentFolderId ? { id: body.parentFolderId }: undefined,
+            disconnect: folder.parentFolderId && !body.parentFolderId ? true : undefined
+          },
           subfolders: {
             connect: newSubfolderIDs.map((s) => {
               return { id: s };
