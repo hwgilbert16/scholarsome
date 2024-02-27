@@ -71,4 +71,11 @@ export class AuthException {
     HttpStatus.BAD_REQUEST
   )
   public static readonly ApiKeyNotFound: Variant;
+
+  @ExceptionVariant(
+    "API key is not provided.",
+    "Please, provide and API key.",
+    HttpStatus.BAD_REQUEST
+  )
+  public static readonly ApiKeyNotProvided: Variant;
 }
