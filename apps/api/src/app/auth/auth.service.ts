@@ -12,6 +12,7 @@ import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { JwtPayload } from "jwt-decode";
+import { AuthException } from "@api/shared/exception/exceptions/variants/auth.exception";
 
 @Injectable()
 export class AuthService {
@@ -39,26 +40,29 @@ export class AuthService {
    *
    * @returns Decoded access token
    */
-  async getUserInfo(req: Request): Promise<{ id: string; email: string; } | false> {
+  async getUserInfo(req: Request): Promise<{ id: string; email: string }> {
     if (req.cookies["access_token"]) {
       let decoded: string | JwtPayload;
 
       try {
-        decoded = jwt.verify(req.cookies["access_token"], this.configService.get<string>("JWT_SECRET"));
+        decoded = jwt.verify(
+          req.cookies["access_token"],
+          this.configService.get<string>("JWT_SECRET")
+        );
       } catch (e) {
-        return false;
+        throw new AuthException.InvalidTokenProvided();
       }
 
-      return decoded as { id: string; email: string; };
+      return decoded as { id: string; email: string };
     } else if (req.header("x-api-key")) {
       const info = await this.apiKeyRedis.get(req.header("x-api-key"));
 
       if (info) {
         return JSON.parse(info);
-      }
+      } else throw new AuthException.InvalidTokenProvided();
     }
 
-    return false;
+    throw new AuthException.TokenNotProvided();
   }
 
   /**
@@ -70,15 +74,18 @@ export class AuthService {
   async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
       secret: this.configService.get<string>("RECAPTCHA_SECRET"),
-      response: token
+      response: token,
     };
 
-    const googleRes = await lastValueFrom(this.httpService.post<RecaptchaResponse>(
+    const googleRes = await lastValueFrom(
+      this.httpService.post<RecaptchaResponse>(
         "https://www.google.com/recaptcha/api/siteverify",
         new URLSearchParams(Object.entries(body)).toString(),
         {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
-        }));
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      )
+    );
 
     if (googleRes.data["error-codes"]) return false;
 
@@ -94,12 +101,12 @@ export class AuthService {
    */
   async validateUser(email: string, password: string): Promise<boolean> {
     const user = await this.usersService.user({
-      email
+      email,
     });
 
     if (!user) throw new UnauthorizedException();
 
-    return (await bcrypt.compare(password, user.password));
+    return await bcrypt.compare(password, user.password);
   }
 
   /**
@@ -108,13 +115,29 @@ export class AuthService {
   setLoginCookies(res: Response, user: UserWithSets | User): void {
     res.cookie("verified", user.verified, { httpOnly: false });
 
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
+    const refreshToken = this.jwtService.sign(
+      { id: user.id, email: user.email, type: "refresh" },
+      { expiresIn: "182d" }
+    );
 
-    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      expires: new Date(new Date().setDate(new Date().getDate() + 182)),
+    });
     this.refreshTokenRedis.set(user.email, refreshToken);
 
-    res.cookie("access_token", this.jwtService.sign({ id: user.id, email: user.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
-    res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
+    res.cookie(
+      "access_token",
+      this.jwtService.sign(
+        { id: user.id, email: user.email, type: "access" },
+        { expiresIn: "15m" }
+      ),
+      { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) }
+    );
+    res.cookie("authenticated", true, {
+      httpOnly: false,
+      expires: new Date(new Date().setDate(new Date().getDate() + 182)),
+    });
   }
 
   /**
