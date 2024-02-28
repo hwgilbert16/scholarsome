@@ -105,8 +105,6 @@ export class AuthController {
     @Body() deleteApiKeyDto: DeleteApiKeyDto,
     @Req() req: ExpressRequest
   ): Promise<ApiResponse<{ apiKey: string }>> {
-    await this.authService.getUserInfo(req);
-
     const apiKey = await this.prisma.apiKey.findUnique({
       where: {
         apiKey: deleteApiKeyDto.apiKey,
