@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { UsersService } from "../shared/http/users.service";
 import { DomSanitizer, Meta, SafeResourceUrl, Title } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
+import { faFolder, faClone } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-profile",
@@ -24,6 +25,9 @@ export class ProfileComponent implements OnInit {
   user: User | null;
   avatarUrl?: SafeResourceUrl;
   registrationDate: string;
+
+  protected readonly faFolder = faFolder;
+  protected readonly faClone = faClone;
 
   async ngOnInit(): Promise<void> {
     const userId = this.route.snapshot.paramMap.get("userId");

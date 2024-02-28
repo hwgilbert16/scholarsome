@@ -108,10 +108,18 @@ export class CreateFolderComponent implements OnInit {
     this.createFolderForm.setErrors(null);
 
     const selectedSets: string[] = [];
+    const selectedSubfolders: string[] = [];
+
     const sets = this.createFolderForm.controls.sets.controls as { [key: string]: AbstractControl };
 
     Object.keys(sets).forEach((set) => {
       if (sets[set].value) selectedSets.push(set);
+    });
+
+    const subfolders = this.createFolderForm.controls.subfolders.controls as { [key: string]: AbstractControl };
+
+    Object.keys(subfolders).forEach((subfolder) => {
+      if (subfolders[subfolder].value) selectedSubfolders.push(subfolder);
     });
 
     // we know that these are valid
@@ -122,6 +130,7 @@ export class CreateFolderComponent implements OnInit {
       color: this.createFolderForm.controls.color.value!,
       private: this.createFolderForm.controls.private.value!,
       parentFolderId: this.createFolderForm.controls.parentFolderId.value!,
+      subfolders: selectedSubfolders,
       sets: selectedSets
     });
     /* eslint-enable */

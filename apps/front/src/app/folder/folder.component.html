@@ -25,12 +25,15 @@
         {{folder.name}}
       </h1>
     </div>
-    <div *ngIf="userIsAuthor" class="d-flex col-12 justify-content-md-end justify-content-sm-start align-items-start">
-      <button type="button" class="btn btn-primary" *ngIf="!editing" (click)="edit()">
+    <div class="d-flex col-12 justify-content-md-end justify-content-sm-start align-items-start">
+      <a *ngIf="!userIsAuthor" [routerLink]="['/profile', folder.authorId]">
+        <button type="button" class="btn btn-light bg-white shadow-sm"><fa-icon [icon]="faUser"></fa-icon> Created by <span class="fw-bold">{{username}}</span></button>
+      </a>
+      <button type="button" class="btn btn-primary mb-2" *ngIf="!editing && userIsAuthor" (click)="edit()">
         <fa-icon [icon]="faPencil"></fa-icon>
         Edit
       </button>
-      <div class="d-flex" *ngIf="editing">
+      <div class="d-flex mb-2" *ngIf="editing">
         <button type="button" class="btn btn-danger me-2" *ngIf="deleteClicked" (click)="delete()">
           <fa-icon [icon]="faTrashCan"></fa-icon>
           Confirm
@@ -39,7 +42,7 @@
           <fa-icon [icon]="faCancel"></fa-icon>
           Cancel
         </button>
-        <button type="button" class="btn btn-danger me-2" (click)="deleteClicked = true;" *ngIf="!deleteClicked">
+        <button type="button" class="btn btn-danger me-2" (click)="deleteClicked = true;" [disabled]="saveInProgress" *ngIf="!deleteClicked">
           <fa-icon [icon]="faTrashCan"></fa-icon>
           Delete
         </button>

@@ -3,7 +3,7 @@ import { FoldersService } from "../shared/http/folders.service";
 import { Folder } from "@scholarsome/shared";
 import { Set, Folder as PrismaFolder } from "@prisma/client";
 import { ActivatedRoute, Router } from "@angular/router";
-import { faFolder, faClone, faFolderTree, faPencil, faCancel, faSave, faArrowUp, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faClone, faFolderTree, faPencil, faCancel, faSave, faArrowUp, faTrashCan, faUser } from "@fortawesome/free-solid-svg-icons";
 import { UsersService } from "../shared/http/users.service";
 import { AbstractControl, FormControl, FormGroup, Validators } from "@angular/forms";
 import { SetsService } from "../shared/http/sets.service";
@@ -34,6 +34,7 @@ export class FolderComponent implements OnInit {
   protected subfolders: PrismaFolder[];
   protected folderSets: Set[] = [];
 
+  protected username: string;
   protected userSets: Set[] = [];
   protected userFolders: Folder[] = [];
 
@@ -63,6 +64,7 @@ export class FolderComponent implements OnInit {
   protected readonly faCancel = faCancel;
   protected readonly faSave = faSave;
   protected readonly faTrashCan = faTrashCan;
+  protected readonly faUser = faUser;
 
   toggleParentFolderSelection(index: string) {
     if (this.saveForm.disabled) return;
@@ -125,6 +127,7 @@ export class FolderComponent implements OnInit {
 
     this.saveForm.disable();
     this.saveInProgress = true;
+    this.deleteClicked = false;
 
     const selectedSets: string[] = [];
     const selectedSubfolders: string[] = [];
@@ -208,6 +211,8 @@ export class FolderComponent implements OnInit {
   }
 
   async view() {
+    this.deleteClicked = false;
+
     const folder = await this.foldersService.folder(this.folderId);
     if (!folder) {
       this.router.navigate(["404"]);
@@ -271,6 +276,8 @@ export class FolderComponent implements OnInit {
 
     await this.view();
 
+    this.username = this.folder.author.username;
+
     // for when someone clicks on a folder from within another folder
     // we need to manually trigger the change in the page
     this.route.url.subscribe(async () => {
@@ -284,6 +291,7 @@ export class FolderComponent implements OnInit {
         }
 
         this.folderId = folderId;
+        this.username = this.folder.author.username;
 
         await this.view();
 

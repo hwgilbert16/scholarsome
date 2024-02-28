@@ -99,11 +99,13 @@ export class FoldersController {
       throw new NotFoundException({ status: "fail", message: "User not found" });
     }
 
-    const folders = await this.foldersService.folders({
+    let folders = await this.foldersService.folders({
       where: {
         authorId: params.userId
       }
     });
+
+    folders = folders.filter((f) => !f.private);
 
     for (let i = 0; i < folders.length; i++) {
       folders[i].sets = folders[i].sets.filter((s) => !s.private);
@@ -184,6 +186,7 @@ export class FoldersController {
 
     if (
       body.parentFolderId &&
+      body.subfolders &&
       body.subfolders.includes(body.parentFolderId)
     ) {
       throw new BadRequestException({
