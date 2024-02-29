@@ -295,6 +295,9 @@ export class FolderComponent implements OnInit {
 
         await this.view();
 
+        this.titleService.setTitle(this.folder.name + " Folder — Scholarsome");
+        this.metaService.addTag({ name: "description", content: "Study using the sets inside the " + this.folder.name + " folder on Scholarsome." });
+
         this.loading = false;
       }
     });

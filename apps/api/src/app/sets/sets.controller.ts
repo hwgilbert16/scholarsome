@@ -37,6 +37,7 @@ import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
 import { AuthService } from "../auth/auth.service";
 import { HtmlDecodePipe } from "./pipes/html-decode.pipe";
+import { FoldersService } from "../folders/folders.service";
 
 @ApiTags("Sets")
 @Controller("sets")
@@ -45,7 +46,8 @@ export class SetsController {
     private readonly setsService: SetsService,
     private readonly usersService: UsersService,
     private readonly cardsService: CardsService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly foldersService: FoldersService
   ) {}
 
   /**
@@ -224,6 +226,23 @@ export class SetsController {
       }
     }
 
+    for (const folderId of body.folders) {
+      const folder = await this.foldersService.folder({ id: folderId });
+      if (!folder) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `Folder with ID ${folderId} does not exist`
+        });
+      }
+
+      if (folder.authorId !== user.id) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `User is not author of folder with id ${folderId}`
+        });
+      }
+    }
+
     const create = await this.setsService.createSet({
       id: uuid,
       author: {
@@ -234,6 +253,11 @@ export class SetsController {
       title: body.title,
       description: body.description,
       private: body.private,
+      folders: {
+        connect: body.folders.map((f) => {
+          return { id: f };
+        })
+      },
       cards: {
         createMany: {
           data: body.cards.map((c) => {
@@ -290,12 +314,42 @@ export class SetsController {
   @UseGuards(AuthenticatedGuard)
   @Patch(":setId")
   async updateSet(@Param() params: SetIdParam, @Body(HtmlDecodePipe) body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
     const set = await this.setsService.set({
       id: params.setId
     });
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    let newFolderIDs: string[] = [];
+    let removedFolderIDs: string[] = [];
+
+    if (body.folders) {
+      const currentFolderIDs = set.folders.map((f) => f.id);
+
+      newFolderIDs = body.folders.filter((id) => !currentFolderIDs.includes(id));
+      removedFolderIDs = currentFolderIDs.filter((id) => !body.folders.includes(id));
+    }
+
+    for (const folderId of newFolderIDs) {
+      const folder = await this.foldersService.folder({ id: folderId });
+      if (!folder) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `Folder with ID ${folderId} does not exist`
+        });
+      }
+
+      if (folder.authorId !== user.id) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `User is not author of folder with id ${folderId}`
+        });
+      }
+    }
 
     const newMedia: string[] = [];
     const existingMedias: CardMedia[] = [];
@@ -370,6 +424,14 @@ export class SetsController {
         title: body.title,
         description: body.description,
         private: body.private,
+        folders: {
+          connect: newFolderIDs.map((s) => {
+            return { id: s };
+          }),
+          disconnect: removedFolderIDs.map((s) => {
+            return { id: s };
+          })
+        },
         cards: body.cards ? {
           createMany: {
             data: body.cards.map((c) => {

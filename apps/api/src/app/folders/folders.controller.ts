@@ -174,25 +174,28 @@ export class FoldersController {
       });
     }
 
-    if (
-      body.parentFolderId &&
-      !author.folders.map((f) => f.id).includes(body.parentFolderId)
-    ) {
-      throw new NotFoundException({
-        status: "fail",
-        message: "Parent folder does not exist"
-      });
-    }
+    if (body.parentFolderId) {
+      const parentFolder = await this.foldersService.folder({ id: body.parentFolderId });
+      if (!parentFolder) {
+        throw new NotFoundException({
+          status: "fail",
+          message: "Parent folder does not exist"
+        });
+      }
 
-    if (
-      body.parentFolderId &&
-      body.subfolders &&
-      body.subfolders.includes(body.parentFolderId)
-    ) {
-      throw new BadRequestException({
-        status: "fail",
-        message: "The parent folder cannot be a member of the subfolder array"
-      });
+      if (body.subfolders.includes(body.parentFolderId)) {
+        throw new BadRequestException({
+          status: "fail",
+          message: "The parent folder cannot be a member of the subfolder array"
+        });
+      }
+
+      if (parentFolder.authorId !== user.id) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: "User is not author of parent folder"
+        });
+      }
     }
 
     for (const setId of body.sets) {
@@ -247,6 +250,14 @@ export class FoldersController {
   @UseGuards(AuthenticatedGuard)
   @Patch(":folderId")
   async updateFolder(@Param() params: FolderIdParam, @Body(HtmlDecodePipe) body: UpdateFolderDto, @Request() req: ExpressRequest): Promise<ApiResponse<Folder>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) {
+      throw new UnauthorizedException({
+        status: "fail",
+        message: "Invalid authentication to access the requested resource"
+      });
+    }
+
     const folder = await this.foldersService.folder({
       id: params.folderId
     });
@@ -259,14 +270,28 @@ export class FoldersController {
       });
     }
 
-    if (
-      body.parentFolderId &&
-      body.subfolders.includes(body.parentFolderId)
-    ) {
-      throw new BadRequestException({
-        status: "fail",
-        message: "The parent folder cannot be a member of the subfolder array"
-      });
+    if (body.parentFolderId) {
+      const parentFolder = await this.foldersService.folder({ id: body.parentFolderId });
+      if (!parentFolder) {
+        throw new NotFoundException({
+          status: "fail",
+          message: "Parent folder does not exist"
+        });
+      }
+
+      if (body.subfolders.includes(body.parentFolderId)) {
+        throw new BadRequestException({
+          status: "fail",
+          message: "The parent folder cannot be a member of the subfolder array"
+        });
+      }
+
+      if (parentFolder.authorId !== user.id) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: "User is not author of parent folder"
+        });
+      }
     }
 
     const currentSetIDs = folder.sets.map((s) => s.id);
@@ -280,6 +305,16 @@ export class FoldersController {
 
     const newSetIDs = body.sets ? body.sets.filter((id) => !currentSetIDs.includes(id)) : [];
 
+    for (const setId of newSetIDs) {
+      const set = await this.setsService.set({ id: setId });
+      if (!set) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `Set with ID ${setId} does not exist`
+        });
+      }
+    }
+
     const currentSubfolderIDs = folder.subfolders.map((f) => f.id);
     let removedSubfolderIDs: string[];
 
@@ -290,6 +325,16 @@ export class FoldersController {
     }
 
     const newSubfolderIDs = body.subfolders ? body.subfolders.filter((id) => !currentSubfolderIDs.includes(id)) : [];
+
+    for (const subfolderId of newSubfolderIDs) {
+      const subfolder = await this.foldersService.folder({ id: subfolderId });
+      if (!subfolder) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `Subfolder with ID ${subfolderId} does not exist`
+        });
+      }
+    }
 
     return {
       status: ApiResponseOptions.Success,
