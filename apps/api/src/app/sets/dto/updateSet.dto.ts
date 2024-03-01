@@ -1,4 +1,4 @@
-import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 import { CardWithIdValidator } from "../validator/cardWithId.validator";
@@ -30,6 +30,16 @@ export class UpdateSetDto {
   @IsBoolean()
   @IsOptional()
     private?: boolean;
+
+  @ApiProperty({
+    description: "The IDs of folders that this set is apart of",
+    example: true
+  })
+  @IsArray()
+  @IsOptional()
+  @ArrayMinSize(0)
+  @IsUUID("4", { each: true })
+    folders?: string[];
 
   @ApiProperty({
     description: "New cards to replace the existing ones in the set with",

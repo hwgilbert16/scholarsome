@@ -83,7 +83,8 @@ export class UsersController {
     delete user.email;
 
     if (!cookies || user.id !== cookies.id) {
-      user.sets = user.sets.filter((set) => set.private === false);
+      user.sets = user.sets.filter((set) => !set.private);
+      user.folders = user.folders.filter((folder) => !folder.private);
     }
 
     return {

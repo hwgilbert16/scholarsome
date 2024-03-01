@@ -1,0 +1,25 @@
+.card:hover {
+  --bs-card-border-color: #8438ff;
+}
+
+.loading-spinner {
+  width: 6rem;
+  height: 6rem;
+}
+
+.description {
+  overflow-wrap: break-word;
+}
+
+card > .form-check-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+card > .form-check-input {
+  cursor: pointer;
+}
+
+.card-name {
+  width: 85%;
+}

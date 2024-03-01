@@ -99,6 +99,7 @@ export class SetsService {
       where: setWhereUniqueInput,
       include: {
         cards: true,
+        folders: true,
         author: {
           select: {
             id: true,
@@ -138,6 +139,7 @@ export class SetsService {
       orderBy,
       include: {
         cards: true,
+        folders: true,
         author: {
           select: {
             id: true,
@@ -162,6 +164,7 @@ export class SetsService {
       data,
       include: {
         cards: true,
+        folders: true,
         author: {
           select: {
             id: true,
@@ -192,6 +195,7 @@ export class SetsService {
       where,
       include: {
         cards: true,
+        folders: true,
         author: {
           select: {
             id: true,
@@ -216,6 +220,7 @@ export class SetsService {
       where,
       include: {
         cards: true,
+        folders: true,
         author: true
       }
     });

@@ -20,6 +20,7 @@ import { MediaModule } from "./media/media.module";
 import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
 import { ConvertingModule } from "./converting/converting.module";
 import { StorageModule } from "./providers/storage/storage.module";
+import { FoldersModule } from "./folders/folders.module";
 
 @Module({
   imports: [
@@ -81,7 +82,8 @@ import { StorageModule } from "./providers/storage/storage.module";
       }),
       global: true
     },
-    ConvertingModule
+    ConvertingModule,
+    FoldersModule
   ],
   controllers: [],
   providers: [],

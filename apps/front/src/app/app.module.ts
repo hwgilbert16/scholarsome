@@ -49,6 +49,7 @@ const Quill: any = QuillNamespace;
 // @ts-ignore
 import ImageResize from "quill-image-resize-module";
 import { SharedService } from "./shared/shared.service";
+import { FolderModule } from "./folder/folder.module";
 Quill.register("modules/imageResize", ImageResize);
 
 @NgModule({
@@ -67,6 +68,7 @@ Quill.register("modules/imageResize", ImageResize);
     ProfileModule,
     HeaderModule,
     SettingsModule,
+    FolderModule,
     QuillModule.forRoot(),
     QuillConfigModule.forRoot({
       modules: {

@@ -12,6 +12,7 @@ import { Router } from "@angular/router";
 import { SetsService } from "../../shared/http/sets.service";
 import { Meta, Title } from "@angular/platform-browser";
 import { CardComponent } from "../../shared/card/card.component";
+import { faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { SavedSet } from "@scholarsome/shared";
@@ -29,7 +30,7 @@ export class CreateStudySetComponent implements OnInit, AfterViewInit {
     private readonly metaService: Meta,
     private readonly bsModalService: BsModalService
   ) {
-    this.titleService.setTitle("Create a new set — Scholarsome");
+    this.titleService.setTitle("Create a set — Scholarsome");
     this.metaService.addTag({ name: "description", content: "Create a free new Scholarsome study set. Scholarsome is the way studying was meant to be." });
   }
 
@@ -45,10 +46,12 @@ export class CreateStudySetComponent implements OnInit, AfterViewInit {
   protected formDisabled = false;
   protected emptyTitleAlert = false;
   protected errorEncountered = false;
-  protected faQuestionCircle = faQuestionCircle;
 
   protected modalRef?: BsModalRef;
   protected existingSet = true;
+
+  protected readonly faQuestionCircle = faQuestionCircle;
+  protected readonly faSquarePlus = faSquarePlus;
 
   // index starts at 0
   protected cardComponents: { component: ComponentRef<CardComponent>, index: number }[] = [];
