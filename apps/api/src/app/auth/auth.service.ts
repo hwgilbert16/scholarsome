@@ -13,15 +13,13 @@ import * as jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { JwtPayload } from "jwt-decode";
 import { AuthException } from "@api/shared/exception/exceptions/variants/auth.exception";
+import * as crypto from "crypto";
 
 @Injectable()
 export class AuthService {
   private readonly refreshTokenRedis: Redis;
   private readonly apiKeyRedis: Redis;
 
-  /**
-   * @ignore
-   */
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -115,29 +113,33 @@ export class AuthService {
   setLoginCookies(res: Response, user: UserWithSets | User): void {
     res.cookie("verified", user.verified, { httpOnly: false });
 
+    const sessionId = crypto.randomUUID();
+
     const refreshToken = this.jwtService.sign(
-      { id: user.id, email: user.email, type: "refresh" },
-      { expiresIn: "182d" }
+        {
+          id: user.id,
+          sessionId,
+          email: user.email,
+          type: "refresh"
+        },
+        { expiresIn: "182d" }
     );
+    const refreshTokenExpiry = new Date(new Date().setDate(new Date().getDate() + 182));
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      expires: new Date(new Date().setDate(new Date().getDate() + 182)),
-    });
-    this.refreshTokenRedis.set(user.email, refreshToken);
+    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: refreshTokenExpiry });
+    this.refreshTokenRedis.set(sessionId, refreshToken);
+    this.refreshTokenRedis.expire(sessionId, Math.round((refreshTokenExpiry.getTime() - new Date().getTime()) / 1000));
 
-    res.cookie(
-      "access_token",
-      this.jwtService.sign(
-        { id: user.id, email: user.email, type: "access" },
+    res.cookie("access_token", this.jwtService.sign(
+        {
+          id: user.id,
+          sessionId,
+          email: user.email,
+          type: "access"
+        },
         { expiresIn: "15m" }
-      ),
-      { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) }
-    );
-    res.cookie("authenticated", true, {
-      httpOnly: false,
-      expires: new Date(new Date().setDate(new Date().getDate() + 182)),
-    });
+    ), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
   }
 
   /**
@@ -150,7 +152,7 @@ export class AuthService {
 
     const user = jwt.decode(req.cookies.access_token);
     if (user && "email" in (user as jwt.JwtPayload)) {
-      this.refreshTokenRedis.del(user["email"]);
+      this.refreshTokenRedis.del(user["sessionId"]);
     }
   }
 }

@@ -7,7 +7,6 @@ import { AlertModule } from "ngx-bootstrap/alert";
 import { NotfoundComponent } from "./notfound/notfound.component";
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from "ng-recaptcha";
 import { CardComponent } from "./card/card.component";
-import { SharedService } from "./shared.service";
 import { CommonModule } from "@angular/common";
 import { QuillEditorComponent } from "ngx-quill";
 
@@ -25,8 +24,7 @@ import { QuillEditorComponent } from "ngx-quill";
     {
       provide: RECAPTCHA_V3_SITE_KEY,
       useValue: process.env["SCHOLARSOME_RECAPTCHA_SITE"]
-    },
-    SharedService
+    }
   ],
   declarations: [
     AlertComponent,

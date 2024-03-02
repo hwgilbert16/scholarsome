@@ -5,9 +5,6 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class MailService {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
@@ -54,13 +51,13 @@ export class MailService {
       return;
     }
 
-    const token = this.jwtService.sign({ email, reset: true }, { expiresIn: "10m" });
+    const token = this.jwtService.sign({ email, forPasswordReset: true }, { expiresIn: "10m" });
 
     await this.mailerService.sendMail({
       to: email,
       from: "noreply@scholarsome.com",
       subject: "Reset your password",
-      text: `Hey there,\n\nIf you did not request a password change, you can ignore this email.\n\nYou're receiving this because you requested a password reset. Follow the link below to choose a new password.\n\nThis link will expire in 10 minutes.\n\nhttp${this.configService.get<string>("SSL_KEY_BASE64") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/reset/password/setCookie/${token}`
+      text: `Hey there,\n\nIf you did not request a password change, you can ignore this email.\n\nYou're receiving this because you requested a password reset. Follow the link below to choose a new password.\n\nThis link will expire in 10 minutes.\n\nhttp${this.configService.get<string>("SSL_KEY_BASE64") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/reset/password/verify/${token}`
     });
   }
 }

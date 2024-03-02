@@ -1,7 +1,8 @@
 User-agent: *
-Allow: /homepage
-Allow: /study-set/
-Allow: /profile/
+Allow: /study-set
+Allow: /profile
+Allow: /folder
+Allow: /handbook
 Disallow: /404
 Disallow: /api/
-Disallow: /assets/
+Disallow: /assets

@@ -12,7 +12,6 @@ import { AuthModule } from "../auth/auth.module";
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
-import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
 import { ResendEmailComponent } from "./resend-email/resend-email.component";
 import { CsvImportModalComponent } from "./csv-import-modal/csv-import-modal.component";
 
@@ -33,7 +32,6 @@ import { CsvImportModalComponent } from "./csv-import-modal/csv-import-modal.com
     LoginModalComponent,
     ForgotPasswordModalComponent,
     RegisterModalComponent,
-    ProfilePictureModalComponent,
     ResendEmailComponent,
     CsvImportModalComponent
   ],

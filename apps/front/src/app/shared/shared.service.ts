@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { lastValueFrom } from "rxjs";
+import { lastValueFrom, Subject } from "rxjs";
 import packageJson from "../../../../../package.json";
 
 @Injectable({
@@ -11,6 +11,8 @@ export class SharedService {
     this.releaseCheckRes = lastValueFrom(this.http.get("https://api.github.com/repos/hwgilbert16/scholarsome/releases"));
     this.starsRes = lastValueFrom(this.http.get("https://api.github.com/repos/hwgilbert16/scholarsome"));
   }
+
+  public avatarUpdateEvent = new Subject<void>();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly releaseCheckRes: Promise<any>;

@@ -18,20 +18,41 @@ model User {
   updatedAt DateTime @updatedAt
   sets      Set[]
   apiKeys   ApiKey[]
+  folders   Folder[]
 }
 
 model Set {
   id          String   @id @default(uuid())
   authorId    String
+  folderId    String?
   title       String
   description String?  @db.Text
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   private     Boolean
+  folders     Folder[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   cards       Card[]
 
-  @@index([authorId])
+  @@index([authorId, folderId])
+}
+
+model Folder {
+  id             String   @id @default(uuid())
+  parentFolderId String?
+  authorId       String
+  name           String
+  description    String?  @db.Text
+  color          String   @db.VarChar(7)
+  private        Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  sets           Set[]
+  author         User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parentFolder   Folder?  @relation("FolderNesting", fields: [parentFolderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subfolders     Folder[] @relation("FolderNesting")
+
+  @@index([parentFolderId, authorId])
 }
 
 model CardMedia {

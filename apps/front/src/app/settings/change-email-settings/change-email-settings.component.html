@@ -1,0 +1,18 @@
+<form class="py-3" (ngSubmit)="submit(form)" #form="ngForm" ngNativeValidate>
+    <div class="mb-3">
+        <label for="newEmail" class="form-label">New Email</label>
+        <input type="email" class="form-control" name="newEmail" id="newEmail" ngModel required>
+    </div>
+    <div class="mb-3">
+        <label for="confirmNewEmail" class="form-label">Confirm New Email</label>
+        <input type="email" class="form-control" name="confirmNewEmail" id="confirmNewEmail" ngModel required>
+        <div class="form-text">After changing your email, you will have to sign in again.</div>
+        <div *ngIf="error" class="form-text text-danger">Something went wrong. Try again, or look at the developer console for more information.</div>
+        <div *ngIf="notMatching" class="form-text text-danger">Your emails do not match.</div>
+        <div *ngIf="rateLimit" class="form-text text-danger">You are being rate limited.</div>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="clicked">
+        <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Change email
+    </button>
+</form>

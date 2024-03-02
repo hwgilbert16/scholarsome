@@ -14,9 +14,6 @@ import { SharedService } from "../shared/shared.service";
   styleUrls: ["./landing.component.scss"]
 })
 export class LandingComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly cookieService: CookieService,
     private readonly router: Router,

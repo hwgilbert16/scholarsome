@@ -21,7 +21,7 @@ export class UsersService {
   ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
-      include: { sets: true }
+      include: { sets: true, folders: true }
     });
   }
 
@@ -51,7 +51,7 @@ export class UsersService {
       where,
       orderBy,
       include: {
-        sets: true
+        sets: true, folders: true
       }
     });
   }

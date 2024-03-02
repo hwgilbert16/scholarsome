@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   CanActivate,
-  ConflictException,
   ExecutionContext,
   Injectable,
   NotFoundException,
@@ -33,9 +32,6 @@ export class CreateCardGuard implements CanActivate {
 
     if (!set || set.authorId !== user.id) throw new UnauthorizedException();
 
-    for (const card of set.cards) {
-      if (card.index === body.index) throw new ConflictException();
-    }
     return true;
   }
 }

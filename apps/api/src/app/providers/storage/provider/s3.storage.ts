@@ -11,10 +11,10 @@ export class S3StorageProvider implements StorageProvider {
     this.s3 = new S3({
       credentials: {
         accessKeyId: configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-        secretAccessKey: configService.get<string>("S3_STORAGE_SECRET_KEY"),
+        secretAccessKey: configService.get<string>("S3_STORAGE_SECRET_KEY")
       },
       endpoint: configService.get<string>("S3_STORAGE_ENDPOINT"),
-      region: configService.get<string>("S3_STORAGE_REGION"),
+      region: configService.get<string>("S3_STORAGE_REGION")
     });
 
     this.bucket = configService.get<string>("S3_STORAGE_BUCKET");
@@ -23,7 +23,7 @@ export class S3StorageProvider implements StorageProvider {
   public async getFile(path: string): Promise<File> {
     const file = await this.s3.getObject({
       Key: path,
-      Bucket: this.bucket,
+      Bucket: this.bucket
     });
 
     const content = await file.Body.transformToByteArray();
@@ -36,65 +36,70 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   public async getDirectoryFiles(path: string): Promise<File[]> {
-    if (!(await this.isDirectory(path)))
+    if (!(await this.isDirectory(path))) {
       throw new Error(`the path provided is not a directory: "${path}"`);
+    }
 
     const files = await this.s3.listObjects({
       Prefix: path,
       Delimiter: "/",
-      Bucket: this.bucket,
+      Bucket: this.bucket
     });
 
     const contents: File[] = await Promise.all(
-      files.Contents.map(async ({ Key }) => {
-        if (Key.slice(path.length).includes("/"))
-          throw new Error(`directory "${path}" contains subdirectories.`);
+        files.Contents.map(async ({ Key }) => {
+          if (Key.slice(path.length).includes("/")) {
+            throw new Error(`directory "${path}" contains subdirectories.`);
+          }
 
-        const file = await this.s3.getObject({ Key, Bucket: this.bucket });
+          const file = await this.s3.getObject({ Key, Bucket: this.bucket });
 
-        return {
-          fileName: Key,
-          content: await file.Body.transformToByteArray(),
-        };
-      })
+          return {
+            fileName: Key,
+            content: await file.Body.transformToByteArray()
+          };
+        })
     );
 
     return contents;
   }
 
   public async deleteFile(path: string): Promise<void> {
-    if (!(await this.isFile(path)))
+    if (!(await this.isFile(path))) {
       throw new Error(`the path provided is not a file: "${path}"`);
+    }
 
     await this.s3.deleteObject({
       Key: path,
-      Bucket: this.bucket,
+      Bucket: this.bucket
     });
   }
 
   public async deleteDirectoryFiles(path: string): Promise<void> {
-    if (!(await this.isDirectory(path)))
+    if (!(await this.isDirectory(path))) {
       throw new Error(`the path provided is not a directory: "${path}"`);
+    }
 
     const files = await this.s3.listObjectsV2({
       Prefix: path,
-      Bucket: this.bucket,
+      Bucket: this.bucket
     });
 
     await Promise.all(
-      files.Contents.map(async ({ Key }) => {
-        if (Key.slice(path.length).includes("/"))
-          throw new Error(`directory "${path}" contains subdirectories.`);
+        files.Contents.map(async ({ Key }) => {
+          if (Key.slice(path.length).includes("/")) {
+            throw new Error(`directory "${path}" contains subdirectories.`);
+          }
 
-        await this.s3.deleteObject({ Key, Bucket: this.bucket });
-      })
+          await this.s3.deleteObject({ Key, Bucket: this.bucket });
+        })
     );
   }
 
   public async isDirectory(path: string): Promise<boolean> {
     const object = await this.s3.listObjectsV2({
       Prefix: path,
-      Bucket: this.bucket,
+      Bucket: this.bucket
     });
 
     return !!object.Contents.length;
@@ -103,7 +108,7 @@ export class S3StorageProvider implements StorageProvider {
   public async isFile(path: string): Promise<boolean> {
     const object = await this.s3.listObjectsV2({
       Prefix: path,
-      Bucket: this.bucket,
+      Bucket: this.bucket
     });
 
     return !object.Contents.length;

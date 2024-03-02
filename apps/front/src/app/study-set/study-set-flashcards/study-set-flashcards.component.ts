@@ -14,9 +14,6 @@ import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
   styleUrls: ["./study-set-flashcards.component.scss"]
 })
 export class StudySetFlashcardsComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly route: ActivatedRoute,
     private readonly sets: SetsService,

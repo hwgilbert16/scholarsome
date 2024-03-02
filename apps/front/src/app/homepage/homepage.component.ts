@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { User } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
 import { UsersService } from "../shared/http/users.service";
+import { faPlus, faClone, faFolder } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-view",
@@ -9,9 +10,6 @@ import { UsersService } from "../shared/http/users.service";
   styleUrls: ["./homepage.component.scss"]
 })
 export class HomepageComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly usersService: UsersService,
     private readonly titleService: Title,
@@ -26,6 +24,10 @@ export class HomepageComponent implements OnInit {
 
   user: User;
 
+  protected readonly faClone = faClone;
+  protected readonly faFolder = faFolder;
+  protected readonly faPlus = faPlus;
+
   async ngOnInit(): Promise<void> {
     const user = await this.usersService.myUser();
     if (user) {
@@ -37,6 +39,12 @@ export class HomepageComponent implements OnInit {
       this.user.sets = this.user.sets.sort((a, b) => {
         return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
       });
+
+      this.user.folders = this.user.folders
+          .sort((a, b) => {
+            return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
+          })
+          .filter((f) => !f.parentFolderId);
     }
 
     this.spinner.nativeElement.remove();

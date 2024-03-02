@@ -5,27 +5,70 @@
 </div>
 
 <div class="py-4 sets" hidden #container>
-  <div class="d-flex header">
-    <h2>Your sets</h2>
-  </div>
-  <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="user">
-    <div *ngIf="user.sets.length === 0" class="text-secondary">
-      You haven't created any sets yet.
-      <a [routerLink]="['/create/set']">Create your first one.</a>
+  <div>
+    <div class="header">
+      <h2>
+        <fa-icon class="fs-3" [icon]="faFolder"></fa-icon>
+        Your folders
+      </h2>
+      <p class="text-secondary me-3">Subfolders are not shown here.</p>
     </div>
-    <div class="col" *ngFor="let set of user.sets">
-      <div class="card shadow-sm set-card h-100" [routerLink]="['/study-set', set.id]" role="button">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">
-            {{ set.title }}
-            <fa-icon
-              *ngIf="set.private"
-              [icon]="['far', 'eye-slash']"
-            ></fa-icon>
-          </h5>
+    <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="user">
+      <div class="col-md-3" [routerLink]="['/create/folder']">
+        <div class="card shadow-sm set-card h-100" role="button">
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <fa-icon class="fs-3" [icon]="faPlus"></fa-icon>
+            <span class="ms-1 fs-5">Create new folder</span>
+          </div>
         </div>
-        <div class="card-footer mt-auto">
-          <small class="text-body-secondary">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'}) }}</small>
+      </div>
+      <div class="col-md-3" *ngFor="let folder of user.folders">
+        <div class="card shadow-sm set-card h-100" [routerLink]="['/folder', folder.id]" role="button">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">
+              {{ folder.name }}
+              <fa-icon
+                *ngIf="folder.private"
+                [icon]="['far', 'eye-slash']"
+              ></fa-icon>
+            </h5>
+          </div>
+          <div class="card-footer mt-auto" [ngStyle]="{'background-color': folder.color}"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="me-4">
+  <div class="mt-4">
+    <div class="d-flex header">
+      <h2>
+        <fa-icon class="fs-3" [icon]="faClone"></fa-icon>
+        Your sets
+      </h2>
+    </div>
+    <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="user">
+      <div class="col-md-3" [routerLink]="['/create/set']">
+        <div class="card shadow-sm set-card h-100" role="button">
+          <div class="card-body d-flex justify-content-center align-items-center">
+            <fa-icon class="fs-3" [icon]="faPlus"></fa-icon>
+            <span class="ms-1 fs-5">Create new set</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3" *ngFor="let set of user.sets">
+        <div class="card shadow-sm set-card h-100" [routerLink]="['/study-set', set.id]" role="button">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">
+              {{ set.title }}
+              <fa-icon
+                *ngIf="set.private"
+                [icon]="['far', 'eye-slash']"
+              ></fa-icon>
+            </h5>
+          </div>
+          <div class="card-footer mt-auto">
+            <small class="text-body-secondary">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'}) }}</small>
+          </div>
         </div>
       </div>
     </div>

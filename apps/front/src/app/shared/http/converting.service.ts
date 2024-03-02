@@ -23,7 +23,7 @@ export class ConvertingService {
 
     try {
       file = await lastValueFrom(
-          this.http.get("/api/converting/export/quizlet/" +
+          this.http.get("/api/sets/converting/export/quizlet/" +
           setId +
           "/" +
           encodeURIComponent(sideDiscriminator) +
@@ -48,7 +48,7 @@ export class ConvertingService {
     let file: Blob | undefined;
 
     try {
-      file = await lastValueFrom(this.http.get("/api/converting/export/anki/" + setId, { responseType: "blob" }));
+      file = await lastValueFrom(this.http.get("/api/sets/converting/export/anki/" + setId, { responseType: "blob" }));
     } catch (e) {
       return null;
     }
@@ -67,7 +67,7 @@ export class ConvertingService {
     let file: Blob | undefined;
 
     try {
-      file = await lastValueFrom(this.http.get("/api/converting/export/csv/" + setId, { responseType: "blob" }));
+      file = await lastValueFrom(this.http.get("/api/sets/converting/export/csv/" + setId, { responseType: "blob" }));
     } catch (e) {
       return null;
     }
@@ -86,7 +86,7 @@ export class ConvertingService {
     let file: Blob | undefined;
 
     try {
-      file = await lastValueFrom(this.http.get("/api/converting/export/media/" + setId, { responseType: "blob" }));
+      file = await lastValueFrom(this.http.get("/api/sets/converting/export/media/" + setId, { responseType: "blob" }));
     } catch (e) {
       return null;
     }
@@ -117,7 +117,7 @@ export class ConvertingService {
     let set: ApiResponse<Set> | undefined;
 
     try {
-      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/converting/import/quizlet", {
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/converting/import/quizlet", {
         title: body.title,
         description: body.description ? body.description : "",
         private: body.private,
@@ -161,7 +161,7 @@ export class ConvertingService {
     formData.append("file", body.file);
 
     try {
-      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/converting/import/apkg", formData));
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/converting/import/apkg", formData));
     } catch (e) {
       return null;
     }
@@ -196,7 +196,7 @@ export class ConvertingService {
     formData.append("file", body.file);
 
     try {
-      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/converting/import/csv", formData));
+      set = await lastValueFrom(this.http.post<ApiResponse<Set>>("/api/sets/converting/import/csv", formData));
     } catch (e) {
       return null;
     }

@@ -52,7 +52,9 @@ export class QuizletImportModalComponent {
     });
 
     if (set) {
-      await this.router.navigate(["/study-set/" + set.id]);
+      this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+        this.router.navigate(["/study-set", set.id]);
+      });
     } else {
       this.response = "pattern";
       this.clicked = false;

@@ -6,7 +6,7 @@ import { CookieService } from "ngx-cookie";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
-import { faQ, faArrowRightFromBracket, faStar, faImage, faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { faQ, faArrowRightFromBracket, faStar, faFileCsv, faGear, faFolder, faClone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
@@ -15,8 +15,6 @@ import { SetPasswordModalComponent } from "./set-password-modal/set-password-mod
 import { LoginModalComponent } from "./login-modal/login-modal.component";
 import { ForgotPasswordModalComponent } from "./forgot-password-modal/forgot-password-modal.component";
 import { RegisterModalComponent } from "./register-modal/register-modal.component";
-import { ProfilePictureModalComponent } from "./profile-picture-modal/profile-picture-modal.component";
-import { MediaService } from "../shared/http/media.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
 import { UsersService } from "../shared/http/users.service";
@@ -34,7 +32,6 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("login") loginModal: LoginModalComponent;
   @ViewChild("forgot") forgotPasswordModal: ForgotPasswordModalComponent;
   @ViewChild("register") registerModal: RegisterModalComponent;
-  @ViewChild("profilePicture") profilePictureModal: ProfilePictureModalComponent;
   @ViewChild("csvImport") csvImportModal: CsvImportModalComponent;
 
   // Whether an update is available compared to the current running version
@@ -64,23 +61,22 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly packageJson = packageJson;
   protected readonly window = window;
 
-  protected readonly faImage = faImage;
+  protected readonly faUser = faUser;
   protected readonly faQ = faQ;
   protected readonly faGithub = faGithub;
   protected readonly faStar = faStar;
   protected readonly faArrowRightFromBracket = faArrowRightFromBracket;
   protected readonly faFileCsv = faFileCsv;
+  protected readonly faGear = faGear;
+  protected readonly faFolder = faFolder;
+  protected readonly faClone = faClone;
 
-  /**
-   * @ignore
-   */
   constructor(
     private readonly modalService: ModalService,
     private readonly authService: AuthService,
     private readonly deviceService: DeviceDetectorService,
     private readonly router: Router,
     private readonly sharedService: SharedService,
-    private readonly mediaService: MediaService,
     private readonly sanitizer: DomSanitizer,
     private readonly usersService: UsersService,
     public readonly cookieService: CookieService
@@ -92,7 +88,7 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async viewAvatar() {
-    const avatar = await this.mediaService.getMyAvatar(64, 64);
+    const avatar = await this.usersService.getMyAvatar(64, 64);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));
@@ -138,7 +134,9 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
             this.user = user;
           }
 
-          this.profilePictureModal.updateAvatarEvent.subscribe(async () => await this.viewAvatar());
+          this.sharedService.avatarUpdateEvent.asObservable().subscribe(async () => {
+            await this.viewAvatar();
+          });
         }
       }
     });
@@ -194,6 +192,10 @@ export class HeaderComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.verificationResult = cookie.includes("true");
     }
+
+    this.sharedService.avatarUpdateEvent.subscribe(() => {
+      this.viewAvatar();
+    });
   }
 
   ngOnDestroy() {

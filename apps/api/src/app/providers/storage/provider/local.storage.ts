@@ -1,4 +1,4 @@
-import * as node_path from "node:path";
+import * as nodePath from "node:path";
 import * as fs from "node:fs";
 import { StorageProvider } from "../interfaces/storage-provider.interface";
 import { ConfigService } from "@nestjs/config";
@@ -12,7 +12,7 @@ export class LocalStorageProvider implements StorageProvider {
   }
 
   public async getFile(path: string): Promise<File> {
-    const filePath = node_path.join(this.localStorageDir, path);
+    const filePath = nodePath.join(this.localStorageDir, path);
 
     if (!fs.existsSync(filePath)) return null;
 
@@ -20,55 +20,63 @@ export class LocalStorageProvider implements StorageProvider {
   }
 
   public async putFile(path: string, data: Uint8Array): Promise<void> {
-    const filePath = node_path.join(this.localStorageDir, path);
-    const fileDir = node_path.dirname(filePath);
+    const filePath = nodePath.join(this.localStorageDir, path);
+    const fileDir = nodePath.dirname(filePath);
 
-    if (!fs.existsSync(fileDir))
+    if (!fs.existsSync(fileDir)) {
       await fs.promises.mkdir(fileDir, { recursive: true });
+    }
 
     await fs.promises.writeFile(filePath, data);
   }
 
   public async getDirectoryFiles(path: string): Promise<File[]> {
-    const dirPath = node_path.join(this.localStorageDir, path);
+    const dirPath = nodePath.join(this.localStorageDir, path);
 
-    if (!(await this.isDirectory(dirPath)))
+    if (!(await this.isDirectory(dirPath))) {
       throw new Error(`the path provided is not a directory: "${dirPath}"`);
+    }
 
     const filenames = await fs.promises.readdir(dirPath);
 
-    for (const entity of await fs.promises.readdir(dirPath))
-      if (await this.isDirectory(node_path.join(dirPath, entity)))
+    for (const entity of await fs.promises.readdir(dirPath)) {
+      if (await this.isDirectory(nodePath.join(dirPath, entity))) {
         throw new Error(`directory "${dirPath}" contains subdirectories.`);
+      }
+    }
 
-    const files: File[] = await Promise.all(
-      filenames.map(async (fileName) => ({
-        fileName,
-        content: await fs.promises.readFile(node_path.join(dirPath, fileName)),
-      }))
+    return await Promise.all(
+        filenames.map(async (fileName) => ({
+          fileName,
+          content: await fs.promises.readFile(nodePath.join(dirPath, fileName))
+        }))
     );
-
-    return files;
   }
 
   public async deleteFile(path: string): Promise<void> {
-    const filePath = node_path.join(this.localStorageDir, path);
+    const filePath = nodePath.join(this.localStorageDir, path);
 
-    if (!(await this.isFile(filePath)))
+    if (!(await this.isFile(filePath))) {
       throw new Error(`the path provided is not a file: "${filePath}"`);
+    }
 
     await fs.promises.rm(filePath);
   }
 
   public async deleteDirectoryFiles(path: string): Promise<void> {
-    const dirPath = node_path.join(this.localStorageDir, path);
+    const dirPath = nodePath.join(this.localStorageDir, path);
 
-    if (!(await this.isDirectory(dirPath)))
+    if (!fs.existsSync(dirPath)) return;
+
+    if (!(await this.isDirectory(dirPath))) {
       throw new Error(`the path provided is not a directory: "${dirPath}"`);
+    }
 
-    for (const entity of await fs.promises.readdir(dirPath))
-      if (await this.isDirectory(node_path.join(dirPath, entity)))
+    for (const entity of await fs.promises.readdir(dirPath)) {
+      if (await this.isDirectory(nodePath.join(dirPath, entity))) {
         throw new Error(`directory "${dirPath}" contains subdirectories.`);
+      }
+    }
 
     await fs.promises.rm(dirPath, { recursive: true, force: true });
   }

@@ -58,7 +58,9 @@ export class AnkiImportModalComponent {
     });
 
     if (set) {
-      this.router.navigate(["/study-set/" + set.id]);
+      this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
+        this.router.navigate(["/study-set", set.id]);
+      });
       this.uploading = false;
       this.clicked = false;
       this.file = null;
