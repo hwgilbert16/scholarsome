@@ -11,6 +11,7 @@ import { envSchema } from "@scholarsome/shared";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as fs from "fs";
 import { LoggerFactory } from "./app/shared/logger.factory";
+import { ExceptionFactory } from "./app/shared/exception/exception.factory";
 
 async function bootstrap() {
   const validation = envSchema
@@ -35,7 +36,8 @@ async function bootstrap() {
       new ValidationPipe({
         whitelist: true,
         transform: true,
-        disableErrorMessages: process.env.NODE_ENV === "production"
+        disableErrorMessages: process.env.NODE_ENV === "production",
+        exceptionFactory: ExceptionFactory.transform
       })
   );
 
@@ -66,7 +68,9 @@ async function bootstrap() {
   const config = new DocumentBuilder()
       .setTitle("Scholarsome API")
       .setVersion("")
-      .setDescription("This page contains documentation about how to use the Scholarsome API. Currently, only endpoints that do not require authentication are able to be used. In a future update, API tokens will be introduced that allow for the usage of privileged endpoints.")
+      .setDescription(
+          "This page contains documentation about how to use the Scholarsome API. Currently, only endpoints that do not require authentication are able to be used. In a future update, API tokens will be introduced that allow for the usage of privileged endpoints."
+      )
       .build();
 
   const document = SwaggerModule.createDocument(app, config);

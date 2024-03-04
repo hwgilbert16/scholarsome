@@ -1,10 +1,10 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus, NotFoundException,
+  NotFoundException,
   Param,
   Post,
   Req,
@@ -33,6 +33,8 @@ import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
 import { CreateApiKeyDto } from "./dto/createApiKey.dto";
+import { AuthException } from "../shared/exception/exceptions/variants/auth.exception";
+import { CommonException } from "../shared/exception/exceptions/variants/common.exception";
 import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
@@ -61,9 +63,11 @@ export class AuthController {
 
   @UseGuards(AuthenticatedGuard)
   @Post("apiKey")
-  async createApiKey(@Body() createApiKeyDto: CreateApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ name: string, apiKey: string }>> {
+  async createApiKey(
+    @Body() createApiKeyDto: CreateApiKeyDto,
+    @Req() req: ExpressRequest
+  ): Promise<ApiResponse<{ name: string; apiKey: string }>> {
     const user = await this.authService.getUserInfo(req);
-    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const apiKey = await this.prisma.apiKey.create({
       data: {
@@ -95,16 +99,15 @@ export class AuthController {
 
   @UseGuards(AuthenticatedGuard)
   @Delete("apiKey")
-  async deleteAPIKey(@Body() deleteApiKeyDto: DeleteApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ apiKey: string }>> {
-    const user = await this.authService.getUserInfo(req);
-    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-
+  async deleteAPIKey(
+    @Body() deleteApiKeyDto: DeleteApiKeyDto
+  ): Promise<ApiResponse<{ apiKey: string }>> {
     const apiKey = await this.prisma.apiKey.findUnique({
       where: {
         apiKey: deleteApiKeyDto.apiKey
       }
     });
-    if (!apiKey) throw new NotFoundException({ status: "fail", message: "API key was not found" });
+    if (!apiKey) throw new AuthException.ApiKeyNotFound();
 
     await this.prisma.apiKey.delete({
       where: {
@@ -183,10 +186,10 @@ export class AuthController {
             this.configService.get<string>("JWT_SECRET")
         ) as { email: string; forPasswordReset: boolean };
       } catch (e) {
-        throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
-      }
+        res.status(401);
 
-      if (!decoded || !decoded.forPasswordReset) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+        throw new AuthException.InvalidResetTokenProvided();
+      }
 
       res.cookie("resetPasswordToken", "", {
         httpOnly: false,
@@ -216,6 +219,7 @@ export class AuthController {
         password: await bcrypt.hash(resetPasswordDto.newPassword, 10)
       }
     });
+
 
     delete updatedUser.password;
     delete updatedUser.verified;
@@ -301,16 +305,7 @@ export class AuthController {
           this.configService.get<string>("JWT_SECRET")
       ) as { email: string };
     } catch (e) {
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Invalid token"
-      };
-    }
-    if (!email) {
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Invalid token"
-      };
+      throw new AuthException.InvalidEmailVerificationTokenProvided();
     }
 
     const verification = await this.usersService.updateUser({
@@ -348,12 +343,6 @@ export class AuthController {
     @Request() req: ExpressRequest
   ): Promise<ApiResponse<null>> {
     const userCookie = await this.authService.getUserInfo(req);
-    if (!userCookie) {
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Something went wrong!"
-      };
-    }
 
     const user = await this.usersService.user({ id: userCookie.id });
 
@@ -364,16 +353,12 @@ export class AuthController {
           data: null
         };
       } else {
-        return {
-          status: ApiResponseOptions.Fail,
-          message: "Could not send verification email - is SMTP configured?"
-        };
+        throw new CommonException.InternalServerError(
+            "Could not send verification email."
+        );
       }
     } else {
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Something went wrong."
-      };
+      throw new CommonException.InternalServerError();
     }
   }
 
@@ -395,10 +380,7 @@ export class AuthController {
     ) {
       res.status(409);
 
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Email already exists"
-      };
+      throw new AuthException.EmailAlreadyExists();
     } else {
       const user = await this.usersService.createUser({
         username: registerDto.username,
@@ -439,10 +421,7 @@ export class AuthController {
     ) {
       res.status(401);
 
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Incorrect email or password"
-      };
+      throw new AuthException.InvalidCredentials();
     }
 
     if (this.configService.get<string>("SCHOLARSOME_RECAPTCHA_SECRET")) {
@@ -450,10 +429,7 @@ export class AuthController {
           loginDto.recaptchaToken
       );
       if (!captchaCheck) {
-        throw new HttpException(
-            "Too many requests",
-            HttpStatus.TOO_MANY_REQUESTS
-        );
+        throw new CommonException.TooManyRequests();
       }
     }
 
@@ -464,10 +440,7 @@ export class AuthController {
     if (!user) {
       res.status(500);
 
-      return {
-        status: ApiResponseOptions.Error,
-        message: "Error finding user"
-      };
+      throw new AuthException.UserDoesNotExist();
     }
 
     this.authService.setLoginCookies(res, user);

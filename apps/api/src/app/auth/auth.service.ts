@@ -12,6 +12,7 @@ import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { JwtPayload } from "jwt-decode";
+import { AuthException } from "../shared/exception/exceptions/variants/auth.exception";
 import * as crypto from "crypto";
 
 @Injectable()
@@ -37,26 +38,29 @@ export class AuthService {
    *
    * @returns Decoded access token
    */
-  async getUserInfo(req: Request): Promise<{ id: string; email: string; } | false> {
+  async getUserInfo(req: Request): Promise<{ id: string; email: string }> {
     if (req.cookies["access_token"]) {
       let decoded: string | JwtPayload;
 
       try {
-        decoded = jwt.verify(req.cookies["access_token"], this.configService.get<string>("JWT_SECRET"));
+        decoded = jwt.verify(
+            req.cookies["access_token"],
+            this.configService.get<string>("JWT_SECRET")
+        );
       } catch (e) {
-        return false;
+        throw new AuthException.InvalidTokenProvided();
       }
 
-      return decoded as { id: string; email: string; };
+      return decoded as { id: string; email: string };
     } else if (req.header("x-api-key")) {
       const info = await this.apiKeyRedis.get(req.header("x-api-key"));
 
       if (info) {
         return JSON.parse(info);
-      }
+      } else throw new AuthException.InvalidTokenProvided();
     }
 
-    return false;
+    throw new AuthException.TokenNotProvided();
   }
 
   /**
@@ -71,12 +75,15 @@ export class AuthService {
       response: token
     };
 
-    const googleRes = await lastValueFrom(this.httpService.post<RecaptchaResponse>(
-        "https://www.google.com/recaptcha/api/siteverify",
-        new URLSearchParams(Object.entries(body)).toString(),
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
-        }));
+    const googleRes = await lastValueFrom(
+        this.httpService.post<RecaptchaResponse>(
+            "https://www.google.com/recaptcha/api/siteverify",
+            new URLSearchParams(Object.entries(body)).toString(),
+            {
+              headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }
+        )
+    );
 
     if (googleRes.data["error-codes"]) return false;
 
@@ -97,7 +104,7 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException();
 
-    return (await bcrypt.compare(password, user.password));
+    return await bcrypt.compare(password, user.password);
   }
 
   /**

@@ -1,16 +1,18 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { ValidationError } from "../../shared/exception/annotations/validation-error.decorator";
 
+@ValidationError("Invalid registration credentials.")
 export class RegisterDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: "username should not be empty" })
     username: string;
 
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: "email must be a correctly formatted email" })
+  @IsNotEmpty({ message: "email should not be empty" })
     email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: "password should not be empty" })
     password: string;
 
   @IsString()

@@ -20,6 +20,9 @@ import { MediaModule } from "./media/media.module";
 import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
 import { ConvertingModule } from "./converting/converting.module";
 import { StorageModule } from "./providers/storage/storage.module";
+import { APP_FILTER } from "@nestjs/core";
+import { CommonHttpExceptionFilter } from "./shared/exception/filters/common-http-exception.filter";
+import { HttpExceptionFilter } from "./shared/exception/filters/http-exception.filter";
 import { FoldersModule } from "./folders/folders.module";
 
 @Module({
@@ -86,7 +89,17 @@ import { FoldersModule } from "./folders/folders.module";
     FoldersModule
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    // higher-priority filters go after lower-priority ones.
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter
+    },
+    {
+      provide: APP_FILTER,
+      useClass: CommonHttpExceptionFilter
+    }
+  ],
   exports: [JwtModule]
 })
 export class AppModule implements NestModule {
