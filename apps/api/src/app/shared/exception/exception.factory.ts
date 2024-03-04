@@ -8,14 +8,14 @@ export class ExceptionFactory {
 
     const responseErrors = errors.map((e) => ({
       field: e.property,
-      errors: Object.values(e.constraints),
+      errors: Object.values(e.constraints)
     }));
 
     return new CommonHttpException(
-      Reflect.getMetadata(EXCEPTION_TITLE, target) ??
+        Reflect.getMetadata(EXCEPTION_TITLE, target) ??
         "A schema validation error occured.",
-      responseErrors,
-      403
+        responseErrors,
+        403
     );
   }
 }

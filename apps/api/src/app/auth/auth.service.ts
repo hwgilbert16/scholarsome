@@ -12,7 +12,7 @@ import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import { JwtPayload } from "jwt-decode";
-import { AuthException } from "@api/shared/exception/exceptions/variants/auth.exception";
+import { AuthException } from "../shared/exception/exceptions/variants/auth.exception";
 import * as crypto from "crypto";
 
 @Injectable()
@@ -44,8 +44,8 @@ export class AuthService {
 
       try {
         decoded = jwt.verify(
-          req.cookies["access_token"],
-          this.configService.get<string>("JWT_SECRET")
+            req.cookies["access_token"],
+            this.configService.get<string>("JWT_SECRET")
         );
       } catch (e) {
         throw new AuthException.InvalidTokenProvided();
@@ -72,17 +72,17 @@ export class AuthService {
   async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
       secret: this.configService.get<string>("RECAPTCHA_SECRET"),
-      response: token,
+      response: token
     };
 
     const googleRes = await lastValueFrom(
-      this.httpService.post<RecaptchaResponse>(
-        "https://www.google.com/recaptcha/api/siteverify",
-        new URLSearchParams(Object.entries(body)).toString(),
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        }
-      )
+        this.httpService.post<RecaptchaResponse>(
+            "https://www.google.com/recaptcha/api/siteverify",
+            new URLSearchParams(Object.entries(body)).toString(),
+            {
+              headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }
+        )
     );
 
     if (googleRes.data["error-codes"]) return false;
@@ -99,7 +99,7 @@ export class AuthService {
    */
   async validateUser(email: string, password: string): Promise<boolean> {
     const user = await this.usersService.user({
-      email,
+      email
     });
 
     if (!user) throw new UnauthorizedException();

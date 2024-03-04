@@ -15,30 +15,30 @@ import { ExceptionFactory } from "./app/shared/exception/exception.factory";
 
 async function bootstrap() {
   const validation = envSchema
-    .prefs({ errors: { label: "key" } })
-    .validate(process.env);
+      .prefs({ errors: { label: "key" } })
+      .validate(process.env);
 
   if (validation.error) {
     console.error(
-      "\x1b[31m" + "Configuration validation error: " + validation.error.message
+        "\x1b[31m" + "Configuration validation error: " + validation.error.message
     );
     process.exit(1);
   }
 
   const server = express();
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
-    bufferLogs: process.env.NODE_ENV === "production",
+    bufferLogs: process.env.NODE_ENV === "production"
   });
   const logger = LoggerFactory("Scholarsome");
   app.useLogger(logger);
 
   app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      disableErrorMessages: process.env.NODE_ENV === "production",
-      exceptionFactory: ExceptionFactory.transform,
-    })
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        disableErrorMessages: process.env.NODE_ENV === "production",
+        exceptionFactory: ExceptionFactory.transform
+      })
   );
 
   app.setGlobalPrefix("api", { exclude: ["assets/images/(.*)"] });
@@ -55,23 +55,23 @@ async function bootstrap() {
     process.env.SSL_CERT_BASE64.length > 0
   ) {
     https
-      .createServer(
-        {
-          key: Buffer.from(process.env.SSL_KEY_BASE64, "base64").toString(),
-          cert: Buffer.from(process.env.SSL_CERT_BASE64, "base64").toString(),
-        },
-        server
-      )
-      .listen(8443);
+        .createServer(
+            {
+              key: Buffer.from(process.env.SSL_KEY_BASE64, "base64").toString(),
+              cert: Buffer.from(process.env.SSL_CERT_BASE64, "base64").toString()
+            },
+            server
+        )
+        .listen(8443);
   }
 
   const config = new DocumentBuilder()
-    .setTitle("Scholarsome API")
-    .setVersion("")
-    .setDescription(
-      "This page contains documentation about how to use the Scholarsome API. Currently, only endpoints that do not require authentication are able to be used. In a future update, API tokens will be introduced that allow for the usage of privileged endpoints."
-    )
-    .build();
+      .setTitle("Scholarsome API")
+      .setVersion("")
+      .setDescription(
+          "This page contains documentation about how to use the Scholarsome API. Currently, only endpoints that do not require authentication are able to be used. In a future update, API tokens will be introduced that allow for the usage of privileged endpoints."
+      )
+      .build();
 
   const document = SwaggerModule.createDocument(app, config);
   fs.writeFileSync("./dist/api-spec.json", JSON.stringify(document));

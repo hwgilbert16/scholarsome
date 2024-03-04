@@ -4,8 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -13,7 +11,7 @@ import {
   Request,
   Res,
   UnauthorizedException,
-  UseGuards,
+  UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
@@ -35,9 +33,8 @@ import { RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
 import { CreateApiKeyDto } from "./dto/createApiKey.dto";
-import { AccessTokenAuthenticatedGuard } from "./guards/accessTokenAuthenticated.guard";
-import { AuthException } from "@api/shared/exception/exceptions/variants/auth.exception";
-import { CommonException } from "@api/shared/exception/exceptions/variants/common.exception";
+import { AuthException } from "../shared/exception/exceptions/variants/auth.exception";
+import { CommonException } from "../shared/exception/exceptions/variants/common.exception";
 import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
@@ -77,53 +74,52 @@ export class AuthController {
         name: createApiKeyDto.name,
         user: {
           connect: {
-            id: user.id,
-          },
-        },
-      },
+            id: user.id
+          }
+        }
+      }
     });
 
     this.apiKeyRedis.set(
-      apiKey.apiKey,
-      JSON.stringify({
-        id: user.id,
-        email: user.email,
-      })
+        apiKey.apiKey,
+        JSON.stringify({
+          id: user.id,
+          email: user.email
+        })
     );
 
     return {
       status: ApiResponseOptions.Success,
       data: {
         name: createApiKeyDto.name,
-        apiKey: apiKey.apiKey,
-      },
+        apiKey: apiKey.apiKey
+      }
     };
   }
 
   @UseGuards(AuthenticatedGuard)
   @Delete("apiKey")
   async deleteAPIKey(
-    @Body() deleteApiKeyDto: DeleteApiKeyDto,
-    @Req() req: ExpressRequest
+    @Body() deleteApiKeyDto: DeleteApiKeyDto
   ): Promise<ApiResponse<{ apiKey: string }>> {
     const apiKey = await this.prisma.apiKey.findUnique({
       where: {
-        apiKey: deleteApiKeyDto.apiKey,
-      },
+        apiKey: deleteApiKeyDto.apiKey
+      }
     });
     if (!apiKey) throw new AuthException.ApiKeyNotFound();
 
     await this.prisma.apiKey.delete({
       where: {
-        apiKey: deleteApiKeyDto.apiKey,
-      },
+        apiKey: deleteApiKeyDto.apiKey
+      }
     });
 
     this.apiKeyRedis.del(deleteApiKeyDto.apiKey);
 
     return {
       status: ApiResponseOptions.Success,
-      data: null,
+      data: null
     };
   }
 
@@ -194,7 +190,7 @@ export class AuthController {
 
         throw new AuthException.InvalidResetTokenProvided();
       }
-      
+
       res.cookie("resetPasswordToken", "", {
         httpOnly: false,
         expires: new Date()
@@ -283,7 +279,7 @@ export class AuthController {
 
     return {
       status: ApiResponseOptions.Success,
-      data: null,
+      data: null
     };
   }
 
@@ -305,8 +301,8 @@ export class AuthController {
 
     try {
       email = jwt.verify(
-        params.token,
-        this.configService.get<string>("JWT_SECRET")
+          params.token,
+          this.configService.get<string>("JWT_SECRET")
       ) as { email: string };
     } catch (e) {
       throw new AuthException.InvalidEmailVerificationTokenProvided();
@@ -314,16 +310,16 @@ export class AuthController {
 
     const verification = await this.usersService.updateUser({
       where: {
-        email: email.email,
+        email: email.email
       },
       data: {
-        verified: true,
-      },
+        verified: true
+      }
     });
 
     if (verification) {
       res.cookie("verified", true, {
-        expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30)),
+        expires: new Date(new Date().setSeconds(new Date().getSeconds() + 30))
       });
     } else {
       res.cookie("verified", false, { expires: new Date() });
@@ -354,11 +350,11 @@ export class AuthController {
       if (await this.mailService.sendEmailConfirmation(user.email)) {
         return {
           status: ApiResponseOptions.Success,
-          data: null,
+          data: null
         };
       } else {
         throw new CommonException.InternalServerError(
-          "Could not send verification email."
+            "Could not send verification email."
         );
       }
     } else {
@@ -390,7 +386,7 @@ export class AuthController {
         username: registerDto.username,
         email: registerDto.email,
         password: await bcrypt.hash(registerDto.password, 10),
-        verified: !this.configService.get<boolean>("SMTP_HOST"),
+        verified: !this.configService.get<boolean>("SMTP_HOST")
       });
 
       await this.mailService.sendEmailConfirmation(registerDto.email);
@@ -398,7 +394,7 @@ export class AuthController {
 
       return {
         status: ApiResponseOptions.Success,
-        data: null,
+        data: null
       };
     }
   }
@@ -430,7 +426,7 @@ export class AuthController {
 
     if (this.configService.get<string>("SCHOLARSOME_RECAPTCHA_SECRET")) {
       const captchaCheck = await this.authService.validateRecaptcha(
-        loginDto.recaptchaToken
+          loginDto.recaptchaToken
       );
       if (!captchaCheck) {
         throw new CommonException.TooManyRequests();
@@ -438,7 +434,7 @@ export class AuthController {
     }
 
     const user = await this.usersService.user({
-      email: loginDto.email,
+      email: loginDto.email
     });
 
     if (!user) {
@@ -451,7 +447,7 @@ export class AuthController {
 
     return {
       status: ApiResponseOptions.Success,
-      data: null,
+      data: null
     };
   }
 

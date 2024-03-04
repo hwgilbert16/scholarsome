@@ -93,14 +93,14 @@ import { FoldersModule } from "./folders/folders.module";
     // higher-priority filters go after lower-priority ones.
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
+      useClass: HttpExceptionFilter
     },
     {
       provide: APP_FILTER,
-      useClass: CommonHttpExceptionFilter,
-    },
+      useClass: CommonHttpExceptionFilter
+    }
   ],
-  exports: [JwtModule],
+  exports: [JwtModule]
 })
 export class AppModule implements NestModule {
   constructor(private configService: ConfigService) {}

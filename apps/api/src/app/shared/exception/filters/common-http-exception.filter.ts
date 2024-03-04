@@ -12,7 +12,7 @@ export class CommonHttpExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       ...exception.getInfo(),
-      instance: request.url,
+      instance: request.url
     });
   }
 }

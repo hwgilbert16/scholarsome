@@ -1,15 +1,15 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Request } from "express";
 import { ConfigService } from "@nestjs/config";
 import * as jwt from "jsonwebtoken";
-import { AuthException } from "@api/shared/exception/exceptions/variants/auth.exception";
+import { AuthException } from "../../shared/exception/exceptions/variants/auth.exception";
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
-  Strategy,
-  "accessToken"
+    Strategy,
+    "accessToken"
 ) {
   constructor(private configService: ConfigService) {
     super({
@@ -20,19 +20,19 @@ export class AccessTokenStrategy extends PassportStrategy(
           }
 
           throw new AuthException.TokenNotProvided();
-        },
+        }
       ]),
       ignoreExpiration: true,
       secretOrKey: configService.get<string>("JWT_SECRET"),
-      passReqToCallback: true,
+      passReqToCallback: true
     });
   }
 
   async validate(req, payload) {
     try {
       jwt.verify(
-        req.cookies.access_token,
-        this.configService.get<string>("JWT_SECRET")
+          req.cookies.access_token,
+          this.configService.get<string>("JWT_SECRET")
       );
     } catch (e) {
       throw new AuthException.InvalidTokenProvided();
