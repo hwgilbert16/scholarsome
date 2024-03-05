@@ -1,9 +1,3 @@
--- DropIndex
-DROP INDEX `Set_authorId_idx` ON `Set`;
-
--- AlterTable
-ALTER TABLE `Set` ADD COLUMN `folderId` VARCHAR(191) NULL;
-
 -- CreateTable
 CREATE TABLE `Folder` (
     `id` VARCHAR(191) NOT NULL,
@@ -28,6 +22,3 @@ CREATE TABLE `_FolderToSet` (
     UNIQUE INDEX `_FolderToSet_AB_unique`(`A`, `B`),
     INDEX `_FolderToSet_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateIndex
-CREATE INDEX `Set_authorId_folderId_idx` ON `Set`(`authorId`, `folderId`);

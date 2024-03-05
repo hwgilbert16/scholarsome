@@ -14,7 +14,8 @@ import * as sanitizeHtml from "sanitize-html";
 export class UpdateFolderDto {
   @ApiProperty({
     description: "The name of the folder",
-    example: "Example folder"
+    example: "Example folder",
+    required: false
   })
   @IsString()
   @IsOptional()
@@ -35,7 +36,8 @@ export class UpdateFolderDto {
     description: "The hex color of the folder",
     maxLength: 7,
     minLength: 7,
-    example: "#495378"
+    example: "#495378",
+    required: false
   })
   @Length(7, 7)
   @IsString()
@@ -45,7 +47,8 @@ export class UpdateFolderDto {
 
   @ApiProperty({
     description: "Whether the folder is private",
-    example: true
+    example: true,
+    required: false
   })
   @IsBoolean()
   @IsOptional()
@@ -53,7 +56,8 @@ export class UpdateFolderDto {
 
   @ApiProperty({
     description: "The ID of the folder to nest this folder within",
-    example: true
+    example: "197ac7a2-8b42-4cbe-a4b7-bde496a36e1e",
+    required: false
   })
   @IsString()
   @IsOptional()
@@ -61,7 +65,8 @@ export class UpdateFolderDto {
 
   @ApiProperty({
     description: "The IDs of folders to nest within this folder",
-    example: true
+    example: ["33b957d5-eb66-421f-8019-cf8a3ccbde32"],
+    required: false
   })
   @IsArray()
   @IsOptional()
@@ -70,8 +75,9 @@ export class UpdateFolderDto {
     subfolders?: string[];
 
   @ApiProperty({
-    description: "The IDs of sets to put within this folder",
-    example: true
+    description: "The IDs of sets to nest within this folder",
+    example: ["19b2337a-654c-4b2c-a746-aa93aaeb948f"],
+    required: false
   })
   @IsArray()
   @IsOptional()

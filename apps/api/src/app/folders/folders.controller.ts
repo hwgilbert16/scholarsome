@@ -12,7 +12,14 @@ import {
   UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from "@nestjs/swagger";
 import { AuthService } from "../auth/auth.service";
 import { FoldersService } from "./folders.service";
 import { Request as ExpressRequest } from "express";
@@ -25,6 +32,9 @@ import { CreateFolderDto } from "./dto/createFolder.dto";
 import { FolderIdParam } from "./param/folderId.param";
 import { UpdateFolderDto } from "./dto/updateFolder.dto";
 import { SetsService } from "../sets/sets.service";
+import { FolderSuccessResponse } from "./response/success/folder.success.response";
+import { FoldersSuccessResponse } from "./response/success/folders.success.response";
+import { ErrorResponse } from "../shared/response/error.response";
 
 @ApiTags("Sets")
 @Controller("sets/folders")
@@ -46,6 +56,14 @@ export class FoldersController {
   @ApiOperation({
     summary: "Get the folders of the authenticated user",
     description: "Gets all of the folders of the user that is currently authenticated"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: FolderSuccessResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @UseGuards(AuthenticatedGuard)
   @Get("user/me")
@@ -75,6 +93,14 @@ export class FoldersController {
    */
   @ApiOperation({
     summary: "Get the folders of a user"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: FoldersSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
   })
   @Get("user/:userId")
   async folders(@Request() req: ExpressRequest, @Param() params: UserIdParam): Promise<ApiResponse<Folder[]>> {
@@ -125,6 +151,18 @@ export class FoldersController {
   @ApiOperation({
     summary: "Get a folder"
   })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: FolderSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
+  })
   @Get(":folderId")
   async folder(@Param() params: FolderIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Folder>> {
     const folder = await this.foldersService.folder({
@@ -152,6 +190,18 @@ export class FoldersController {
    */
   @ApiOperation({
     summary: "Create a folder"
+  })
+  @ApiCreatedResponse({
+    description: "Expected response to a valid request",
+    type: FolderSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @UseGuards(AuthenticatedGuard)
   @Post()
@@ -245,7 +295,19 @@ export class FoldersController {
    * @returns Updated `Folder` object
    */
   @ApiOperation({
-    summary: "Create a folder"
+    summary: "Update a folder"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: FolderSuccessResponse
+  })
+  @ApiNotFoundResponse({
+    description: "Resource not found or inaccessible",
+    type: ErrorResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @UseGuards(AuthenticatedGuard)
   @Patch(":folderId")
@@ -379,6 +441,14 @@ export class FoldersController {
    */
   @ApiOperation( {
     summary: "Delete a folder"
+  })
+  @ApiOkResponse({
+    description: "Expected response to a valid request",
+    type: FolderSuccessResponse
+  })
+  @ApiUnauthorizedResponse({
+    description: "Invalid authentication to access the requested resource",
+    type: ErrorResponse
   })
   @UseGuards(AuthenticatedGuard)
   @Delete(":folderId")

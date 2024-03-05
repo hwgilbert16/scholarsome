@@ -1,8 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { CardSetsEntity } from "./card.sets.entity";
-import { PartialUserEntity } from "./partial-user.sets.entity";
 
-export class SetSetsEntity {
+export class PartialSetEntity {
   @ApiProperty({
     description: "The ID of the set",
     example: "77a72340-0b91-499e-9a06-0eee498d5aec"
@@ -11,7 +9,7 @@ export class SetSetsEntity {
 
   @ApiProperty({
     description: "The ID of the author of the set",
-    example: "1e3e00cf-6705-496a-b742-752cb30c6a6b"
+    example: "7e58311d-33b0-4153-a1af-8baa7f8f62f6"
   })
     authorId: string;
 
@@ -22,7 +20,6 @@ export class SetSetsEntity {
     title: string;
 
   @ApiProperty({
-    required: false,
     description: "A description explaining what the set contains",
     example: "This is an example of a set description"
   })
@@ -45,16 +42,4 @@ export class SetSetsEntity {
     example: "1970-01-01T00:00:00.000Z"
   })
     updatedAt: string;
-
-  @ApiProperty({
-    description: "The cards contained within the set",
-    type: [CardSetsEntity]
-  })
-    cards: [CardSetsEntity];
-
-  @ApiProperty({
-    description: "The author of this set",
-    type: PartialUserEntity
-  })
-    author: [PartialUserEntity];
 }
