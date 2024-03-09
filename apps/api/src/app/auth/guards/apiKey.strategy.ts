@@ -1,7 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
+  UnauthorizedException
 } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-custom";
@@ -23,19 +23,21 @@ export class ApiKeyStrategy extends PassportStrategy(Strategy, "apiKey") {
   async validate(req: ExpressRequest): Promise<TokenUser> {
     const apiKey = req.header("x-api-key");
 
-    if (!apiKey)
+    if (!apiKey) {
       throw new UnauthorizedException({
         status: "fail",
-        message: "Invalid authentication to access the requested resource",
+        message: "Invalid authentication to access the requested resource"
       });
+    }
 
     const redisRes = await this.apiKeyRedis.get(req.header("x-api-key"));
 
-    if (!redisRes)
+    if (!redisRes) {
       throw new InternalServerErrorException("Failed to retrieve API key data");
+    }
 
     return {
-      email: (JSON.parse(redisRes) as { id: string; email: string }).email,
+      email: (JSON.parse(redisRes) as { id: string; email: string }).email
     };
   }
 }
