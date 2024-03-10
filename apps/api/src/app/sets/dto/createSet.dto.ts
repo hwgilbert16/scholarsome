@@ -39,7 +39,7 @@ export class CreateSetDto {
 
   @ApiProperty({
     description: "Whether the set is private",
-    example: true
+    example: false
   })
   @IsBoolean()
   @IsNotEmpty()
@@ -47,7 +47,8 @@ export class CreateSetDto {
 
   @ApiProperty({
     description: "The IDs of folders that this set is apart of",
-    example: true
+    example: ["0cac6b82-897e-4e5e-b51a-3a157e23e9e5", "bfeec5b3-7272-4d22-aa5a-3503610076d5"],
+    required: false
   })
   @IsArray()
   @IsOptional()

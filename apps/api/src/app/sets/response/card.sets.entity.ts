@@ -15,7 +15,7 @@ export class CardSetsEntity {
 
   @ApiProperty({
     description: "The index of the card in the set",
-    example: "0"
+    example: 0
   })
     index: number;
 

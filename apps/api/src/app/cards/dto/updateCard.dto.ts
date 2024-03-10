@@ -6,6 +6,7 @@ import * as sanitizeHtml from "sanitize-html";
 export class UpdateCardDto {
   @ApiProperty({
     description: "The index of the card in the set",
+    example: 0,
     required: false,
     minimum: 0,
     maximum: 2147483647

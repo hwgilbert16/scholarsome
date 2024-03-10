@@ -59,7 +59,7 @@ export class FoldersController {
   })
   @ApiOkResponse({
     description: "Expected response to a valid request",
-    type: FolderSuccessResponse
+    type: FoldersSuccessResponse
   })
   @ApiUnauthorizedResponse({
     description: "Invalid authentication to access the requested resource",

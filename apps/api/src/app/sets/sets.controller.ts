@@ -226,20 +226,22 @@ export class SetsController {
       }
     }
 
-    for (const folderId of body.folders) {
-      const folder = await this.foldersService.folder({ id: folderId });
-      if (!folder) {
-        throw new UnauthorizedException({
-          status: "fail",
-          message: `Folder with ID ${folderId} does not exist`
-        });
-      }
+    if (body.folders) {
+      for (const folderId of body.folders) {
+        const folder = await this.foldersService.folder({ id: folderId });
+        if (!folder) {
+          throw new UnauthorizedException({
+            status: "fail",
+            message: `Folder with ID ${folderId} does not exist`
+          });
+        }
 
-      if (folder.authorId !== user.id) {
-        throw new UnauthorizedException({
-          status: "fail",
-          message: `User is not author of folder with id ${folderId}`
-        });
+        if (folder.authorId !== user.id) {
+          throw new UnauthorizedException({
+            status: "fail",
+            message: `User is not author of folder with id ${folderId}`
+          });
+        }
       }
     }
 
@@ -254,9 +256,9 @@ export class SetsController {
       description: body.description,
       private: body.private,
       folders: {
-        connect: body.folders.map((f) => {
+        connect: body.folders ? body.folders.map((f) => {
           return { id: f };
-        })
+        }) : undefined
       },
       cards: {
         createMany: {
