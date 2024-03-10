@@ -35,15 +35,6 @@
       "cache": true
     }
   },
-  "plugins": [
-    {
-      "plugin": "@nx/webpack/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "serveTargetName": "serve"
-      }
-    }
-  ],
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
