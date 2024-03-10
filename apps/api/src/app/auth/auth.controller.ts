@@ -26,7 +26,7 @@ import * as bcrypt from "bcrypt";
 import { MailService } from "../providers/mail/mail.service";
 import { User } from "@prisma/client";
 import { ApiExcludeEndpoint, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { SkipThrottle, Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { AuthenticatedGuard } from "./guards/authenticated.guard";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { RedisService } from "@liaoliaots/nestjs-redis";
@@ -137,6 +137,7 @@ export class AuthController {
    * @returns Updated User object
    */
   @ApiExcludeEndpoint()
+  @SkipThrottle()
   @Post("reset/email/set")
   async resetEmail(
     @Body() resetPasswordDto: ResetEmailDto,
@@ -173,6 +174,7 @@ export class AuthController {
    * @returns Updated User object
    */
   @ApiExcludeEndpoint()
+  @SkipThrottle()
   @Post("reset/password/set")
   async setPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -273,7 +275,7 @@ export class AuthController {
    * @returns Success response
    */
   @ApiExcludeEndpoint()
-  @Throttle(1, 5)
+  @Throttle({ default: { ttl: 60000, limit: 1 } })
   @Get("reset/password/send/:email")
   async sendPasswordReset(
     @Param() params: { email: string }
@@ -354,6 +356,7 @@ export class AuthController {
    * @returns Success response
    */
   @ApiExcludeEndpoint()
+  @Throttle({ default: { ttl: 60000, limit: 1 } })
   @Post("resendVerification")
   async resendVerificationMail(
     @Request() req: ExpressRequest
@@ -395,7 +398,6 @@ export class AuthController {
    * @returns Success response
    */
   @ApiExcludeEndpoint()
-  @Throttle(1, 5)
   @Post("register")
   async register(
     @Body() registerDto: RegisterDto,
@@ -497,6 +499,7 @@ export class AuthController {
    * @returns Void
    */
   @ApiExcludeEndpoint()
+  @SkipThrottle()
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,

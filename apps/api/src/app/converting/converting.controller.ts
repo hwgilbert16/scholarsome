@@ -43,7 +43,7 @@ import { ImportSetFromFileDto } from "./dto/importSetFromFile.dto";
 import * as crypto from "crypto";
 import { Set } from "@prisma/client";
 import { ConvertingService } from "./converting.service";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { ImportSetFromQuizletDto } from "./dto/importSetFromQuizlet.dto";
 import { AuthService } from "../auth/auth.service";
 import { HtmlDecodePipe } from "../sets/pipes/html-decode.pipe";
@@ -80,7 +80,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
   async exportSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -122,7 +121,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/anki/:setId")
   async exportSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -164,7 +162,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/csv/:setId")
   async exportSetToCsv(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -206,7 +203,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/media/:setId")
   async exportSetMedia(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({

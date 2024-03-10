@@ -6,6 +6,7 @@ import { ConvertingController } from "./converting.controller";
 import { ConvertingService } from "./converting.service";
 import { AuthModule } from "../auth/auth.module";
 import { StorageModule } from "../providers/storage/storage.module";
+import { ThrottlerModule } from "@nestjs/throttler";
 
 @Module({
   imports: [
@@ -13,7 +14,11 @@ import { StorageModule } from "../providers/storage/storage.module";
     UsersModule,
     CardsModule,
     AuthModule,
-    StorageModule
+    StorageModule,
+    ThrottlerModule.forRoot([{
+      ttl: 30000,
+      limit: 5
+    }])
   ],
   controllers: [ConvertingController],
   providers: [ConvertingService]

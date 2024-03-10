@@ -14,10 +14,13 @@ import { ApiKeyStrategy } from "./guards/apiKey.strategy";
   imports: [
     DatabaseModule,
     PassportModule,
-    ThrottlerModule.forRoot(),
     MailModule,
     HttpModule,
-    UsersModule
+    UsersModule,
+    ThrottlerModule.forRoot([{
+      ttl: 30000,
+      limit: 3
+    }])
   ],
   controllers: [AuthController],
   providers: [AuthService, AccessTokenStrategy, ApiKeyStrategy],

@@ -8,9 +8,7 @@
     "build": {
       "executor": "@ngx-env/builder:browser",
       "builder": "@ngx-env/builder:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/front",
         "index": "apps/front/src/index.html",
@@ -28,9 +26,7 @@
             "output": "./assets/fonts/"
           }
         ],
-        "styles": [
-          "apps/front/src/styles.scss"
-        ],
+        "styles": ["apps/front/src/styles.scss"],
         "scripts": [
           "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
           "node_modules/quill/dist/quill.min.js",
@@ -94,26 +90,16 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/front/**/*.ts",
-          "apps/front/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     },
     "test": {
       "executor": "@ngx-env/builder:karma",
-      "outputs": [
-        "{workspaceRoot}/coverage/apps/front"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/front"],
       "options": {
         "jestConfig": "apps/front/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": [
-    "scope:client"
-  ]
+  "tags": ["scope:client"]
 }

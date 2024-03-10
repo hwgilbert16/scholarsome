@@ -48,3 +48,7 @@ apps/front/src/environments/*
 # Generated Docusaurus files
 .docusaurus/
 .cache-loader/
+
+#Nx files
+
+.nx/cache

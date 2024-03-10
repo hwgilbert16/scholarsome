@@ -60,13 +60,19 @@ export class AuthService {
    * @returns HTTP response of request
    */
   async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
-    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/send/" + submitResetForm.email, { observe: "response" }));
+    try {
+      await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/send/" + submitResetForm.email, { observe: "response" }));
 
-    if (req.status === 429) {
-      return ApiResponseOptions.Ratelimit;
-    } else if (req.body) {
       return ApiResponseOptions.Success;
-    } else return ApiResponseOptions.Fail;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        if (e.status === 429) {
+          return ApiResponseOptions.Ratelimit;
+        }
+      }
+
+      return ApiResponseOptions.Error;
+    }
   }
 
   /**
@@ -200,7 +206,16 @@ export class AuthService {
    * Makes a request to send verification email
   */
   async resendVerificationEmail(): Promise<ApiResponseOptions> {
-    const response = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/resendVerification", {}));
-    return response.status;
+    try {
+      await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/resendVerification", {}));
+
+      return ApiResponseOptions.Success;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse && e.status === 429) {
+        return ApiResponseOptions.Ratelimit;
+      }
+
+      return ApiResponseOptions.Error;
+    }
   }
 }

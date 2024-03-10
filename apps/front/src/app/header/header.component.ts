@@ -8,6 +8,7 @@ import { DeviceDetectorService } from "ngx-device-detector";
 import { NavigationEnd, Router } from "@angular/router";
 import { faQ, faArrowRightFromBracket, faStar, faFileCsv, faGear, faFolder, faClone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { SharedService } from "../shared/shared.service";
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import packageJson from "../../../../../package.json";
 import { AnkiImportModalComponent } from "./anki-import-modal/anki-import-modal.component";
 import { QuizletImportModalComponent } from "./quizlet-import-modal/quizlet-import-modal.component";

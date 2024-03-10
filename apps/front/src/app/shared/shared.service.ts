@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { lastValueFrom, Subject } from "rxjs";
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import packageJson from "../../../../../package.json";
 
 @Injectable({
