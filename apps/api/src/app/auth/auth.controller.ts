@@ -25,7 +25,7 @@ import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 import { MailService } from "../providers/mail/mail.service";
 import { User } from "@prisma/client";
-import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
+import { ApiExcludeEndpoint, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { AuthenticatedGuard } from "./guards/authenticated.guard";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
@@ -36,7 +36,6 @@ import { CreateApiKeyDto } from "./dto/createApiKey.dto";
 import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
-@ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
@@ -59,6 +58,9 @@ export class AuthController {
    *
    */
 
+  @ApiOperation({
+    summary: "Create an API key"
+  })
   @UseGuards(AuthenticatedGuard)
   @Post("apiKey")
   async createApiKey(@Body() createApiKeyDto: CreateApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ name: string, apiKey: string }>> {
@@ -93,6 +95,9 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: "Delete an API key"
+  })
   @UseGuards(AuthenticatedGuard)
   @Delete("apiKey")
   async deleteAPIKey(@Body() deleteApiKeyDto: DeleteApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ apiKey: string }>> {
@@ -131,6 +136,7 @@ export class AuthController {
    *
    * @returns Updated User object
    */
+  @ApiExcludeEndpoint()
   @Post("reset/email/set")
   async resetEmail(
     @Body() resetPasswordDto: ResetEmailDto,
@@ -166,6 +172,7 @@ export class AuthController {
    *
    * @returns Updated User object
    */
+  @ApiExcludeEndpoint()
   @Post("reset/password/set")
   async setPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
@@ -233,6 +240,7 @@ export class AuthController {
    * @remarks This is the link that is emailed to users when a password reset is requested.
    * @returns Void, redirect to /api/auth/redirect
    */
+  @ApiExcludeEndpoint()
   @Get("reset/password/verify/:token")
   async verifyPasswordResetRequest(
     @Param() params: { token: string },
@@ -264,6 +272,7 @@ export class AuthController {
    * @remarks Throttled to 1 request per 5 seconds
    * @returns Success response
    */
+  @ApiExcludeEndpoint()
   @Throttle(1, 5)
   @Get("reset/password/send/:email")
   async sendPasswordReset(
@@ -291,6 +300,7 @@ export class AuthController {
    * @remarks This is the link that users click on to verify their email
    * @returns Void, redirect to '/homepage'
    */
+  @ApiExcludeEndpoint()
   @Get("verify/email/:token")
   async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
     let email: { email: string };
@@ -343,6 +353,7 @@ export class AuthController {
    *
    * @returns Success response
    */
+  @ApiExcludeEndpoint()
   @Post("resendVerification")
   async resendVerificationMail(
     @Request() req: ExpressRequest
@@ -383,6 +394,7 @@ export class AuthController {
    * @remarks Throttled to 1 request per 5 seconds
    * @returns Success response
    */
+  @ApiExcludeEndpoint()
   @Throttle(1, 5)
   @Post("register")
   async register(
@@ -428,6 +440,7 @@ export class AuthController {
    *
    * @returns Success response
    */
+  @ApiExcludeEndpoint()
   @HttpCode(200)
   @Post("login")
   async login(
@@ -483,6 +496,7 @@ export class AuthController {
    *
    * @returns Void
    */
+  @ApiExcludeEndpoint()
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,

@@ -42,7 +42,8 @@ async function bootstrap() {
   app.use(helmet({
     contentSecurityPolicy: {
       directives: {
-        "script-src": ["'self'", "'unsafe-eval'", "https://www.gstatic.com", "https://www.google.com"],
+        "script-src": ["'self'", "'unsafe-eval'", "'unsafe-inline'", "blob:", "https://www.gstatic.com", "https://www.google.com"],
+        "img-src": ["'self'", "https://cdn.redoc.ly", "data:"],
         "script-src-attr": ["'unsafe-inline'"],
         "default-src": ["'self'", "https://api.github.com/"],
         "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com/"]

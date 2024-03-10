@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, IsUUID } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class DeleteApiKeyDto {
@@ -8,5 +8,6 @@ export class DeleteApiKeyDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsUUID("4")
     apiKey: string;
 }

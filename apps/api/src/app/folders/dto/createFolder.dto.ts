@@ -2,11 +2,12 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsHexColor,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
-  Length
+  MaxLength
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, TransformFnParams } from "class-transformer";
@@ -15,32 +16,35 @@ import * as sanitizeHtml from "sanitize-html";
 export class CreateFolderDto {
   @ApiProperty({
     description: "The name of the folder",
-    example: "Example folder"
+    example: "Example folder",
+    maxLength: 191
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(191)
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     name: string;
 
   @ApiProperty({
     description: "The description of the folder",
     example: "This is an example of a folder description",
-    required: false
+    required: false,
+    maxLength: 65535
   })
   @IsString()
   @IsOptional()
+  @MaxLength(65535)
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     description: string;
 
   @ApiProperty({
     description: "The hex color of the folder",
+    example: "#495378",
     maxLength: 7,
-    minLength: 7,
-    example: "#495378"
+    minLength: 7
   })
-  @Length(7, 7)
-  @IsString()
   @IsNotEmpty()
+  @IsHexColor()
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     color: string;
 
@@ -54,9 +58,11 @@ export class CreateFolderDto {
 
   @ApiProperty({
     description: "The ID of the folder to nest this folder within",
-    example: "197ac7a2-8b42-4cbe-a4b7-bde496a36e1e"
+    example: "197ac7a2-8b42-4cbe-a4b7-bde496a36e1e",
+    maxLength: 36,
+    minLength: 36
   })
-  @IsString()
+  @IsUUID("4")
   @IsOptional()
     parentFolderId: string;
 
@@ -77,6 +83,6 @@ export class CreateFolderDto {
   @IsArray()
   @IsOptional()
   @ArrayMinSize(0)
-  @IsUUID("4", { each: true, message: "Invalid UUID" })
+  @IsUUID("4", { each: true })
     sets: string[];
 }

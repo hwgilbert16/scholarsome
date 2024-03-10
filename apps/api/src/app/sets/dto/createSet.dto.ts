@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
+  IsUUID, MaxLength,
   ValidateNested
 } from "class-validator";
 import { Transform, TransformFnParams, Type } from "class-transformer";
@@ -16,20 +16,24 @@ import * as sanitizeHtml from "sanitize-html";
 export class CreateSetDto {
   @ApiProperty({
     description: "The title of the set",
-    example: "Example set"
+    example: "Example set",
+    maxLength: 191
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(191)
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     title: string;
 
   @ApiProperty({
     description: "The description of the set",
     example: "This is an example of a set description",
-    required: false
+    required: false,
+    maxLength: 65535
   })
   @IsString()
   @IsOptional()
+  @MaxLength(65535)
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value))
     description: string;
 
