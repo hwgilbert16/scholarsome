@@ -1,22 +1,22 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { lastValueFrom } from 'rxjs';
-import { RecaptchaResponse, User as UserWithSets } from '@scholarsome/shared';
-import { RedisService } from '@liaoliaots/nestjs-redis';
-import Redis from 'ioredis';
-import { Request, Response } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { User } from '@prisma/client';
-import * as crypto from 'crypto';
-import { AccessTokenPayload } from '../types/token-payload.interface';
-import { JwtPayload } from 'jwt-decode';
-import { TokenUser } from '../types/token-user.interface';
-import { TokenService } from './token.service';
-import { TokenType } from '../types/token-type.enum';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { UsersService } from "../../users/users.service";
+import * as bcrypt from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+import { HttpService } from "@nestjs/axios";
+import { ConfigService } from "@nestjs/config";
+import { lastValueFrom } from "rxjs";
+import { RecaptchaResponse, User as UserWithSets } from "@scholarsome/shared";
+import { RedisService } from "@liaoliaots/nestjs-redis";
+import Redis from "ioredis";
+import { Request, Response } from "express";
+import * as jwt from "jsonwebtoken";
+import { User } from "@prisma/client";
+import * as crypto from "crypto";
+import { AccessTokenPayload } from "../types/token-payload.interface";
+import { JwtPayload } from "jwt-decode";
+import { TokenUser } from "../types/token-user.interface";
+import { TokenService } from "./token.service";
+import { TokenType } from "../types/token-type.enum";
 
 @Injectable()
 export class AuthService {
@@ -31,8 +31,8 @@ export class AuthService {
     private readonly redisService: RedisService,
     private readonly tokenService: TokenService
   ) {
-    this.refreshTokenRedis = this.redisService.getClient('default');
-    this.apiKeyRedis = this.redisService.getClient('apiToken');
+    this.refreshTokenRedis = this.redisService.getClient("default");
+    this.apiKeyRedis = this.redisService.getClient("apiToken");
   }
 
   /**
@@ -43,22 +43,22 @@ export class AuthService {
    * @returns Decoded access token
    */
   async getUserInfo(req: Request): Promise<TokenUser | null> {
-    if (req.cookies['access_token']) {
+    if (req.cookies["access_token"]) {
       try {
         const payload = await this.jwtService.verifyAsync(
-          req.cookies['access_token']
+          req.cookies["access_token"]
         );
-        if (typeof payload.sub !== 'string' || typeof payload.rti !== 'string')
-          throw new UnauthorizedException('Invalid access token provided.');
+        if (typeof payload.sub !== "string" || typeof payload.rti !== "string")
+          throw new UnauthorizedException("Invalid access token provided.");
 
         return { id: payload.sub };
       } catch (e) {
         return null;
       }
-    } else if (req.header('x-api-key')) {
-      const id = await this.apiKeyRedis.get(req.header('x-api-key'));
+    } else if (req.header("x-api-key")) {
+      const id = await this.apiKeyRedis.get(req.header("x-api-key"));
 
-      if (!id) throw new UnauthorizedException('Invalid API key provided.');
+      if (!id) throw new UnauthorizedException("Invalid API key provided.");
 
       return { id };
     }
@@ -74,21 +74,21 @@ export class AuthService {
    */
   async validateRecaptcha(token: string): Promise<boolean> {
     const body = {
-      secret: this.configService.get<string>('RECAPTCHA_SECRET'),
+      secret: this.configService.get<string>("RECAPTCHA_SECRET"),
       response: token,
     };
 
     const googleRes = await lastValueFrom(
       this.httpService.post<RecaptchaResponse>(
-        'https://www.google.com/recaptcha/api/siteverify',
+        "https://www.google.com/recaptcha/api/siteverify",
         new URLSearchParams(Object.entries(body)).toString(),
         {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
         }
       )
     );
 
-    if (googleRes.data['error-codes']) return false;
+    if (googleRes.data["error-codes"]) return false;
 
     return googleRes.data.score >= 0.5;
   }
@@ -106,12 +106,14 @@ export class AuthService {
 
   /**
    * Sets the response login cookies for the user
+   * Sets `verified` and `authenticated` non-httpOnly cookies
+   * Stores the token id in Redis
    */
   public async setLoginCookies(
     res: Response,
     user: UserWithSets | User
   ): Promise<void> {
-    res.cookie('verified', user.verified, { httpOnly: false });
+    res.cookie("verified", user.verified, { httpOnly: false });
 
     const { refreshToken, accessToken, jti } =
       await this.tokenService.issueTokenPair(user.id);
@@ -122,7 +124,7 @@ export class AuthService {
     this.refreshTokenRedis.sadd(user.id, jti);
 
     res.cookie(TokenType.AccessToken, accessToken);
-    res.cookie('authenticated', true, {
+    res.cookie("authenticated", true, {
       httpOnly: false,
     });
   }
@@ -136,8 +138,8 @@ export class AuthService {
     );
     await this.refreshTokenRedis.srem(user.sub);
 
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
-    res.clearCookie('authenticated');
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+    res.clearCookie("authenticated");
   }
 }

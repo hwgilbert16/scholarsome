@@ -481,7 +481,7 @@ export class AuthController {
 
       return {
         status: ApiResponseOptions.Fail,
-        message: "Wrong password password",
+        message: "Wrong password",
       };
     }
 
