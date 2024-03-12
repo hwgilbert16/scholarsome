@@ -9,7 +9,7 @@ import {
   Body,
   Delete,
   UnauthorizedException,
-  Patch
+  Patch,
 } from "@nestjs/common";
 import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
@@ -27,14 +27,14 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiUnauthorizedResponse
+  ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { CardIdParam } from "./param/cardId.param";
 import { CreateCardDto } from "./dto/createCard.dto";
 import { UpdateCardDto } from "./dto/updateCard.dto";
 import { CardSuccessResponse } from "./response/success/card.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
-import { AuthService } from "../auth/auth.service";
+import { AuthService } from "../auth/services/auth.service";
 
 @ApiTags("Cards")
 @Controller("sets/cards")
@@ -52,52 +52,63 @@ export class CardsController {
    * @returns `Card` object
    */
   @ApiOperation({
-    summary: "Get a card"
+    summary: "Get a card",
   })
   @ApiOkResponse({
     description: "Expected response to a valid request",
-    type: CardSuccessResponse
+    type: CardSuccessResponse,
   })
   @ApiNotFoundResponse({
     description: "Resource not found or inaccessible",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @ApiUnauthorizedResponse({
     description: "Invalid authentication to access the requested resource",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @Get(":cardId")
-  async card(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
+  async card(
+    @Param() params: CardIdParam,
+    @Request() req: ExpressRequest
+  ): Promise<ApiResponse<Card>> {
     const userCookie = await this.authService.getUserInfo(req);
 
     let userId = "";
 
     if (
       userCookie &&
-      await this.usersService.user({
-        id: userCookie.id
-      })
+      (await this.usersService.user({
+        id: userCookie.id,
+      }))
     ) {
-      userId = (await this.usersService.user({
-        id: userCookie.id
-      })).id;
+      userId = (
+        await this.usersService.user({
+          id: userCookie.id,
+        })
+      ).id;
     }
 
     const card = await this.cardsService.card({
-      id: params.cardId
+      id: params.cardId,
     });
 
     if (!card) {
-      throw new NotFoundException({ status: "fail", message: "Card not found" });
+      throw new NotFoundException({
+        status: "fail",
+        message: "Card not found",
+      });
     }
 
-    if (card.set.private && (card.set.authorId !== userId)) {
-      throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    if (card.set.private && card.set.authorId !== userId) {
+      throw new UnauthorizedException({
+        status: "fail",
+        message: "Invalid authentication to access the requested resource",
+      });
     }
 
     return {
       status: ApiResponseOptions.Success,
-      data: card
+      data: card,
     };
   }
 
@@ -108,28 +119,34 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, CreateCardGuard)
   @ApiOperation({
-    summary: "Create a card"
+    summary: "Create a card",
   })
   @ApiCreatedResponse({
     description: "Expected response to a valid request",
-    type: CardSuccessResponse
+    type: CardSuccessResponse,
   })
   @ApiUnauthorizedResponse({
     description: "Invalid authentication to access the requested resource",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @Post()
-  async createCard(@Body() body: CreateCardDto, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
+  async createCard(
+    @Body() body: CreateCardDto,
+    @Request() req: ExpressRequest
+  ): Promise<ApiResponse<Card>> {
     if (!(await this.setsService.verifySetOwnership(req, body.setId))) {
-      throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      throw new UnauthorizedException({
+        status: "fail",
+        message: "Invalid authentication to access the requested resource",
+      });
     }
 
     const set = await this.setsService.set({ id: body.setId });
-    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+    if (!set)
+      throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     let index = body.index;
-    const indices = set.cards.map((c) => c.index)
-        .sort((a, b) => a - b);
+    const indices = set.cards.map((c) => c.index).sort((a, b) => a - b);
 
     if (indices.includes(body.index)) {
       // if the index already exists
@@ -147,13 +164,19 @@ export class CardsController {
 
     let media = [];
 
-    const termScanned = await this.cardsService.scanAndUploadMedia(body.term, body.setId);
+    const termScanned = await this.cardsService.scanAndUploadMedia(
+      body.term,
+      body.setId
+    );
     if (termScanned) {
       body.term = termScanned.scanned;
       media = [...termScanned.media];
     }
 
-    const definitionScanned = await this.cardsService.scanAndUploadMedia(body.definition, body.setId);
+    const definitionScanned = await this.cardsService.scanAndUploadMedia(
+      body.definition,
+      body.setId
+    );
     if (definitionScanned) {
       body.definition = definitionScanned.scanned;
       media = [...media, ...definitionScanned.media];
@@ -169,17 +192,17 @@ export class CardsController {
           createMany: {
             data: media.map((c) => {
               return {
-                name: c
+                name: c,
               };
-            })
-          }
+            }),
+          },
         },
         set: {
           connect: {
-            id: body.setId
-          }
-        }
-      })
+            id: body.setId,
+          },
+        },
+      }),
     };
   }
 
@@ -190,29 +213,39 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, UpdateCardGuard)
   @ApiOperation({
-    summary: "Update a card"
+    summary: "Update a card",
   })
   @ApiOkResponse({
     description: "Expected response to a valid request",
-    type: CardSuccessResponse
+    type: CardSuccessResponse,
   })
   @ApiNotFoundResponse({
     description: "Resource not found or inaccessible",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @ApiUnauthorizedResponse({
     description: "Invalid authentication to access the requested resource",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @Patch(":cardId")
-  async updateCard(@Param() params: CardIdParam, @Body() body: UpdateCardDto, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
+  async updateCard(
+    @Param() params: CardIdParam,
+    @Body() body: UpdateCardDto,
+    @Request() req: ExpressRequest
+  ): Promise<ApiResponse<Card>> {
     const card = await this.cardsService.card({ id: params.cardId });
     if (!card) {
-      throw new NotFoundException({ status: "fail", message: "Card not found" });
+      throw new NotFoundException({
+        status: "fail",
+        message: "Card not found",
+      });
     }
 
     if (!(await this.setsService.verifySetOwnership(req, card.setId))) {
-      throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      throw new UnauthorizedException({
+        status: "fail",
+        message: "Invalid authentication to access the requested resource",
+      });
     }
 
     let media = [];
@@ -222,7 +255,10 @@ export class CardsController {
     let mediaChecked = false;
 
     if (body.term) {
-      const termScanned = await this.cardsService.scanAndUploadMedia(body.term, card.setId);
+      const termScanned = await this.cardsService.scanAndUploadMedia(
+        body.term,
+        card.setId
+      );
       if (termScanned) {
         body.term = termScanned.scanned;
         media = [...termScanned.media];
@@ -244,7 +280,10 @@ export class CardsController {
     }
 
     if (body.definition) {
-      const definitionScanned = await this.cardsService.scanAndUploadMedia(body.definition, card.setId);
+      const definitionScanned = await this.cardsService.scanAndUploadMedia(
+        body.definition,
+        card.setId
+      );
       if (definitionScanned) {
         body.definition = definitionScanned.scanned;
         media = [...media, ...definitionScanned.media];
@@ -263,7 +302,7 @@ export class CardsController {
       status: ApiResponseOptions.Success,
       data: await this.cardsService.updateCard({
         where: {
-          id: params.cardId
+          id: params.cardId,
         },
         data: {
           index: body.index,
@@ -273,13 +312,13 @@ export class CardsController {
             createMany: {
               data: media.map((c) => {
                 return {
-                  name: c
+                  name: c,
                 };
-              })
-            }
-          }
-        }
-      })
+              }),
+            },
+          },
+        },
+      }),
     };
   }
 
@@ -290,35 +329,50 @@ export class CardsController {
    */
   @UseGuards(AuthenticatedGuard, DeleteCardGuard)
   @ApiOperation({
-    summary: "Delete a card"
+    summary: "Delete a card",
   })
   @ApiOkResponse({
     description: "Expected response to a valid request",
-    type: CardSuccessResponse
+    type: CardSuccessResponse,
   })
   @ApiNotFoundResponse({
     description: "Resource not found or inaccessible",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @ApiUnauthorizedResponse({
     description: "Invalid authentication to access the requested resource",
-    type: ErrorResponse
+    type: ErrorResponse,
   })
   @Delete(":cardId")
-  async deleteCard(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
+  async deleteCard(
+    @Param() params: CardIdParam,
+    @Request() req: ExpressRequest
+  ): Promise<ApiResponse<Card>> {
     const userCookie = await this.authService.getUserInfo(req);
-    if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    if (!userCookie)
+      throw new UnauthorizedException({
+        status: "fail",
+        message: "Invalid authentication to access the requested resource",
+      });
 
     const card = await this.cardsService.card({ id: params.cardId });
-    if (!card) throw new NotFoundException({ status: "fail", message: "Card not found" });
+    if (!card)
+      throw new NotFoundException({
+        status: "fail",
+        message: "Card not found",
+      });
 
-    if (card.set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    if (card.set.authorId !== userCookie.id)
+      throw new UnauthorizedException({
+        status: "fail",
+        message: "Invalid authentication to access the requested resource",
+      });
 
     return {
       status: ApiResponseOptions.Success,
       data: await this.cardsService.deleteCard({
-        id: params.cardId
-      })
+        id: params.cardId,
+      }),
     };
   }
 }

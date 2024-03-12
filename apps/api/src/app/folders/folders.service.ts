@@ -3,7 +3,7 @@ import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma } from "@prisma/client";
 import { Folder } from "@scholarsome/shared";
 import { Request as ExpressRequest } from "express";
-import { AuthService } from "../auth/auth.service";
+import { AuthService } from "../auth/services/auth.service";
 import { UsersService } from "../users/users.service";
 
 @Injectable()
@@ -22,16 +22,19 @@ export class FoldersService {
    *
    * @returns Whether the folder belongs to the user
    */
-  public async verifyFolderOwnership(req: ExpressRequest, folderId: string): Promise<boolean> {
+  public async verifyFolderOwnership(
+    req: ExpressRequest,
+    folderId: string
+  ): Promise<boolean> {
     const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) return false;
 
     const user = await this.usersService.user({
-      id: userCookie.id
+      id: userCookie.id,
     });
 
     const folder = await this.folder({
-      id: folderId
+      id: folderId,
     });
 
     if (!folder || !user) return false;
@@ -47,7 +50,7 @@ export class FoldersService {
    * @returns Queried `Folder` object
    */
   async folder(
-      folderWhereUniqueInput: Prisma.FolderWhereUniqueInput
+    folderWhereUniqueInput: Prisma.FolderWhereUniqueInput
   ): Promise<Folder | null> {
     return this.prisma.folder.findUnique({
       where: folderWhereUniqueInput,
@@ -59,10 +62,10 @@ export class FoldersService {
             id: true,
             username: true,
             createdAt: true,
-            updatedAt: true
-          }
-        }
-      }
+            updatedAt: true,
+          },
+        },
+      },
     });
   }
 
@@ -99,10 +102,10 @@ export class FoldersService {
             id: true,
             username: true,
             createdAt: true,
-            updatedAt: true
-          }
-        }
-      }
+            updatedAt: true,
+          },
+        },
+      },
     });
   }
 
@@ -124,10 +127,10 @@ export class FoldersService {
             id: true,
             username: true,
             createdAt: true,
-            updatedAt: true
-          }
-        }
-      }
+            updatedAt: true,
+          },
+        },
+      },
     });
   }
 
@@ -155,10 +158,10 @@ export class FoldersService {
             id: true,
             username: true,
             createdAt: true,
-            updatedAt: true
-          }
-        }
-      }
+            updatedAt: true,
+          },
+        },
+      },
     });
   }
 
@@ -175,9 +178,9 @@ export class FoldersService {
       where,
       data: {
         subfolders: {
-          set: []
-        }
-      }
+          set: [],
+        },
+      },
     });
 
     return this.prisma.folder.delete({
@@ -190,10 +193,10 @@ export class FoldersService {
             id: true,
             username: true,
             createdAt: true,
-            updatedAt: true
-          }
-        }
-      }
+            updatedAt: true,
+          },
+        },
+      },
     });
   }
 }
