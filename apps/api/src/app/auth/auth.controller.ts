@@ -511,6 +511,8 @@ export class AuthController {
    * @returns Void
    */
   @ApiExcludeEndpoint()
+  @HttpCode(200)
+  @UseGuards(AuthenticatedGuard)
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,
