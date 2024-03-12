@@ -118,13 +118,14 @@ export class AuthService {
   ): Promise<void> {
     res.cookie("verified", user.verified, { httpOnly: false });
 
-    const { refreshToken, accessToken, jti } =
+    const { refreshToken, accessToken, jti, exp } =
       await this.tokenService.issueTokenPair(user.id);
 
     res.cookie(TokenType.RefreshToken, refreshToken, {
       httpOnly: true,
     });
     this.refreshTokenRedis.sadd(user.id, jti);
+    this.refreshTokenRedis.expireat(user.id, exp);
 
     res.cookie(TokenType.AccessToken, accessToken);
     res.cookie("authenticated", true, {
@@ -132,9 +133,15 @@ export class AuthService {
     });
   }
 
-  public async replaceTokenId(sub: string, oldId: string, newId: string) {
+  public async replaceTokenId(
+    sub: string,
+    oldId: string,
+    newId: string,
+    exp: number
+  ) {
     await this.refreshTokenRedis.srem(sub, oldId);
     await this.refreshTokenRedis.sadd(sub, newId);
+    await this.refreshTokenRedis.expireat(sub, exp);
   }
 
   /**

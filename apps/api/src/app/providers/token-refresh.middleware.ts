@@ -66,12 +66,14 @@ export class TokenRefreshMiddleware implements NestMiddleware {
       accessToken,
       refreshToken: issuedRefreshToken,
       jti,
+      exp,
     } = await this.tokenService.refreshTokens(refreshToken);
 
     await this.authService.replaceTokenId(
       refreshToken.sub,
       refreshToken.jti,
-      jti
+      jti,
+      exp
     );
 
     res.cookie(TokenType.AccessToken, accessToken, {

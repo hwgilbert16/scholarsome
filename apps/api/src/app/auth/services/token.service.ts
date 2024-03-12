@@ -51,12 +51,12 @@ export class TokenService {
   ): Promise<{ token: string; jti: string; exp: number }> {
     const jti = randomUUID();
 
+    const exp = new Date().getTime() / 1000 + this.refreshTokenExpiresIn;
+
     const payload: RefreshTokenPayload = {
       sub: id,
       jti,
-      exp:
-        customExpirationTimestamp ??
-        new Date().getTime() / 1000 + this.refreshTokenExpiresIn,
+      exp: customExpirationTimestamp ?? exp - (exp % 1),
     };
 
     const token = await this.jwtService.signAsync(payload);
@@ -73,23 +73,28 @@ export class TokenService {
     accessToken: string;
     refreshToken: string;
     jti: string;
+    exp: number;
   }> {
     const { token: refreshToken, jti, exp } = await this.issueRefreshToken(id);
     const accessToken = await this.issueAccessToken(id, jti);
 
-    return { accessToken, refreshToken, jti };
+    return { accessToken, refreshToken, jti, exp };
   }
 
-  public async refreshTokens(
-    payload: RefreshTokenPayload
-  ): Promise<{ accessToken: string; refreshToken: string; jti: string }> {
-    const { token: refreshToken, jti } = await this.issueRefreshToken(
-      payload.sub,
-      payload.exp
-    );
+  public async refreshTokens(payload: RefreshTokenPayload): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    jti: string;
+    exp: number;
+  }> {
+    const {
+      token: refreshToken,
+      jti,
+      exp,
+    } = await this.issueRefreshToken(payload.sub, payload.exp);
     const accessToken = await this.issueAccessToken(payload.sub, jti);
 
-    return { accessToken, refreshToken, jti };
+    return { accessToken, refreshToken, jti, exp };
   }
 
   /**
