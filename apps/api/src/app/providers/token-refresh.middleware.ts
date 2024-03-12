@@ -17,6 +17,7 @@ export class TokenRefreshMiddleware implements NestMiddleware {
 
   constructor(
     private readonly tokenService: TokenService,
+    private readonly authService: AuthService,
     redisService: RedisService
   ) {
     this.refreshTokenRedis = redisService.getClient("default");
@@ -67,8 +68,11 @@ export class TokenRefreshMiddleware implements NestMiddleware {
       jti,
     } = await this.tokenService.refreshTokens(refreshToken);
 
-    await this.refreshTokenRedis.srem(refreshToken.sub, refreshToken.jti);
-    await this.refreshTokenRedis.sadd(refreshToken.sub, jti);
+    await this.authService.replaceTokenId(
+      refreshToken.sub,
+      refreshToken.jti,
+      jti
+    );
 
     res.cookie(TokenType.AccessToken, accessToken, {
       httpOnly: true,
@@ -82,6 +86,6 @@ export class TokenRefreshMiddleware implements NestMiddleware {
     });
 
     req.cookies[TokenType.AccessToken] = accessToken;
-    req.cookies[TokenType.RefreshToken] = refreshToken;
+    req.cookies[TokenType.RefreshToken] = issuedRefreshToken;
   }
 }
