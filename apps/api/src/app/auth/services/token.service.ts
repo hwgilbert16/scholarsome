@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 import {
   AccessTokenPayload,
   RefreshTokenPayload,
-} from '../types/token-payload.interface';
-import { randomUUID } from 'node:crypto';
-import { TokenType } from '../types/token-type.enum';
+} from "../types/token-payload.interface";
+import { randomUUID } from "node:crypto";
+import { TokenType } from "../types/token-type.enum";
 
 @Injectable()
 export class TokenService {
@@ -15,10 +15,10 @@ export class TokenService {
 
   constructor(private jwtService: JwtService, configService: ConfigService) {
     this.accessTokenExpiresIn = Number(
-      configService.get<number>('JWT_ACCESS_TOKEN_EXPIRES_IN')
+      configService.get<number>("JWT_ACCESS_TOKEN_EXPIRES_IN")
     );
     this.refreshTokenExpiresIn = Number(
-      configService.get<number>('JWT_REFRESH_TOKEN_EXPIRES_IN')
+      configService.get<number>("JWT_REFRESH_TOKEN_EXPIRES_IN")
     );
   }
 
@@ -48,7 +48,7 @@ export class TokenService {
   public async issueRefreshToken(
     id: string,
     customExpirationTimestamp?: number
-  ): Promise<{ token: string; jti: string }> {
+  ): Promise<{ token: string; jti: string; exp: number }> {
     const jti = randomUUID();
 
     const payload: RefreshTokenPayload = {
@@ -61,18 +61,20 @@ export class TokenService {
 
     const token = await this.jwtService.signAsync(payload);
 
-    return { token, jti };
+    return { token, jti, exp: payload.exp };
   }
 
   /**
    *
    * @param id User's id
-   * @returns Access and refresh tokens
+   * @returns Access and refresh tokens, refresh token expiration (unix timestamp)
    */
-  public async issueTokenPair(
-    id: string
-  ): Promise<{ accessToken: string; refreshToken: string; jti: string }> {
-    const { token: refreshToken, jti } = await this.issueRefreshToken(id);
+  public async issueTokenPair(id: string): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    jti: string;
+  }> {
+    const { token: refreshToken, jti, exp } = await this.issueRefreshToken(id);
     const accessToken = await this.issueAccessToken(id, jti);
 
     return { accessToken, refreshToken, jti };
@@ -107,7 +109,7 @@ export class TokenService {
       ignoreExpiration: ignoreExpiration ?? false,
     });
 
-    if (!requiredClaims.every((claim) => typeof payload[claim] === 'string'))
+    if (!requiredClaims.every((claim) => typeof payload[claim] === "string"))
       return null;
 
     return payload;
@@ -117,13 +119,13 @@ export class TokenService {
     token: string,
     ignoreExpiration?: boolean
   ): Promise<AccessTokenPayload | null> {
-    return await this.decodeToken(token, ['sub', 'rti'], ignoreExpiration);
+    return await this.decodeToken(token, ["sub", "rti"], ignoreExpiration);
   }
 
   public async decodeRefreshToken(
     token: string,
     ignoreExpiration?: boolean
   ): Promise<RefreshTokenPayload | null> {
-    return await this.decodeToken(token, ['sub', 'jti'], ignoreExpiration);
+    return await this.decodeToken(token, ["sub", "jti"], ignoreExpiration);
   }
 }

@@ -12,7 +12,10 @@ import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
 import * as crypto from "crypto";
-import { AccessTokenPayload } from "../types/token-payload.interface";
+import {
+  AccessTokenPayload,
+  RefreshTokenPayload,
+} from "../types/token-payload.interface";
 import { JwtPayload } from "jwt-decode";
 import { TokenUser } from "../types/token-user.interface";
 import { TokenService } from "./token.service";
@@ -129,14 +132,23 @@ export class AuthService {
     });
   }
 
+  public async replaceTokenId(sub: string, oldId: string, newId: string) {
+    await this.refreshTokenRedis.srem(sub, oldId);
+    await this.refreshTokenRedis.sadd(sub, newId);
+  }
+
   /**
    * Logs a user out
    */
   async logout(req: Request, res: Response) {
-    const user: AccessTokenPayload = await this.jwtService.verifyAsync(
-      req.cookies.access_token
-    );
-    await this.refreshTokenRedis.srem(user.sub);
+    if (!req.cookies?.[TokenType.RefreshToken]) return;
+
+    const refreshToken: RefreshTokenPayload =
+      await this.tokenService.decodeRefreshToken(
+        req.cookies[TokenType.RefreshToken],
+        true
+      );
+    await this.refreshTokenRedis.srem(refreshToken.sub, refreshToken.jti);
 
     res.clearCookie("access_token");
     res.clearCookie("refresh_token");
