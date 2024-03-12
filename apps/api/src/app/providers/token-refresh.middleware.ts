@@ -2,81 +2,86 @@ import { Injectable, NestMiddleware } from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { AuthService } from "../auth/auth.service";
-import { InjectRedis } from "@liaoliaots/nestjs-redis";
+import { AuthService } from "../auth/services/auth.service";
+import { InjectRedis, RedisService } from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 import * as jwt from "jsonwebtoken";
 import * as crypto from "crypto";
+import { TokenService } from "../auth/services/token.service";
+import { TokenType } from "../auth/types/token-type.enum";
+import { RefreshTokenPayload } from "../auth/types/token-payload.interface";
 
 @Injectable()
 export class TokenRefreshMiddleware implements NestMiddleware {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
-    @InjectRedis() private readonly redis: Redis
-  ) {}
+  private readonly refreshTokenRedis: Redis;
 
-  use(req: Request, res: Response, next: NextFunction) {
-    if (
-      req.cookies &&
-      "authenticated" in req.cookies &&
-      !("access_token" in req.cookies) &&
-      !("refresh_token" in req.cookies)
-    ) {
-      this.authService.logout(req, res);
+  constructor(
+    private readonly tokenService: TokenService,
+    redisService: RedisService
+  ) {
+    this.refreshTokenRedis = redisService.getClient("default");
+  }
+
+  public async use(req: Request, res: Response, next: NextFunction) {
+    const refreshToken = this.getTokenCookie(req, TokenType.RefreshToken);
+    if (!refreshToken) return next();
+    const refreshTokenPayload = await this.tokenService.decodeRefreshToken(
+      refreshToken,
+      true
+    );
+    if (Number(refreshTokenPayload.exp) < new Date().getTime() / 1000)
+      return next();
+
+    const accessToken = this.getTokenCookie(req, TokenType.AccessToken);
+    if (!accessToken) {
+      await this.renewAccessToken(req, res, refreshTokenPayload);
       return next();
     }
 
-    if (
-      req.cookies &&
-      "authenticated" in req.cookies
-    ) {
-      // if you have an access token but no refresh token, we know you need a new one
-      if (
-        !("access_token" in req.cookies) &&
-        "refresh_token" in req.cookies
-      ) this.renewAccessToken(req, res);
-
-      // if your access token is expired
-      try {
-        jwt.verify(req.cookies.access_token, this.configService.get<string>("JWT_SECRET"));
-      } catch (e) {
-        // and you have a refresh token
-        if ("refresh_token" in req.cookies) {
-          // renew your access token
-          this.renewAccessToken(req, res);
-        } else {
-          this.authService.logout(req, res);
-        }
-      }
-    }
+    const accessTokenPayload = await this.tokenService.decodeAccessToken(
+      accessToken,
+      true
+    );
+    if (Number(accessTokenPayload.exp) < new Date().getTime() / 1000)
+      await this.renewAccessToken(req, res, refreshTokenPayload);
 
     next();
   }
 
-  renewAccessToken(req: Request, res: Response): boolean {
-    let refreshToken: { id: string; sessionId: string; email: string; type: "refresh" };
+  private getTokenCookie(req: Request, tokenType: TokenType): string | null {
+    const cookie = req.cookies?.[tokenType];
 
-    try {
-      refreshToken = jwt.verify(req.cookies["refresh_token"], this.configService.get<string>("JWT_SECRET")) as { id: string; sessionId: string; email: string; type: "refresh" };
-    } catch (e) {
-      this.authService.logout(req, res);
-      return true;
-    }
+    if (!cookie) return null;
 
-    if (!refreshToken.sessionId || !this.redis.get(req.cookies["refresh_token"].sessionId)) {
-      this.authService.logout(req, res);
-      return true;
-    }
+    return cookie;
+  }
 
-    const accessToken = this.jwtService.sign({ id: refreshToken.id, sessionId: crypto.randomUUID(), email: refreshToken.email, type: "access" }, { expiresIn: "15m" });
+  public async renewAccessToken(
+    req: Request,
+    res: Response,
+    refreshToken: RefreshTokenPayload
+  ) {
+    const {
+      accessToken,
+      refreshToken: issuedRefreshToken,
+      jti,
+    } = await this.tokenService.refreshTokens(refreshToken);
 
-    // the route following this interceptor will not see the cookie unless if we modify the cookie object here
-    // this is only for the request that this interceptor is directly in front of
-    req.cookies["access_token"] = accessToken;
+    await this.refreshTokenRedis.srem(refreshToken.sub, refreshToken.jti);
+    await this.refreshTokenRedis.sadd(refreshToken.sub, jti);
 
-    // but this actually sets the cookie for future requests
-    res.cookie("access_token", accessToken, { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie(TokenType.AccessToken, accessToken, {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+    });
+    res.cookie(TokenType.RefreshToken, issuedRefreshToken, {
+      httpOnly: true,
+      path: "/",
+      sameSite: "lax",
+    });
+
+    req.cookies[TokenType.AccessToken] = accessToken;
+    req.cookies[TokenType.RefreshToken] = refreshToken;
   }
 }
