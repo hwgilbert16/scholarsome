@@ -40,7 +40,14 @@
       "configurations": {
         "production": {
           "buildOptimizer": true,
-          "optimization": true,
+          "optimization": {
+            "scripts": true,
+            "fonts": true,
+            "styles": {
+              "minify": true,
+              "inlineCritical": false
+            }
+          },
           "sourceMap": false,
           "extractLicenses": true,
           "budgets": [
