@@ -30,8 +30,16 @@ export class TokenRefreshMiddleware implements NestMiddleware {
       refreshToken,
       true
     );
-    if (Number(refreshTokenPayload.exp) < new Date().getTime() / 1000)
+    if (Number(refreshTokenPayload.exp) < new Date().getTime() / 1000) {
+      res.clearCookie(TokenType.RefreshToken);
+      try {
+        await this.refreshTokenRedis.srem(
+          refreshTokenPayload.sub,
+          refreshTokenPayload.jti
+        );
+      } catch (e) {}
       return next();
+    }
 
     const accessToken = this.getTokenCookie(req, TokenType.AccessToken);
     if (!accessToken) {
