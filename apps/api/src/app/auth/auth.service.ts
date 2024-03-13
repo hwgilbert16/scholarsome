@@ -11,14 +11,14 @@ import Redis from "ioredis";
 import { Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
 import { User } from "@prisma/client";
+import { JwtPayload } from "jwt-decode";
+import * as crypto from "crypto";
 
 @Injectable()
 export class AuthService {
-  private readonly redis: Redis;
+  private readonly refreshTokenRedis: Redis;
+  private readonly apiKeyRedis: Redis;
 
-  /**
-   * @ignore
-   */
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -26,7 +26,37 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly redisService: RedisService
   ) {
-    this.redis = this.redisService.getClient();
+    this.refreshTokenRedis = this.redisService.getClient("default");
+    this.apiKeyRedis = this.redisService.getClient("apiToken");
+  }
+
+  /**
+   * Decodes the access token JWT
+   *
+   * @param req User's `Request` object
+   *
+   * @returns Decoded access token
+   */
+  async getUserInfo(req: Request): Promise<{ id: string; email: string; } | false> {
+    if (req.cookies["access_token"]) {
+      let decoded: string | JwtPayload;
+
+      try {
+        decoded = jwt.verify(req.cookies["access_token"], this.configService.get<string>("JWT_SECRET"));
+      } catch (e) {
+        return false;
+      }
+
+      return decoded as { id: string; email: string; };
+    } else if (req.header("x-api-key")) {
+      const info = await this.apiKeyRedis.get(req.header("x-api-key"));
+
+      if (info) {
+        return JSON.parse(info);
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -76,12 +106,32 @@ export class AuthService {
   setLoginCookies(res: Response, user: UserWithSets | User): void {
     res.cookie("verified", user.verified, { httpOnly: false });
 
-    const refreshToken = this.jwtService.sign({ id: user.id, email: user.email, type: "refresh" }, { expiresIn: "182d" });
+    const sessionId = crypto.randomUUID();
 
-    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
-    this.redis.set(user.email, refreshToken);
+    const refreshToken = this.jwtService.sign(
+        {
+          id: user.id,
+          sessionId,
+          email: user.email,
+          type: "refresh"
+        },
+        { expiresIn: "182d" }
+    );
+    const refreshTokenExpiry = new Date(new Date().setDate(new Date().getDate() + 182));
 
-    res.cookie("access_token", this.jwtService.sign({ id: user.id, email: user.email, type: "access" }, { expiresIn: "15m" }), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
+    res.cookie("refresh_token", refreshToken, { httpOnly: true, expires: refreshTokenExpiry });
+    this.refreshTokenRedis.set(sessionId, refreshToken);
+    this.refreshTokenRedis.expire(sessionId, Math.round((refreshTokenExpiry.getTime() - new Date().getTime()) / 1000));
+
+    res.cookie("access_token", this.jwtService.sign(
+        {
+          id: user.id,
+          sessionId,
+          email: user.email,
+          type: "access"
+        },
+        { expiresIn: "15m" }
+    ), { httpOnly: true, expires: new Date(new Date().getTime() + 15 * 60000) });
     res.cookie("authenticated", true, { httpOnly: false, expires: new Date(new Date().setDate(new Date().getDate() + 182)) });
   }
 
@@ -95,7 +145,7 @@ export class AuthService {
 
     const user = jwt.decode(req.cookies.access_token);
     if (user && "email" in (user as jwt.JwtPayload)) {
-      this.redis.del(user["email"]);
+      this.refreshTokenRedis.del(user["sessionId"]);
     }
   }
 }

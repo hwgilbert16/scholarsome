@@ -38,6 +38,7 @@ You can read more about our design philosophy <a href="https://github.com/hwgilb
 ## Features
 
 - Create your own study sets 🏗️
+- Use LaTeX to create math expressions 📐
 - Share your sets with other users 🤝
 - Import sets from Anki, Quizlet, and CSV files 🔼
 - Export sets to Anki, Quizlet, and CSV files 🔽
@@ -81,6 +82,12 @@ Scholarsome is an open source project. We believe in a transparent development p
 
 - **Bug reports.** If you run into an issue using Scholarsome, please <a href="https://github.com/hwgilbert16/scholarsome/issues/new">create a bug report</a>. Make sure you attach the `bug` label to your issue.
 - **Feature requests.** We'd love to hear your ideas for future features. Please <a href="https://github.com/hwgilbert16/scholarsome/issues/new">create an issue</a> and attach the `feature request` label to propose a new feature.
+
+## Contributors
+
+<a href="https://github.com/hwgilbert16/scholarsome/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hwgilbert16/scholarsome"/>
+</a>
 
 ## Design Philosophy
 

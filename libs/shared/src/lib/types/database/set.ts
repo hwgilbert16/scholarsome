@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 
 const setWithRelations = Prisma.validator<Prisma.SetArgs>()({
-  include: { cards: true, author: {
+  include: { cards: true, folders: true, author: {
     select: {
       id: true,
       username: true,

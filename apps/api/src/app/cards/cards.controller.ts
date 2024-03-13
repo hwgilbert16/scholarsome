@@ -14,7 +14,7 @@ import {
 import { Request as ExpressRequest } from "express";
 import { CardsService } from "./cards.service";
 import { UsersService } from "../users/users.service";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { SetsService } from "../sets/sets.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { CreateCardGuard } from "./guards/create-card.guard";
@@ -34,17 +34,16 @@ import { CreateCardDto } from "./dto/createCard.dto";
 import { UpdateCardDto } from "./dto/updateCard.dto";
 import { CardSuccessResponse } from "./response/success/card.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
+import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Cards")
-@Controller("cards")
+@Controller("sets/cards")
 export class CardsController {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly cardsService: CardsService,
     private readonly setsService: SetsService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService
   ) {}
 
   /**
@@ -69,7 +68,7 @@ export class CardsController {
   })
   @Get(":cardId")
   async card(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
 
     let userId = "";
 
@@ -125,6 +124,27 @@ export class CardsController {
       throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
+    const set = await this.setsService.set({ id: body.setId });
+    if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
+
+    let index = body.index;
+    const indices = set.cards.map((c) => c.index)
+        .sort((a, b) => a - b);
+
+    if (indices.includes(body.index)) {
+      // if the index already exists
+      await this.setsService.shiftCardIndices(set.id, body.index, 1);
+
+      index = body.index;
+    } else if (body.index > indices[indices.length - 1] + 1) {
+      // if the provided index is greater than +1 of the existing highest index
+      index = indices[indices.length - 1] + 1;
+    } else if (!body.index) {
+      // if no provided index
+      // index is +1 of the index of the last card in the set
+      index = indices[indices.length - 1] + 1;
+    }
+
     let media = [];
 
     const termScanned = await this.cardsService.scanAndUploadMedia(body.term, body.setId);
@@ -142,7 +162,7 @@ export class CardsController {
     return {
       status: ApiResponseOptions.Success,
       data: await this.cardsService.createCard({
-        index: body.index,
+        index: index,
         term: body.term,
         definition: body.definition,
         media: {
@@ -286,7 +306,7 @@ export class CardsController {
   })
   @Delete(":cardId")
   async deleteCard(@Param() params: CardIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Card>> {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const card = await this.cardsService.card({ id: params.cardId });

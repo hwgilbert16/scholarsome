@@ -60,6 +60,10 @@ Click the purple "Create" button once you are ready to import the set.
 
 ## Importing from a CSV file
 
+:::caution
+If you are creating sets within Excel and planning to import as a `.csv`, ensure that you select "CSV UTF-8 (Comma-delimited)" as the file type to export to within Excel. This will ensure special character compatibility in both Excel and Scholarsome.
+:::
+
 To import a set from a `.csv` file, you will need to have a `.csv` file that has two columns. The left column should contain the "terms" of your set, and the right column should contain the "definitions" of your set.
 
 Click the purple button in the Scholarsome navigation bar that says "Create", and then click "From CSV." A menu will open.

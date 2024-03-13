@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { SetsService } from "./sets.service";
 import { UsersService } from "../users/users.service";
 import { Request as ExpressRequest } from "express";
@@ -35,17 +35,19 @@ import { UserIdParam } from "../users/param/userId.param";
 import { SetsSuccessResponse } from "./response/success/sets.success.response";
 import { SetSuccessResponse } from "./response/success/set.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
+import { AuthService } from "../auth/auth.service";
+import { HtmlDecodePipe } from "./pipes/html-decode.pipe";
+import { FoldersService } from "../folders/folders.service";
 
 @ApiTags("Sets")
 @Controller("sets")
 export class SetsController {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly setsService: SetsService,
     private readonly usersService: UsersService,
-    private readonly cardsService: CardsService
+    private readonly cardsService: CardsService,
+    private readonly authService: AuthService,
+    private readonly foldersService: FoldersService
   ) {}
 
   /**
@@ -68,7 +70,7 @@ export class SetsController {
   })
   @Get("user/me")
   async mySets(@Request() req: ExpressRequest): Promise<ApiResponse<Set[]>> {
-    const user = this.usersService.getUserInfo(req);
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     return {
@@ -99,7 +101,7 @@ export class SetsController {
   })
   @Get("user/:userId")
   async sets(@Request() req: ExpressRequest, @Param() params: UserIdParam): Promise<ApiResponse<Set[]>> {
-    const user = this.usersService.getUserInfo(req);
+    const user = await this.authService.getUserInfo(req);
 
     // if a user is requesting their own sets -> don't filter private sets
     if (user && params.userId === user.id) {
@@ -168,7 +170,7 @@ export class SetsController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -198,8 +200,8 @@ export class SetsController {
   })
   @UseGuards(AuthenticatedGuard)
   @Post()
-  async createSet(@Body() body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
-    const user = this.usersService.getUserInfo(req);
+  async createSet(@Body(HtmlDecodePipe) body: CreateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({
@@ -224,6 +226,25 @@ export class SetsController {
       }
     }
 
+    if (body.folders) {
+      for (const folderId of body.folders) {
+        const folder = await this.foldersService.folder({ id: folderId });
+        if (!folder) {
+          throw new UnauthorizedException({
+            status: "fail",
+            message: `Folder with ID ${folderId} does not exist`
+          });
+        }
+
+        if (folder.authorId !== user.id) {
+          throw new UnauthorizedException({
+            status: "fail",
+            message: `User is not author of folder with id ${folderId}`
+          });
+        }
+      }
+    }
+
     const create = await this.setsService.createSet({
       id: uuid,
       author: {
@@ -234,6 +255,11 @@ export class SetsController {
       title: body.title,
       description: body.description,
       private: body.private,
+      folders: {
+        connect: body.folders ? body.folders.map((f) => {
+          return { id: f };
+        }) : undefined
+      },
       cards: {
         createMany: {
           data: body.cards.map((c) => {
@@ -289,13 +315,43 @@ export class SetsController {
   })
   @UseGuards(AuthenticatedGuard)
   @Patch(":setId")
-  async updateSet(@Param() params: SetIdParam, @Body() body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+  async updateSet(@Param() params: SetIdParam, @Body(HtmlDecodePipe) body: UpdateSetDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
     const set = await this.setsService.set({
       id: params.setId
     });
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    let newFolderIDs: string[] = [];
+    let removedFolderIDs: string[] = [];
+
+    if (body.folders) {
+      const currentFolderIDs = set.folders.map((f) => f.id);
+
+      newFolderIDs = body.folders.filter((id) => !currentFolderIDs.includes(id));
+      removedFolderIDs = currentFolderIDs.filter((id) => !body.folders.includes(id));
+    }
+
+    for (const folderId of newFolderIDs) {
+      const folder = await this.foldersService.folder({ id: folderId });
+      if (!folder) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `Folder with ID ${folderId} does not exist`
+        });
+      }
+
+      if (folder.authorId !== user.id) {
+        throw new UnauthorizedException({
+          status: "fail",
+          message: `User is not author of folder with id ${folderId}`
+        });
+      }
+    }
 
     const newMedia: string[] = [];
     const existingMedias: CardMedia[] = [];
@@ -370,10 +426,19 @@ export class SetsController {
         title: body.title,
         description: body.description,
         private: body.private,
+        folders: {
+          connect: newFolderIDs.map((s) => {
+            return { id: s };
+          }),
+          disconnect: removedFolderIDs.map((s) => {
+            return { id: s };
+          })
+        },
         cards: body.cards ? {
           createMany: {
             data: body.cards.map((c) => {
               return {
+                id: c.id,
                 index: c.index,
                 term: c.term,
                 definition: c.definition
@@ -425,7 +490,6 @@ export class SetsController {
    *
    * @returns Deleted `Set` Object
    */
-  @UseGuards(AuthenticatedGuard)
   @ApiOperation( {
     summary: "Delete a set"
   })
@@ -437,17 +501,20 @@ export class SetsController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
+  @UseGuards(AuthenticatedGuard)
   @Delete(":setId")
   async deleteSet(@Param() params: SetIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
     if (!(await this.setsService.verifySetOwnership(req, params.setId))) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const set = await this.setsService.deleteSet({
+      id: params.setId
+    });
 
     await this.setsService.deleteSetMediaFiles(params.setId);
 
     return {
       status: ApiResponseOptions.Success,
-      data: await this.setsService.deleteSet({
-        id: params.setId
-      })
+      data: set
     };
   }
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { CardSetsEntity } from "./card.sets.entity";
+import { PartialUserEntity } from "./partial-user.sets.entity";
 
 export class SetSetsEntity {
   @ApiProperty({
@@ -50,4 +51,10 @@ export class SetSetsEntity {
     type: [CardSetsEntity]
   })
     cards: [CardSetsEntity];
+
+  @ApiProperty({
+    description: "The author of this set",
+    type: PartialUserEntity
+  })
+    author: [PartialUserEntity];
 }

@@ -1,20 +1,21 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   HttpCode,
   HttpException,
-  HttpStatus,
+  HttpStatus, NotFoundException,
   Param,
   Post,
   Req,
   Request,
   Res,
+  UnauthorizedException,
   UseGuards
 } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { AuthService } from "./auth.service";
-import { Response, Request as ExpressRequest } from "express";
+import { Request as ExpressRequest, Response } from "express";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -24,81 +25,214 @@ import { ConfigService } from "@nestjs/config";
 import * as bcrypt from "bcrypt";
 import { MailService } from "../providers/mail/mail.service";
 import { User } from "@prisma/client";
-import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { ApiExcludeEndpoint, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { SkipThrottle, Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { AuthenticatedGuard } from "./guards/authenticated.guard";
+import { PrismaService } from "../providers/database/prisma/prisma.service";
+import { RedisService } from "@liaoliaots/nestjs-redis";
+import Redis from "ioredis";
+import { DeleteApiKeyDto } from "./dto/deleteApiKey.dto";
+import { CreateApiKeyDto } from "./dto/createApiKey.dto";
+import { ResetEmailDto } from "./dto/resetEmail.dto";
 
 @ApiTags("Authentication")
-@ApiExcludeController()
 @UseGuards(ThrottlerGuard)
 @Controller("auth")
 export class AuthController {
-  /**
-   * @ignore
-   */
+  private readonly apiKeyRedis: Redis;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
-    private readonly mailService: MailService
-  ) {}
+    private readonly mailService: MailService,
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService
+  ) {
+    this.apiKeyRedis = this.redisService.getClient("apiToken");
+  }
 
   /*
-   * Password reset routes
+   *
+   * API key CRUD routes
+   *
    */
+
+  @ApiOperation({
+    summary: "Create an API key"
+  })
+  @UseGuards(AuthenticatedGuard)
+  @Post("apiKey")
+  async createApiKey(@Body() createApiKeyDto: CreateApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ name: string, apiKey: string }>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const apiKey = await this.prisma.apiKey.create({
+      data: {
+        name: createApiKeyDto.name,
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
+      }
+    });
+
+    this.apiKeyRedis.set(
+        apiKey.apiKey,
+        JSON.stringify({
+          id: user.id,
+          email: user.email
+        })
+    );
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: {
+        name: createApiKeyDto.name,
+        apiKey: apiKey.apiKey
+      }
+    };
+  }
+
+  @ApiOperation({
+    summary: "Delete an API key"
+  })
+  @UseGuards(AuthenticatedGuard)
+  @Delete("apiKey")
+  async deleteAPIKey(@Body() deleteApiKeyDto: DeleteApiKeyDto, @Req() req: ExpressRequest): Promise<ApiResponse<{ apiKey: string }>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const apiKey = await this.prisma.apiKey.findUnique({
+      where: {
+        apiKey: deleteApiKeyDto.apiKey
+      }
+    });
+    if (!apiKey) throw new NotFoundException({ status: "fail", message: "API key was not found" });
+
+    await this.prisma.apiKey.delete({
+      where: {
+        apiKey: deleteApiKeyDto.apiKey
+      }
+    });
+
+    this.apiKeyRedis.del(deleteApiKeyDto.apiKey);
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: null
+    };
+  }
+
+  /*
+   *
+   * Password reset routes
+   *
+   */
+
+  /**
+   * Changes the email of an authenticated user
+   *
+   * @returns Updated User object
+   */
+  @ApiExcludeEndpoint()
+  @SkipThrottle()
+  @Post("reset/email/set")
+  async resetEmail(
+    @Body() resetPasswordDto: ResetEmailDto,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: ExpressRequest
+  ): Promise<ApiResponse<User>> {
+    const user = await this.authService.getUserInfo(req);
+    if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+    const updatedUser = await this.usersService.updateUser({
+      where: {
+        id: user.id
+      },
+      data: {
+        email: resetPasswordDto.newEmail
+      }
+    });
+
+    if (req.cookies["access_token"]) await this.authService.logout(req, res);
+
+    delete updatedUser.password;
+    delete updatedUser.verified;
+    delete updatedUser.email;
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: updatedUser
+    };
+  }
 
   /**
    * Resets the password of a user after checking for a valid reset token in their cookies.
    *
-   * @returns Whether the user's password was successfully updated
+   * @returns Updated User object
    */
-  @Post("reset/setPassword")
-  async resetPassword(
+  @ApiExcludeEndpoint()
+  @SkipThrottle()
+  @Post("reset/password/set")
+  async setPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res({ passthrough: true }) res: Response,
     @Req() req: ExpressRequest
   ): Promise<ApiResponse<User>> {
-    let decoded: { email: string; reset: boolean };
+    let email = "";
 
-    try {
-      decoded = jwt.verify(
-          req.cookies["resetPasswordToken"],
-          this.configService.get<string>("JWT_SECRET")
-      ) as { email: string; reset: boolean };
-    } catch (e) {
-      res.status(401);
+    if (req.cookies["resetPasswordToken"]) {
+      let decoded: { email: string; forPasswordReset: boolean };
 
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Invalid reset token"
-      };
+      try {
+        decoded = jwt.verify(
+            req.cookies["resetPasswordToken"],
+            this.configService.get<string>("JWT_SECRET")
+        ) as { email: string; forPasswordReset: boolean };
+      } catch (e) {
+        throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+      }
+
+      if (!decoded || !decoded.forPasswordReset) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+      res.cookie("resetPasswordToken", "", {
+        httpOnly: false,
+        expires: new Date()
+      });
+
+      email = decoded.email;
+    } else if (resetPasswordDto.existingPassword) {
+      const userCookie = await this.authService.getUserInfo(req);
+      if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+
+      const user = await this.usersService.user({ id: userCookie.id });
+      if (!user) throw new NotFoundException({ status: "fail", message: "User not found" });
+
+      email = user.email;
+
+      if (!bcrypt.compareSync(resetPasswordDto.existingPassword, user.password)) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
+    } else {
+      throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
 
-    if (!decoded || !decoded.reset) {
-      res.status(401);
-
-      return {
-        status: ApiResponseOptions.Fail,
-        message: "Invalid reset token"
-      };
-    }
-
-    res.cookie("resetPasswordToken", "", {
-      httpOnly: false,
-      expires: new Date()
-    });
-
-    const query = await this.usersService.updateUser({
+    const updatedUser = await this.usersService.updateUser({
       where: {
-        email: decoded.email
+        email: email
       },
       data: {
-        password: await bcrypt.hash(resetPasswordDto.password, 10)
+        password: await bcrypt.hash(resetPasswordDto.newPassword, 10)
       }
     });
 
+    delete updatedUser.password;
+    delete updatedUser.verified;
+    delete updatedUser.email;
+
     return {
       status: ApiResponseOptions.Success,
-      data: query
+      data: updatedUser
     };
   }
 
@@ -108,22 +242,23 @@ export class AuthController {
    * @remarks This is the link that is emailed to users when a password reset is requested.
    * @returns Void, redirect to /api/auth/redirect
    */
-  @Get("reset/password/setCookie/:token")
-  async setResetCookie(
+  @ApiExcludeEndpoint()
+  @Get("reset/password/verify/:token")
+  async verifyPasswordResetRequest(
     @Param() params: { token: string },
     @Res() res: Response
   ): Promise<void> {
-    let decoded: { email: string; reset: boolean };
+    let decoded: { email: string; forPasswordReset: boolean };
     try {
       decoded = jwt.verify(
           params.token,
           this.configService.get<string>("JWT_SECRET")
-      ) as { email: string; reset: boolean };
+      ) as { email: string; forPasswordReset: boolean };
     } catch (e) {
       return res.redirect("/");
     }
 
-    if (decoded && decoded.reset) {
+    if (decoded && decoded.forPasswordReset) {
       res.cookie("resetPasswordToken", params.token, {
         httpOnly: false,
         expires: new Date(new Date().setMinutes(new Date().getMinutes() + 10))
@@ -139,9 +274,10 @@ export class AuthController {
    * @remarks Throttled to 1 request per 5 seconds
    * @returns Success response
    */
-  @Throttle(1, 5)
-  @Get("reset/sendReset/:email")
-  async sendReset(
+  @ApiExcludeEndpoint()
+  @Throttle({ default: { ttl: 60000, limit: 1 } })
+  @Get("reset/password/send/:email")
+  async sendPasswordReset(
     @Param() params: { email: string }
   ): Promise<ApiResponse<null>> {
     const user = await this.usersService.user({ email: params.email });
@@ -155,7 +291,9 @@ export class AuthController {
   }
 
   /*
+   *
    * Registration routes
+   *
    */
 
   /**
@@ -164,6 +302,7 @@ export class AuthController {
    * @remarks This is the link that users click on to verify their email
    * @returns Void, redirect to '/homepage'
    */
+  @ApiExcludeEndpoint()
   @Get("verify/email/:token")
   async verifyEmail(@Param() params: { token: string }, @Res() res: Response) {
     let email: { email: string };
@@ -216,11 +355,13 @@ export class AuthController {
    *
    * @returns Success response
    */
+  @ApiExcludeEndpoint()
+  @Throttle({ default: { ttl: 60000, limit: 1 } })
   @Post("resendVerification")
   async resendVerificationMail(
     @Request() req: ExpressRequest
   ): Promise<ApiResponse<null>> {
-    const userCookie = this.usersService.getUserInfo(req);
+    const userCookie = await this.authService.getUserInfo(req);
     if (!userCookie) {
       return {
         status: ApiResponseOptions.Fail,
@@ -256,7 +397,7 @@ export class AuthController {
    * @remarks Throttled to 1 request per 5 seconds
    * @returns Success response
    */
-  @Throttle(1, 5)
+  @ApiExcludeEndpoint()
   @Post("register")
   async register(
     @Body() registerDto: RegisterDto,
@@ -291,7 +432,9 @@ export class AuthController {
   }
 
   /*
+   *
    * Login routes
+   *
    */
 
   /**
@@ -299,6 +442,7 @@ export class AuthController {
    *
    * @returns Success response
    */
+  @ApiExcludeEndpoint()
   @HttpCode(200)
   @Post("login")
   async login(
@@ -354,6 +498,8 @@ export class AuthController {
    *
    * @returns Void
    */
+  @ApiExcludeEndpoint()
+  @SkipThrottle()
   @Post("logout")
   logout(
     @Req() req: ExpressRequest,

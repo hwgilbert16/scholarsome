@@ -69,12 +69,29 @@
                 "
                 [routerLink]="
                   this.cookieService.get('authenticated')
+                    ? 'create/folder'
+                    : undefined
+                "
+              ><fa-icon [icon]="faFolder"></fa-icon> &nbsp;Folder</a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
+                [attr.data-bs-target]="
+                  isMobile ? '#navbarSupportedContent' : ''
+                "
+                (click)="
+                  !this.cookieService.get('authenticated')
+                    ? (this.modalRef = loginModal.open())
+                    : ''
+                "
+                [routerLink]="
+                  this.cookieService.get('authenticated')
                     ? 'create/set'
                     : undefined
                 "
-                ><fa-icon [icon]="['far', 'clone']"></fa-icon> &nbsp;Study
-                set</a
-              >
+                ><fa-icon [icon]="faClone"></fa-icon> &nbsp;Study set</a>
             </li>
             <li>
               <a
@@ -88,9 +105,8 @@
                     ? (this.modalRef = quizletImportModal.open())
                     : (this.modalRef = loginModal.open())
                 "
-                ><fa-icon [icon]="faQ" class="quizlet-color"></fa-icon>
-                &nbsp;From Quizlet</a
-              >
+                ><fa-icon [icon]="faQ"></fa-icon>
+                &nbsp;From Quizlet</a>
             </li>
             <li>
               <a
@@ -104,7 +120,7 @@
                     ? (this.modalRef = ankiImportModal.open())
                     : (this.modalRef = loginModal.open())
                 "
-                ><fa-icon [icon]="faStar" class="anki-color"></fa-icon>
+                ><fa-icon [icon]="faStar"></fa-icon>
                 &nbsp;From Anki
                 </a>
             </li>
@@ -170,7 +186,7 @@
               class="nav-link dropdown-toggle text-black text-left"
               data-bs-toggle="dropdown"
             >
-              <fa-icon [icon]="['far', 'user']"></fa-icon>
+              <fa-icon [icon]="faUser"></fa-icon>
             </a>
             <a
               *ngIf="avatarUrl"
@@ -186,15 +202,14 @@
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
                 [routerLink]="'profile/' + user.id">
-                <fa-icon [icon]="['far', 'user']"></fa-icon> Profile
+                <fa-icon [icon]="faUser"></fa-icon> Profile
               </a>
               <a
                 class="dropdown-item"
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
-                (click)="this.profilePictureModal.open()"
-              >
-                <fa-icon [icon]="faImage"></fa-icon> Avatar
+                [routerLink]="'settings'">
+                <fa-icon [icon]="faGear"></fa-icon> Settings
               </a>
               <a
                 class="dropdown-item"
@@ -218,5 +233,4 @@
 <scholarsome-login-modal #login></scholarsome-login-modal>
 <scholarsome-forgot-password-modal #forgot></scholarsome-forgot-password-modal>
 <scholarsome-register-modal #register></scholarsome-register-modal>
-<scholarsome-profile-picture-modal #profilePicture></scholarsome-profile-picture-modal>
 <scholarsome-csv-import-modal #csvImport></scholarsome-csv-import-modal>

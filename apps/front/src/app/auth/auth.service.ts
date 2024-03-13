@@ -16,21 +16,17 @@ import { User } from "@prisma/client";
   providedIn: "root"
 })
 export class AuthService {
-  /**
-   * @ignore
-   */
   constructor(private http: HttpClient, private recaptchaV3Service: ReCaptchaV3Service) {}
 
-
   /**
-   * Makes a request to submit a password reset based on information from `SubmitResetForm`
+   * Makes a request to change the password of a user that is already authenticated
    *
-   * @param submitResetForm `SubmitResetForm` object
+   * @param newEmail The new email address
    *
-   * @returns HTTP response of request
+   * @returns HTTP sttus of the request
    */
-  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
-    const req = await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/sendReset/" + submitResetForm.email, { observe: "response" }));
+  async setEmail(newEmail: string): Promise<ApiResponseOptions> {
+    const req = await lastValueFrom(this.http.post<ApiResponse<User>>("/api/auth/reset/email/set", { newEmail: newEmail }, { observe: "response" }));
 
     if (req.status === 429) {
       return ApiResponseOptions.Ratelimit;
@@ -47,13 +43,71 @@ export class AuthService {
    * @returns HTTP status of request
    */
   async setPassword(resetForm: ResetForm): Promise<string> {
-    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/setPassword", { password: resetForm.password }, { observe: "response" }));
+    const req = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/reset/password/set", { newPassword: resetForm.password }, { observe: "response" }));
 
     if (req.status === 429) {
       return "ratelimit";
     } else if (req.body) {
       return req.body.status;
     } else return "error";
+  }
+
+  /**
+   * Makes a request to submit a password reset based on information from `SubmitResetForm`
+   *
+   * @param submitResetForm `SubmitResetForm` object
+   *
+   * @returns HTTP response of request
+   */
+  async sendPasswordReset(submitResetForm: SubmitResetForm): Promise<ApiResponseOptions> {
+    try {
+      await lastValueFrom(this.http.get<ApiResponse<User>>("/api/auth/reset/password/send/" + submitResetForm.email, { observe: "response" }));
+
+      return ApiResponseOptions.Success;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        if (e.status === 429) {
+          return ApiResponseOptions.Ratelimit;
+        }
+      }
+
+      return ApiResponseOptions.Error;
+    }
+  }
+
+  /**
+   * Makes a request to update the password of a user that is already authenticated
+   *
+   * @param existingPassword The existing password of the user
+   * @param newPassword The new password of the user
+   *
+   * @returns HTTP status of request
+   */
+  async setPasswordAuthenticated(existingPassword: string, newPassword: string): Promise<ApiResponseOptions | null> {
+    try {
+      await lastValueFrom(this.http.post<ApiResponse<User>>(
+          "/api/auth/reset/password/set",
+          {
+            existingPassword,
+            newPassword
+          }, { observe: "response" }))
+      ;
+
+      return ApiResponseOptions.Success;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse) {
+        switch (e.status) {
+          case 401:
+            return ApiResponseOptions.Incorrect;
+          case 429:
+            return ApiResponseOptions.Ratelimit;
+          default:
+            return ApiResponseOptions.Error;
+        }
+      }
+
+      return ApiResponseOptions.Error;
+    }
   }
 
   /**
@@ -152,7 +206,16 @@ export class AuthService {
    * Makes a request to send verification email
   */
   async resendVerificationEmail(): Promise<ApiResponseOptions> {
-    const response = await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/resendVerification", {}));
-    return response.status;
+    try {
+      await lastValueFrom(this.http.post<ApiResponse<null>>("/api/auth/resendVerification", {}));
+
+      return ApiResponseOptions.Success;
+    } catch (e) {
+      if (e instanceof HttpErrorResponse && e.status === 429) {
+        return ApiResponseOptions.Ratelimit;
+      }
+
+      return ApiResponseOptions.Error;
+    }
   }
 }

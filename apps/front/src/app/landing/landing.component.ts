@@ -14,9 +14,6 @@ import { SharedService } from "../shared/shared.service";
   styleUrls: ["./landing.component.scss"]
 })
 export class LandingComponent implements OnInit {
-  /**
-   * @ignore
-   */
   constructor(
     private readonly cookieService: CookieService,
     private readonly router: Router,
@@ -30,7 +27,7 @@ export class LandingComponent implements OnInit {
     this.metaService.addTag({ name: "description", content: "Scholarsome is the way studying was meant to be. No monthly fees or upsells to get between you and your study tools. Just flashcards." });
   }
 
-  protected stargazers: number;
+  protected stargazers = 0;
   protected readonly faGithub = faGithub;
   protected readonly faUpRightFromSquare = faUpRightFromSquare;
   protected readonly faArrowRight = faArrowRight;

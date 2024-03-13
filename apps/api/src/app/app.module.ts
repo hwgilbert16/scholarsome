@@ -19,6 +19,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { MediaModule } from "./media/media.module";
 import { TokenRefreshMiddleware } from "./providers/token-refresh.middleware";
 import { ConvertingModule } from "./converting/converting.module";
+import { StorageModule } from "./providers/storage/storage.module";
+import { FoldersModule } from "./folders/folders.module";
 
 @Module({
   imports: [
@@ -44,18 +46,29 @@ import { ConvertingModule } from "./converting/converting.module";
     RedisModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        config: {
+        defaultOptions: {
           host: configService.get<string>("REDIS_HOST"),
           port: configService.get<number>("REDIS_PORT"),
           username: configService.get<string>("REDIS_USERNAME"),
           password: configService.get<string>("REDIS_PASSWORD")
-        }
+        },
+        config: [
+          {
+            namespace: "apiToken",
+            keyPrefix: "apiToken&",
+            name: "apiToken"
+          },
+          {
+            namespace: "default"
+          }
+        ]
       })
     }),
     AuthModule,
     DatabaseModule,
     SetsModule,
     MailModule,
+    StorageModule,
     CardsModule,
     UsersModule,
     MediaModule,
@@ -69,7 +82,8 @@ import { ConvertingModule } from "./converting/converting.module";
       }),
       global: true
     },
-    ConvertingModule
+    ConvertingModule,
+    FoldersModule
   ],
   controllers: [],
   providers: [],

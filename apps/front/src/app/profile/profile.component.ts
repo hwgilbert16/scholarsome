@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { UsersService } from "../shared/http/users.service";
 import { DomSanitizer, Meta, SafeResourceUrl, Title } from "@angular/platform-browser";
 import { User } from "@scholarsome/shared";
-import { MediaService } from "../shared/http/media.service";
+import { faFolder, faClone } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "scholarsome-profile",
@@ -17,7 +17,6 @@ export class ProfileComponent implements OnInit {
     private readonly router: Router,
     private readonly titleService: Title,
     private readonly metaService: Meta,
-    private readonly mediaService: MediaService,
     private readonly sanitizer: DomSanitizer
   ) {}
 
@@ -27,6 +26,9 @@ export class ProfileComponent implements OnInit {
   avatarUrl?: SafeResourceUrl;
   registrationDate: string;
 
+  protected readonly faFolder = faFolder;
+  protected readonly faClone = faClone;
+
   async ngOnInit(): Promise<void> {
     const userId = this.route.snapshot.paramMap.get("userId");
     if (!userId) {
@@ -34,7 +36,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    const avatar = await this.mediaService.getAvatar(userId, 128, 128);
+    const avatar = await this.usersService.getAvatar(userId, 128, 128);
 
     if (avatar) {
       this.avatarUrl = this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(avatar));

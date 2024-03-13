@@ -36,25 +36,28 @@ import { ErrorResponse } from "../shared/response/error.response";
 import { QuizletExportParams } from "./param/quizletExportParams";
 import { CardsService } from "../cards/cards.service";
 import { ApiResponse, ApiResponseOptions } from "@scholarsome/shared";
-import { AuthenticatedGuard } from "../auth/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { SetSuccessResponse } from "../sets/response/success/set.success.response";
 import { ImportSetFromFileDto } from "./dto/importSetFromFile.dto";
 import * as crypto from "crypto";
 import { Set } from "@prisma/client";
 import { ConvertingService } from "./converting.service";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { ImportSetFromQuizletDto } from "./dto/importSetFromQuizlet.dto";
+import { AuthService } from "../auth/auth.service";
+import { HtmlDecodePipe } from "../sets/pipes/html-decode.pipe";
 
 @ApiTags("Converting")
 @UseGuards(ThrottlerGuard)
-@Controller("converting")
+@Controller("sets/converting")
 export class ConvertingController {
   constructor(
     private readonly setsService: SetsService,
     private readonly usersService: UsersService,
     private readonly cardsService: CardsService,
-    private readonly convertingService: ConvertingService
+    private readonly convertingService: ConvertingService,
+    private readonly authService: AuthService
   ) {}
 
   /**
@@ -77,7 +80,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/quizlet/:setId/:sideDiscriminator/:cardDiscriminator")
   async exportSetToQuizletTxt(@Param() params: QuizletExportParams, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -86,7 +88,7 @@ export class ConvertingController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -119,7 +121,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/anki/:setId")
   async exportSetToAnkiApkg(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -128,7 +129,7 @@ export class ConvertingController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -161,7 +162,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/csv/:setId")
   async exportSetToCsv(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -170,7 +170,7 @@ export class ConvertingController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -203,7 +203,6 @@ export class ConvertingController {
     description: "Invalid authentication to access the requested resource",
     type: ErrorResponse
   })
-  @Throttle(1, 3)
   @Get("export/media/:setId")
   async exportSetMedia(@Param() params: SetIdParam, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse): Promise<StreamableFile> {
     const set = await this.setsService.set({
@@ -212,7 +211,7 @@ export class ConvertingController {
     if (!set) throw new NotFoundException({ status: "fail", message: "Set not found" });
 
     if (set.private) {
-      const userCookie = this.usersService.getUserInfo(req);
+      const userCookie = await this.authService.getUserInfo(req);
 
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (set.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
@@ -253,8 +252,8 @@ export class ConvertingController {
   })
   @UseGuards(AuthenticatedGuard)
   @Post("import/quizlet")
-  async importSetFromQuizletTxt(@Body() body: ImportSetFromQuizletDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
-    const user = this.usersService.getUserInfo(req);
+  async importSetFromQuizletTxt(@Body(HtmlDecodePipe) body: ImportSetFromQuizletDto, @Request() req: ExpressRequest): Promise<ApiResponse<Set>> {
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({
@@ -318,8 +317,8 @@ export class ConvertingController {
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("import/apkg")
-  async importSetFromAnkiApkg(@Body() body: ImportSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
-    const user = this.usersService.getUserInfo(req);
+  async importSetFromAnkiApkg(@Body(HtmlDecodePipe) body: ImportSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({
@@ -400,8 +399,8 @@ export class ConvertingController {
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor("file"))
   @Post("import/csv")
-  async importSetFromCsvFile(@Body() body: ImportSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
-    const user = this.usersService.getUserInfo(req);
+  async importSetFromCsvFile(@Body(HtmlDecodePipe) body: ImportSetFromFileDto, @Request() req: ExpressRequest, @UploadedFile() file: Express.Multer.File): Promise<ApiResponse<Set>> {
+    const user = await this.authService.getUserInfo(req);
     if (!user) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const author = await this.usersService.user({

@@ -1,4 +1,4 @@
-<nav class="navbar fixed-top navbar-expand-xxl bg-white">
+<nav class="navbar sticky-top navbar-expand-xxl bg-white">
   <div class="container-fluid navbar-container">
     <a class="navbar-brand" href="#">
       <img src="assets/header/scholarsome-logo-purple-lowercase.svg" width="80%" height="80%" alt="Logo" class="d-inline-block align-text-top">
@@ -13,7 +13,7 @@
       </div>
       <div class="navbar-nav ms-auto mt-3 mt-md-0">
         <a href="https://github.com/hwgilbert16/scholarsome" target="_blank" class="d-flex align-items-center text-decoration-none text-black">
-          <div class="fs-6 me-4 mb-2 mb-md-0 github">
+          <div *ngIf="stargazers !== 0" class="fs-6 me-4 mb-2 mb-md-0 github">
             <fa-icon [icon]="faGithub"></fa-icon>&nbsp;&nbsp;{{stargazers}} stars
           </div>
         </a>
@@ -28,7 +28,7 @@
 
 <div class="container-fluid p-0 bg-white">
   <div class="main-screen d-flex align-items-center min-vh-100">
-    <div class="container-fluid text-center main-screen-content">
+    <div class="container-fluid text-center">
       <div class="row justify-content-center">
         <div class="col-lg-8">
           <h1 class="display-2 fw-bold">Interactive and open source flashcard studying <span class="text-primary">for the masses</span></h1>
@@ -118,7 +118,7 @@
         <div class="row justify-content-center align-items-center mt-4">
           <div class="col-lg-5 order-sm-1 order-1 order-xl-0 order-lg-0">
             <h3 class="display-5 fw-bold mt-3 mt-xl-0 mt-lg-0">Feature-rich card editor</h3>
-            <p class="fs-5">Each side of a card can be customized to your heart's content. Add multiple images, change the formatting of text, use code blocks, and much more.</p>
+            <p class="fs-5">Each side of a card can be customized to your heart's content. Add multiple images, change the formatting of text, add LaTeX expressions, use code blocks, and much more.</p>
           </div>
           <div class="col-lg-7 col-sm-12 text-lg-end text-xl-end text-sm-center order-0 order-xl-1 order-lg-1">
             <img src="assets/landing/section-3-feature-4.webp" class="section-3-feature-image shadow-sm">
@@ -136,8 +136,8 @@
         </div>
         <div class="row row-cols-1 row-cols-md-3 justify-content-center mt-4 gap-3">
           <div class="col col-md-3 bg-white rounded shadow-sm py-3">
-            <h4 class="fs-2 fw-semibold">LaTex Support</h4>
-            <p class="fs-5">Use LaTex code to create beautiful mathematical expressions in your cards.</p>
+            <h4 class="fs-2 fw-semibold">User-accessible API</h4>
+            <p class="fs-5">Use the data in your sets in external applications, and create custom automations.</p>
           </div>
           <div class="col col-md-3 bg-white rounded shadow-sm py-3">
             <h4 class="fs-2 fw-semibold">Spaced Repetition</h4>
@@ -152,10 +152,10 @@
     </div>
   </div>
 
-  <div class="section-5 mt-xl-5 mb-xl-2">
+  <div class="section-5 pt-xxl-5 pb-xxl-2">
     <div class="d-flex justify-content-center mt">
       <div class="section-5-rectangle round text-center pb-3">
-        <h2 class="text-white display-3 fw-bold mt-3">We're open-source, too</h2>
+        <h2 class="text-white display-3 fw-bold mx-2 mt-3">We're open-source, too</h2>
         <p class="fs-4 text-white mt-3 mx-5">Scholarsome is proud to be released under the AGPL-3.0 license. With the help of our detailed documentation, you can easily get a fully-functional local instance running using Docker.</p>
         <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
           <a [href]="document.location.href + 'handbook'" target="_blank">

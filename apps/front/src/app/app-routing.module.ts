@@ -24,6 +24,14 @@ const routes: Routes = [
     loadChildren: () => import("./profile/profile.module").then((m) => m.ProfileModule)
   },
   {
+    path: "settings",
+    loadChildren: () => import("./settings/settings.module").then((m) => m.SettingsModule)
+  },
+  {
+    path: "folder",
+    loadChildren: () => import("./folder/folder.module").then((m) => m.FolderModule)
+  },
+  {
     path: "404",
     component: NotfoundComponent
   },

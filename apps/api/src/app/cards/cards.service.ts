@@ -4,19 +4,13 @@ import { Prisma, Card as PrismaCard, CardMedia as PrismaCardMedia } from "@prism
 import { Card, CardMedia } from "@scholarsome/shared";
 import * as sharp from "sharp";
 import * as crypto from "crypto";
-import * as fs from "fs";
-import * as path from "path";
-import { ConfigService } from "@nestjs/config";
-import { S3 } from "@aws-sdk/client-s3";
+import { StorageService } from "../providers/storage/storage.service";
 
 @Injectable()
 export class CardsService {
-  /**
-   * @ignore
-   */
   constructor(
-    private readonly configService: ConfigService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService
   ) {}
 
   /**
@@ -63,34 +57,10 @@ export class CardsService {
 
         const fileName = setId + "/" + name;
 
-        // upload to s3
-        if (
-          this.configService.get<string>("STORAGE_TYPE") === "s3" ||
-          this.configService.get<string>("STORAGE_TYPE") === "S3"
-        ) {
-          const s3 = await new S3({
-            credentials: {
-              accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-              secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-            },
-            endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-            region: this.configService.get<string>("S3_STORAGE_REGION")
-          });
+        await this.storageService.getInstance()
+            .putFile("media/sets/" + fileName, decoded);
 
-          await s3.putObject({ Body: decoded, Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + fileName });
-        }
-
-        // upload locally
-        if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-          const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets");
-
-          if (!fs.existsSync(filePath)) fs.mkdirSync(filePath, { recursive: true });
-          if (!fs.existsSync(path.join(filePath, setId))) fs.mkdirSync(path.join(filePath, setId), { recursive: true });
-
-          fs.writeFileSync(path.join(filePath, fileName), decoded);
-        }
-
-        side = side.replace(source, "/api/media/sets/" + fileName);
+        side = side.replace(source, "/api/sets/" + setId + "/media/" + fileName);
       }
     } else return false;
 
@@ -98,29 +68,8 @@ export class CardsService {
   }
 
   async deleteMedia(setId: string, fileName: string) {
-    if (
-      this.configService.get<string>("STORAGE_TYPE") === "s3" ||
-      this.configService.get<string>("STORAGE_TYPE") === "S3"
-    ) {
-      const s3 = await new S3({
-        credentials: {
-          accessKeyId: this.configService.get<string>("S3_STORAGE_ACCESS_KEY"),
-          secretAccessKey: this.configService.get<string>("S3_STORAGE_SECRET_KEY")
-        },
-        endpoint: this.configService.get<string>("S3_STORAGE_ENDPOINT"),
-        region: this.configService.get<string>("S3_STORAGE_REGION")
-      });
-
-      await s3.deleteObject({ Bucket: this.configService.get<string>("S3_STORAGE_BUCKET"), Key: "media/sets/" + setId + "/" + fileName });
-    }
-
-    if (this.configService.get<string>("STORAGE_TYPE") === "local") {
-      const filePath = path.join(this.configService.get<string>("STORAGE_LOCAL_DIR"), "media", "sets", setId, fileName);
-
-      if (fs.existsSync(filePath)) {
-        fs.rmSync(filePath);
-      }
-    }
+    return await this.storageService.getInstance()
+        .deleteFile("media/sets/" + setId + "/" + fileName);
   }
 
   /**
@@ -138,7 +87,6 @@ export class CardsService {
       include: { set: true, media: true }
     });
   }
-
 
   /**
    * Queries the database for multiple cards

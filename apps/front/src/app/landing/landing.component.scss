@@ -67,21 +67,13 @@ body {
 
 // landscape phones
 @media only screen and (min-device-width : 321px) and (max-device-width: 850px) and (orientation: landscape) {
-  .main-screen {
-    margin-top: 18vh;
-  }
-
   .section-3-feature-image {
     width: 80%;
   }
 }
 
 // landscape tablets
-@media only screen and (min-device-width : 850px) and (max-device-width : 1223px) and (orientation : landscape) {
-  .main-screen {
-    margin-top: 17vh;
-  }
-
+@media only screen and (min-device-width : 850px) and (max-device-width : 1370px) {
   .as-seen-on {
     margin-top: 10vh;
     margin-bottom: 4vh;
@@ -93,7 +85,7 @@ body {
 }
 
 // desktop
-@media only screen and (min-device-width : 1224px) and (max-device-width : 7680px) {
+@media only screen and (min-device-width : 1370px) and (max-device-width : 7680px) {
   .navbar-container {
     padding-left: 15%;
     padding-right: 15%;
@@ -101,10 +93,6 @@ body {
 
   .as-seen-on {
     margin-bottom: 2vh;
-  }
-
-  .main-screen {
-    margin-top: 5vh;
   }
 
   .section-2-laptop {

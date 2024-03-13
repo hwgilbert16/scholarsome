@@ -7,11 +7,15 @@ import { ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthori
 import { UserIdParam } from "./param/userId.param";
 import { UserSuccessResponse } from "./response/success/user.success.response";
 import { ErrorResponse } from "../shared/response/error.response";
+import { AuthService } from "../auth/auth.service";
 
 @ApiTags("Users")
 @Controller("users")
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService
+  ) {}
 
   /**
    * Gets the current authenticated user
@@ -32,7 +36,7 @@ export class UsersController {
   })
   @Get("me")
   async myUser(@Req() req: ExpressRequest): Promise<ApiResponse<User>> {
-    const cookies = this.usersService.getUserInfo(req);
+    const cookies = await this.authService.getUserInfo(req);
     if (!cookies) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
 
     const user = await this.usersService.user({
@@ -67,7 +71,7 @@ export class UsersController {
   })
   @Get(":userId")
   async user(@Param() params: UserIdParam, @Req() req: ExpressRequest): Promise<ApiResponse<User>> {
-    const cookies = this.usersService.getUserInfo(req);
+    const cookies = await this.authService.getUserInfo(req);
 
     const user = await this.usersService.user({
       id: params.userId
@@ -79,7 +83,8 @@ export class UsersController {
     delete user.email;
 
     if (!cookies || user.id !== cookies.id) {
-      user.sets = user.sets.filter((set) => set.private === false);
+      user.sets = user.sets.filter((set) => !set.private);
+      user.folders = user.folders.filter((folder) => !folder.private);
     }
 
     return {

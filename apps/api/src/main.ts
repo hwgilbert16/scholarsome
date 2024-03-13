@@ -11,6 +11,7 @@ import { envSchema } from "@scholarsome/shared";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as fs from "fs";
 import { LoggerFactory } from "./app/shared/logger.factory";
+import helmet from "helmet";
 
 async function bootstrap() {
   const validation = envSchema
@@ -25,9 +26,31 @@ async function bootstrap() {
   }
 
   const server = express();
+
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
     bufferLogs: process.env.NODE_ENV === "production"
   });
+
+  app.enableCors();
+
+  /**
+   * unsafe-inline is required in style-src for Angular to work
+   *
+   * but unsafe-eval is required because i'm unable to find the module that is using it
+   * in a future update, it will be removed
+   */
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "script-src": ["'self'", "'unsafe-eval'", "'unsafe-inline'", "blob:", "https://www.gstatic.com", "https://www.google.com"],
+        "img-src": ["'self'", "https://cdn.redoc.ly", "data:"],
+        "script-src-attr": ["'unsafe-inline'"],
+        "default-src": ["'self'", "https://api.github.com/"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com/"]
+      }
+    }
+  }));
+
   const logger = LoggerFactory("Scholarsome");
   app.useLogger(logger);
 

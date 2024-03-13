@@ -2,38 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../providers/database/prisma/prisma.service";
 import { Prisma, User as PrismaUser } from "@prisma/client";
 import { User } from "@scholarsome/shared";
-import { Request } from "express";
-import { JwtPayload } from "jwt-decode";
-import * as jwt from "jsonwebtoken";
-import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly configService: ConfigService
+    private readonly prisma: PrismaService
   ) {}
-
-  /**
-   * Decodes the access token JWT
-   *
-   * @param req User's `Request` object
-   *
-   * @returns Decoded access token
-   */
-  getUserInfo(req: Request): false | { id: string; email: string; } {
-    if (req.cookies["access_token"]) {
-      let decoded: string | JwtPayload;
-
-      try {
-        decoded = jwt.verify(req.cookies["access_token"], this.configService.get<string>("JWT_SECRET"));
-      } catch (e) {
-        return false;
-      }
-
-      return decoded as { id: string; email: string; };
-    } else return false;
-  }
 
   /**
    * Queries the database for a unique user
@@ -47,7 +21,7 @@ export class UsersService {
   ): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
-      include: { sets: true }
+      include: { sets: true, folders: true }
     });
   }
 
@@ -77,7 +51,7 @@ export class UsersService {
       where,
       orderBy,
       include: {
-        sets: true
+        sets: true, folders: true
       }
     });
   }
