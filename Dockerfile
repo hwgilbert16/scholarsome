@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 RUN apk add g++ make py3-pip
 
 COPY package*.json .
-RUN npm install --omit=dev --legacy-peer-deps
+RUN npm install --omit=dev --legacy-peer-deps --ignore-scripts
 
 COPY . .
 RUN npm run generate
