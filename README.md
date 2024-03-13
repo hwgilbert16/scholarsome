@@ -38,6 +38,7 @@ You can read more about our design philosophy <a href="https://github.com/hwgilb
 ## Features
 
 - Create your own study sets 🏗️
+- Use LaTeX to create math expressions 📐
 - Share your sets with other users 🤝
 - Import sets from Anki, Quizlet, and CSV files 🔼
 - Export sets to Anki, Quizlet, and CSV files 🔽

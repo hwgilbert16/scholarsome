@@ -158,7 +158,7 @@ export class MediaController {
 
   @ApiTags("Users")
   @ApiOperation({
-    summary: "Get a avatar",
+    summary: "Get an avatar",
     description: "Retrieves a user avatar based on their user ID"
   })
   @ApiOkResponse({
