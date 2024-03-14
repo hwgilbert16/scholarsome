@@ -1,9 +1,12 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CardWithIdValidator {
+  /*
+  cannot include @IsUUID with this because it's optional
+   */
   @ApiProperty({
     description: "The ID of the card",
     example: "27758237-5f57-4f6c-b483-6161056dad76",
@@ -11,7 +14,6 @@ export class CardWithIdValidator {
     minLength: 36
   })
   @IsOptional()
-  @IsUUID()
     id: string;
 
   @ApiProperty({
