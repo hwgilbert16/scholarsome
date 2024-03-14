@@ -56,13 +56,15 @@ export class CreateFolderDto {
   @IsNotEmpty()
     private: boolean;
 
+  /*
+  cannot include @IsUUID with this because it's optional
+   */
   @ApiProperty({
     description: "The ID of the folder to nest this folder within",
     example: "197ac7a2-8b42-4cbe-a4b7-bde496a36e1e",
     maxLength: 36,
     minLength: 36
   })
-  @IsUUID("4")
   @IsOptional()
     parentFolderId: string;
 
