@@ -7,7 +7,6 @@ RUN apk add g++ make py3-pip
 
 COPY package*.json .
 RUN npm install --omit=dev --legacy-peer-deps --ignore-scripts --platform=linuxmusl
-RUN npm rebuild bcrypt --build-from-source
 
 COPY . .
 RUN npm run generate
