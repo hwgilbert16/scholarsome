@@ -165,6 +165,8 @@ export class FoldersController {
   })
   @Get(":folderId")
   async folder(@Param() params: FolderIdParam, @Request() req: ExpressRequest): Promise<ApiResponse<Folder>> {
+    const userCookie = await this.authService.getUserInfo(req);
+
     const folder = await this.foldersService.folder({
       id: params.folderId
     });
@@ -176,6 +178,15 @@ export class FoldersController {
       if (!userCookie) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
       if (folder.authorId !== userCookie.id) throw new UnauthorizedException({ status: "fail", message: "Invalid authentication to access the requested resource" });
     }
+
+    if (userCookie && folder.authorId === userCookie.id) {
+      return {
+        status: ApiResponseOptions.Success,
+        data: folder
+      };
+    }
+
+    folder.sets = folder.sets.filter((f) => !f.private);
 
     return {
       status: ApiResponseOptions.Success,
