@@ -39,17 +39,28 @@ async function bootstrap() {
    * but unsafe-eval is required because i'm unable to find the module that is using it
    * in a future update, it will be removed
    */
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        "script-src": ["'self'", "'unsafe-eval'", "'unsafe-inline'", "blob:", "https://www.gstatic.com", "https://www.google.com"],
-        "img-src": ["'self'", "blob:", "data:", "https://cdn.redoc.ly"],
-        "script-src-attr": ["'unsafe-inline'"],
-        "default-src": ["'self'", "https://api.github.com/"],
-        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com/"]
+  if (
+    process.env.SSL_KEY_BASE64 &&
+    process.env.SSL_KEY_BASE64.length > 0 &&
+    process.env.SSL_CERT_BASE64 &&
+    process.env.SSL_CERT_BASE64.length > 0
+  ) {
+    app.use(helmet({
+      contentSecurityPolicy: {
+        directives: {
+          "script-src": ["'self'", "'unsafe-eval'", "'unsafe-inline'", "blob:", "https://www.gstatic.com", "https://www.google.com"],
+          "img-src": ["'self'", "blob:", "data:", "https://cdn.redoc.ly"],
+          "script-src-attr": ["'unsafe-inline'"],
+          "default-src": ["'self'", "https://api.github.com/"],
+          "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com/"]
+        }
       }
-    }
-  }));
+    }));
+  } else {
+    app.use(helmet({
+      contentSecurityPolicy: false
+    }));
+  }
 
   const logger = LoggerFactory("Scholarsome");
   app.useLogger(logger);
