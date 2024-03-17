@@ -76,10 +76,6 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   public async deleteDirectoryFiles(path: string): Promise<void> {
-    if (!(await this.isDirectory(path))) {
-      throw new Error(`the path provided is not a directory: "${path}"`);
-    }
-
     const files = await this.s3.listObjectsV2({
       Prefix: path,
       Bucket: this.bucket
