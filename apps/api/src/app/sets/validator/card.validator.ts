@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Max, MaxLength, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, TransformFnParams } from "class-transformer";
 import * as sanitizeHtml from "sanitize-html";
@@ -18,12 +18,10 @@ export class CardValidator {
 
   @ApiProperty({
     description: "The front or \"term\" of the card",
-    example: "The term of the card",
-    maxLength: 65535
+    example: "The term of the card"
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(65535)
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
     allowedAttributes: { "img": ["src", "width", "height"], "span": ["style"] },
@@ -33,12 +31,10 @@ export class CardValidator {
 
   @ApiProperty({
     description: "The back or \"definition\" of the card",
-    example: "The definition of the card",
-    maxLength: 65535
+    example: "The definition of the card"
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(65535)
   @Transform((params: TransformFnParams) => sanitizeHtml(params.value, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
     allowedAttributes: { "img": ["src", "width", "height"], "span": ["style"] },
