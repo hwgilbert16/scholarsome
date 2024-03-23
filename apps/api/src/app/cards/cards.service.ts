@@ -60,7 +60,7 @@ export class CardsService {
         await this.storageService.getInstance()
             .putFile("media/sets/" + fileName, decoded);
 
-        side = side.replace(source, "/api/sets/" + setId + "/media/" + fileName);
+        side = side.replace(source, "/api/sets/" + setId + "/media/" + name);
       }
     } else return false;
 

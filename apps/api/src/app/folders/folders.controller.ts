@@ -217,8 +217,6 @@ export class FoldersController {
   @UseGuards(AuthenticatedGuard)
   @Post()
   async createFolder(@Body(HtmlDecodePipe) body: CreateFolderDto, @Request() req: ExpressRequest): Promise<ApiResponse<Folder>> {
-    console.log(body);
-
     const user = await this.authService.getUserInfo(req);
     if (!user) {
       throw new UnauthorizedException({
