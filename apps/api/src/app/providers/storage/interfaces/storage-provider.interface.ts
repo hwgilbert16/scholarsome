@@ -8,9 +8,9 @@ export interface StorageProvider {
    *
    * @throws {Error} A file does not exist.
    *
-   * @returns File content in bytes.
+   * @returns File content in bytes or null if file does not exist.
    */
-  getFile(path: string): Promise<File>;
+  getFile(path: string): Promise<File | null>;
 
   /**
    * Puts a file.
