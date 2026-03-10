@@ -15,8 +15,8 @@ export class HomepageComponent implements OnInit {
     private readonly titleService: Title,
     private readonly metaService: Meta
   ) {
-    this.titleService.setTitle("Homepage — Scholarsome");
-    this.metaService.addTag({ name: "description", content: "Scholarsome is the way studying was meant to be. No monthly fees or upsells to get between you and your study tools. Just flashcards." });
+    this.titleService.setTitle("Accueil— Scholarsome");
+    this.metaService.addTag({ name: "description", content: "Créez vos propre set de cartes gratuitement !" });
   }
 
   @ViewChild("container", { static: true }) container: ElementRef;

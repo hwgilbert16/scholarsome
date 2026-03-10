@@ -23,7 +23,7 @@
 
 <ng-template #editModal>
   <div class="modal-header">
-    <span class="pull-left text-secondary">* Both term and definition must be filled</span>
+    <span class="pull-left text-secondary">* Le terme et la définition doivent être renseignés.</span>
     <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
@@ -31,22 +31,22 @@
   <div class="modal-body">
     <div class="container-fluid">
       <div *ngIf="isMobile" class="mb-2">
-        <button type="button" class="btn btn-primary me-2" (click)="modalRef?.hide(); addCardEvent.emit()">Add another card</button>
-        <button type="button" class="btn btn-outline-primary" (click)="modalRef?.hide()">Finish editing</button>
+        <button type="button" class="btn btn-primary me-2" (click)="modalRef?.hide(); addCardEvent.emit()">Ajouter une nouvelle carte</button>
+        <button type="button" class="btn btn-outline-primary" (click)="modalRef?.hide()">Confirmer</button>
       </div>
       <div class="row row-cols-1 row-cols-md-2">
         <div class="col border-end">
-          <p class="fs-2">Term</p>
+          <p class="fs-2">Terme</p>
           <quill-editor (onEditorCreated)="focusEditor($event)" [(ngModel)]="changingTerm" (ngModelChange)="editCardEvent.emit()" id="termEditor" class="w-100"></quill-editor>
         </div>
         <div class="col mt-4 mt-md-0">
-          <p class="fs-2 pull-right">Definition</p>
+          <p class="fs-2 pull-right">Définition</p>
           <quill-editor [(ngModel)]="changingDefinition" (ngModelChange)="editCardEvent.emit()" id="definitionEditor" class="w-100"></quill-editor>
         </div>
       </div>
       <div *ngIf="!isMobile" class="mt-2">
-        <button type="button" class="btn btn-primary me-2" (click)="modalRef?.hide(); addCardEvent.emit()">Add another card</button>
-        <button type="button" class="btn btn-outline-primary" (click)="modalRef?.hide()">Finish editing</button>
+        <button type="button" class="btn btn-primary me-2" (click)="modalRef?.hide(); addCardEvent.emit()">Ajouter une nouvelle carte</button>
+        <button type="button" class="btn btn-outline-primary" (click)="modalRef?.hide()">Confirmer</button>
       </div>
     </div>
   </div>

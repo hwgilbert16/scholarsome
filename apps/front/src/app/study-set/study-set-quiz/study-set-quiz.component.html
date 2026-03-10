@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center mt-5" #spinner>
   <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">Chargement...</span>
   </div>
 </div>
 
@@ -8,40 +8,40 @@
   <div class="card shadow-sm">
     <div class="card-body">
       <h2>
-        Quiz configuration
+        Configuration du quiz
         <a href="/handbook/usage/quizzes" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
       </h2>
       <form #optionsForm="ngForm" (ngSubmit)="beginQuiz(optionsForm)" class="fs-5 ms-n5" ngNativeValidate>
         <div class="form-check form-switch options-buttons">
           <div class="d-flex justify-content-between">
-            <p>Written</p>
+            <p>Réponse écrite</p>
             <input class="form-check-input options-selector" type="checkbox" role="switch" name="written" [disabled]="!trueOrFalseSelected && !multipleChoiceSelected" [(ngModel)]="writtenSelected" checked>
           </div>
           <div class="d-flex justify-content-between">
-            <p>True/False</p>
+            <p>Vrai/Faux</p>
             <input class="form-check-input options-selector" type="checkbox" role="switch" name="trueOrFalse" [disabled]="!writtenSelected && !multipleChoiceSelected" [(ngModel)]="trueOrFalseSelected" checked>
           </div>
           <div class="d-flex justify-content-between" *ngIf="set">
-            <p>Multiple Choice</p>
+            <p>Choix multiple</p>
             <input class="form-check-input options-selector" type="checkbox" role="switch" name="multipleChoice" [disabled]="!writtenSelected && !trueOrFalseSelected || set.cards.length < 4" [(ngModel)]="multipleChoiceSelected" checked>
           </div>
           <hr class="mb-4">
           <div class="d-flex justify-content-between options-dropdown">
-            <p class="options-text">Answer with</p>
+            <p class="options-text">Répondre avec</p>
             <select class="form-select w-25 h-50 options-dropdown" name="answerWith" required ngModel>
-              <option selected disabled>Select</option>
-              <option value="term">Term</option>
-              <option value="definition">Definition</option>
-              <option value="both">Both</option>
+              <option selected disabled>Sélectionner</option>
+              <option value="term">Terme</option>
+              <option value="definition">Définition</option>
+              <option value="both">Les deux</option>
             </select>
           </div>
           <div class="d-flex justify-content-between">
-            <p class="options-text">Number of questions <span class="fs-6 fw-light text-secondary options-disclaimer" hidden>(selecting more than 10 will create more than 1 question per card)</span></p>
+            <p class="options-text">Nombre de questions <span class="fs-6 fw-light text-secondary options-disclaimer" hidden>(sélectionner plus de 10 créera plus d'une question par carte)</span></p>
             <input type="number" class="form-control h-50 w-25" name="numberOfQuestions" min="1" required ngModel>
           </div>
           <div class="d-flex justify-content-between mt-4 mb-4">
-            <p class="text-secondary fs-6 fw-light">* Quizzes do not save between reloads</p>
-            <button type="submit" class="btn btn-primary">Start</button>
+            <p class="text-secondary fs-6 fw-light">* Les quiz ne sont pas sauvegardés entre les rechargements de page</p>
+            <button type="submit" class="btn btn-primary">Commencer</button>
           </div>
         </div>
       </form>
@@ -51,7 +51,7 @@
 
 <div *ngIf="created">
   <div class="container-fluid quiz">
-    <button type="submit" class="btn btn-primary container-fluid my-5" *ngIf="submitted" (click)="reloadPage()">Take another quiz</button>
+    <button type="submit" class="btn btn-primary container-fluid my-5" *ngIf="submitted" (click)="reloadPage()">Faire un autre quiz</button>
     <div class="d-flex d-flex shadow rounded quiz-question align-items-center" *ngIf="submitted">
       <div class="mx-4 container-fluid mt-3 mb-4">
         <div class="progress bg-danger" role="progressbar" aria-label="Warning example">
@@ -64,7 +64,7 @@
       <div *ngFor="let question of questions">
         <scholarsome-study-set-quiz-question [question]="question" [submitted]="submitted" [correct]="question.correct" [parentForm]="quizForm"></scholarsome-study-set-quiz-question>
       </div>
-      <button type="submit" class="btn btn-primary container-fluid my-5" [disabled]="submitted">Submit quiz</button>
+      <button type="submit" class="btn btn-primary container-fluid my-5" [disabled]="submitted">Soumettre le quiz</button>
       <div class="my-5"></div>
     </form>
   </div>

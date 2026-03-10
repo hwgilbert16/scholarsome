@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
     <div class="card-body">
       <h2>
-        Flashcards configuration
+        Configuration des flashcards
         <a href="/handbook/usage/flashcards" target="_blank" class="text-decoration-none help-button"><fa-icon [icon]="faQuestionCircle" class="fs-5"></fa-icon></a>
       </h2>
       <form #configForm="ngForm" (ngSubmit)="beginFlashcards(configForm)" ngNativeValidate>
@@ -10,36 +10,36 @@
           <label for="traditional-radio" class="form-label fs-5">Type</label>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flashcards-type" id="traditional-radio" value="traditional" ngModel required>
-            <label class="form-check-label" for="traditional-radio">Traditional</label>
+            <label class="form-check-label" for="traditional-radio">Traditionnel</label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flashcards-type" id="progressive-radio" value="progressive" ngModel required>
-            <label class="form-check-label" for="progressive-radio">Progressive</label>
+            <label class="form-check-label" for="progressive-radio">Progressif</label>
           </div>
         </div>
         <div class="mb-3">
-          <label for="term-radio" class="form-label fs-5">Answer with</label>
+          <label for="term-radio" class="form-label fs-5">Répondre avec</label>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="answer-with" id="term-radio" value="term" ngModel required>
-            <label class="form-check-label" for="term-radio">Term</label>
+            <label class="form-check-label" for="term-radio">Terme</label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="answer-with" id="definition-radio" value="definition" ngModel required>
-            <label class="form-check-label" for="definition-radio">Definition</label>
+            <label class="form-check-label" for="definition-radio">Définition</label>
           </div>
         </div>
         <div class="mb-3">
-          <label for="term-radio" class="form-label fs-5">Enable shuffling</label>
+          <label for="term-radio" class="form-label fs-5">Activer le mélange</label>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="enable-shuffling" id="yes-radio" value="yes" ngModel required>
-            <label class="form-check-label" for="yes-radio">Yes</label>
+            <label class="form-check-label" for="yes-radio">Oui</label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="enable-shuffling" id="no-radio" value="no" ngModel required>
-            <label class="form-check-label" for="no-radio">No</label>
+            <label class="form-check-label" for="no-radio">Non</label>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">Start</button>
+        <button type="submit" class="btn btn-primary">Commencer</button>
       </form>
     </div>
   </div>
@@ -54,14 +54,14 @@
             <fa-icon [icon]="cards.length > 0 ? faThumbsUp : faCake" class="display-1"></fa-icon>
           </div>
           <div class="col">
-            <h1 class="me-4">Great job!</h1>
+            <h1 class="me-4">Bravo !</h1>
             <div *ngIf="cards.length > 0">
-              <p>You learned <span class="fw-bold">{{newLearnedCards}} card(s)</span> in that round. Keep it up until you learn them all!</p>
-              <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false; newLearnedCards = 0">Continue</button>
+              <p>Vous avez appris <span class="fw-bold">{{newLearnedCards}} carte(s)</span> pendant ce tour. Continuez jusqu'à les avoir toutes apprises !</p>
+              <button class="btn btn-primary" (click)="modalRef?.hide(); roundCompleted = false; newLearnedCards = 0">Continuer</button>
             </div>
             <div *ngIf="cards.length === 0">
-              <p>You learned all of the cards in this set. Now - do it again!</p>
-              <button *ngIf="cards.length === 0" class="btn btn-primary" (click)="reloadPage()">Start over</button>
+              <p>Vous avez appris toutes les cartes de ce set. Maintenant, recommencez !</p>
+              <button *ngIf="cards.length === 0" class="btn btn-primary" (click)="reloadPage()">Recommencer</button>
             </div>
           </div>
         </div>
@@ -87,8 +87,8 @@
           <button type="button" class="fs-4 w-25 btn btn-outline-secondary mb-3" (click)="changeCard(1)" [disabled]="cards.length === index + 1 ? true : null"><fa-icon [icon]="['far', 'arrow-alt-circle-right']"></fa-icon></button>
         </div>
         <div class="mt-2 d-flex justify-content-around" *ngIf="cards && flashcardsMode !== 'traditional'">
-          <button type="button" class="fs-4 w-25 btn btn-outline-warning mb-3 fw-bold" (click)="changeCard(1)">Don't know</button>
-          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="incrementLearntCount(); knownCardIDs.push(currentCard.id); changeCard(1);">Know</button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-warning mb-3 fw-bold" (click)="changeCard(1)">Je ne sais pas</button>
+          <button type="button" class="fs-4 w-25 btn btn-outline-success mb-3 fw-bold" (click)="incrementLearntCount(); knownCardIDs.push(currentCard.id); changeCard(1);">Je sais</button>
         </div>
         <div class="mx-2 d-flex justify-content-between">
           <p class="text-secondary fs-5">{{remainingCards}}</p>

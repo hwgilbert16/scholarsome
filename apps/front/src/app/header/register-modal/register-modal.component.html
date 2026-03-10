@@ -1,6 +1,6 @@
 <ng-template #modal>
   <div class="modal-header bg-white">
-    <h4 class="modal-title pull-left" *ngIf="publicAppEnv">Sign up</h4>
+    <h4 class="modal-title pull-left" *ngIf="publicAppEnv">S'inscrire</h4>
     <div class="modal-title w-100 text-center" *ngIf="!publicAppEnv">
       <img
         class="navbar-brand img-fluid mt-1"
@@ -9,7 +9,7 @@
         width="75%"
         height="75%"
       />
-      <p class="text-secondary mt-3 mb-n1 mx-auto w-75">Register an account at the Scholarsome instance running at {{appUrl}}</p>
+      <p class="text-secondary mt-3 mb-n1 mx-auto w-75">Créer un compte sur l'instance Scholarsome fonctionnant à l'adresse {{appUrl}}</p>
     </div>
     <button type="button" class="btn-close close pull-right" aria-label="Close" *ngIf="publicAppEnv" (click)="modalRef?.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
@@ -18,31 +18,31 @@
   <div class="modal-body">
     <form class="mx-3" (ngSubmit)="submit(registerForm)" #registerForm="ngForm" ngNativeValidate>
       <div class="mb-3">
-        <label for="register-username" class="form-label">Username</label>
+        <label for="register-username" class="form-label">Nom d'utilisateur</label>
         <input type="text" class="form-control" id="register-username" name="username" ngModel required>
-        <div *ngIf="response === ApiResponseOptions.Error" class="form-text text-danger">There was an issue with registration.</div>
-        <div *ngIf="response === ApiResponseOptions.Exists" class="form-text text-danger">That username or email already has an account.</div>
-        <div *ngIf="response === ApiResponseOptions.Ratelimit" class="form-text text-danger">You are being rate limited.</div>
+        <div *ngIf="response === ApiResponseOptions.Error" class="form-text text-danger">Une erreur est survenue lors de l'inscription.</div>
+        <div *ngIf="response === ApiResponseOptions.Exists" class="form-text text-danger">Ce nom d'utilisateur ou cet email possède déjà un compte.</div>
+        <div *ngIf="response === ApiResponseOptions.Ratelimit" class="form-text text-danger">Vous effectuez trop de requêtes. Veuillez réessayer plus tard.</div>
       </div>
       <div class="mb-3">
-        <label for="register-email" class="form-label">Email address</label>
+        <label for="register-email" class="form-label">Adresse email</label>
         <input type="email" class="form-control" id="register-email" name="email" ngModel required>
       </div>
       <div class="mb-3">
-        <label for="register-password" class="form-label">Password</label>
+        <label for="register-password" class="form-label">Mot de passe</label>
         <input type="password" class="form-control" id="register-password" name="password" ngModel required>
-        <div class="form-text mb-3" *ngIf="publicAppEnv">By clicking sign up, I agree to Scholarsome's
-          <a href="https://scholarsome.com/legal/terms">Terms of Service</a> and
-          <a href="https://scholarsome.com/legal/privacy">Privacy Policy.</a></div>
-        <div class="form-text" *ngIf="recaptchaEnabled">This site is protected by reCAPTCHA and the Google
-          <a href="https://policies.google.com/privacy">Privacy Policy</a> and
-          <a href="https://policies.google.com/terms">Terms of Service</a> apply.</div>
+        <div class="form-text mb-3" *ngIf="publicAppEnv">En cliquant sur s'inscrire, j'accepte les
+          <a href="https://scholarsome.com/legal/terms">Conditions d'utilisation</a> et la
+          <a href="https://scholarsome.com/legal/privacy">Politique de confidentialité</a> de Scholarsome.</div>
+        <div class="form-text" *ngIf="recaptchaEnabled">Ce site est protégé par reCAPTCHA et les
+          <a href="https://policies.google.com/privacy">Règles de confidentialité</a> et les
+          <a href="https://policies.google.com/terms">Conditions d'utilisation</a> de Google s'appliquent.</div>
       </div>
-      <div class="form-text text-center mb-3">Already have an account? <a [routerLink]="[]" (click)="modalRef?.hide(); this.modalService.modal.next('login-open')" class="text-primary">Log in.</a></div>
+      <div class="form-text text-center mb-3">Vous avez déjà un compte ? <a [routerLink]="[]" (click)="modalRef?.hide(); this.modalService.modal.next('login-open')" class="text-primary">Se connecter.</a></div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary" [disabled]="clicked">
           <span *ngIf="clicked" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          Sign up</button>
+          S'inscrire</button>
       </div>
     </form>
   </div>

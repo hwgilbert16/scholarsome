@@ -41,7 +41,7 @@
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link text-black" aria-current="page" href="/handbook">Handbook</a>
+          <a class="nav-link text-black" aria-current="page" href="/handbook">Documentation</a>
         </li>
         <li class="btn-group" dropdown>
           <button
@@ -51,7 +51,7 @@
             class="btn btn-primary dropdown-toggle fs-5 h-100 w-25"
             aria-controls="dropdown-basic"
           >
-            Create
+            Créer
             <span class="caret"></span>
           </button>
           <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu">
@@ -72,7 +72,7 @@
                     ? 'create/folder'
                     : undefined
                 "
-              ><fa-icon [icon]="faFolder"></fa-icon> &nbsp;Folder</a>
+              ><fa-icon [icon]="faFolder"></fa-icon> &nbsp;Dossiers</a>
             </li>
             <li>
               <a
@@ -91,7 +91,7 @@
                     ? 'create/set'
                     : undefined
                 "
-                ><fa-icon [icon]="faClone"></fa-icon> &nbsp;Study set</a>
+                ><fa-icon [icon]="faClone"></fa-icon> &nbsp;Set d'apprentissage</a>
             </li>
             <li>
               <a
@@ -106,7 +106,7 @@
                     : (this.modalRef = loginModal.open())
                 "
                 ><fa-icon [icon]="faQ"></fa-icon>
-                &nbsp;From Quizlet</a>
+                &nbsp;Depuis Quizlet</a>
             </li>
             <li>
               <a
@@ -121,7 +121,7 @@
                     : (this.modalRef = loginModal.open())
                 "
                 ><fa-icon [icon]="faStar"></fa-icon>
-                &nbsp;From Anki
+                &nbsp;Depuis Anki
                 </a>
             </li>
             <li>
@@ -137,7 +137,7 @@
                     : (this.modalRef = loginModal.open())
                 "
               ><fa-icon [icon]="faFileCsv"></fa-icon>
-                &nbsp;<span class="file-icon">From CSV</span>
+                &nbsp;<span class="file-icon">Depuis CSV</span>
               </a>
             </li>
           </ul>
@@ -152,7 +152,7 @@
           target="_blank"
         ><small
           class="d-inline-flex px-2 py-1 fw-semibold bg-warning text-bg-warning border border-warning-s rounded-2 text-decoration-underline me-2"
-        >New version is available</small
+        >Une nouvelle version est disponible</small
         ></a
         >
         <span class="navbar-text me-3 fs-6">v{{ packageJson.version }}</span>
@@ -169,14 +169,14 @@
             class="btn btn-outline-primary pr-6"
             (click)="this.modalRef = loginModal.open()"
           >
-            Log in
+            Se connecter
           </button>
           <button
             type="button"
             class="btn btn-primary ms-4 shadow-sm"
             (click)="this.modalRef = registerModal.open()"
           >
-            Sign up
+            s'inscrire
           </button>
         </div>
         <ul class="nav navbar-nav" *ngIf="signedIn">
@@ -202,14 +202,14 @@
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
                 [routerLink]="'profile/' + user.id">
-                <fa-icon [icon]="faUser"></fa-icon> Profile
+                <fa-icon [icon]="faUser"></fa-icon> Profil
               </a>
               <a
                 class="dropdown-item"
                 [attr.data-bs-toggle]="isMobile ? 'collapse' : ''"
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
                 [routerLink]="'settings'">
-                <fa-icon [icon]="faGear"></fa-icon> Settings
+                <fa-icon [icon]="faGear"></fa-icon> Paramètres
               </a>
               <a
                 class="dropdown-item"
@@ -217,7 +217,7 @@
                 [attr.data-bs-target]="isMobile ? '#navbarSupportedContent' : ''"
                 (click)="submitLogout()"
               >
-                <fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Logout
+                <fa-icon [icon]="faArrowRightFromBracket"></fa-icon> Se déconnecter
               </a>
             </ul>
           </li>
