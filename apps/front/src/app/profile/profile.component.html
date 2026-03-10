@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center mt-5" #spinner>
   <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">Chargement...</span>
   </div>
 </div>
 
@@ -11,12 +11,12 @@
       <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar">
       <div class="display-5 fw-bold ms-3 text-break">{{user.username}}</div>
     </div>
-    <p class="text-secondary fs-4 mt-4">Member since {{registrationDate}}</p>
+    <p class="text-secondary fs-4 mt-4">Membre depuis {{registrationDate}}</p>
   </div>
   <div class="mt-5 mb-4">
     <h2>
       <fa-icon class="fs-3" [icon]="faClone"></fa-icon>
-      Study sets
+      Ensembles d'étude
     </h2>
     <div class="row row-cols-1 row-cols-md-4 mt-3 g-4">
       <div class="col-md-3" *ngFor="let set of user.sets;">
@@ -26,7 +26,7 @@
               <h5 class="card-title">{{set.title}} <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon></h5>
             </div>
             <div class="card-footer mt-auto">
-              <small class="text-body-secondary text-decoration-none">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'long', day: 'numeric', year:'numeric'}) }}</small>
+              <small class="text-body-secondary text-decoration-none">Mis à jour le {{ set.updatedAt.toLocaleString('fr-FR', { month:'long', day: 'numeric', year:'numeric'}) }}</small>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
   <div class="mt-5 mb-4">
     <h2>
       <fa-icon class="fs-3" [icon]="faFolder"></fa-icon>
-      Folders
+      Dossiers
     </h2>
     <div class="row row-cols-1 row-cols-md-4 mt-3 g-4">
       <div class="col-md-3" *ngFor="let folder of user.folders;">

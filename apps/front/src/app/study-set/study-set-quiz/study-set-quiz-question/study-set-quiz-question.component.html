@@ -7,12 +7,12 @@
         <p class="fs-1 text-center" *ngIf="question.type === 'trueOrFalse'"><span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.question)"></span><br><fa-icon [icon]="faArrowRight"></fa-icon><br><span [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.trueOrFalseOption ? question.trueOrFalseOption : '')"></span></p>
       </div>
       <div class="quiz-question-written" *ngIf="question.type === 'written'">
-        <p class="text-secondary text-center">Answer with the corresponding {{question.answerWith}}</p>
+        <p class="text-secondary text-center">Répondez avec le/la {{question.answerWith}} correspondant(e)</p>
         <input type="text" class="form-control text-center shadow-sm fs-4" formControlName="written" required>
-        <p class="text-success mt-2" *ngIf="submitted && !correct">Correct answer: <span class="fw-bold" [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.answer)"></span></p>
+        <p class="text-success mt-2" *ngIf="submitted && !correct">Réponse correcte : <span class="fw-bold" [innerHTML]="sanitizer.bypassSecurityTrustHtml(question.answer)"></span></p>
       </div>
       <div class="quiz-question-tf text-center" *ngIf="question.type === 'trueOrFalse'">
-        <p class="text-secondary text-center">Answer with whether this is true or false</p>
+        <p class="text-secondary text-center">Répondez si c'est vrai ou faux</p>
         <div *ngFor="let option of question.options; index as i">
           <input type="radio" class="btn-check" formControlName="trueOrFalse" (click)="selectedIndex = i" [id]="'q' + question.index + '-tf-option' + i" [required]="question.type === 'trueOrFalse'" [value]="i" autocomplete="off">
           <label class="btn btn-outline-success mx-1 my-1" *ngIf="submitted && i === correctIndex" [for]="'q' + question.index + '-tf-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>
@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="quiz-question-mc text-center" *ngIf="question.type === 'multipleChoice'">
-        <p class="text-secondary text-center">Answer by selecting the correct option</p>
+        <p class="text-secondary text-center">Répondez en sélectionnant l'option correcte</p>
         <div *ngFor="let option of question.options; index as i">
           <input type="radio" class="btn-check" formControlName="multipleChoice" (click)="selectedIndex = i" [id]="'q' + question.index + '-mc-option' + i" [value]="i" [required]="question.type === 'multipleChoice'" autocomplete="off">
           <label class="btn btn-outline-success mx-1 my-1" *ngIf="submitted && i === correctIndex" [for]="'q' + question.index + '-mc-option' + i" [innerHTML]="sanitizer.bypassSecurityTrustHtml(option.option)"></label>

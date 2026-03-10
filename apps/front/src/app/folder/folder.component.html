@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center mt-5" *ngIf="loading">
   <div class="loading-spinner spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">Chargement...</span>
   </div>
 </div>
 
@@ -18,6 +18,7 @@
       <span *ngIf="i + 1 !== folderPath.length"> /</span>
     </p>
   </div>
+
   <div class="d-flex row row-cols-md-2 row-cols-sm-1 justify-content-between">
     <div class="col-12">
       <h1 class="fs-1">
@@ -25,46 +26,49 @@
         {{folder.name}}
       </h1>
     </div>
+
     <div class="d-flex col-12 justify-content-md-end justify-content-sm-start align-items-start">
       <a *ngIf="!userIsAuthor" [routerLink]="['/profile', folder.authorId]">
-        <button type="button" class="btn btn-light bg-white shadow-sm"><fa-icon [icon]="faUser"></fa-icon> Created by <span class="fw-bold">{{username}}</span></button>
+        <button type="button" class="btn btn-light bg-white shadow-sm">
+          <fa-icon [icon]="faUser"></fa-icon> Créé par <span class="fw-bold">{{username}}</span>
+        </button>
       </a>
+
       <button type="button" class="btn btn-primary mb-2" *ngIf="!editing && userIsAuthor" (click)="edit()">
-        <fa-icon [icon]="faPencil"></fa-icon>
-        Edit
+        <fa-icon [icon]="faPencil"></fa-icon> Modifier
       </button>
+
       <div class="d-flex mb-2" *ngIf="editing">
         <button type="button" class="btn btn-danger me-2" *ngIf="deleteClicked" (click)="delete()">
-          <fa-icon [icon]="faTrashCan"></fa-icon>
-          Confirm
+          <fa-icon [icon]="faTrashCan"></fa-icon> Confirmer
         </button>
         <button type="button" class="btn btn-outline-secondary me-2" *ngIf="deleteClicked" (click)="deleteClicked = false;">
-          <fa-icon [icon]="faCancel"></fa-icon>
-          Cancel
+          <fa-icon [icon]="faCancel"></fa-icon> Annuler
         </button>
         <button type="button" class="btn btn-danger me-2" (click)="deleteClicked = true;" [disabled]="saveInProgress" *ngIf="!deleteClicked">
-          <fa-icon [icon]="faTrashCan"></fa-icon>
-          Delete
+          <fa-icon [icon]="faTrashCan"></fa-icon> Supprimer
         </button>
       </div>
+
       <button type="submit" class="btn btn-primary me-2" *ngIf="editing" [disabled]="saveInProgress" (click)="save()">
         <span *ngIf="saveInProgress" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
-        <fa-icon [icon]="faSave"></fa-icon>
-        Save
+        <fa-icon [icon]="faSave"></fa-icon> Enregistrer
       </button>
       <button type="submit" class="btn btn-secondary" *ngIf="editing" [disabled]="saveInProgress" (click)="view()">
-        <fa-icon [icon]="faCancel"></fa-icon>
-        Cancel
+        <fa-icon [icon]="faCancel"></fa-icon> Annuler
       </button>
     </div>
   </div>
+
   <p class="text-secondary text-wrap description">{{folder.description}}</p>
+
   <div class="spinner-border text-primary" role="status" *ngIf="editingLoading">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">Chargement...</span>
   </div>
+
   <form *ngIf="editing && !editingLoading" [formGroup]="saveForm">
     <div class="my-3">
-      <input type="text" class="form-control mt-4" placeholder="Enter a title for your folder..." maxlength="255" formControlName="name" required>
+      <input type="text" class="form-control mt-4" placeholder="Entrez un titre pour votre dossier..." maxlength="255" formControlName="name" required>
       <div
         class="form-text text-danger"
         *ngIf="
@@ -72,53 +76,45 @@
               !saveForm.disabled &&
               (saveForm.controls.name.dirty || saveForm.controls.name.touched || saveInProgress)"
       >
-        You must provide a title for your folder.
+        Vous devez fournir un titre pour votre dossier.
       </div>
       <div
         class="form-text text-danger"
         *ngIf="saveForm.errors?.['httpError']"
       >
-        Something went wrong. Try again.
+        Une erreur est survenue. Réessayez.
       </div>
     </div>
+
     <div class="mb-3">
-      <textarea class="form-control" placeholder="Add a description..." formControlName="description"></textarea>
+      <textarea class="form-control" placeholder="Ajouter une description..." formControlName="description"></textarea>
     </div>
+
     <div class="mb-3 d-flex align-items-center">
       <input type="color" class="bg-white border-0 shadow-sm" id="colorPicker" formControlName="color">
-      <label for="colorPicker" class="ms-2 form-label pt-2">Select a color for the folder</label>
+      <label for="colorPicker" class="ms-2 form-label pt-2">Sélectionnez une couleur pour le dossier</label>
     </div>
+
     <div class="mb-2 form-check">
       <input type="checkbox" class="form-check-input" id="privateCheck" formControlName="private">
-      <label class="form-check-label" for="privateCheck">Viewable only to me</label>
+      <label class="form-check-label" for="privateCheck">Visible uniquement par moi</label>
     </div>
   </form>
+
   <div class="mt-4" *ngIf="editing">
     <hr>
     <div>
       <h2>
-        <fa-icon class="fs-3" [icon]="faArrowUp"></fa-icon>
-        Parent Folder
+        <fa-icon class="fs-3" [icon]="faArrowUp"></fa-icon> Dossier parent
       </h2>
-      <p *ngIf="editing">Select the folder that this folder should be nested inside.</p>
+      <p *ngIf="editing">Sélectionnez le dossier dans lequel ce dossier doit être imbriqué.</p>
       <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="userFolders">
-        <p class="text-secondary" *ngIf="userFolders.length === 0">You currently do not have any folders.</p>
+        <p class="text-secondary" *ngIf="userFolders.length === 0">Vous n'avez actuellement aucun dossier.</p>
         <div class="col-md-3 col-12" *ngFor="let folder of userFolders; let i = index;">
-          <div
-            class="card shadow-sm" role="button"
-            (click)="toggleParentFolderSelection(folder.id)"
-          >
+          <div class="card shadow-sm" role="button" (click)="toggleParentFolderSelection(folder.id)">
             <div class="card-body d-flex justify-content-between align-items-center fs-5">
-              <div class="fw-semibold card-name">
-                {{ folder.name }}
-              </div>
-              <input
-                class="form-check-input ms-2 rounded-circle"
-                type="checkbox"
-                value=""
-                [disabled]="saveForm.disabled"
-                [checked]="this.saveForm.controls.parentFolderId.value === folder.id"
-              >
+              <div class="fw-semibold card-name">{{ folder.name }}</div>
+              <input class="form-check-input ms-2 rounded-circle" type="checkbox" value="" [disabled]="saveForm.disabled" [checked]="this.saveForm.controls.parentFolderId.value === folder.id">
             </div>
             <div class="card-footer mt-auto" [ngStyle]="{'background-color': folder.color}"></div>
           </div>
@@ -126,17 +122,17 @@
       </div>
     </div>
   </div>
+
   <div class="mt-4">
     <hr *ngIf="editing">
     <div>
       <h2>
-        <fa-icon class="fs-3" [icon]="faFolderTree"></fa-icon>
-        Subfolders
+        <fa-icon class="fs-3" [icon]="faFolderTree"></fa-icon> Sous-dossiers
       </h2>
-      <p *ngIf="editing">Select the folders that should be nested within this folder.</p>
+      <p *ngIf="editing">Sélectionnez les dossiers qui doivent être imbriqués dans ce dossier.</p>
     </div>
     <div *ngIf="!editing">
-      <p class="text-secondary mt-3 mb-4" *ngIf="!editing && subfolders && subfolders.length === 0">There are no subfolders in this folder.</p>
+      <p class="text-secondary mt-3 mb-4" *ngIf="!editing && subfolders && subfolders.length === 0">Il n'y a pas de sous-dossiers dans ce dossier.</p>
       <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-4" *ngIf="subfolders && subfolders.length > 0">
         <div class="col-md-3" *ngFor="let folder of subfolders">
           <div class="card shadow-sm set-card h-100" [routerLink]="['/folder', folder.id]" role="button">
@@ -149,27 +145,16 @@
       </div>
     </div>
     <div *ngIf="editing">
-      <p class="mt-3 text-secondary" *ngIf="!editingLoading && userFolders.length === 0">You do not have any other folders other than this one.</p>
+      <p class="mt-3 text-secondary" *ngIf="!editingLoading && userFolders.length === 0">Vous n'avez pas d'autres dossiers en dehors de celui-ci.</p>
       <div class="spinner-border text-primary" role="status" *ngIf="editingLoading">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">Chargement...</span>
       </div>
       <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="userFolders.length > 0">
         <div class="col-md-3 col-12" *ngFor="let folder of userFolders; let i = index;">
-          <div
-            class="card shadow-sm" role="button"
-            (click)="toggleSubfolderSelection(folder.id)"
-          >
+          <div class="card shadow-sm" role="button" (click)="toggleSubfolderSelection(folder.id)">
             <div class="card-body d-flex justify-content-between align-items-center fs-5">
-              <div class="fw-semibold card-name">
-                {{ folder.name }}
-              </div>
-              <input
-                class="form-check-input ms-2"
-                type="checkbox"
-                value=""
-                [disabled]="saveForm.disabled"
-                [checked]="isSubfolderSelected(folder.id)"
-              >
+              <div class="fw-semibold card-name">{{ folder.name }}</div>
+              <input class="form-check-input ms-2" type="checkbox" value="" [disabled]="saveForm.disabled" [checked]="isSubfolderSelected(folder.id)">
             </div>
             <div class="card-footer mt-auto" [ngStyle]="{'background-color': folder.color}"></div>
           </div>
@@ -177,16 +162,16 @@
       </div>
     </div>
   </div>
+
   <hr>
   <div class="mt-4">
     <div>
       <h2>
-        <fa-icon class="fs-3" [icon]="faClone"></fa-icon>
-        Sets
+        <fa-icon class="fs-3" [icon]="faClone"></fa-icon> Sets
       </h2>
-      <p *ngIf="editing">Select the sets that should be nested within this folder.</p>
+      <p *ngIf="editing">Sélectionnez les sets qui doivent être imbriqués dans ce dossier.</p>
     </div>
-    <p class="text-secondary my-3" *ngIf="!editing && folderSets && folderSets.length === 0">There are no sets in this folder.</p>
+    <p class="text-secondary my-3" *ngIf="!editing && folderSets && folderSets.length === 0">Il n'y a pas de sets dans ce dossier.</p>
     <div *ngIf="!editing">
       <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-4" *ngIf="folderSets && folderSets.length > 0">
         <div class="col-md-3" *ngFor="let set of folderSets">
@@ -194,14 +179,11 @@
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">
                 {{ set.title }}
-                <fa-icon
-                  *ngIf="set.private"
-                  [icon]="['far', 'eye-slash']"
-                ></fa-icon>
+                <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon>
               </h5>
             </div>
             <div class="card-footer mt-auto">
-              <small class="text-body-secondary">Updated on {{ set.updatedAt.toLocaleString('en-us', { month:'short', day: 'numeric', year:'numeric'}) }}</small>
+              <small class="text-body-secondary">Mis à jour le {{ set.updatedAt.toLocaleString('fr-fr', { month:'short', day: 'numeric', year:'numeric'}) }}</small>
             </div>
           </div>
         </div>
@@ -209,30 +191,18 @@
     </div>
     <div *ngIf="editing">
       <div class="spinner-border text-primary" role="status" *ngIf="editingLoading">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">Chargement...</span>
       </div>
-      <p class="mt-3 text-secondary" *ngIf="!editingLoading && userSets.length === 0">You do not have any created sets.</p>
+      <p class="mt-3 text-secondary" *ngIf="!editingLoading && userSets.length === 0">Vous n'avez aucun set créé.</p>
       <div class="row row-cols-1 row-cols-md-4 g-4 pb-4 pt-2" *ngIf="userSets.length > 0">
         <div class="col-md-3 col-12" *ngFor="let set of userSets; let i = index;">
-          <div
-            class="card shadow-sm" role="button"
-            (click)="toggleSetSelection(set.id)"
-          >
+          <div class="card shadow-sm" role="button" (click)="toggleSetSelection(set.id)">
             <div class="card-body d-flex justify-content-between align-items-center fs-5">
               <div class="fw-semibold card-name">
                 {{ set.title }}
-                <fa-icon
-                  *ngIf="set.private"
-                  [icon]="['far', 'eye-slash']"
-                ></fa-icon>
+                <fa-icon *ngIf="set.private" [icon]="['far', 'eye-slash']"></fa-icon>
               </div>
-              <input
-                class="form-check-input ms-2"
-                type="checkbox"
-                value=""
-                [disabled]="saveForm.disabled"
-                [checked]="isSetSelected(set.id)"
-              >
+              <input class="form-check-input ms-2" type="checkbox" value="" [disabled]="saveForm.disabled" [checked]="isSetSelected(set.id)">
             </div>
           </div>
         </div>
