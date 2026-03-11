@@ -29,8 +29,8 @@ export class MailService {
     await this.mailerService.sendMail({
       to: email,
       from: "noreply@scholarsome.com",
-      subject: "Confirm your email address",
-      text: `Hey there,\n\nWelcome to Scholarsome! We're glad to have you here. Before getting started, we need to confirm your email address.\n\nTo confirm your email, please click this link:\n\nhttp${this.configService.get<string>("SSL_KEY_PATH") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/verify/email/${token}`
+      subject: "Confirmer votre Email",
+      text: `Bonjour,\n\nMerci de confirmer votre adresse E-mail. En cliquant sur le lien suivant :\n\nhttp${this.configService.get<string>("SSL_KEY_PATH") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/verify/email/${token}\n\n\nRespectueusement.`
     });
 
     return true;
@@ -57,7 +57,7 @@ export class MailService {
       to: email,
       from: "noreply@scholarsome.com",
       subject: "Reset your password",
-      text: `Hey there,\n\nIf you did not request a password change, you can ignore this email.\n\nYou're receiving this because you requested a password reset. Follow the link below to choose a new password.\n\nThis link will expire in 10 minutes.\n\nhttp${this.configService.get<string>("SSL_KEY_BASE64") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/reset/password/verify/${token}`
+      text: `Bonjour,\n\nSi vous n’avez pas demandé de changement de mot de passe, vous pouvez ignorer cet e-mail.\n\nVous recevez ce message parce que vous avez demandé une réinitialisation de votre mot de passe. Suivez le lien ci-dessous pour choisir un nouveau mot de passe.\n\nCe lien expirera dans 10 minutes.\n\nhttp${this.configService.get<string>("SSL_KEY_BASE64") ? "s" : ""}://${this.configService.get<string>("HOST")}/api/auth/reset/password/verify/${token}`
     });
   }
 }

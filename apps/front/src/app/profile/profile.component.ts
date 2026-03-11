@@ -62,6 +62,6 @@ export class ProfileComponent implements OnInit {
 
     this.user.createdAt = new Date(this.user.createdAt);
 
-    this.registrationDate = this.user.createdAt.toLocaleString("en-us", { month: "long", day: "numeric", year: "numeric" } );
+    this.registrationDate = this.user.createdAt.toLocaleString("fr-FR", { month: "long", day: "numeric", year: "numeric" } );
   }
 }
