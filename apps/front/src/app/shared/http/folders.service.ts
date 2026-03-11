@@ -71,6 +71,25 @@ export class FoldersService {
   }
 
   /**
+   * Gets all public folders
+   *
+   * @returns Array of public `Folder` objects
+   */
+  async publicFolders(): Promise<Folder[] | null> {
+    let folders: ApiResponse<Folder[]> | undefined;
+
+    try {
+      folders = await lastValueFrom(this.http.get<ApiResponse<Folder[]>>("/api/sets/folders/public"));
+    } catch (e) {
+      return null;
+    }
+
+    if (folders.status === ApiResponseOptions.Success) {
+      return folders.data;
+    } else return null;
+  }
+
+  /**
    * Creates a folder
    *
    * @param body.title Title of the folder

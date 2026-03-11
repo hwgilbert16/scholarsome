@@ -38,6 +38,31 @@
       </div>
     </div>
   </div>
+  <div>
+    <div class="header">
+      <h2>
+        <fa-icon class="fs-3" [icon]="faFolder"></fa-icon>
+        Dossiers Publique
+      </h2>
+      <p class="text-secondary me-3">Les sous-dossiers ne sont pas affiché ici.</p>
+    </div>
+    <div class="row row-cols-1 row-cols-md-4 g-4 py-4 px-3 w-100" *ngIf="user">
+      <div class="col-md-3" *ngFor="let folder of publicFolders">
+        <div class="card shadow-sm set-card h-100" [routerLink]="['/folder', folder.id]" role="button">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">
+              {{ folder.name }}
+              <fa-icon
+                *ngIf="folder.private"
+                [icon]="['far', 'eye-slash']"
+              ></fa-icon>
+            </h5>
+          </div>
+          <div class="card-footer mt-auto" [ngStyle]="{'background-color': folder.color}"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <hr class="me-4">
   <div class="mt-4">
     <div class="d-flex header">

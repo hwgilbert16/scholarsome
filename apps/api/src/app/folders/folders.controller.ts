@@ -142,7 +142,33 @@ export class FoldersController {
       data: folders
     };
   }
+  /**
+   * Gets a folder public
+   *
+   * @returns Array of `Folder` objects
+   */
 
+  @ApiOperation({
+    summary: "Get all public folders"
+  })
+  @ApiOkResponse({
+    description: "Returns all public folders",
+    type: FoldersSuccessResponse
+  })
+  @Get("public")
+  async publicFolders(): Promise<ApiResponse<Folder[]>> {
+    const folders = await this.foldersService.folders({
+      where: {
+        private: false,
+        parentFolderId: null // seulement les root folders
+      }
+    });
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: folders
+    };
+  }
   /**
    * Gets a folder given a folder ID
    *
@@ -193,6 +219,7 @@ export class FoldersController {
       data: folder
     };
   }
+
 
   /**
    * Creates a folder

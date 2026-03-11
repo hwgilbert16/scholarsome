@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
-import { User } from "@scholarsome/shared";
+import { User, Folder } from "@scholarsome/shared";
 import { Meta, Title } from "@angular/platform-browser";
 import { UsersService } from "../shared/http/users.service";
+import { FoldersService } from "../shared/http/folders.service";
 import { faPlus, faClone, faFolder } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
@@ -13,7 +14,8 @@ export class HomepageComponent implements OnInit {
   constructor(
     private readonly usersService: UsersService,
     private readonly titleService: Title,
-    private readonly metaService: Meta
+    private readonly metaService: Meta,
+    private readonly foldersService: FoldersService
   ) {
     this.titleService.setTitle("Accueil— Scholarsome");
     this.metaService.addTag({ name: "description", content: "Créez vos propre set de cartes gratuitement !" });
@@ -23,6 +25,7 @@ export class HomepageComponent implements OnInit {
   @ViewChild("spinner", { static: true }) spinner: ElementRef;
 
   user: User;
+  publicFolders: Folder[] = [];
 
   protected readonly faClone = faClone;
   protected readonly faFolder = faFolder;
@@ -45,6 +48,11 @@ export class HomepageComponent implements OnInit {
             return new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf();
           })
           .filter((f) => !f.parentFolderId);
+    }
+    const folders = await this.foldersService.publicFolders();
+
+    if (folders) {
+      this.publicFolders = folders;
     }
 
     this.spinner.nativeElement.remove();
