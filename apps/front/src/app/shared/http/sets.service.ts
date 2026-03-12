@@ -69,6 +69,24 @@ export class SetsService {
       return sets.data;
     } else return null;
   }
+  /**
+   * Gets all public sets
+   *
+   * @returns Array of public `Sets` objects
+   */
+  async publicSets(): Promise<Set[] | null> {
+    let sets: ApiResponse<Set[]> | undefined;
+
+    try {
+      sets = await lastValueFrom(this.http.get<ApiResponse<Set[]>>("/api/sets/public"));
+    } catch (e) {
+      return null;
+    }
+
+    if (sets.status === ApiResponseOptions.Success) {
+      return sets.data;
+    } else return null;
+  }
 
   /**
    * Creates a set

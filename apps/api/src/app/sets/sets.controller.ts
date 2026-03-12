@@ -84,6 +84,34 @@ export class SetsController {
   }
 
   /**
+   * Gets Array of public Sets
+   *
+   * @returns Array of `Set` objects
+   */
+
+  @ApiOperation({
+    summary: "Get all public sets"
+  })
+  @ApiOkResponse({
+    description: "Returns all public sets",
+    type: SetSuccessResponse
+  })
+  @Get("public")
+  async publicFolders(): Promise<ApiResponse<Set[]>> {
+    const sets = await this.setsService.sets({
+      where: {
+        private: false
+      }
+    });
+
+    return {
+      status: ApiResponseOptions.Success,
+      data: sets
+    };
+  }
+
+
+  /**
    * Gets the sets of a user given an author ID
    *
    * @returns Array of `Set` objects that belong to the user
