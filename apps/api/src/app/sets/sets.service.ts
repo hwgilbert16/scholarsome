@@ -51,7 +51,7 @@ export class SetsService {
 
     if (!set || !user) return false;
 
-    return set.author.id === user.id;
+    return set.author.id === user.id || user.admin === true;
   }
 
   /**

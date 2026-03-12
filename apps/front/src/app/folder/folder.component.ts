@@ -168,7 +168,8 @@ export class FolderComponent implements OnInit {
     this.editing = true;
     this.editingLoading = true;
 
-    const userSets = await this.setsService.mySets();
+    // const userSets = await this.setsService.mySets();
+    const userSets = await this.setsService.publicSets();
     // const userFolders = await this.foldersService.myFolders();
     const userFolders = await this.foldersService.publicFolders(false);
     this.saveForm.controls.name.setValue(this.folder.name);

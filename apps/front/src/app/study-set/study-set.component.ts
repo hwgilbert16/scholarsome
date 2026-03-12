@@ -44,6 +44,7 @@ export class StudySetComponent implements OnInit {
   @ViewChild("quizletExportModal") quizletExportModal: QuizletExportModalComponent;
 
   protected userIsAuthor = false;
+  protected userIsAdmin = false;
   protected isEditing = false;
   protected setId: string | null;
 
@@ -375,6 +376,7 @@ export class StudySetComponent implements OnInit {
     this.set = set;
 
     if (user && user.id === set.authorId) this.userIsAuthor = true;
+    if (user && user.admin) this.userIsAdmin =true;
 
     if (window.location.href.slice(0, 5) !== "https") {
       this.isHttps = false;

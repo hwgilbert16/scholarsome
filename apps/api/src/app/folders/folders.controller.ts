@@ -355,13 +355,16 @@ export class FoldersController {
   @UseGuards(AuthenticatedGuard)
   @Patch(":folderId")
   async updateFolder(@Param() params: FolderIdParam, @Body(HtmlDecodePipe) body: UpdateFolderDto, @Request() req: ExpressRequest): Promise<ApiResponse<Folder>> {
-    const user = await this.authService.getUserInfo(req);
-    if (!user) {
+    const userAuth = await this.authService.getUserInfo(req);
+
+    if (!userAuth) {
       throw new UnauthorizedException({
         status: "fail",
         message: "Invalid authentication to access the requested resource"
       });
     }
+
+    const user = await this.usersService.user({ id: userAuth.id });
 
     const folder = await this.foldersService.folder({
       id: params.folderId
@@ -391,7 +394,7 @@ export class FoldersController {
         });
       }
 
-      if (parentFolder.authorId !== user.id) {
+      if (parentFolder.authorId !== user.id && user.admin === false) {
         throw new UnauthorizedException({
           status: "fail",
           message: "User is not author of parent folder"

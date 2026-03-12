@@ -81,7 +81,7 @@
             </a></li>
           </ul>
         </div>
-        <button type="submit" class="btn btn-primary" [hidden]="isEditing || !userIsAuthor" (click)="editCards()">
+        <button type="submit" class="btn btn-primary" [hidden]="isEditing || (!userIsAuthor && !userIsAdmin)" (click)="editCards()">
           <fa-icon [icon]="faPencil"></fa-icon>
           Modifier
         </button>
