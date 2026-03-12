@@ -2,8 +2,8 @@ services:
   redis:
     image: redis:latest
     container_name : scholarsome-redis-compose
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     command: >
       redis-server
       --save 900 1
@@ -17,10 +17,11 @@ services:
   mariadb:
     image: mariadb:latest
     container_name : scholarsome-mariadb-compose
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     environment:
-      - "MARIADB_ROOT_PASSWORD=rootroot"
+      - "MARIADB_RANDOM_ROOT_PASSWORD=no"
+      - "MARIADB_ROOT_PASSWORD=test"
       - "MARIADB_ROOT_HOST=localhost"
       - "MARIADB_DATABASE=scholarsome"
       - "MARIADB_USER=scholarsome"
@@ -29,11 +30,12 @@ services:
       - mariadb:/var/lib/mysql
     restart: always
   scholarsome:
-    build: .
+    image: hwgilbert16/scholarsome:latest
     container_name : scholarsome-scholarsome-compose
     platform: "linux/amd64"
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
+#      - "(your ssl port):8443"
     environment:
       - "NODE_ENV=${NODE_ENV}"
       - "DATABASE_URL=mysql://scholarsome:${DATABASE_PASSWORD}@mariadb:3306/scholarsome"
@@ -45,7 +47,20 @@ services:
       - "REDIS_USERNAME="
       - "REDIS_PASSWORD=${DATABASE_PASSWORD}"
       - "STORAGE_LOCAL_DIR=/data"
+      - "S3_STORAGE_ENDPOINT=${S3_STORAGE_ENDPOINT}"
+      - "S3_STORAGE_ACCESS_KEY=${S3_STORAGE_ACCESS_KEY}"
+      - "S3_STORAGE_SECRET_KEY=${S3_STORAGE_SECRET_KEY}"
+      - "S3_STORAGE_REGION=${S3_STORAGE_REGION}"
+      - "S3_STORAGE_BUCKET=${S3_STORAGE_BUCKET}"
+      - "SMTP_HOST=${SMTP_HOST}"
+      - "SMTP_PORT=${SMTP_PORT}"
+      - "SMTP_USERNAME=${SMTP_USERNAME}"
+      - "SMTP_PASSWORD=${SMTP_PASSWORD}"
       - "HOST=${HOST}"
+      - "SSL_KEY_BASE64=${SSL_KEY_BASE64}"
+      - "SSL_CERT_BASE64=${SSL_CERT_BASE64}"
+      - "SCHOLARSOME_RECAPTCHA_SITE=${RECAPTCHA_SITE}"
+      - "SCHOLARSOME_RECAPTCHA_SECRET=${RECAPTCHA_SECRET}"
     volumes:
       - scholarsome:/data
     depends_on:
