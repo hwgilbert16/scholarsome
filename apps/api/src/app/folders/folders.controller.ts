@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UnauthorizedException,
   UseGuards
@@ -156,13 +157,17 @@ export class FoldersController {
     type: FoldersSuccessResponse
   })
   @Get("public")
-  async publicFolders(): Promise<ApiResponse<Folder[]>> {
-    const folders = await this.foldersService.folders({
-      where: {
-        private: false,
-        parentFolderId: null // seulement les root folders
-      }
-    });
+  async publicFolders(@Query("rootOnly") rootOnly = "true"): Promise<ApiResponse<Folder[]>> {
+    // Transformer la chaîne en booléen
+    const onlyRoot = rootOnly === "true";
+
+    // Construire dynamiquement le where
+    const where: any = { private: false };
+    if (onlyRoot) {
+      where.parentFolderId = null; // filtrer uniquement les dossiers racines
+    }
+
+    const folders = await this.foldersService.folders({ where });
 
     return {
       status: ApiResponseOptions.Success,

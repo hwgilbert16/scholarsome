@@ -75,11 +75,11 @@ export class FoldersService {
    *
    * @returns Array of public `Folder` objects
    */
-  async publicFolders(): Promise<Folder[] | null> {
+  async publicFolders(rootOnly = true): Promise<Folder[] | null> {
     let folders: ApiResponse<Folder[]> | undefined;
 
     try {
-      folders = await lastValueFrom(this.http.get<ApiResponse<Folder[]>>("/api/sets/folders/public"));
+      folders = await lastValueFrom(this.http.get<ApiResponse<Folder[]>>(`/api/sets/folders/public?rootOnly=${rootOnly}`));
     } catch (e) {
       return null;
     }

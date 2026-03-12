@@ -36,7 +36,8 @@ export class FoldersService {
 
     if (!folder || !user) return false;
 
-    return folder.author.id === user.id;
+    // L’auteur du dossier ou un admin peut accéder
+    return folder.author.id === user.id || user.admin === true;
   }
 
   /**

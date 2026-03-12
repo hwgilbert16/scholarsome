@@ -34,7 +34,7 @@
         </button>
       </a>
 
-      <button type="button" class="btn btn-primary mb-2" *ngIf="!editing && userIsAuthor" (click)="edit()">
+      <button type="button" class="btn btn-primary mb-2" *ngIf="!editing && (userIsAuthor || userIsAdmin)" (click)="edit()">
         <fa-icon [icon]="faPencil"></fa-icon> Modifier
       </button>
 

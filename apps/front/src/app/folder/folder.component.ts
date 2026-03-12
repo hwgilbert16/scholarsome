@@ -52,6 +52,7 @@ export class FolderComponent implements OnInit {
   protected deleteClicked = false;
 
   protected userIsAuthor = false;
+  protected userIsAdmin = false;
   protected editing = false;
   protected editingLoading = false;
   protected loading = true;
@@ -122,6 +123,7 @@ export class FolderComponent implements OnInit {
   async save() {
     if (this.saveForm.invalid) {
       this.saveForm.markAllAsTouched();
+      console.log("INVALID");
       return;
     }
 
@@ -167,8 +169,8 @@ export class FolderComponent implements OnInit {
     this.editingLoading = true;
 
     const userSets = await this.setsService.mySets();
-    const userFolders = await this.foldersService.myFolders();
-
+    // const userFolders = await this.foldersService.myFolders();
+    const userFolders = await this.foldersService.publicFolders(false);
     this.saveForm.controls.name.setValue(this.folder.name);
     this.saveForm.controls.description.setValue(this.folder.description);
     this.saveForm.controls.color.setValue(this.folder.color);
@@ -230,6 +232,9 @@ export class FolderComponent implements OnInit {
 
     if (user && folder.authorId === user.id) {
       this.userIsAuthor = true;
+    }
+    if (user && user.admin == true) {
+      this.userIsAdmin = true;
     }
 
     let parentFolderId = folder.parentFolderId;
