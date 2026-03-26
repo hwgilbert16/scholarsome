@@ -55,12 +55,21 @@ export class HomepageComponent implements OnInit {
     const folders = await this.foldersService.publicFolders();
 
     if (folders) {
+      // folders.forEach((f) => {
+      //  f.updatedAt = new Date(f.updatedAt);
+      //  f.createdAt = new Date(f.createdAt);
+      // });
+
       this.publicFolders = folders;
     }
 
     const sets = await this.setsService.publicSets();
 
     if (sets) {
+    //  sets.forEach((s) => {
+    //   s.updatedAt = new Date(s.updatedAt);
+    // });
+
       this.publicSets = sets;
     }
 
