@@ -18,9 +18,9 @@ Three options are available in this menu: type, answer with, and enable shufflin
 
 Type refers to the studying method used.
 
-Traditional is a digitized form of how flashcards are physically studied. The card can be flipped, the set can be navigated with arrow buttons, etc. It is on the user to utilize the presented cards in a meaningful way.
+**Traditional** is a digitized form of how flashcards are physically studied. The card can be flipped, the set can be navigated with arrow buttons, etc. It is on the user to utilize the presented cards in a meaningful way.
 
-Progressive is an alternative way to study cards. Cards are shown, and the user is asked after revealing the answer whether they knew it or not. If they did, the card is not shown again. If the card was not known, it is shown again after the user has reached the end of the set. This repeats until all cards are known.
+**Progressive** is an alternative way to study cards. Cards are shown, and the user is asked after revealing the answer whether they knew it or not. If they did, the card is not shown again. If the card was not known, it is shown again after the user has reached the end of the set. This repeats until all cards are known.
 
 An additional mode, a spaced repetition system, will be available in the future. This will differ from the existing modes as its progress will save between study sessions.
 
